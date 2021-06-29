@@ -1,0 +1,31 @@
+{
+  "name": "numary-control",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "webpack-dev-server --hot --port=3070"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "copy-webpack-plugin": "^6.0.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-modal": "^3.11.2",
+    "react-router-dom": "^5.2.0",
+    "react-table": "^7.5.0",
+    "styled-components": "^5.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-react": "^7.10.1",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^3.5.3",
+    "html-webpack-plugin": "^4.3.0",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
