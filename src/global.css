@@ -21,3 +21,32 @@ body {
 .page {
   animation: appear 0.8s;
 }
+
+.top-container {
+  padding-left: 80px;
+  padding-right: 80px;
+}
+
+.mr10 {
+  margin-right: 10px;
+}
+
+.ml20 {
+  margin-left: 20px;
+}
+
+.mt40 {
+  margin-top: 40px;
+}
+
+.mb10 {
+  margin-bottom: 10px;
+}
+
+.mb20 {
+  margin-bottom: 20px;
+}
+
+.mb40 {
+  margin-bottom: 40px;
+}

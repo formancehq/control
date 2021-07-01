@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "webpack-dev-server --hot --port=3070"
+    "dev": "webpack-dev-server --hot --port=3078"
   },
   "dependencies": {
     "axios": "^0.19.2",

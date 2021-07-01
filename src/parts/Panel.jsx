@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   /* background: #F5F5F5; */
-  border-radius: var(--theme-radius);
-  box-shadow: rgba(0, 0, 0, 0.05) 2px 2px 4px;
-  border: solid 0.5px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  /* box-shadow: rgba(0, 0, 0, 0.05) 2px 2px 4px; */
+  border: solid 0.7px rgba(16, 0, 70, 0.1);
   display: inline-block;
   padding: ${props => props.nopad ? 0 : '18px'};
   width: 100%;

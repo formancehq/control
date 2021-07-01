@@ -19,10 +19,31 @@ function getInfo() {
   return p;
 }
 
-function getTransactions(query) {
+function getStats() {
   const p = new Promise((resolve, reject) => {
     axios
-      .get(url('/transactions'))
+    .get(url('/stats'))
+    .then(res => {
+      resolve(res.data);
+    })
+    .catch(() => {
+      reject();
+    })
+  });
+
+  return p;
+}
+
+function getTransactions(query) {
+  const params = query || {};
+
+  console.log(params);
+
+  const p = new Promise((resolve, reject) => {
+    axios
+      .get(url('/transactions'), {
+        params,
+      })
       .then((res) => {
         resolve(res.data);
       })
@@ -67,6 +88,7 @@ function getAccount(address) {
 
 export {
   getInfo,
+  getStats,
   getTransactions,
   getAccounts,
   getAccount,

@@ -20,7 +20,7 @@ const Addr = styled.div`
     /* background-color: hsla(189, 89%, 90%, 1); */
     
     background-color: ${props => {
-      if (props.ns === 'default') {
+      if (props.ns === 'default' && false) {
         return "hsla(50.36, 88.37%, 82.81%, 1)";
       } else {
         return "hsla(170, 100%, 90%, 1)";
@@ -28,7 +28,7 @@ const Addr = styled.div`
     }};
 
     color: ${props => {
-      if (props.ns === 'default') {
+      if (props.ns === 'default' && false) {
         return "hsla(39.17, 55.91%, 56.9%, 1)";
       } else {
         return "hsla(183, 29%, 40%, 1)";

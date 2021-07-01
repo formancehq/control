@@ -2,15 +2,18 @@ import * as React from 'react';
 import styled from 'styled-components'
 import * as server from '../lib/ledger';
 import Address from '../parts/Address.jsx';
-import Asset from '../parts/Asset.jsx';
 import Amount from '../parts/Amount.jsx';
 import Table from '../parts/Table.jsx';
 import TxId from '../parts/TxId.jsx';
-
-import {Link} from 'react-router-dom';
+import Status from '../parts/Status.jsx';
 import Panel from '../parts/Panel.jsx';
+import Pagination from '../parts/Pagination.jsx';
 
 const Wrapper = styled.div`
+  .asset {
+    font-family: 'Roboto Mono', monospace;
+  }
+  
   .pagination {
     display: flex;
     justify-content: center;
@@ -45,10 +48,17 @@ const columns = [
   {
     Header: "# TXID",
     groups: ['full'],
-    accessor: row =>{
+    accessor: row => {
       return (
         <TxId>{row.txid}</TxId>
       );
+    },
+  },
+  {
+    Header: "Status",
+    groups: ['full', 'simple'],
+    accessor: () => {
+      return <Status>completed</Status>;
     },
   },
   {
@@ -58,7 +68,7 @@ const columns = [
     accessor: row => {
       return (
         <div>
-          <span>{row.asset} </span>
+          <span className="asset">{row.asset} </span>
           <Amount>{row.amount}</Amount>
         </div>
       )
@@ -105,8 +115,8 @@ const columns = [
     Header: "Date",
     groups: ['full'],
     // accessor: "timestamp",
-    accessor: () => {
-      return new Date().toDateString();
+    accessor: (row) => {
+      return new Date(row.timestamp).toDateString();
     }
   },
   // {
@@ -132,16 +142,65 @@ class TransactionsTable extends React.Component {
 
     this.state = {
       ready: false,
+      results: [],
       transactions: [],
+      pagination: {
+        total: 0,
+        pageSize: 0,
+        previous: [],
+        query: {},
+      },
     };
 
     this.mode = this.props.mode || 'full';
     this.columns = columns.filter(e => e.groups.indexOf(this.mode) > -1);
+    this.paginationHandler = this.paginationHandler.bind(this);
+    this.fetch = this.fetch.bind(this);
   }
 
-  componentDidMount() {
+  paginationHandler(event) {
+    let pagination;
+
+    switch (event) {
+      case "next":
+        this.setState({
+          pagination: {
+            ...this.state.pagination,
+
+            previous: [
+              ...this.state.pagination.previous,
+              this.state.pagination.query
+            ],
+
+            query: {
+              after: this.state.transactions[this.state.transactions.length - 1].txid,
+            },
+          },
+        }, this.fetch);
+
+        break;
+      
+      case "previous":
+        const previous = [...this.state.pagination.previous];
+        const query = previous.pop();
+
+        pagination = {
+          ...this.state.pagination,
+          previous,
+          query,
+        };
+
+        this.setState({pagination}, this.fetch);
+        break;
+    
+      default:
+        break;
+    }
+  }
+
+  fetch() {
     server
-    .getTransactions()
+    .getTransactions(this.state.pagination.query)
     .then((data) => {
       let transactions = data.cursor.data;
 
@@ -158,47 +217,68 @@ class TransactionsTable extends React.Component {
       const results = []
 
       transactions.forEach(tx => {
-        tx.postings.forEach(e => {
+        tx.postings.forEach((e, i) => {
           let t = JSON.parse(JSON.stringify(tx));
           t = {
             ...t,
             ...e,
+            postingId: i,
           };
+
           results.push(t);
         })
       });
-
-      console.log(results);
       
       this.setState({
         ready: true,
+        results: data.cursor.data,
         transactions: results,
+        pagination: {
+          ...this.state.pagination,
+          total: data.cursor.total,
+          pageSize: data.cursor.page_size,
+        }
       });
+
+      window.scroll(0, 0);
     })
+  }
+
+  componentDidMount() {
+    this.fetch();
   }
 
   render() {
     return (
       <Wrapper>
-        <Table
-          columns={this.columns}
-          data={this.state.transactions}
-          empty={
-            <div>
-              <span>No transactions yet!</span><br/>
-              <span>Add your first</span>
-            </div>
-          }></Table>
-          {this.props.paginate && false && (
-            <div className="pagination">
-              <ul>
-                <li className="active">1</li>
-                <li>2</li>
-                <li>...</li>
-                <li>31</li>
-              </ul>
-            </div>
-          )}
+        <Panel nopad>
+          <Table
+            columns={this.columns}
+            data={this.state.transactions}
+            getRowProps={row => {
+              return {
+                level: row.original.postingId == 0 ? '0' : '1',
+                group: row.original.txid % 2 == 0 ? 'even' : 'odd',
+              };
+            }}
+            empty={
+              <div>
+                {this.state.ready && (
+                  <span>No transactions yet</span>
+                )}
+                {!this.state.ready && (
+                  <span>Loading</span>
+                )}
+              </div>
+            }></Table>
+        </Panel>
+        {this.props.paginate && (
+          <Pagination
+            total={this.state.pagination.total}
+            previous={this.state.pagination.previous.length}
+            next={this.state.results.length == this.state.pagination.pageSize}
+            handler={this.paginationHandler}></Pagination>
+        )}
       </Wrapper>
     );
   }

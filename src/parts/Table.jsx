@@ -22,9 +22,24 @@ const TableWrapper = styled.table`
   } */
 
   tbody tr {
+    border-bottom: solid 0.5px rgba(16, 0, 70, 0.05);
+
     &:nth-child(even) {
-      background-color: rgba(0, 0, 0, 0.03);
+      /* background-color: rgba(0, 0, 0, 0.02); */
     }
+
+    &[group="odd"] {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    /* &[level="0"] {
+      border-left: solid 3px black;
+    }
+
+    &[level="1"] {
+      border-left: solid 3px lightgrey;
+      background-color: rgba(0, 0, 0, 0.02);
+    } */
   }
 
   thead tr {
@@ -58,6 +73,7 @@ function Table({
   columns,
   data,
   empty,
+  getRowProps = () => ({}),
   getCellProps = () => ({}),
 }) {
     const {
@@ -86,7 +102,7 @@ function Table({
           {rows.map((row, i) => {
             prepareRow(row)
             return (
-              <tr {...row.getRowProps()}>
+              <tr {...row.getRowProps()} {...getRowProps(row)}>
                 {row.cells.map(cell => {
                   return <td {...cell.getCellProps([
                     {
