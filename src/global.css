@@ -50,3 +50,11 @@ body {
 .mb40 {
   margin-bottom: 40px;
 }
+
+.row {
+  display: flex;
+}
+
+.f1 {
+  flex: 1;
+}

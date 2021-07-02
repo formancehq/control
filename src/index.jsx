@@ -6,6 +6,7 @@ import './global.css';
 import Home from './pages/Home.jsx';
 import Transactions from './pages/Transactions.jsx';
 import Accounts from './pages/Accounts.jsx';
+import Account from './pages/Account.jsx';
 
 import ScrollToTop from './parts/Scroll.jsx';
 
@@ -74,6 +75,9 @@ class App extends React.Component {
         <Router>
           <ScrollToTop></ScrollToTop>
           <Switch>
+            <Route path="/accounts/:id" exact>
+              <Account></Account>
+            </Route>
             <Route path="/accounts" exact>
               <Accounts></Accounts>
             </Route>

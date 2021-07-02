@@ -7,7 +7,7 @@ const Wrapper = styled.div`
   
 `;
 
-function Transactions() {
+function Accounts() {
   return (
     <Wrapper>
       <Navbar></Navbar>
@@ -18,4 +18,4 @@ function Transactions() {
   );
 }
 
-export default Transactions;
+export default Accounts;
