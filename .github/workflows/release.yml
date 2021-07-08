@@ -15,18 +15,19 @@ jobs:
         run: yarn
       - name: Build
         run: yarn webpack
-      - id: get_release
+      - name: Get release
+        id: get_release
         uses: bruceadams/get-release@v1.2.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Package
-        run: cd dist && tar -cvf numary-control-${{ steps.get-release.outputs.tag_name }}.tar.gz .
+        run: cd dist && tar -cvf numary-control-${{ steps.get_release.outputs.tag_name }}.tar.gz .
       - name: upload release
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.get-release.outputs.upload_url }}
-          asset_path: numary-control-${{ steps.get-release.outputs.tag_name }}.tar.gz
-          asset_name: numary-control-${{ steps.get-release.outputs.tag_name }}.tar.gz
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: numary-control-${{ steps.get_release.outputs.tag_name }}.tar.gz
+          asset_name: numary-control-${{ steps.get_release.outputs.tag_name }}.tar.gz
           asset_content_type: application/gzip
