@@ -1,0 +1,17 @@
+name: test
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.2.0
+      - uses: actions/checkout@v2
+      - name: Fetch deps
+        run: yarn
+      - name: build
+        run: yarn webpack
