@@ -20,8 +20,8 @@ jobs:
         uses: bruceadams/get-release@v1.2.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Package
-        run: cd dist && tar -cvf release . && mv release ../
+      - name: Package release
+        run: cd dist && tar -zcvf numary-control.tar.gz . && mv numary-control.tar.gz ../
       - name: upload release
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -31,12 +31,14 @@ jobs:
           asset_path: release
           asset_name: numary-control-${{ steps.get_release.outputs.tag_name }}.tar.gz
           asset_content_type: application/gzip
-      - name: upload release
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: upload release generic s3
+        uses: zdurham/s3-upload-github-action@master
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: release
-          asset_name: numary-control.tar.gz
-          asset_content_type: application/gzip
+          args: --acl public-read
+        env:
+          FILE: numary-control.tar.gz
+          AWS_REGION: 'eu-west-1'
+          S3_BUCKET: 'numary-control-releases'
+          S3_KEY: 'numary-control.tar.gz'
+          AWS_ACCESS_KEY_ID: ${{ secrets.RELEASE_AWS_S3_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.RELEASE_AWS_S3_KEY_SECRET }}
