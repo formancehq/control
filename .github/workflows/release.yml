@@ -21,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Package release
-        run: cd dist && tar -zcvf numary-control.tar.gz . && mv numary-control.tar.gz ../
+        run: cd dist && tar -zcvf numary-control.tar.gz * && mv numary-control.tar.gz ../
       - name: upload release
         uses: actions/upload-release-asset@v1.0.2
         env:
