@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: release
+          asset_path: numary-control.tar.gz
           asset_name: numary-control-${{ steps.get_release.outputs.tag_name }}.tar.gz
           asset_content_type: application/gzip
       - name: upload release generic s3
