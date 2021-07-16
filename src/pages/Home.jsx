@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import Navbar from '../parts/Navbar.jsx';
-import * as ledger from '../lib/ledger';
+import ledger from '../lib/ledger';
 
 const Wrapper = styled.div`
   .stats {
@@ -40,7 +40,7 @@ function Home() {
   });
 
   React.useEffect(() => {
-    ledger
+    ledger()
     .getStats()
     .then(res => {
       setData({

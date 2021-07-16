@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components'
-import * as server from '../lib/ledger';
+import ledger from '../lib/ledger';
 import Address from '../parts/Address.jsx';
 import Amount from '../parts/Amount.jsx';
 import Table from '../parts/Table.jsx';
@@ -199,7 +199,7 @@ class TransactionsTable extends React.Component {
   }
 
   fetch() {
-    server
+    ledger()
     .getTransactions(this.state.pagination.query)
     .then((data) => {
       let transactions = data.cursor.data;

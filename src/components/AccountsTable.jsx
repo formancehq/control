@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import * as server from '../lib/ledger';
+import ledger from '../lib/ledger';
 import Table from '../parts/Table.jsx';
 import Panel from '../parts/Panel.jsx';
 import Address from '../parts/Address.jsx';
@@ -48,7 +48,7 @@ class Accounts extends React.Component {
   }
 
   fetch() {
-    server
+    ledger()
     .getAccounts()
     .then((data) => {
       this.setState({

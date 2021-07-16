@@ -58,3 +58,7 @@ body {
 .f1 {
   flex: 1;
 }
+
+.mono {
+  font-family: 'Roboto Mono', monospace;
+}

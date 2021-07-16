@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Navbar from '../parts/Navbar.jsx';
 import Balances from '../components/BalancesTable.jsx';
-import * as ledger from '../lib/ledger';
+import ledger from '../lib/ledger';
 
 const Wrapper = styled.div`
   h1 {
@@ -21,7 +21,7 @@ function Account() {
   const [data, setData] = React.useState({});
 
   React.useEffect(() => {
-    ledger
+    ledger()
     .getAccount(id)
     .then(res => {
       setData({
