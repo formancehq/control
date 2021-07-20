@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import Navbar from '../parts/Navbar.jsx';
 import Balances from '../components/BalancesTable.jsx';
+import Volumes from '../components/VolumesTable.jsx';
 import ledger from '../lib/ledger';
 
 const Wrapper = styled.div`
@@ -32,18 +32,21 @@ function Account() {
 
   return (
     <Wrapper>
-      <Navbar></Navbar>
       <div className="top-container">
         <h1>{id}</h1>
         {data.account && (
           <div>
             <div className="row">
-              <div className="f1">
+              <div className="f1 pad-right-20 ">
                 <h2>Balances</h2>
                 <Balances
-                balances={data.account.balances}></Balances>
+                  balances={data.account.balances}></Balances>
               </div>
-              <div className="f1"></div>
+              <div className="f1 pad-left-20">
+                <h2>Volumes</h2>
+                <Volumes
+                  volumes={data.account.volumes}></Volumes>
+              </div>
             </div>
           </div>
         )}

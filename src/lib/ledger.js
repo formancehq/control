@@ -57,9 +57,13 @@ class Ledger {
   }
 
   getAccounts(query) {
+    const params = query || {};
+
     const p = new Promise((resolve, reject) => {
       axios
-        .get(url(`/${this.name}/accounts`))
+        .get(url(`/${this.name}/accounts`), {
+          params,
+        })
         .then((res) => {
           console.log(res.data);
           resolve(res.data);
@@ -89,7 +93,7 @@ class Ledger {
 }
 
 function url(path) {
-  return `http://localhost:3068${path}`;
+  return `http://localhost:3068${path || ''}`;
 }
 
 function getInfo() {
@@ -107,81 +111,11 @@ function getInfo() {
   return p;
 }
 
-function getStats() {
-  const p = new Promise((resolve, reject) => {
-    axios
-    .get(url('/stats'))
-    .then(res => {
-      resolve(res.data);
-    })
-    .catch(() => {
-      reject();
-    })
-  });
-
-  return p;
-}
-
-function getTransactions(query) {
-  const params = query || {};
-
-  console.log(params);
-
-  const p = new Promise((resolve, reject) => {
-    axios
-      .get(url('/transactions'), {
-        params,
-      })
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((e) => {
-        reject(e);
-      });
-  });
-
-  return p;
-}
-
-function getAccounts(query) {
-  const p = new Promise((resolve, reject) => {
-    axios
-      .get(url('/accounts'))
-      .then((res) => {
-        console.log(res.data);
-        resolve(res.data);
-      })
-      .catch(() => {
-        reject();
-      });
-  });
-
-  return p;
-}
-
-function getAccount(address) {
-  const p = new Promise((resolve, reject) => {
-    axios
-      .get(url(`/accounts/${address}`))
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch(() => {
-        reject();
-      });
-  });
-
-  return p;
-}
-
 export default (name) => {
   return new Ledger(name);
 };
 
 export {
   getInfo,
-  getStats,
-  getTransactions,
-  getAccounts,
-  getAccount,
+  url,
 };

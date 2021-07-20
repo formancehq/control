@@ -18,23 +18,32 @@ const columns = [
     }
   },
   {
-    Header: "Balance",
-    group: 'balances',
-    accessor: ({balance}) => {
+    Header: "Received",
+    group: 'volumes',
+    accessor: ({volumes}) => {
       return (
-        <Amount>{balance}</Amount>
-      );
-    }
+        <Amount color="green">{volumes["input"] || 0}</Amount>
+      )
+    },
+  },
+  {
+    Header: "Sent",
+    group: 'volumes',
+    accessor: ({volumes}) => {
+      return (
+        <Amount color="red">{volumes["output"] || 0}</Amount>
+      )
+    },
   }
 ];
 
-function Balances({balances}) {
+function Volumes({volumes}) {
   const rows = [];
 
-  for (let asset of Object.keys(balances)){
+  for (let asset of Object.keys(volumes)) {
     const row = {
       asset,
-      balance: balances[asset],
+      volumes: volumes[asset],
     }
 
     rows.push(row);
@@ -51,4 +60,4 @@ function Balances({balances}) {
   );
 }
 
-export default Balances;
+export default Volumes;

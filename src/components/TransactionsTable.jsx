@@ -8,6 +8,7 @@ import TxId from '../parts/TxId.jsx';
 import Status from '../parts/Status.jsx';
 import Panel from '../parts/Panel.jsx';
 import Pagination from '../parts/Pagination.jsx';
+import Empty from './EmptyLedger.jsx';
 
 const Wrapper = styled.div`
   .asset {
@@ -41,8 +42,6 @@ const Wrapper = styled.div`
     }
   }
 `;
-
-const ActionsWrapper = styled.div``;
 
 const columns = [
   {
@@ -249,6 +248,16 @@ class TransactionsTable extends React.Component {
   }
 
   render() {
+    if (!this.state.ready) {
+      return null;
+    }
+
+    if (this.state.transactions.length == 0 && this.state.ready) {
+      return (
+       <Empty></Empty>
+      );
+    }
+    
     return (
       <Wrapper>
         <Panel nopad>
@@ -275,6 +284,7 @@ class TransactionsTable extends React.Component {
         {this.props.paginate && (
           <Pagination
             total={this.state.pagination.total}
+            size={this.state.results.length}
             previous={this.state.pagination.previous.length}
             next={this.state.results.length == this.state.pagination.pageSize}
             handler={this.paginationHandler}></Pagination>

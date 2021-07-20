@@ -29,7 +29,7 @@ const TableWrapper = styled.table`
     }
 
     &[group="odd"] {
-      background-color: rgba(0, 0, 0, 0.02);
+      /* background-color: rgba(0, 0, 0, 0.02); */
     }
 
     /* &[level="0"] {
@@ -45,19 +45,23 @@ const TableWrapper = styled.table`
   thead tr {
     border-bottom: solid 1px rgba(0, 0, 0, 0.05);
     /* color: white; */
-    
-  }
+    /* background: #F5F5F5; */
+    border-radius: 4px;
 
-  thead th {
-    font-weight: 500;
+    th {
+      line-height: 30px;
+      /* padding-bottom: 30px; */
+      font-weight: 500;
+      opacity: 0.65;
 
-    /* &:first-child {
-      border-radius: var(--theme-radius) 0 0 0;
+      /* &:first-child {
+        border-radius: var(--theme-radius) 0 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 var(--theme-radius) 0 0;
+      } */
     }
-
-    &:last-child {
-      border-radius: 0 var(--theme-radius) 0 0;
-    } */
   }
 
   tbody tr:last-child {

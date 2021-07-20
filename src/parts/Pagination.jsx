@@ -28,12 +28,18 @@ const Wrapper = styled.div`
   }
 `;
 
-function Pagination({handler, previous, next, total}) {
+function Pagination({handler, previous, next, total, size}) {
   return (
     <Wrapper>
       <div className="counter">
         {total > 0 && (
           <span>{total} results found</span>
+        )}
+        {total > 0 && size > 0 && (
+          <span> • </span>
+        )}
+        {size > 0 && (
+          <span>showing {size} results</span>
         )}
       </div>
       <div className="actions">

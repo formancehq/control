@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import Navbar from '../parts/Navbar.jsx';
 import ledger from '../lib/ledger';
 
 const Wrapper = styled.div`
@@ -13,7 +12,7 @@ const Wrapper = styled.div`
       margin: 0 20px;
       padding: 20px;
 
-      background: #F5F5F5;
+      background: white;
       border-radius: 8px;
 
       .count {
@@ -50,7 +49,6 @@ function Home() {
   }, [])
   return (
     <Wrapper>
-      <Navbar></Navbar>
       <div className="top-container">
        <div className="stats mt40">
           <div className="tile">

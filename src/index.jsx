@@ -3,23 +3,28 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import './global.css';
 
-import Home from './pages/Home.jsx';
-import Transactions from './pages/Transactions.jsx';
-import Accounts from './pages/Accounts.jsx';
-import Account from './pages/Account.jsx';
-
-import ScrollToTop from './parts/Scroll.jsx';
-
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from "react-router-dom";
 
+import {getInfo, url} from './lib/ledger';
+
+import Navbar from './parts/Navbar.jsx';
+import Home from './pages/Home.jsx';
+import Transactions from './pages/Transactions.jsx';
+import Accounts from './pages/Accounts.jsx';
+import Account from './pages/Account.jsx';
+import Create from './pages/Create.jsx';
+import ScrollToTop from './parts/Scroll.jsx';
+import Panel from './parts/Panel.jsx';
+
 const Wrapper = styled.div`
   font-family: 'Inter', sans-serif;
 
   button, a.button {
+    display: inline-block;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -37,12 +42,21 @@ const Wrapper = styled.div`
       background: black;
       color: white;
     }
+
+    &.action {
+      background: #13e07e;
+      color: #222;
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 12px;
+    }
   }
 
   input[type="text"], input[type="email"] {
     padding: 12px;
     font-size: 16px;
     border-radius: 100px;
+    border-radius: 8px;
     border: none;
     margin-left: 0;
 
@@ -69,11 +83,38 @@ class App extends React.Component {
     };
   }
 
+  componentWillMount() {
+    getInfo()
+    .then(() => {
+      this.setState({
+        ready: true,
+      });
+    })
+    .catch(e => {
+      this.setState({
+        ready: true,
+        error: true,
+      });
+    });
+  }
+
   render() {
+    if (this.state.error) {
+      return (
+        <Wrapper>
+          <Panel>
+            <h1>Failed to connect to the ledger</h1>
+            <h2 className="opacity-05 fw300">Is the ledger started on {url()}?</h2>
+          </Panel>
+        </Wrapper>
+      );
+    }
+
     return (
       <Wrapper>
         <Router>
           <ScrollToTop></ScrollToTop>
+          <Navbar></Navbar>
           <Switch>
             <Route path="/accounts/:id" exact>
               <Account></Account>
@@ -83,6 +124,9 @@ class App extends React.Component {
             </Route>
             <Route path="/transactions" exact>
               <Transactions></Transactions>
+            </Route>
+            <Route path="/new" exact>
+              <Create></Create>
             </Route>
             <Route path="/">
               <Home></Home>

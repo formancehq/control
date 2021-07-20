@@ -1,11 +1,11 @@
 html, body {
   margin: 0;
   padding: 0;
+  /* background: #F1F1F1; */
 }
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background-color: white;
 }
 
 @keyframes appear {
@@ -23,8 +23,8 @@ body {
 }
 
 .top-container {
-  padding-left: 80px;
-  padding-right: 80px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .mr10 {
@@ -33,6 +33,14 @@ body {
 
 .ml20 {
   margin-left: 20px;
+}
+
+.m10 {
+  margin-top: 10px;
+}
+
+.mt20 {
+  margin-top: 20px;
 }
 
 .mt40 {
@@ -51,6 +59,18 @@ body {
   margin-bottom: 40px;
 }
 
+.pad20 {
+  padding: 20px;
+}
+
+.pad-right-20 {
+  padding-right: 20px;
+}
+
+.pad-left-20 {
+  padding-left: 20px;
+}
+
 .row {
   display: flex;
 }
@@ -61,4 +81,32 @@ body {
 
 .mono {
   font-family: 'Roboto Mono', monospace;
+}
+
+.fw300 {
+  font-weight: 300;
+}
+
+.fw400 {
+  font-weight: 400;
+}
+
+.fw500 {
+  font-weight: 500;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.opacity-05 {
+  opacity: 0.5;
+}
+
+.opacity-065 {
+  opacity: 0.65;
+}
+
+.opacity-075 {
+  opacity: 0.75;
 }
