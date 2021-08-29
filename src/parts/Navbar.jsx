@@ -35,46 +35,6 @@ const Wrapper = styled.div`
       }
     }
 
-    div.selector {
-      /* margin-left: auto; */
-      position: relative;
-      padding: 10px;
-      background: #343434;
-      border: solid 2px #444;
-      border-radius: 8px;
-
-      .dropdown {
-        position: absolute;
-        display: none;
-        padding: 10px;
-        background: white;
-        border-radius: 4px;
-        color: #222;
-        margin-top: 10px;
-        width: 180px;
-        min-height: 100px;
-        transform: translateX(-100px);
-        box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.05);
-
-        ul {
-          list-style-type: none;
-          margin: 0;
-          padding: 0;
-
-          li {
-            /* background: #F5F5F5; */
-            padding: 10px;
-            padding-left: 0;
-            border-bottom: solid 2px #EEE;
-          }
-        }
-      }
-
-      &:hover .dropdown {
-        display: block;
-      }
-    }
-
     div.right-links {
       margin-left: auto;
       display: flex;
@@ -133,26 +93,6 @@ function Navbar() {
           <input type="text"/>
         </div>
         <div className="right-links">
-          <div>
-            <div className="selector">
-              <span>Quickstart</span>
-              <div className="dropdown">
-                {/* <div className="fw500 mb10">
-                  <span>Ledger selection</span>
-                </div> */}
-                <ul>
-                  <li>
-                    <span className="name">Quickstart</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          {/* <div>
-            <Link className="button action" to="/new">
-              <span class="material-icon">Create</span>
-            </Link>
-          </div> */}
         </div>
       </div>
       <div className="sub">
