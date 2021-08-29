@@ -2,7 +2,7 @@ import * as axios from 'axios';
 
 class Ledger {
   constructor(name) {
-    this.name = name || 'quickstart';
+    this.name = name || (localStorage['ledger_name'] || 'quickstart');
   }
 
   getInfo() {
@@ -93,7 +93,7 @@ class Ledger {
 }
 
 function url(path) {
-  return `http://localhost:3068${path || ''}`;
+  return `${localStorage['ledger_uri'] || 'http://localhost:3068'}${path || ''}`;
 }
 
 function getInfo() {
