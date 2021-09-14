@@ -2,14 +2,22 @@ import * as React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import './global.css';
-
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from "react-router-dom";
-
 import {getInfo, url} from './lib/ledger';
+import posthog from 'posthog-js';
+
+if (POSTHOG) {
+  posthog.init(POSTHOG_KEY, {
+    api_host: 'https://app.posthog.com',
+    autocapture: false,
+  });
+
+  posthog.capture('control.open');
+}
 
 import Navbar from './parts/Navbar.jsx';
 import Home from './pages/Home.jsx';

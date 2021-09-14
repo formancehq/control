@@ -1,7 +1,7 @@
- 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const DefinePlugin = require('webpack').DefinePlugin;
 
 module.exports = {
   entry: './src/index.jsx',
@@ -34,7 +34,11 @@ module.exports = {
       patterns: [
         {from: 'assets/img', to: 'img'},
       ]
-    })
+    }),
+    new DefinePlugin({
+      POSTHOG: JSON.stringify(!!process.env['POSTHOG_KEY']),
+      POSTHOG_KEY: JSON.stringify(process.env['POSTHOG_KEY']),
+    }),
   ],
   devServer: {
     historyApiFallback: true
