@@ -24,4 +24,5 @@ export default (name) => {
 
 export {
   getInfo,
+  opts,
 };

@@ -61,7 +61,7 @@ const Wrapper = styled.div`
     }
   }
 
-  input[type="text"], input[type="email"] {
+  input[type="text"], input[type="email"], input[type="password"] {
     padding: 4px 8px;
     font-size: 14px;
     border-radius: 4px;
@@ -72,6 +72,10 @@ const Wrapper = styled.div`
 
     &:focus {
       outline: solid 2px #474F5C;
+    }
+
+    &:disabled {
+      color: #5D6779;
     }
   }
 

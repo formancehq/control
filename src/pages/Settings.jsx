@@ -1,8 +1,14 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import {opts} from '../lib/ledger';
 
 const Wrapper = styled.div`
-  
+  form {
+    label {
+      display: inline-block;
+      width: 200px;
+    }
+  }
 `;
 
 export default function Settings() {
@@ -14,18 +20,15 @@ export default function Settings() {
         <form>
           <div>
             <label htmlFor="" className="mr20">Cluster URI</label>
-            <input type="text" />
+            <input type="text" disabled={true} value={opts.uri}/>
           </div>
           <div className="mt20">
-            <label htmlFor="" className="mr20">User</label>
-            <input type="text" />
+            <label htmlFor="" className="mr20">Username</label>
+            <input type="text" disabled={true} value={opts.auth ? opts.auth.username : ''}/>
           </div>
           <div className="mt20">
             <label htmlFor="" className="mr20">Password</label>
-            <input type="text" />
-          </div>
-          <div className="mt20">
-            <button>Try</button>
+            <input type="password" disabled={true} value={opts.auth ? opts.auth.password : ''}/>
           </div>
         </form>
       </div>
