@@ -97,9 +97,9 @@ function Navbar() {
           <input type="text"/>
         </div>
         <div className="right-links">
-          <Link to="/settings">
+          {/* <Link to="/settings">
             <img src="/img/icons/settings.svg" alt="" />
-          </Link>
+          </Link> */}
         </div>
       </div>
       <div className="sub">
