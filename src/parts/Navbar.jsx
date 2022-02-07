@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -7,14 +7,14 @@ const Wrapper = styled.div`
   .main {
     height: 80px;
     width: calc(100% - 0px);
-    padding: 0 20px;
+    padding: 0 40px;
     box-sizing: border-box;
     margin: auto;
     display: flex;
     align-items: center;
 
-    background: #111;
-    color: white;
+    background: #16191D;
+    color: #EEEFF2;
 
     .logo {
       a {
@@ -32,6 +32,11 @@ const Wrapper = styled.div`
 
       li {
         margin: 16px;
+        color: #5D6779;
+
+        a.active {
+          color: #EEEFF2;
+        }
       }
     }
 
@@ -73,26 +78,28 @@ function Navbar() {
         <div className="logo">
           <Link to="/">
             <img src="/img/numary-square.png" width="32" className="mr10"/>
-            {/* <span>Numary</span> */}
             <span>Control</span>
           </Link>
         </div>
         <ul className="ml20 fw500 opacity-075 links">
           <li>
-            <Link to="/accounts">
+            <NavLink to="/accounts">
               <span>Accounts</span>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/transactions">
+            <NavLink to="/transactions">
               <span>Transactions</span>
-            </Link>
+            </NavLink>
           </li>
         </ul>
         <div className="search">
           <input type="text"/>
         </div>
         <div className="right-links">
+          <Link to="/settings">
+            <img src="/img/icons/settings.svg" alt="" />
+          </Link>
         </div>
       </div>
       <div className="sub">

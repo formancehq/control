@@ -8,12 +8,9 @@ const Wrapper = styled.div`
 
   font-family: 'Roboto Mono', monospace;
   text-transform: capitalize;
-  
-  background: #98fb9896;
-  color: #005800;
 
-  background: #EEE;
-  color: #444;
+  background: #29303D;
+  color: #CBD0D7;
 `;
 
 function Status({children: status}) {

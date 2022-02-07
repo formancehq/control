@@ -23,9 +23,9 @@ function Account() {
   React.useEffect(() => {
     ledger()
     .getAccount(id)
-    .then(res => {
+    .then(account => {
       setData({
-        account: res.account,
+        account,
       });
     });
   }, []);

@@ -7,7 +7,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import {getInfo, url} from './lib/ledger';
+import { getInfo } from './lib/ledger';
 import posthog from 'posthog-js';
 
 if (POSTHOG) {
@@ -27,6 +27,7 @@ import Account from './pages/Account.jsx';
 import Create from './pages/Create.jsx';
 import ScrollToTop from './parts/Scroll.jsx';
 import Panel from './parts/Panel.jsx';
+import Settings from './pages/Settings.jsx';
 
 const Wrapper = styled.div`
   font-family: 'Inter', sans-serif;
@@ -61,17 +62,17 @@ const Wrapper = styled.div`
   }
 
   input[type="text"], input[type="email"] {
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 100px;
-    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 4px;
     border: none;
     margin-left: 0;
+    background: #16191D;
+    color: #EEEFF2;
 
-    /* &:focus {
-      outline: none;
-      outline: solid 4px rgba(0, 0, 0, 0.2);
-    } */
+    &:focus {
+      outline: solid 2px #474F5C;
+    }
   }
 
   a {
@@ -112,7 +113,7 @@ class App extends React.Component {
         <Wrapper>
           <Panel>
             <h1>Failed to connect to the ledger</h1>
-            <h2 className="opacity-05 fw300">Is the ledger started on {url()}?</h2>
+            <h2 className="opacity-05 fw300">Is the ledger started?</h2>
           </Panel>
         </Wrapper>
       );
@@ -132,6 +133,9 @@ class App extends React.Component {
             </Route>
             <Route path="/transactions" exact>
               <Transactions></Transactions>
+            </Route>
+            <Route path="/settings" exact>
+              <Settings></Settings>
             </Route>
             <Route path="/new" exact>
               <Create></Create>

@@ -53,13 +53,13 @@ const columns = [
       );
     },
   },
-  {
-    Header: "Status",
-    groups: ['full', 'simple'],
-    accessor: () => {
-      return <Status>completed</Status>;
-    },
-  },
+  // {
+  //   Header: "Status",
+  //   groups: ['full', 'simple'],
+  //   accessor: () => {
+  //     return <Status>completed</Status>;
+  //   },
+  // },
   {
     Header: "Value",
     groups: ['full', 'simple'],
@@ -200,8 +200,8 @@ class TransactionsTable extends React.Component {
   fetch() {
     ledger()
     .getTransactions(this.state.pagination.query)
-    .then((data) => {
-      let transactions = data.cursor.data;
+    .then((cursor) => {
+      let transactions = cursor.data;
 
       let filter = this.props.filter;
 
@@ -230,12 +230,12 @@ class TransactionsTable extends React.Component {
       
       this.setState({
         ready: true,
-        results: data.cursor.data,
+        results: cursor.data,
         transactions: results,
         pagination: {
           ...this.state.pagination,
-          total: data.cursor.total,
-          pageSize: data.cursor.page_size,
+          total: cursor.total,
+          pageSize: cursor.page_size,
         }
       });
 

@@ -12,9 +12,6 @@ const Wrapper = styled.div`
       margin: 0 20px;
       padding: 20px;
 
-      background: white;
-      border-radius: 8px;
-
       .count {
         display: block;
         font-family: 'Roboto Mono', monospace;
@@ -41,9 +38,9 @@ function Home() {
   React.useEffect(() => {
     ledger()
     .getStats()
-    .then(res => {
+    .then(stats => {
       setData({
-        ...res.stats,
+        ...stats,
       })
     });
   }, [])

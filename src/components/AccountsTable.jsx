@@ -97,14 +97,14 @@ class Accounts extends React.Component {
   fetch() {
     ledger()
     .getAccounts(this.state.pagination.query)
-    .then((data) => {
+    .then((cursor) => {
       this.setState({
         ready: true,
-        accounts: data.cursor.data,
+        accounts: cursor.data,
         pagination: {
           ...this.state.pagination,
-          hasMore: data.cursor.has_more,
-          total: data.cursor.total,
+          hasMore: cursor.has_more,
+          total: cursor.total,
         },
       });
     });

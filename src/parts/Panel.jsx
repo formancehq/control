@@ -2,10 +2,10 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-  background: white;
+  /* background: white; */
   border-radius: 8px;
   /* box-shadow: rgba(0, 0, 0, 0.05) 1px 1px 2px 4px; */
-  border: solid 0.7px rgba(16, 0, 70, 0.1);
+  border: solid 1px #23272E;
   display: inline-block;
   padding: ${props => props.nopad ? 0 : '18px'};
   width: 100%;

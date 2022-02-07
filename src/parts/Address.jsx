@@ -6,35 +6,16 @@ const Addr = styled.div`
   display: inline-block;
 
   font-family: 'Roboto Mono', monospace;
-  /* font-family: 'Inter', sans-serif; */
   font-weight: 300;
-  /* font-size: 13px; */
+
+  background: #29303D;
+  border-radius: 4px;
 
   cursor: pointer;
 
   span {
     display: inline-block;
-
-    /* border-radius: var(--theme-radius); */
-    border-radius: var(--theme-small-radius);
-    /* background-color: hsla(189, 89%, 90%, 1); */
-    
-    background-color: ${props => {
-      if (props.ns === 'default' && false) {
-        return "hsla(50.36, 88.37%, 82.81%, 1)";
-      } else {
-        return "hsla(170, 100%, 90%, 1)";
-      }
-    }};
-
-    color: ${props => {
-      if (props.ns === 'default' && false) {
-        return "hsla(39.17, 55.91%, 56.9%, 1)";
-      } else {
-        return "hsla(183, 29%, 40%, 1)";
-      }
-    }};
-
+    border-radius: 4px;
     padding: 5px 8px;
   }
 `;

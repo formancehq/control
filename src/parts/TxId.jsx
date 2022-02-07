@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.span`
-  opacity: 0.4;
+  color: #929BAB;
   font-family: 'Roboto Mono', monospace;
   display: inline-block;
 `;

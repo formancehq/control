@@ -10,13 +10,18 @@ const Wrapper = styled.div`
     margin-left: auto;
 
     button {
-      background: white;
-      color: #111;
+      /* background: white; */
+      background: #5D6779;
+      color: #16191D;
       border: solid 1px rgba(0, 0, 0, 0.1);
 
       &:disabled {
-        opacity: 0.5;
+        background: #31363f;
         cursor: default;
+      }
+
+      &:first-child {
+        margin-right: 10px;
       }
     }
   }

@@ -1,121 +1,27 @@
-import * as axios from 'axios';
+import Cluster from 'numary';
 
-class Ledger {
-  constructor(name) {
-    this.name = name || (localStorage['ledger_name'] || 'quickstart');
-  }
+let overrides = {};
 
-  getInfo() {
-    const p = new Promise((resolve, reject) => {
-      axios
-      .get(url('/_info'))
-      .then(res => {
-        resolve(res.data);
-      })
-      .catch(() => {
-        reject();
-      })
-    });
-  
-    return p;
-  }
-
-  getStats() {
-    const p = new Promise((resolve, reject) => {
-      axios
-      .get(url(`/${this.name}/stats`))
-      .then(res => {
-        resolve(res.data);
-      })
-      .catch(() => {
-        reject();
-      })
-    });
-  
-    return p;
-  }
-
-  getTransactions(query) {
-    const params = query || {};
-  
-    console.log(params);
-  
-    const p = new Promise((resolve, reject) => {
-      axios
-        .get(url(`/${this.name}/transactions`), {
-          params,
-        })
-        .then((res) => {
-          resolve(res.data);
-        })
-        .catch((e) => {
-          reject(e);
-        });
-    });
-  
-    return p;
-  }
-
-  getAccounts(query) {
-    const params = query || {};
-
-    const p = new Promise((resolve, reject) => {
-      axios
-        .get(url(`/${this.name}/accounts`), {
-          params,
-        })
-        .then((res) => {
-          console.log(res.data);
-          resolve(res.data);
-        })
-        .catch(() => {
-          reject();
-        });
-    });
-  
-    return p;
-  }
-
-  getAccount(address) {
-    const p = new Promise((resolve, reject) => {
-      axios
-        .get(url(`/${this.name}/accounts/${address}`))
-        .then((res) => {
-          resolve(res.data);
-        })
-        .catch(() => {
-          reject();
-        });
-    });
-  
-    return p;
-  }
+if (localStorage['ledger_opts']) {
+  overrides = JSON.parse(localStorage['ledger_opts']);
 }
 
-function url(path) {
-  return `${localStorage['ledger_uri'] || 'http://localhost:3068'}${path || ''}`;
-}
+const opts = {
+  name: 'quickstart',
+  uri: `${'http://localhost:3068'}`,
+  ...overrides,
+};
+
+const cluster = new Cluster(opts);
 
 function getInfo() {
-  const p = new Promise((resolve, reject) => {
-    axios
-    .get(url('/_info'))
-    .then(res => {
-      resolve(res.data);
-    })
-    .catch(() => {
-      reject();
-    })
-  });
-
-  return p;
+  return cluster.getInfo();
 }
 
 export default (name) => {
-  return new Ledger(name);
+  return cluster.getLedger(name || opts.name);
 };
 
 export {
   getInfo,
-  url,
 };
