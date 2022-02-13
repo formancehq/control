@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import * as React from 'react';
 import styled from 'styled-components';
 
@@ -9,8 +10,11 @@ const Wrapper = styled.div`
   .actions {
     margin-left: auto;
 
-    button {
-      /* background: white; */
+    button:first-child {
+      margin-right: 10px;
+    }
+
+    /* button {
       background: #5D6779;
       color: #16191D;
       border: solid 1px rgba(0, 0, 0, 0.1);
@@ -23,7 +27,7 @@ const Wrapper = styled.div`
       &:first-child {
         margin-right: 10px;
       }
-    }
+    } */
   }
 
   .counter {
@@ -48,8 +52,19 @@ function Pagination({handler, previous, next, total, size}) {
         )}
       </div>
       <div className="actions">
-        <button onClick={() => handler("previous")} disabled={!previous}>Prev</button>
-        <button onClick={() => handler("next")} disabled={!next}>Next</button>
+        <Button
+          onClick={() => handler("previous")}
+          disabled={!previous}
+          size="small"
+          color="secondary"
+          variant="contained">Prev</Button>
+        <Button
+          className="ml20"
+          onClick={() => handler("next")}
+          disabled={!next}
+          size="small"
+          color="secondary"
+          variant="contained">Next</Button>
       </div>
     </Wrapper>
   );

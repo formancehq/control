@@ -107,6 +107,8 @@ class Accounts extends React.Component {
           total: cursor.total,
         },
       });
+
+      window.scroll(0, 0);
     });
   }
 

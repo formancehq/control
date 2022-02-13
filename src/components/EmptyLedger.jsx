@@ -11,8 +11,8 @@ function Empty() {
   return (
     <Wrapper>
       <Panel>
-        <h2 className="fw500 text-center">This legder brand new ✨</h2>
-        <h3 className="fw300 text-center">Add your first transaction to get started</h3>
+        <h2 className="fw500 text-center">This legder is brand new ✨</h2>
+        <h3 className="fw300 text-center">Add a first transaction to get started</h3>
       </Panel>
     </Wrapper>
   )

@@ -43,97 +43,87 @@ const Wrapper = styled.div`
   }
 `;
 
-const columns = [
-  {
-    Header: "# TXID",
-    groups: ['full'],
-    accessor: row => {
-      return (
-        <TxId>{row.txid}</TxId>
-      );
+function Cols(account) {
+  return [
+    {
+      Header: "# TXID",
+      groups: ['full'],
+      accessor: row => {
+        return (
+          <TxId>{row.txid}</TxId>
+        );
+      },
     },
-  },
-  // {
-  //   Header: "Status",
-  //   groups: ['full', 'simple'],
-  //   accessor: () => {
-  //     return <Status>completed</Status>;
-  //   },
-  // },
-  {
-    Header: "Value",
-    groups: ['full', 'simple'],
-    className: 'left',
-    accessor: row => {
-      return (
-        <div>
-          <span className="asset">{row.asset} </span>
-          <Amount>{row.amount}</Amount>
-        </div>
-      )
+    {
+      Header: "Value",
+      groups: ['full', 'simple'],
+      className: 'left',
+      accessor: row => {
+        return (
+          <div>
+            <span className="asset">{row.asset} </span>
+            <Amount>{row.amount}</Amount>
+          </div>
+        )
+      },
     },
-  },
-  // {
-  //   Header: "Asset",
-  //   groups: ['full', 'simple'],
-  //   accessor: row => {
-  //     return (
-  //       <Asset data={row.asset}></Asset>
-  //     );
-  //   },
-  // },
-  {
-    Header: "Source",
-    groups: ['full', 'simple'],
-    className: 'left',
-    accessor: (row) => {
-      return (
-        <Address data={row.source}></Address>
-      );
+    {
+      Header: "Source",
+      groups: ['full', 'simple'],
+      className: 'left',
+      accessor: (row) => {
+        return (
+          <Address
+            data={row.source}
+            type={row.source === account ? 'source' : ''}></Address>
+        );
+      },
     },
-  },
-  {
-    Header: "Destination",
-    groups: ['full', 'simple'],
-    className: 'left',
-    accessor: (row) => {
-      return (
-        <Address data={row.destination}></Address>
-      );
+    {
+      Header: "Destination",
+      groups: ['full', 'simple'],
+      className: 'left',
+      accessor: (row) => {
+        return (
+          <Address
+            data={row.destination}
+            type={row.destination === account ? 'destination' : ''}></Address>
+        );
+      },
     },
-  },
-  // {
-  //   Header: "Ref",
-  //   groups: ['full', 'simple'],
-  //   className: 'left',
-  //   accessor: (row) => {
-  //     return row["ref"] || "no-data";
-  //   },
-  // },
-  {
-    Header: "Date",
-    groups: ['full'],
-    // accessor: "timestamp",
-    accessor: (row) => {
-      return new Date(row.timestamp).toDateString();
-    }
-  },
-  // {
-  //   Header: "Actions",
-  //   groups: ['full'],
-  //   accessor: (row) => {
-  //     return (
-  //       <ActionsWrapper>
-  //         <Link to={`/transactions/${row.id}`}>
-  //           <button className="invisible">
-  //             <img src="/img/eye_2.svg" alt="" width="20"/>
-  //           </button>
-  //         </Link>
-  //       </ActionsWrapper>
-  //     );
-  //   },
-  // }
-];
+    // {
+    //   Header: "Ref",
+    //   groups: ['full', 'simple'],
+    //   className: 'left',
+    //   accessor: (row) => {
+    //     return row["ref"] || "no-data";
+    //   },
+    // },
+    {
+      Header: "Date",
+      groups: ['full'],
+      // accessor: "timestamp",
+      accessor: (row) => {
+        return new Date(row.timestamp).toDateString();
+      }
+    },
+    // {
+    //   Header: "Actions",
+    //   groups: ['full'],
+    //   accessor: (row) => {
+    //     return (
+    //       <ActionsWrapper>
+    //         <Link to={`/transactions/${row.id}`}>
+    //           <button className="invisible">
+    //             <img src="/img/eye_2.svg" alt="" width="20"/>
+    //           </button>
+    //         </Link>
+    //       </ActionsWrapper>
+    //     );
+    //   },
+    // }
+  ];
+}
 
 class TransactionsTable extends React.Component {
   constructor(props) {
@@ -143,6 +133,7 @@ class TransactionsTable extends React.Component {
       ready: false,
       results: [],
       transactions: [],
+      query: props.query || {},
       pagination: {
         total: 0,
         pageSize: 0,
@@ -152,7 +143,7 @@ class TransactionsTable extends React.Component {
     };
 
     this.mode = this.props.mode || 'full';
-    this.columns = columns.filter(e => e.groups.indexOf(this.mode) > -1);
+    this.columns = Cols(props.account).filter(e => e.groups.indexOf(this.mode) > -1);
     this.paginationHandler = this.paginationHandler.bind(this);
     this.fetch = this.fetch.bind(this);
   }
@@ -199,7 +190,10 @@ class TransactionsTable extends React.Component {
 
   fetch() {
     ledger()
-    .getTransactions(this.state.pagination.query)
+    .getTransactions({
+      ...this.state.query,
+      ...this.state.pagination.query,
+    })
     .then((cursor) => {
       let transactions = cursor.data;
 

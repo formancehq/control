@@ -6,9 +6,12 @@ if (localStorage['ledger_opts']) {
   overrides = JSON.parse(localStorage['ledger_opts']);
 }
 
-const opts = {
-  name: 'quickstart',
+const defaultName = 'quickstart';
+
+let opts = {
+  name: defaultName,
   uri: `${'http://localhost:3068'}`,
+  auth: {},
   ...overrides,
 };
 
@@ -18,11 +21,39 @@ function getInfo() {
   return cluster.getInfo();
 }
 
-export default (name) => {
+function getName() {
+  return opts.name;
+}
+
+function setName(name) {
+  setOpts({
+    name: name || defaultName,
+  });
+}
+
+function setOpts(update) {
+  opts = {
+    ...opts,
+    ...update,
+    "auth": {
+      ...opts.auth,
+      ...update.auth,
+    }
+  };
+
+  localStorage['ledger_opts'] = JSON.stringify(opts);
+  window.location.pathname = '/';
+}
+
+export default function getLedger (name) {
   return cluster.getLedger(name || opts.name);
 };
 
 export {
   getInfo,
+  getLedger,
+  getName,
+  setName,
+  setOpts,
   opts,
 };

@@ -1,3 +1,5 @@
+import 'core-js/actual';
+import "regenerator-runtime/runtime.js";
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
@@ -7,7 +9,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import { getInfo } from './lib/ledger';
+import { getInfo, opts } from './lib/ledger';
 import posthog from 'posthog-js';
 
 if (POSTHOG) {
@@ -28,6 +30,28 @@ import Create from './pages/Create.jsx';
 import ScrollToTop from './parts/Scroll.jsx';
 import Panel from './parts/Panel.jsx';
 import Settings from './pages/Settings.jsx';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
+import Connection from './parts/Connection.jsx';
+
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Inter',
+  },
+  palette: {
+    mode: 'dark',
+    secondary: {
+      main: '#333942',
+    },
+    text: {
+      primary: '#CBD0D7',
+    },
+    background: {
+      paper: '#1D2025',
+      default: '#1D2025',
+    },
+  },
+});
 
 const Wrapper = styled.div`
   font-family: 'Inter', sans-serif;
@@ -38,7 +62,7 @@ const Wrapper = styled.div`
     border-radius: 4px;
     cursor: pointer;
 
-    padding: 9px 14px;
+    /* padding: 9px 14px; */
     font-size: 14px;
 
     &.primary {
@@ -61,27 +85,17 @@ const Wrapper = styled.div`
     }
   }
 
-  input[type="text"], input[type="email"], input[type="password"] {
-    padding: 4px 8px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: none;
-    margin-left: 0;
-    background: #16191D;
-    color: #EEEFF2;
-
-    &:focus {
-      outline: solid 2px #474F5C;
-    }
-
-    &:disabled {
-      color: #5D6779;
-    }
-  }
-
   a {
     text-decoration: none;
     color: inherit;
+  }
+
+  form {
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
   }
 `;
 
@@ -96,38 +110,48 @@ class App extends React.Component {
     };
   }
 
-  componentWillMount() {
-    getInfo()
-    .then(() => {
+  async componentWillMount() {
+    try {
+      const info = await getInfo();
+
       this.setState({
         ready: true,
+        info,
       });
-    })
-    .catch(e => {
+    } catch (e) {
       this.setState({
         ready: true,
         error: true,
       });
-    });
+    }
   }
 
   render() {
     if (this.state.error) {
       return (
-        <Wrapper>
+        <ThemeProvider theme={theme}>
+          <Wrapper>
           <Panel>
-            <h1>Failed to connect to the ledger</h1>
-            <h2 className="opacity-05 fw300">Is the ledger started?</h2>
+            <div>
+              <h1>Failed to connect to the ledger</h1>
+              <h2 className="opacity-05 fw300">Is the ledger started on {opts.uri}?</h2>
+            </div>
+            <div>
+              <Connection></Connection>
+            </div>
           </Panel>
         </Wrapper>
+        </ThemeProvider>
       );
     }
 
     return (
-      <Wrapper>
+      <ThemeProvider theme={theme}>
+        <CssBaseline/>
+        <Wrapper>
         <Router>
           <ScrollToTop></ScrollToTop>
-          <Navbar></Navbar>
+          <Navbar info={this.state.info}></Navbar>
           <Switch>
             <Route path="/accounts/:id" exact>
               <Account></Account>
@@ -150,6 +174,7 @@ class App extends React.Component {
           </Switch>
         </Router>
       </Wrapper>
+      </ThemeProvider>
     );
   }
 }

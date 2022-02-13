@@ -9,7 +9,7 @@ const Wrapper = styled.div`
 function Transactions() {
   return (
     <Wrapper>
-      <div className="top-container mt20 mb40">
+      <div className="top-container mt40 mb40">
         <TransactionsTable paginate></TransactionsTable>
       </div>
     </Wrapper>

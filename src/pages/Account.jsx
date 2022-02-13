@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Balances from '../components/BalancesTable.jsx';
+import TransactionsTable from '../components/TransactionsTable.jsx';
 import Volumes from '../components/VolumesTable.jsx';
 import ledger from '../lib/ledger';
 
@@ -12,6 +13,7 @@ const Wrapper = styled.div`
 
   h2 {
     font-weight: 400;
+    display: block;
   }
 `;
 
@@ -28,13 +30,13 @@ function Account() {
         account,
       });
     });
-  }, []);
+  }, [id]);
 
   return (
     <Wrapper>
       <div className="top-container">
         <h1>{id}</h1>
-        {data.account && (
+        {data.account && data.account.balances && (
           <div>
             <div className="row">
               <div className="f1 pad-right-20 ">
@@ -47,6 +49,14 @@ function Account() {
                 <Volumes
                   volumes={data.account.volumes}></Volumes>
               </div>
+            </div>
+            <div className="row mt20">
+              <h2>Transactions</h2>
+            </div>
+            <div>
+              <TransactionsTable key={id} account={id} query={{
+                account: id,
+              }} paginate></TransactionsTable>
             </div>
           </div>
         )}

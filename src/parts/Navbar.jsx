@@ -1,6 +1,8 @@
+import { Autocomplete, TextField } from '@mui/material';
 import * as React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import { getName, setName } from '../lib/ledger';
 
 const Wrapper = styled.div`
 
@@ -71,7 +73,7 @@ const Wrapper = styled.div`
   }
 `;
 
-function Navbar() {
+function Navbar({info}) {
   return (
     <Wrapper>
       <div className="main">
@@ -97,6 +99,15 @@ function Navbar() {
           <input type="text"/>
         </div>
         <div className="right-links">
+          <Autocomplete
+            className="mr20"
+            size="small"
+            freeSolo={true}
+            options={info.ledgers || []}
+            defaultValue={getName()}
+            sx={{ width: 240 }}
+            renderInput={(params) => <TextField variant="outlined" {...params} />}
+            onChange={(e, value) => setName(value)}/>
           <Link to="/settings">
             <img src="/img/icons/settings.svg" alt="" />
           </Link>

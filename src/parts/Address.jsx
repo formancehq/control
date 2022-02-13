@@ -6,10 +6,22 @@ const Addr = styled.div`
   display: inline-block;
 
   font-family: 'Roboto Mono', monospace;
-  font-weight: 300;
+  font-weight: 400;
 
   background: #29303D;
   border-radius: 4px;
+
+  &.source {
+    background: rgb(254, 118, 118);
+    color: rgb(68, 32, 32);
+    /* font-weight: 500; */
+  }
+
+  &.destination {
+    background: rgb(91, 181, 124);
+    color: rgb(28, 54, 37);
+    /* font-weight: 500; */
+  }
 
   cursor: pointer;
 
@@ -38,7 +50,7 @@ class Address extends React.Component {
   render() {
     return (
       <Link to={`/accounts/${this.props.data}`}>
-        <Addr ns={this.state.ns} className="address">
+        <Addr ns={this.state.ns} className={["address", this.props.type].join(' ')}>
           <span>{this.props.data}</span>
         </Addr>
       </Link>
