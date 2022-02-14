@@ -9,6 +9,9 @@ import Status from '../parts/Status.jsx';
 import Panel from '../parts/Panel.jsx';
 import Pagination from '../parts/Pagination.jsx';
 import Empty from './EmptyLedger.jsx';
+import { Link } from 'react-router-dom';
+import Arrow from '@mui/icons-material/ArrowForwardIos';
+import { Button } from '@mui/material';
 
 const Wrapper = styled.div`
   .asset {
@@ -43,8 +46,8 @@ const Wrapper = styled.div`
   }
 `;
 
-function Cols(account) {
-  return [
+function Cols({account, actions}) {
+  const cols = [
     {
       Header: "# TXID",
       groups: ['full'],
@@ -107,22 +110,25 @@ function Cols(account) {
         return new Date(row.timestamp).toDateString();
       }
     },
-    // {
-    //   Header: "Actions",
-    //   groups: ['full'],
-    //   accessor: (row) => {
-    //     return (
-    //       <ActionsWrapper>
-    //         <Link to={`/transactions/${row.id}`}>
-    //           <button className="invisible">
-    //             <img src="/img/eye_2.svg" alt="" width="20"/>
-    //           </button>
-    //         </Link>
-    //       </ActionsWrapper>
-    //     );
-    //   },
-    // }
   ];
+
+  if (actions) {
+    cols.push({
+      Header: "Actions",
+      groups: ['full'],
+      accessor: (row) => {
+        return (
+          <Link to={`/transactions/${row.txid}`}>
+            <Button color="secondary">
+              <Arrow fontSize={'14px'}/>
+            </Button>
+          </Link>
+        );
+      },
+    });
+  }
+
+  return cols;
 }
 
 class TransactionsTable extends React.Component {
@@ -143,9 +149,22 @@ class TransactionsTable extends React.Component {
     };
 
     this.mode = this.props.mode || 'full';
-    this.columns = Cols(props.account).filter(e => e.groups.indexOf(this.mode) > -1);
+    this.columns = Cols(props).filter(e => e.groups.indexOf(this.mode) > -1);
     this.paginationHandler = this.paginationHandler.bind(this);
     this.fetch = this.fetch.bind(this);
+
+    this.getTransactions = async (query) => {
+      if (query.txid) {
+        const tx =  await ledger().getTransaction(query.txid);
+        return {
+          data: [tx],
+          total: 1,
+          page_size: 1,
+        }
+      }
+
+      return await ledger().getTransactions(query);
+    }
   }
 
   paginationHandler(event) {
@@ -189,8 +208,7 @@ class TransactionsTable extends React.Component {
   }
 
   fetch() {
-    ledger()
-    .getTransactions({
+    this.getTransactions({
       ...this.state.query,
       ...this.state.pagination.query,
     })

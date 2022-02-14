@@ -125,3 +125,11 @@ h2 {
 .opacity-075 {
   opacity: 0.75;
 }
+
+.ohover-065 {
+  opacity: 0.65;
+}
+
+.ohover-065:hover {
+  opacity: 1;
+}

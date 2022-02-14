@@ -33,6 +33,7 @@ import Settings from './pages/Settings.jsx';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import Connection from './parts/Connection.jsx';
+import Transaction from './pages/Transaction.jsx';
 
 const theme = createTheme({
   typography: {
@@ -97,6 +98,10 @@ const Wrapper = styled.div`
       font-size: 14px;
     }
   }
+
+  code {
+    font-family: 'Roboto Mono', monospace;
+  }
 `;
 
 class App extends React.Component {
@@ -158,6 +163,9 @@ class App extends React.Component {
             </Route>
             <Route path="/accounts" exact>
               <Accounts></Accounts>
+            </Route>
+            <Route path="/transactions/:txid" exact>
+              <Transaction></Transaction>
             </Route>
             <Route path="/transactions" exact>
               <Transactions></Transactions>

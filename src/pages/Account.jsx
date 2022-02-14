@@ -56,7 +56,7 @@ function Account() {
             <div>
               <TransactionsTable key={id} account={id} query={{
                 account: id,
-              }} paginate></TransactionsTable>
+              }} actions paginate></TransactionsTable>
             </div>
           </div>
         )}

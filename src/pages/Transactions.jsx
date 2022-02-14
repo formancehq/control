@@ -10,7 +10,7 @@ function Transactions() {
   return (
     <Wrapper>
       <div className="top-container mt40 mb40">
-        <TransactionsTable paginate></TransactionsTable>
+        <TransactionsTable actions paginate></TransactionsTable>
       </div>
     </Wrapper>
   );
