@@ -41,6 +41,9 @@ function Account() {
   return (
     <Wrapper>
       <div className="top-container">
+        <Box sx={{display: 'flex', alignItems: 'center'}}>
+          <h1>{id}</h1>
+        </Box>
         {data.account && data.account.balances && (
           <div>
             <div className="row">
