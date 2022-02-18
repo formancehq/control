@@ -16,19 +16,6 @@ const Wrapper = styled.div`
       font-weight: 300;
     }
   }
-
-  pre {
-    background-color: hsl(218deg 13% 12%);
-    width: 100%;
-    border-radius: 4px;
-    padding: 20px;
-    
-    code {
-      font-size: 14px;
-      max-width: 100%;
-      word-break: break-all;
-    }
-  }
 `;
 
 export default function Transaction() {

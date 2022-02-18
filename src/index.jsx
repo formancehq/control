@@ -26,7 +26,6 @@ import Home from './pages/Home.jsx';
 import Transactions from './pages/Transactions.jsx';
 import Accounts from './pages/Accounts.jsx';
 import Account from './pages/Account.jsx';
-import Create from './pages/Create.jsx';
 import ScrollToTop from './parts/Scroll.jsx';
 import Panel from './parts/Panel.jsx';
 import Settings from './pages/Settings.jsx';
@@ -34,6 +33,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import Connection from './parts/Connection.jsx';
 import Transaction from './pages/Transaction.jsx';
+import NewTransaction from './pages/NewTransaction.jsx';
 
 const theme = createTheme({
   typography: {
@@ -102,6 +102,19 @@ const Wrapper = styled.div`
   code {
     font-family: 'Roboto Mono', monospace;
   }
+
+  pre {
+    background-color: hsl(218deg 13% 12%);
+    width: 100%;
+    border-radius: 4px;
+    padding: 20px;
+    
+    code {
+      font-size: 14px;
+      max-width: 100%;
+      word-break: break-all;
+    }
+  }
 `;
 
 class App extends React.Component {
@@ -164,6 +177,9 @@ class App extends React.Component {
             <Route path="/accounts" exact>
               <Accounts></Accounts>
             </Route>
+            <Route path="/transactions/new" exact>
+              <NewTransaction></NewTransaction>
+            </Route>
             <Route path="/transactions/:txid" exact>
               <Transaction></Transaction>
             </Route>
@@ -172,9 +188,6 @@ class App extends React.Component {
             </Route>
             <Route path="/settings" exact>
               <Settings></Settings>
-            </Route>
-            <Route path="/new" exact>
-              <Create></Create>
             </Route>
             <Route path="/">
               <Home></Home>

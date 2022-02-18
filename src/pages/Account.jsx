@@ -1,3 +1,5 @@
+import { Button } from '@mui/material';
+import { Box } from '@mui/system';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -14,6 +16,10 @@ const Wrapper = styled.div`
   h2 {
     font-weight: 400;
     display: block;
+  }
+
+  .right {
+    margin-left: auto;
   }
 `;
 
@@ -35,7 +41,6 @@ function Account() {
   return (
     <Wrapper>
       <div className="top-container">
-        <h1>{id}</h1>
         {data.account && data.account.balances && (
           <div>
             <div className="row">
@@ -57,6 +62,16 @@ function Account() {
               <TransactionsTable key={id} account={id} query={{
                 account: id,
               }} actions paginate></TransactionsTable>
+            </div>
+            <div className="row mt20">
+              <h2>Properties</h2>
+            </div>
+            <div className="row mb20">
+              <pre>
+                <code>{JSON.stringify({
+                  metadata: data.account.metadata,
+                }, null, 2)}</code>
+              </pre>
             </div>
           </div>
         )}
