@@ -30,29 +30,10 @@ import ScrollToTop from './parts/Scroll.jsx';
 import Panel from './parts/Panel.jsx';
 import Settings from './pages/Settings.jsx';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, useMediaQuery } from '@mui/material';
 import Connection from './parts/Connection.jsx';
 import Transaction from './pages/Transaction.jsx';
 import NewTransaction from './pages/NewTransaction.jsx';
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Inter',
-  },
-  palette: {
-    mode: 'dark',
-    secondary: {
-      main: '#333942',
-    },
-    text: {
-      primary: '#CBD0D7',
-    },
-    background: {
-      paper: '#1D2025',
-      default: '#1D2025',
-    },
-  },
-});
 
 const Wrapper = styled.div`
   font-family: 'Inter', sans-serif;
@@ -117,87 +98,108 @@ const Wrapper = styled.div`
   }
 `;
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+const App = () => {
+  const [state, setState] = React.useState({
+    ready: false,
+    error: false,
+    info: {},
+  });
 
-    this.state = {
-      ready: false,
-      error: false,
-      info: {},
-    };
-  }
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const info = await getInfo();
+  
+        setState({
+          ready: true,
+          info,
+        });
+      } catch (e) {
+        setState({
+          ready: true,
+          error: true,
+        });
+      }
+    })();
+  }, []);
 
-  async componentWillMount() {
-    try {
-      const info = await getInfo();
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
-      this.setState({
-        ready: true,
-        info,
-      });
-    } catch (e) {
-      this.setState({
-        ready: true,
-        error: true,
-      });
-    }
-  }
+  const theme = React.useMemo(
+    () => createTheme({
+      typography: {
+        fontFamily: 'Inter',
+      },
+      palette: {
+        mode: prefersDarkMode ? 'dark' : 'light',
+        mode: 'dark',
+        secondary: {
+          main: '#333942',
+        },
+        text: {
+          primary: '#CBD0D7',
+        },
+        background: {
+          paper: '#1D2025',
+          default: '#1D2025',
+        },
+      },
+    }),
+    [prefersDarkMode],
+  );
 
-  render() {
-    if (this.state.error) {
-      return (
-        <ThemeProvider theme={theme}>
-          <Wrapper>
-          <Panel>
-            <div>
-              <h1>Failed to connect to the ledger</h1>
-              <h2 className="opacity-05 fw300">Is the ledger started on {opts.uri}?</h2>
-            </div>
-            <div>
-              <Connection></Connection>
-            </div>
-          </Panel>
-        </Wrapper>
-        </ThemeProvider>
-      );
-    }
-
+  if (state.error) {
     return (
       <ThemeProvider theme={theme}>
-        <CssBaseline/>
         <Wrapper>
-        <Router>
-          <ScrollToTop></ScrollToTop>
-          <Navbar info={this.state.info}></Navbar>
-          <Switch>
-            <Route path="/accounts/:id" exact>
-              <Account></Account>
-            </Route>
-            <Route path="/accounts" exact>
-              <Accounts></Accounts>
-            </Route>
-            <Route path="/transactions/new" exact>
-              <NewTransaction></NewTransaction>
-            </Route>
-            <Route path="/transactions/:txid" exact>
-              <Transaction></Transaction>
-            </Route>
-            <Route path="/transactions" exact>
-              <Transactions></Transactions>
-            </Route>
-            <Route path="/settings" exact>
-              <Settings></Settings>
-            </Route>
-            <Route path="/">
-              <Home></Home>
-            </Route>
-          </Switch>
-        </Router>
+        <Panel>
+          <div>
+            <h1>Failed to connect to the ledger</h1>
+            <h2 className="opacity-05 fw300">Is the ledger started on {opts.uri}?</h2>
+          </div>
+          <div>
+            <Connection></Connection>
+          </div>
+        </Panel>
       </Wrapper>
       </ThemeProvider>
     );
   }
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+      <Wrapper>
+      <Router>
+        <ScrollToTop></ScrollToTop>
+        <Navbar info={state.info}></Navbar>
+        <Switch>
+          <Route path="/accounts/:id" exact>
+            <Account></Account>
+          </Route>
+          <Route path="/accounts" exact>
+            <Accounts></Accounts>
+          </Route>
+          <Route path="/transactions/new" exact>
+            <NewTransaction></NewTransaction>
+          </Route>
+          <Route path="/transactions/:txid" exact>
+            <Transaction></Transaction>
+          </Route>
+          <Route path="/transactions" exact>
+            <Transactions></Transactions>
+          </Route>
+          <Route path="/settings" exact>
+            <Settings></Settings>
+          </Route>
+          <Route path="/">
+            <Home></Home>
+          </Route>
+        </Switch>
+      </Router>
+    </Wrapper>
+    </ThemeProvider>
+  );
 }
 
 const container = document.querySelector('#app');
