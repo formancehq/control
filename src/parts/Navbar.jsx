@@ -2,10 +2,10 @@ import { Autocomplete, TextField } from '@mui/material';
 import * as React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import Search from '../components/Search.jsx';
 import { getName, setName } from '../lib/ledger';
 
 const Wrapper = styled.div`
-
   .main {
     height: 80px;
     width: calc(100% - 0px);
@@ -49,20 +49,8 @@ const Wrapper = styled.div`
     }
 
     .search {
-      display: none;
       margin-left: 100px;
-      width: 300px;
-
-      input {
-        display: block;
-        width: 100%;
-        background: #333;
-        color: #EEE;
-        &:focus {
-          outline: 0;
-          border: solid 4px #444;
-        }
-      }
+      width: 400px;
     }
 
     /* box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.08); */
@@ -96,7 +84,7 @@ function Navbar({info}) {
           </li>
         </ul>
         <div className="search">
-          <input type="text"/>
+          <Search/>
         </div>
         <div className="right-links">
           <Autocomplete

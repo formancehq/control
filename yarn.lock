@@ -4840,10 +4840,10 @@ nth-check@~1.0.1:
   dependencies:
     boolbase "~1.0.0"
 
-numary@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/numary/-/numary-1.5.0.tgz#b339c1cacb7b7b83bfc90d95d9d8118f2554772b"
-  integrity sha512-mpexDljaMze1IVm9snYS3CVMY3Vj8PhjPcAXa5iHXqBPF8jrufNxn1tw6uRa24Lhfrn8dCoJGaOX2QduVyFoKw==
+numary@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/numary/-/numary-1.6.0.tgz#03f36b0cf2c5657ea585a304a9e9bacaa870ccc1"
+  integrity sha512-LHZS6Peaw4qtejGrQYNX7/vgRqogn1lva3iNC2WMxaEiU5aPESz505onIoWK9/XPD2jdG59UXwX59bHWFOvUjg==
   dependencies:
     axios "^0.21.1"
     json-schema-to-typescript "^10.1.4"
