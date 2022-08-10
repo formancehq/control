@@ -1,0 +1,47 @@
+html,
+body {
+  height: 100%;
+}
+
+/* Graph styles */
+.Graph {
+  background-color: #f5f5f5;
+  margin-top: 24px;
+}
+
+.Graph svg g polygon {
+  fill: #f5f5f5;
+}
+
+.Graph .node text,
+.edge text {
+  font-family: Roboto Mono, monospace;
+}
+
+.Graph .node ellipse {
+  fill: #ffffff;
+}
+
+.Graph .edge polygon {
+  fill: #000000;
+}
+
+/* Crisp button */
+.crisp-client .cc-kv6t .cc-1xry .cc-unoo[data-is-failure='false'],
+.crisp-client .cc-kv6t .cc-1xry .cc-unoo[data-is-failure='false'] * {
+  display: none !important;
+}
+
+/* DatePicker content */
+.MuiCalendarPicker-root .MuiIconButton-root,
+.MuiCalendarPicker-root .MuiIconButton-root:hover {
+  color: #121417;
+  border: none;
+}
+
+/* DatePicker field */
+#date .MuiIconButton-root,
+#date .MuiIconButton-root:hover {
+  border: none;
+  background-color: white;
+}

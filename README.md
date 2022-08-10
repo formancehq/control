@@ -1,12 +1,45 @@
-# Numary Control [![test](https://github.com/numary/ledger/actions/workflows/test.yml/badge.svg)](https://github.com/numary/ledger/actions/workflows/test.yml)
+# Control OSS
 
-A simple dashboard for Numary Ledger
+## Stack
 
-<!-- <img width="858" alt="control-screenshot" src="https://user-images.githubusercontent.com/1770991/126158742-393ac0d0-1048-4b57-a7fd-7381f3da2ca8.png"> -->
+- [Remix Docs](https://remix.run/docs)
+- [Formance Local Stack](https://github.com/numary/stack)
 
-<img width="909" alt="control-screenshot" src="https://user-images.githubusercontent.com/1770991/153751534-d8bba99e-610a-4b8c-9c63-4bde6eb6f96f.png">
+## Development
 
+From your terminal:
 
-# Documentation
+```sh
+touch .env
+```
 
-You can find the complete Numary documentation at [docs.numary.com](https://docs.numary.com)
+```
+API_URL=http://localhost // this url works only with [Formance Local Stack](https://github.com/numary/stack)
+```
+
+```sh
+yarn dev
+```
+
+This starts your app in development mode, rebuilding assets on file changes.
+
+## Deployment
+
+```sh
+yarn build
+```
+
+Then run the app in production mode:
+
+```sh
+yarn start
+```
+
+### DIY
+
+If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
+
+Make sure to deploy the output of `remix build`
+
+- `build/`
+- `public/build/`

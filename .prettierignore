@@ -1,0 +1,16 @@
+node_modules
+package.json
+.env
+.eslintrc
+.gitignore
+README.md
+yarn.lock
+public
+.husky
+vercel.json
+/build
+copilot
+docker-compose.yml
+Dockerfile
+Dockerfile.local
+tsconfig.json
