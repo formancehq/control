@@ -34,7 +34,8 @@ export function links() {
 export async function loader() {
   return json({
     ENV: {
-      API_URL: process.env.API_URL,
+      API_URL_FRONT: process.env.API_URL_FRONT,
+      API_URL_BACK: process.env.API_URL_BACK, // just in case of need
     },
   });
 }
@@ -95,7 +96,7 @@ export default function App() {
     <Document>
       <ServiceContext.Provider
         value={{
-          api: new ApiClient(ENV.API_URL),
+          api: new ApiClient(ENV.API_URL_FRONT),
         }}
       >
         <Layout>

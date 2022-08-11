@@ -14,7 +14,9 @@ touch .env
 ```
 
 ```
-API_URL=http://localhost // this url works only with [Formance Local Stack](https://github.com/numary/stack)
+// works with [Formance Local Stack](https://github.com/numary/stack)
+API_URL_BACK=http://localhost
+API_URL_FRONT=http://localhost
 ```
 
 ```sh
@@ -32,7 +34,8 @@ yarn build
 Then run the app in production mode:
 
 ```sh
-yarn start
+// .env is not sourced by remix
+API_URL_BACK=http://localhost API_URL_FRONT=http://localhost remix-serve build
 ```
 
 ### DIY

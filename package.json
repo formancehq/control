@@ -7,7 +7,6 @@
     "dev": "remix dev",
     "prepare": "husky install",
     "postinstall": "remix setup node",
-    "start": "remix-serve build",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "prettier": "prettier . -w"
   },

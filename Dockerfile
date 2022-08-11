@@ -6,4 +6,4 @@ RUN yarn install
 COPY ./ .
 RUN yarn run build
 ENV NODE_ENV=production
-CMD ["npm", "run" ,"start"]
+CMD ["remix-serve", "build"]
