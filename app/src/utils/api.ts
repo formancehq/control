@@ -15,10 +15,15 @@ export class ApiClient implements IApiClient {
   public baseUrl: string;
 
   constructor(url?: string) {
-    this.baseUrl =
-      url ||
-      (process && process.env && process.env.API_URL) ||
-      'http://localhost';
+    this.baseUrl = url || 'http://localhost';
+
+    if (typeof process !== 'undefined') {
+      if (!url) {
+        if (process.env.API_URL_BACK) {
+          this.baseUrl = process.env.API_URL_BACK;
+        } else throw new Error('API_URL_BACK is not defined');
+      }
+    }
   }
 
   public decorateUrl(uri: string): string {
