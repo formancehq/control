@@ -69,7 +69,7 @@ export const loader: LoaderFunction = async ({
   if (transaction) {
     return {
       postings: normalizePostings(transaction),
-      metadata: transaction.metadata,
+      metadata: [{ value: transaction.metadata }],
     };
   }
 };

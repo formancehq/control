@@ -104,6 +104,7 @@ export default {
             },
           },
           details: {
+            title: 'Account',
             table: {
               columnLabel: {
                 balance: {
@@ -150,6 +151,7 @@ export default {
             },
           },
           details: {
+            title: 'Transaction',
             table: {
               columnLabel: {
                 metadata: {
@@ -209,43 +211,17 @@ export default {
         more: 'More',
       },
       dialog: {
-        deleteTitle: 'Confirm deletion',
-        deleteWarning:
-          'Deleting this resource is a permanent action, are you sure you wish to continue?',
+        createTitle: 'Create',
         updateTitle: 'Update',
-        updateButton: 'Update',
-        createButton: 'Create',
-        confirmButton: 'Confirm',
-        closeButton: 'Close',
+        cancelButton: 'Cancel',
+        saveButton: 'Save',
       },
       forms: {
-        fields: {
-          jsonTextArea: {
-            prettify: 'Prettify',
-          },
-        },
-        ledger: {
-          name: {
-            label: 'Ledger name',
-            errors: {
-              required: 'Ledger name is required',
-              regexMatch:
-                'Ledger name should only contain alphanumeric characters, underscores and hyphens',
-            },
-          },
-        },
         metadata: {
-          key: {
-            label: 'Key',
-            errors: {
-              required: 'Key is required',
-            },
-          },
           value: {
             label: 'Value',
             errors: {
               required: 'Value is required',
-              jsonNotValid: 'Json not valid',
             },
           },
         },

@@ -9,20 +9,7 @@ export enum LedgerSubResources {
   METADATA = 'metadata',
 }
 
-export type LedgerResource =
-  | 'overview'
-  | LedgerResources.ACCOUNTS
-  | 'account'
-  | LedgerResources.TRANSACTIONS
-  | 'transaction'
-  | 'insights'
-  | 'reports'
-  | 'integrations';
-
-export type Metadata = {
-  key: string;
-  value: any;
-};
+export type Metadata = { value: ObjectOf<any> }[];
 
 export type LedgerGetResourceData = {
   cursor: Cursor<any>;
@@ -92,7 +79,7 @@ export type TransactionHybrid = Omit<Transaction, 'postings'> &
 export type AccountHybrid = {
   balances: Balance[];
   volumes: Volume[];
-  metadata: ObjectOf<any>;
+  metadata: { value: ObjectOf<any> }[];
 };
 
 export type LedgerInfo = {
