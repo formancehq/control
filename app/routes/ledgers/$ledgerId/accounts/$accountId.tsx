@@ -40,7 +40,7 @@ export const normalizeBalance = (
         received: item.input,
         sent: item.output,
       })) as Volume[],
-      metadata: account.metadata,
+      metadata: [{ value: account.metadata }],
     };
   }
 
@@ -96,7 +96,7 @@ export default function Index() {
   ) => <Typography color={color}>{value}</Typography>;
 
   return (
-    <Page id="account" title={t('pages.ledgers.accounts.title')}>
+    <Page id="account" title={t('pages.ledgers.accounts.details.title')}>
       <>
         <Box display="flex" justifyContent="space-between" mb={3}>
           {/* Balances Section */}
@@ -169,12 +169,14 @@ export default function Index() {
           </>
         </SectionWrapper>
         {/* Metadata Section */}
-        <Metadata
-          metadata={account.metadata}
-          title={t('pages.ledgers.accounts.details.metadata.title')}
-          resource={LedgerResources.ACCOUNTS}
-          id="account"
-        />
+        {id && (
+          <Metadata
+            metadata={account.metadata}
+            title={t('pages.ledgers.accounts.details.metadata.title')}
+            resource={LedgerResources.ACCOUNTS}
+            id={id}
+          />
+        )}
       </>
     </Page>
   );

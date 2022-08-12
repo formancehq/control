@@ -136,6 +136,7 @@ export default function Index() {
               onClick={(item) => handleLedger(item)}
               paperSx={{ width: 262 }}
               search={false}
+              noResult={t('common.noResult')}
             />
           </Box>
         </Box>
