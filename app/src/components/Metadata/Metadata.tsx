@@ -1,50 +1,57 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { MetadataProps } from './types';
-import { normalizeMetadata } from './utils';
-import { JsonTextArea, SectionWrapper } from '@numaryhq/storybook';
+import { LoadingButton, SectionWrapper, TextArea } from '@numaryhq/storybook';
 import Table from '../Table';
 import Row from '../Table/components/Row';
 import { TableConfig } from '~/src/types/generic';
-import { LedgerResources, Metadata as MetadataType } from '~/src/types/ledger';
-import { ArrowRight } from '@mui/icons-material';
+import { Metadata as MetadataType } from '~/src/types/ledger';
+import { Edit, LocalFlorist } from '@mui/icons-material';
 import Modal from '../Modal';
-import { Form } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { API_LEDGER, IApiClient } from '~/src/utils/api';
-import { getCurrentLedger } from '~/src/utils/localStorage';
 import { useService } from '~/src/hooks/useService';
 import { noop } from 'lodash';
-
-const submit = async (value: string, id: string, api: IApiClient) => {
-  await api.postResource(
-    `${API_LEDGER}/${getCurrentLedger()}/${
-      LedgerResources.ACCOUNTS
-    }/${id}/metadata`,
-    { value }
-  );
-};
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import {
+  FormInput,
+  prettyJson,
+  schema,
+  submit,
+} from '~/src/components/Metadata/service';
+import { Box } from '@mui/material';
 
 const Metadata: FunctionComponent<MetadataProps> = ({
   metadata,
   title,
   resource,
   id,
+  sync,
 }) => {
-  const [disabled, setDisabled] = useState<boolean>(false);
-  const [value, setValue] = useState<string | undefined>();
   const { t } = useTranslation();
   const { api } = useService();
+  const {
+    getValues,
+    formState: { errors },
+    setValue,
+    control,
+    trigger,
+  } = useForm<FormInput>({ resolver: yupResolver(schema), mode: 'onChange' });
 
-  const handleOnChange = async (value: string | undefined, error?: boolean) => {
-    if (value) setValue(value);
-    if (error) {
-      setDisabled(error);
+  const onSave = async () => {
+    const validated = await trigger('json');
+    if (validated) {
+      await submit(JSON.parse(getValues('json')), id, resource, api);
+      sync();
     }
   };
 
-  const handleOnSave = async () => {
-    if (!disabled && value) {
-      await submit(value, id, api);
+  const handlePrettify = () => {
+    try {
+      setValue('json', prettyJson(JSON.parse(getValues('json'))), {
+        shouldValidate: true,
+      });
+    } catch (e) {
+      noop();
     }
   };
 
@@ -52,8 +59,12 @@ const Metadata: FunctionComponent<MetadataProps> = ({
     <Modal
       button={{
         id: `edit-${id}-button`,
-        onClick: () => null,
-        endIcon: <ArrowRight />,
+        onClick: () => {
+          setValue('json', `${metadata.value}`, {
+            shouldValidate: true,
+          });
+        },
+        endIcon: <Edit />,
       }}
       modal={{
         PaperProps: { sx: { minWidth: '500px' } },
@@ -64,26 +75,37 @@ const Metadata: FunctionComponent<MetadataProps> = ({
             label: t('common.dialog.cancelButton'),
           },
           save: {
-            onClick: handleOnSave,
+            onClick: onSave,
             label: t('common.dialog.saveButton'),
-            disabled: disabled,
+            disabled: !!errors.json,
           },
         },
       }}
     >
-      <Form method="post">
-        <JsonTextArea
-          button={{ label: t('common.metadata.prettify') }}
-          textarea={{
-            name: 'metadata',
-            minRows: 20,
-            placeholder: 'Add some metadata',
-            json: metadata.value,
-            onChange: handleOnChange,
-            required: true,
-          }}
+      <form>
+        <Box display="flex" justifyContent="end" mb={1}>
+          <LoadingButton
+            startIcon={<LocalFlorist />}
+            content={t('common.forms.metadata.json.prettify')}
+            onClick={handlePrettify}
+            variant="stroke"
+          />
+        </Box>
+        <Controller
+          name="json"
+          control={control}
+          render={({ field }) => (
+            <TextArea
+              {...field}
+              aria-label="text-area"
+              minRows={10}
+              error={!!errors.json}
+              errorMessage={errors.json?.message}
+              placeholder={t('common.forms.metadata.json.placeholder')}
+            />
+          )}
         />
-      </Form>
+      </form>
     </Modal>
   );
 
@@ -92,7 +114,7 @@ const Metadata: FunctionComponent<MetadataProps> = ({
       <Table
         withPagination={false}
         key={`${id}-metadata`}
-        items={normalizeMetadata(metadata)}
+        items={metadata}
         columns={[{ key: 'metadata.value' }, { key: TableConfig.ACTIONS }]}
         resource={`ledgers.${resource}.details`}
         renderItem={(m: MetadataType) => (

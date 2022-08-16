@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { useSearchParams } from 'remix';
+import { useSearchParams } from '@remix-run/react';
 import { Checkbox } from '@mui/material';
 import { SelectCheckboxProps } from '~/src/components/Filters/SelectCheckbox/types';
 import { buildQuery } from '~/src/utils/search';

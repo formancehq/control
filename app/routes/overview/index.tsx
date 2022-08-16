@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect, useState } from 'react';
-import type { MetaFunction } from 'remix';
+import type { MetaFunction } from '@remix-run/node';
 import { Avatar, Box, Link, Typography } from '@mui/material';
 import {
   getRoute,

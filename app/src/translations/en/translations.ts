@@ -218,10 +218,12 @@ export default {
       },
       forms: {
         metadata: {
-          value: {
-            label: 'Value',
+          json: {
+            prettify: 'Prettify',
+            label: 'JSON',
+            placeholder: 'Add some metadata (JSON)',
             errors: {
-              required: 'Value is required',
+              valid: 'JSON syntax error',
             },
           },
         },

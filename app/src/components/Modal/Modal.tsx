@@ -4,11 +4,20 @@ import { ModalProps } from './types';
 
 const Modal: FunctionComponent<ModalProps> = ({ children, modal, button }) => {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    button.onClick && button.onClick();
+    setOpen(true);
+  };
   const handleClose = () => setOpen(false);
+
+  const handleSave = () => {
+    modal.actions && modal.actions.save && modal.actions.save.onClick();
+    handleClose();
+  };
   const actions = modal.actions
     ? {
         ...modal.actions,
+        save: { ...modal.actions.save, onClick: handleSave },
         cancel: { ...modal.actions.cancel, onClick: handleClose },
       }
     : undefined;

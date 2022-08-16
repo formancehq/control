@@ -39,6 +39,9 @@ export class ApiClient implements IApiClient {
       method: 'POST',
       body: JSON.stringify(body),
     });
+    if (res.status === 204) {
+      return {} as any;
+    }
     const json = await res.json();
 
     return path ? get(json, path) : json;

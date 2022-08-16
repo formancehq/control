@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { Cursor, TableConfig } from '../../types/generic';
 import { TableProps } from './types';
 import { ArrowLeft, ArrowRight } from '@mui/icons-material';
-import { useSearchParams } from 'remix';
+import { useSearchParams } from '@remix-run/react';
 import { LoadingButton } from '@numaryhq/storybook';
 
 const Table: FunctionComponent<TableProps> = ({
