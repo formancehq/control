@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import type { MetaFunction } from 'remix';
-import { Form, useSearchParams } from 'remix';
+import type { MetaFunction } from '@remix-run/node';
+import { Form, useLoaderData, useSearchParams } from '@remix-run/react';
 import { LoadingButton, Page } from '@numaryhq/storybook';
 import { useTranslation } from 'react-i18next';
 import { LoaderFunction } from '@remix-run/server-runtime';
@@ -12,7 +12,6 @@ import {
   Paper,
 } from '@mui/material';
 import { Payment, PaymentTypes } from '~/src/types/payment';
-import { useLoaderData } from '@remix-run/react';
 import PaymentList from '~/src/components/Lists/PaymentList';
 import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
 import { API_SEARCH, ApiClient } from '~/src/utils/api';

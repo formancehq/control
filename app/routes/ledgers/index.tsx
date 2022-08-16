@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import type { MetaFunction } from 'remix';
-import { useSearchParams } from 'remix';
+import type { MetaFunction } from '@remix-run/node';
+import { useLoaderData, useSearchParams } from '@remix-run/react';
 import {
   EmptyState,
   Page,
@@ -17,7 +17,6 @@ import TransactionList from '~/src/components/Lists/TransactionList/TransactionL
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import { LedgerInfo } from '~/src/types/ledger';
-import { useLoaderData } from '@remix-run/react';
 import { buildQuery } from '~/src/utils/search';
 import { URLSearchParamsInit } from 'react-router-dom';
 import { getCurrentLedger, setCurrentLedger } from '~/src/utils/localStorage';

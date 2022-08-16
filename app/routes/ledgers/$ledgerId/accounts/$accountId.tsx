@@ -1,21 +1,19 @@
 import * as React from 'react';
-import type { MetaFunction } from 'remix';
+import type { MetaFunction } from '@remix-run/node';
 import { Page, SectionWrapper } from '@numaryhq/storybook';
 import { Box, Typography } from '@mui/material';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
-import { API_SEARCH, ApiClient } from '~/src/utils/api';
+import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import {
   Account,
   AccountHybrid,
-  Asset,
   Balance,
   LedgerResources,
+  Metadata as MetadataType,
   Volume,
 } from '~/src/types/ledger';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import { head } from 'lodash';
-import { useLoaderData } from '@remix-run/react';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import Table from '../../../../src/components/Table';
 import Row from '~/src/components/Table/components/Row';
 import TransactionList from '~/src/components/Lists/TransactionList';
@@ -23,24 +21,26 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getCurrentLedger } from '~/src/utils/localStorage';
 import Metadata from '~/src/components/Metadata';
+import { prettyJson } from '~/src/components/Metadata/service';
+import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
 
-export const normalizeBalance = (
-  account: Account,
-  asset: Asset[]
-): AccountHybrid => {
-  if (account && asset) {
+export const normalizeBalance = (account: Account): AccountHybrid => {
+  if (account) {
     return {
-      balances: asset.map((item: Asset) => ({
-        asset: item.name,
-        value: item.input - item.output,
-      })) as Balance[],
-
-      volumes: asset.map((item) => ({
-        asset: item.name,
-        received: item.input,
-        sent: item.output,
-      })) as Volume[],
-      metadata: [{ value: account.metadata }],
+      balances: account.balances
+        ? (Object.keys(account.balances).map((key: string) => ({
+            asset: key,
+            value: account.balances[key],
+          })) as Balance[])
+        : [],
+      volumes: account.volumes
+        ? (Object.keys(account.volumes).map((key) => ({
+            asset: key,
+            received: account.volumes[key].input,
+            sent: account.volumes[key].output,
+          })) as Volume[])
+        : [],
+      metadata: [{ value: prettyJson(account.metadata as JSON) }],
     };
   }
 
@@ -54,41 +54,31 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({
   params,
-}): Promise<AccountHybrid | undefined> => {
+}): Promise<AccountHybrid | null> => {
   invariant(params.ledgerId, 'Expected params.ledgerId');
   invariant(params.accountId, 'Expected params.accountId');
-  const api = new ApiClient();
-
-  const account = head(
-    await api.postResource<Account[]>(
-      API_SEARCH,
-      {
-        target: SearchTargets.ACCOUNT,
-        policy: SearchPolicies.OR,
-        terms: [`address=${params.accountId}`],
-      },
-      'cursor.data'
-    )
-  );
-  const assets = await api.postResource<Asset[]>(
-    API_SEARCH,
-    {
-      target: SearchTargets.ASSET,
-      policy: SearchPolicies.OR,
-      terms: [`account=${params.accountId}`],
-    },
-    'cursor.data'
+  const account = await new ApiClient().getResource<Account>(
+    `${API_LEDGER}/${params.ledgerId}/${LedgerResources.ACCOUNTS}/${params.accountId}`,
+    'data'
   );
 
-  if (account && assets) {
-    return normalizeBalance(account, assets);
+  if (account) {
+    return normalizeBalance(account);
   }
+
+  return null;
 };
 
 export default function Index() {
-  const account = useLoaderData<AccountHybrid>();
+  const loaderData = useLoaderData<AccountHybrid>();
   const { accountId: id } = useParams<{ accountId: string }>();
   const { t } = useTranslation();
+  const fetcher = useFetcher();
+  const account = fetcher.data || loaderData;
+
+  const sync = () => {
+    fetcher.load(getLedgerAccountDetailsRoute(id!, getCurrentLedger()!));
+  };
 
   const renderValue = (
     value: number,
@@ -171,7 +161,8 @@ export default function Index() {
         {/* Metadata Section */}
         {id && (
           <Metadata
-            metadata={account.metadata}
+            sync={sync}
+            metadata={account.metadata as MetadataType[]}
             title={t('pages.ledgers.accounts.details.metadata.title')}
             resource={LedgerResources.ACCOUNTS}
             id={id}

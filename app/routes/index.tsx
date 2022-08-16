@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import type { MetaFunction } from 'remix';
+import type { MetaFunction } from '@remix-run/node';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import { useNavigate } from 'react-router-dom';
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { MetaFunction } from 'remix';
+import type { MetaFunction } from '@remix-run/node';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
 import { useLoaderData } from '@remix-run/react';

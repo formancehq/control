@@ -4,7 +4,7 @@ import { Cursor } from '~/src/types/generic';
 import { useNavigate } from 'react-router-dom';
 import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Table';
-import { useSearchParams } from 'remix';
+import { useSearchParams } from '@remix-run/react';
 import Row from '~/src/components/Table/components/Row';
 import { API_SEARCH } from '~/src/utils/api';
 import { SourceDestination } from '@numaryhq/storybook';

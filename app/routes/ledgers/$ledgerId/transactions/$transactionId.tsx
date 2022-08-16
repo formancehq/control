@@ -9,26 +9,29 @@ import {
 } from '@numaryhq/storybook';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
-import { API_SEARCH, ApiClient } from '~/src/utils/api';
+import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import {
   LedgerResources,
+  Metadata as MetadataType,
   Posting,
   PostingHybrid,
   Transaction,
 } from '~/src/types/ledger';
-import { Metadata as MetadataType } from '../../../../src/types/ledger';
-import { SearchTargets } from '~/src/types/search';
-import { head, omit } from 'lodash';
+import { omit } from 'lodash';
 import Table from '../../../../src/components/Table';
 import Row from '~/src/components/Table/components/Row';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
-import { useLoaderData } from '@remix-run/react';
+import {
+  getLedgerAccountDetailsRoute,
+  getLedgerTransactionDetailsRoute,
+} from '~/src/components/Navbar/routes';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import PostingsGraph from '~/src/components/Dataviz/PostingsGraph';
-import { MetaFunction } from 'remix';
+import { MetaFunction } from '@remix-run/node';
 import { getCurrentLedger } from '~/src/utils/localStorage';
 import Metadata from '~/src/components/Metadata';
+import { prettyJson } from '~/src/components/Metadata/service';
 
 export const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(
@@ -46,42 +49,42 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({
   params,
-}): Promise<
-  | {
-      postings: PostingHybrid[];
-      metadata: MetadataType;
-    }
-  | undefined
-> => {
+}): Promise<{
+  postings: PostingHybrid[];
+  metadata: MetadataType[];
+} | null> => {
   invariant(params.ledgerId, 'Expected params.ledgerId');
   invariant(params.transactionId, 'Expected params.transactionId');
 
-  const transaction = head(
-    await new ApiClient().postResource<Transaction[]>(
-      API_SEARCH,
-      {
-        target: SearchTargets.TRANSACTION,
-        terms: [`txid=${params.transactionId}`],
-      },
-      'cursor.data'
-    )
+  const transaction = await new ApiClient().getResource<Transaction>(
+    `${API_LEDGER}/${params.ledgerId}/${LedgerResources.TRANSACTIONS}/${params.transactionId}`,
+    'data'
   );
+
   if (transaction) {
     return {
       postings: normalizePostings(transaction),
-      metadata: [{ value: transaction.metadata }],
+      metadata: [{ value: prettyJson(transaction.metadata as JSON) }],
     };
   }
+
+  return null;
 };
 
 export default function Index() {
   const { transactionId: id } = useParams<{ transactionId: string }>();
   const navigate = useNavigate();
-  const { postings, metadata } = useLoaderData<{
+  const loaderData = useLoaderData<{
     postings: PostingHybrid[];
-    metadata: MetadataType;
+    metadata: MetadataType[];
   }>();
   const { t } = useTranslation();
+  const fetcher = useFetcher();
+  const transaction = fetcher.data || loaderData;
+
+  const sync = () => {
+    fetcher.load(getLedgerTransactionDetailsRoute(id!, getCurrentLedger()!));
+  };
 
   const handleSourceDestinationAction = (id: string) => {
     navigate(getLedgerAccountDetailsRoute(id, getCurrentLedger()!));
@@ -97,7 +100,7 @@ export default function Index() {
           <Table
             withPagination={false}
             key={id}
-            items={postings}
+            items={transaction.postings}
             columns={[
               { key: 'txid' },
               { key: 'amount' },
@@ -138,20 +141,23 @@ export default function Index() {
           />
         </SectionWrapper>
         {/* Graph Section */}
-        {postings.length > 0 && (
+        {transaction.postings.length > 0 && (
           <SectionWrapper
             title={t('pages.ledgers.transactions.details.graph.title')}
           >
-            <PostingsGraph postings={postings} />
+            <PostingsGraph postings={transaction.postings} />
           </SectionWrapper>
         )}
         {/* Metadata Section */}
-        <Metadata
-          metadata={metadata}
-          title={t('pages.ledgers.transactions.details.metadata.title')}
-          resource={LedgerResources.TRANSACTIONS}
-          id="transaction"
-        />
+        {id && (
+          <Metadata
+            sync={sync}
+            metadata={transaction.metadata as MetadataType[]}
+            title={t('pages.ledgers.transactions.details.metadata.title')}
+            resource={LedgerResources.TRANSACTIONS}
+            id={id}
+          />
+        )}
       </>
     </Page>
   );
