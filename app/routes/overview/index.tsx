@@ -26,6 +26,7 @@ import { getCurrentLedger } from '~/src/utils/localStorage';
 import { useService } from '~/src/hooks/useService';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { get } from 'lodash';
 
 export const meta: MetaFunction = () => ({
   title: 'Dashboard',
@@ -87,7 +88,6 @@ export default function Index() {
       <Box
         sx={{
           backgroundColor: ({ palette }) => palette.neutral[900],
-          height: 650,
         }}
       >
         <Box
@@ -147,34 +147,7 @@ export default function Index() {
                   />
                 </Box>
               </Box>
-              {/*  STATUS */}
-              {getCurrentLedger() ? (
-                <Box mt={5}>
-                  <Typography variant="h1" color="secondary">
-                    {t('pages.overview.status')}
-                  </Typography>
-                  {stats && (
-                    <Box mt={3} display="flex">
-                      <Box mr={3}>
-                        <StatsCard
-                          icon={<Topic />}
-                          variant="violet"
-                          title={t('pages.overview.stats.transactions')}
-                          mainValue={`${stats.transactions}`}
-                        />
-                      </Box>
-                      <Box>
-                        <StatsCard
-                          icon={<AccountBalanceWallet />}
-                          variant="brown"
-                          title={t('pages.overview.stats.accounts')}
-                          mainValue={`${stats.accounts}`}
-                        />
-                      </Box>
-                    </Box>
-                  )}
-                </Box>
-              ) : (
+              {!getCurrentLedger() && (
                 <Box mt={5}>
                   <EmptyState
                     variant="dark"
@@ -186,7 +159,6 @@ export default function Index() {
                     <Box mt={3}>
                       <LoadingButton
                         content={t('pages.ledgers.emptyState.button')}
-                        variant="stroke"
                         endIcon={<Bolt />}
                         onClick={() => navigate(getRoute(LEDGERS_ROUTE))}
                       />
@@ -194,6 +166,30 @@ export default function Index() {
                   </EmptyState>
                 </Box>
               )}
+              {/*  STATUS */}
+              <Box mt={5}>
+                <Typography variant="h1" color="secondary">
+                  {t('pages.overview.status')}
+                </Typography>
+                <Box mt={3} display="flex">
+                  <Box mr={3}>
+                    <StatsCard
+                      icon={<Topic />}
+                      variant="violet"
+                      title={t('pages.overview.stats.transactions')}
+                      mainValue={`${get(stats, 'transactions', '0')}`}
+                    />
+                  </Box>
+                  <Box>
+                    <StatsCard
+                      icon={<AccountBalanceWallet />}
+                      variant="brown"
+                      title={t('pages.overview.stats.accounts')}
+                      mainValue={`${get(stats, 'accounts', '0')}`}
+                    />
+                  </Box>
+                </Box>
+              </Box>
             </>
           </Page>
         </Box>
