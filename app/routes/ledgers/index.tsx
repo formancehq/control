@@ -133,7 +133,12 @@ export default function Index() {
               variant="dark"
               items={ledgers}
               onClick={(item) => handleLedger(item)}
-              paperSx={{ width: 262 }}
+              paperSx={{
+                width: 262,
+                '& ul': {
+                  height: 'auto',
+                },
+              }}
               search={false}
               noResult={t('common.noResult')}
             />
