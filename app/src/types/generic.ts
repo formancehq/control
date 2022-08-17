@@ -99,3 +99,8 @@ export enum RowActionType {
 }
 
 export type ButtonVariants = 'light' | 'stroke' | 'primary';
+
+export enum Errors {
+  NOT_FOUND = 'resourceNotFound',
+  MS_DOWN = 'microServiceDown',
+}

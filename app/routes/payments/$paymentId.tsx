@@ -6,11 +6,22 @@ import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { Page } from '@numaryhq/storybook';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
 export const meta: MetaFunction = () => ({
   title: 'Payment details',
   description: 'Show a details for a payment',
 });
+
+export function ErrorBoundary({ error }) {
+  return (
+    <ComponentErrorBoundary
+      id="payment"
+      title="pages.ledgers.payment.title"
+      error={error}
+    />
+  );
+}
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.paymentId, 'Expected params.paymentId');

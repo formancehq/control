@@ -26,6 +26,7 @@ import { buildQuery } from '~/src/utils/search';
 import SelectCheckbox from '~/src/components/Wrappers/Filters/SelectCheckbox';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { URLSearchParamsInit } from 'react-router-dom';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
 const paymentTypes: { value: string; label: string }[] = [
   { value: `type=${PaymentTypes.PAY_IN}`, label: PaymentTypes.PAY_IN },
@@ -43,6 +44,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     API_SEARCH,
     {
       ...buildQuery(url.searchParams),
+      target: SearchTargets.PAYMENT,
     },
     'cursor'
   );
@@ -50,6 +52,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return null;
 };
+
+export function ErrorBoundary({ error }) {
+  return (
+    <ComponentErrorBoundary
+      id={paymentsConfig.id}
+      title="pages.payments.title"
+      error={error}
+    />
+  );
+}
 
 export default function Index() {
   const { t } = useTranslation();

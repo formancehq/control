@@ -59,6 +59,11 @@ export default {
           transactions: 'Transactions',
           accounts: 'Accounts',
         },
+        emptyState: {
+          title: 'There is nothing here, yet',
+          description: 'Connect your tools, set up tasks and start right away.',
+          button: 'Get started',
+        },
       },
       transaction: {
         title: 'Transaction',
@@ -88,9 +93,8 @@ export default {
       ledgers: {
         title: 'Ledgers',
         emptyState: {
-          title: 'Make a quick start',
-          description: 'Select your ledger',
-          button: 'Get started',
+          title: 'There is nothing here, yet',
+          description: 'You can start by selecting a ledger',
         },
         select: {
           label: 'Select a ledger',
@@ -184,6 +188,24 @@ export default {
     },
     common: {
       boundaries: {
+        errorState: {
+          default: {
+            title: 'Oops, this content could not be displayed',
+            description:
+              'You can try again by refreshing your browser. If the error is still persisting, please feel free to ask for help on our discord.',
+            button: 'Help !',
+          },
+          microServiceDown: {
+            title: 'Hm, we are experiencing technical difficulties.',
+            description: 'You can checkout our status page to find out more.',
+            button: 'Status page',
+          },
+          resourceNotFound: {
+            title: 'Wow, looks like you trying to get a John Doe resource',
+            description: '',
+            button: 'Go back home',
+          },
+        },
         401: 'Looks like you tried to visit a page that you do not have access',
         404: 'Looks like you tried to visit a page that does not exist',
         title: 'Uh oh!',
