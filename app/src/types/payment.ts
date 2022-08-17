@@ -29,3 +29,25 @@ export type Payment = {
   date: Date;
   raw: ObjectOf<any>;
 };
+
+export type PaymentDetail = {
+  id: string;
+  provider: string;
+  createdAt: string;
+  reference: string;
+  scheme: string;
+  type: string;
+  status: string;
+  initialAmount: number;
+  asset: string;
+  raw: ObjectOf<any>;
+  adjustments: Array<AdjustmentsItem>;
+};
+
+export interface AdjustmentsItem {
+  status: string;
+  amount: number;
+  date: string;
+  absolute: boolean;
+  raw: ObjectOf<any>;
+}
