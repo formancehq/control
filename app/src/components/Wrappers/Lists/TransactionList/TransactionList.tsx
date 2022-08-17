@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { TransactionListProps } from './types';
 import { API_SEARCH } from '~/src/utils/api';
 import { Transaction, TransactionHybrid } from '~/src/types/ledger';
-import { useSearchParams } from 'remix';
+import { useSearchParams } from '@remix-run/react';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { Cursor } from '~/src/types/generic';
 import {
