@@ -88,8 +88,9 @@ export default {
       ledgers: {
         title: 'Ledgers',
         emptyState: {
-          title: 'Select a ledger to get started',
-          description: 'Lorem ipsum',
+          title: 'Make a quick start',
+          description: 'Select your ledger',
+          button: 'Get started',
         },
         select: {
           label: 'Select a ledger',
@@ -183,15 +184,14 @@ export default {
       },
     },
     common: {
-      soon: 'Soon!',
-      api: {
-        errorMessages: {
-          '404': 'Resource not found',
-          '403': 'Forbidden',
-          '401': 'Permission deny',
-          '422': 'Something wrong happened',
-        },
+      boundaries: {
+        401: 'Looks like you tried to visit a page that you do not have access',
+        404: 'Looks like you tried to visit a page that does not exist',
+        title: 'Uh oh!',
+        default:
+          "Well, this is unexpected. Don't worry, it's not you - it's us ! Sorry 🙏",
       },
+      soon: 'Soon!',
       title: 'Formance',
       noResults: 'No results',
       table: {
