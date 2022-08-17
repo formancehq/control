@@ -15,6 +15,7 @@ import {
 } from '@numaryhq/storybook';
 import {
   AccountBalanceWallet,
+  Bolt,
   GitHub,
   Person,
   ReadMore,
@@ -175,16 +176,18 @@ export default function Index() {
                 </Box>
               ) : (
                 <Box mt={5}>
-                  {' '}
                   <EmptyState
                     variant="dark"
                     title={t('pages.ledgers.emptyState.title')}
-                    description={t('pages.ledgers.emptyState.description')}
+                    description={`${t(
+                      'pages.ledgers.emptyState.description'
+                    )} 👇`}
                   >
                     <Box mt={3}>
                       <LoadingButton
-                        content="Choose my ledger"
-                        variant="primary"
+                        content={t('pages.ledgers.emptyState.button')}
+                        variant="stroke"
+                        endIcon={<Bolt />}
                         onClick={() => navigate(getRoute(LEDGERS_ROUTE))}
                       />
                     </Box>
