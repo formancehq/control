@@ -13,7 +13,7 @@ export const meta: MetaFunction = () => ({
   description: 'Show a details for a payment',
 });
 
-export function ErrorBoundary({ error }) {
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
       id="payment"

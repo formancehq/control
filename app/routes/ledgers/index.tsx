@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async () => {
   }));
 };
 
-export function ErrorBoundary({ error }) {
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
       id={ledgersConfig.id}

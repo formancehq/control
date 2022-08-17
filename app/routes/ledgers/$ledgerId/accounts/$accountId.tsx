@@ -52,7 +52,7 @@ export const meta: MetaFunction = () => ({
   description: 'Display account details',
 });
 
-export function ErrorBoundary({ error }) {
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
       id="account"

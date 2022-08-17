@@ -53,7 +53,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-export function ErrorBoundary({ error }) {
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
       id={paymentsConfig.id}
