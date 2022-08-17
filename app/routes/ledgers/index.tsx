@@ -20,9 +20,11 @@ import { LedgerInfo } from '~/src/types/ledger';
 import { buildQuery } from '~/src/utils/search';
 import { URLSearchParamsInit } from 'react-router-dom';
 import { getCurrentLedger, setCurrentLedger } from '~/src/utils/localStorage';
+import { ledgers as ledgersConfig } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
 export const meta: MetaFunction = () => ({
-  title: 'Ledger details',
+  title: 'Ledger list',
   description: 'Display list of accounts and transaction for a ledger',
 });
 
@@ -38,6 +40,16 @@ export const loader: LoaderFunction = async () => {
   }));
 };
 
+export function ErrorBoundary({ error }) {
+  return (
+    <ComponentErrorBoundary
+      id={ledgersConfig.id}
+      title="pages.ledgers.title"
+      error={error}
+    />
+  );
+}
+
 export default function Index() {
   const [showAccounts, setShowAccounts] = useState(false);
   const [showTransactions, setShowTransactions] = useState(false);
@@ -51,14 +63,21 @@ export default function Index() {
     if (currentLedger) {
       setShowAccounts(true);
       setShowTransactions(false);
-      setSearchParams({
+      const query = {
         ...buildQuery(searchParams),
         ledgers: [currentLedger],
         target: SearchTargets.ACCOUNT,
-      } as URLSearchParamsInit);
+      };
+      const url = new URLSearchParams(query as any);
+      if (url.toString() !== searchParams.toString()) {
+        setSearchParams({
+          ...buildQuery(searchParams),
+          ledgers: [currentLedger],
+          target: SearchTargets.ACCOUNT,
+        } as URLSearchParamsInit);
+      }
     }
   }, []);
-
   const handleLedger = (item: SelectButtonItem | undefined) => {
     if (item) {
       setCurrentLedger(item.label);
@@ -107,7 +126,7 @@ export default function Index() {
   };
 
   return (
-    <Page id={ledgers.id}>
+    <Page id={ledgersConfig.id}>
       <>
         <Box
           display="flex"

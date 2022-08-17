@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+import { Errors } from '~/src/types/generic';
 
 export const API_SEARCH = 'search';
 export const API_LEDGER = 'ledger';
@@ -35,22 +36,46 @@ export class ApiClient implements IApiClient {
     body: any,
     path?: string
   ): Promise<T> {
-    const res = await fetch(this.decorateUrl(uri), {
-      method: 'POST',
-      body: JSON.stringify(body),
-    });
-    if (res.status === 204) {
-      return {} as any;
-    }
-    const json = await res.json();
+    let data: T;
+    let res: Response;
+    try {
+      res = await fetch(this.decorateUrl(uri), {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
+      if (res && res.status === 204) {
+        return {} as any;
+      }
 
-    return path ? get(json, path) : json;
+      data = path ? get(json, path) : json;
+    } catch (e) {
+      throw new Error(Errors.MS_DOWN);
+    }
+
+    if (!data && res && res.status !== 204) {
+      throw new Error(Errors.NOT_FOUND);
+    }
+
+    return data;
   }
 
   public async getResource<T>(params: string, path?: string): Promise<T> {
-    const res = await fetch(this.decorateUrl(params));
-    const json = await res.json();
+    let data;
+    let res;
+    try {
+      res = await fetch(this.decorateUrl(params));
+      const json = await res.json();
 
-    return path ? get(json, path) : json;
+      data = path ? get(json, path) : json;
+    } catch (e) {
+      throw new Error(Errors.MS_DOWN);
+    }
+
+    if (!data && res && res.status !== 204) {
+      throw new Error(Errors.NOT_FOUND);
+    }
+
+    return data;
   }
 }

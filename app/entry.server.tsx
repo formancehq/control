@@ -1,7 +1,6 @@
 import * as React from 'react';
 import createEmotionCache from './src/utils/createEmotionCache';
 import { theme } from '@numaryhq/storybook';
-import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
@@ -21,7 +20,6 @@ export default async function handleRequest(
   const MuiRemixServer = () => (
     <CacheProvider value={cache}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
         <RemixServer context={remixContext} url={request.url} />
       </ThemeProvider>
     </CacheProvider>

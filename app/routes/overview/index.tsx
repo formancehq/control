@@ -151,14 +151,14 @@ export default function Index() {
                 <Box mt={5}>
                   <EmptyState
                     variant="dark"
-                    title={t('pages.ledgers.emptyState.title')}
+                    title={t('pages.overview.emptyState.title')}
                     description={`${t(
-                      'pages.ledgers.emptyState.description'
+                      'pages.overview.emptyState.description'
                     )} 👇`}
                   >
                     <Box mt={3}>
                       <LoadingButton
-                        content={t('pages.ledgers.emptyState.button')}
+                        content={t('pages.overview.emptyState.button')}
                         endIcon={<Bolt />}
                         onClick={() => navigate(getRoute(LEDGERS_ROUTE))}
                       />

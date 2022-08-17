@@ -32,6 +32,7 @@ import { getCurrentLedger } from '~/src/utils/localStorage';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import Table from '~/src/components/Wrappers/Table';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
 export const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(
@@ -46,6 +47,16 @@ export const meta: MetaFunction = () => ({
   title: 'Transaction details for a transaction',
   description: 'Display transaction details',
 });
+
+export function ErrorBoundary({ error }) {
+  return (
+    <ComponentErrorBoundary
+      id="transaction"
+      title="pages.ledgers.transactions.details.title"
+      error={error}
+    />
+  );
+}
 
 export const loader: LoaderFunction = async ({
   params,

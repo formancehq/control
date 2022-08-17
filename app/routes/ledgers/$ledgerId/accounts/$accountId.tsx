@@ -22,6 +22,7 @@ import Metadata from '~/src/components/Wrappers/Metadata';
 import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
 export const normalizeBalance = (account: Account): AccountHybrid => {
   if (account) {
@@ -50,6 +51,16 @@ export const meta: MetaFunction = () => ({
   title: 'Account details for an account',
   description: 'Display account details',
 });
+
+export function ErrorBoundary({ error }) {
+  return (
+    <ComponentErrorBoundary
+      id="account"
+      title="pages.ledgers.accounts.details.title"
+      error={error}
+    />
+  );
+}
 
 export const loader: LoaderFunction = async ({
   params,

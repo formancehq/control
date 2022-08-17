@@ -1,14 +1,16 @@
 import * as React from 'react';
+import { json } from '@remix-run/node';
 import {
-  json,
   Links,
   LiveReload,
   Meta,
+  NavigateFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
   useCatch,
-} from 'remix';
+  useLoaderData,
+} from '@remix-run/react';
 import { withEmotionCache } from '@emotion/react';
 import {
   Backdrop,
@@ -19,7 +21,6 @@ import {
 import { LoadingButton, theme } from '@numaryhq/storybook';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import Layout from '~/src/components/Layout';
-import { NavigateFunction, useLoaderData } from '@remix-run/react';
 import { ApiClient } from '~/src/utils/api';
 import { ServiceContext } from '~/src/contexts/service';
 import styles from './root.css';
@@ -76,6 +77,14 @@ const Document = withEmotionCache(
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Inter:300,400,500,700&display=swap"
+          />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,700&display=swap"
           />
           <meta
             name="emotion-insertion-point"
