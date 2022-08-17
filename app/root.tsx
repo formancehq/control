@@ -11,16 +11,22 @@ import {
 } from 'remix';
 import { withEmotionCache } from '@emotion/react';
 import {
+  Backdrop,
+  Box,
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
-import { Page, theme } from '@numaryhq/storybook';
+import { LoadingButton, theme } from '@numaryhq/storybook';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import Layout from '~/src/components/Layout';
-import { useLoaderData } from '@remix-run/react';
+import { NavigateFunction, useLoaderData } from '@remix-run/react';
 import { ApiClient } from '~/src/utils/api';
 import { ServiceContext } from '~/src/contexts/service';
 import styles from './root.css';
+import { Home } from '@mui/icons-material';
+import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -87,6 +93,73 @@ const Document = withEmotionCache(
   }
 );
 
+const renderError = (navigate: NavigateFunction, t: any, message?: string) => (
+  <Backdrop
+    sx={{
+      zIndex: (theme) => theme.zIndex.drawer + 1,
+    }}
+    open={true}
+  >
+    <Box
+      display="flex"
+      justifyContent="space-evenly"
+      sx={{
+        width: '100%',
+        height: '100%',
+        background: ({ palette }) => palette.neutral[0],
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          alignSelf: 'center',
+          background: ({ palette }) => palette.neutral[0],
+        }}
+      >
+        <Typography variant="large3x" mb={3}>
+          {t('common.boundaries.title')}
+        </Typography>
+        <Typography variant="h2" mt={3}>
+          {message || t('common.boundaries.default')}
+        </Typography>
+        <LoadingButton
+          content="Go back home"
+          variant="primary"
+          startIcon={<Home />}
+          onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
+          sx={{ mt: 5 }}
+        />
+      </Box>
+      <Box
+        sx={{
+          borderBottom: ({ palette }) => `1px solid ${palette.neutral[200]}`,
+          borderLeft: ({ palette }) => `1px solid ${palette.neutral[200]}`,
+          width: 180,
+        }}
+      >
+        <Box
+          sx={{
+            width: '100%',
+            height: 150,
+            position: 'absolute',
+          }}
+        />
+        <Box
+          sx={{
+            borderBottom: ({ palette }) => `1px solid ${palette.neutral[200]}`,
+            width: 450,
+            height: 150,
+            top: 300,
+            position: 'absolute',
+          }}
+        />
+      </Box>
+    </Box>
+  </Backdrop>
+);
+
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
@@ -110,14 +183,12 @@ export default function App() {
 // https://remix.run/docs/en/v1/api/conventions#errorboundary
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Document title="Error!">
-      <Layout>
-        <Page title="There was an error" id="error-boundary">
-          <Typography>{error.message}</Typography>
-        </Page>
-      </Layout>
+      <Layout>{renderError(navigate, t)}</Layout>
     </Document>
   );
 }
@@ -125,21 +196,16 @@ export function ErrorBoundary({ error }: { error: Error }) {
 // https://remix.run/docs/en/v1/api/conventions#catchboundary
 export function CatchBoundary() {
   const caught = useCatch();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   let message;
   switch (caught.status) {
     case 401:
-      message = (
-        <p>
-          Oops! Looks like you tried to visit a page that you do not have access
-          to.
-        </p>
-      );
+      message = t('common.boundaries.401');
       break;
     case 404:
-      message = (
-        <p>Oops! Looks like you tried to visit a page that does not exist.</p>
-      );
+      message = t('common.boundaries.404');
       break;
 
     default:
@@ -148,16 +214,7 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>
-        <Page title="There was an error" id="catch-boundary">
-          <>
-            <Typography variant="h1">
-              {caught.status}: {caught.statusText}
-            </Typography>
-            <Typography>{message}</Typography>
-          </>
-        </Page>
-      </Layout>
+      <Layout>{renderError(navigate, t, message)}</Layout>
     </Document>
   );
 }
