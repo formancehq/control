@@ -101,7 +101,6 @@ export default {
           table: {
             columnLabel: {
               address: 'Address',
-              actions: 'Actions',
             },
           },
           details: {
@@ -195,11 +194,17 @@ export default {
       title: 'Formance',
       noResults: 'No results',
       table: {
+        actionColumnLabel: 'Actions',
+        metadata: {
+          columnLabel: {
+            value: 'Value',
+          },
+        },
         search: 'Search',
         pagination: {
           showing: 'Showing',
           results: 'results',
-          of: 'of',
+          separator: 'of',
           previous: 'Prev',
           after: 'Next',
         },

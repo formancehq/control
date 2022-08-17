@@ -1,9 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import { MetadataProps } from './types';
-import { LoadingButton, SectionWrapper, TextArea } from '@numaryhq/storybook';
-import Table from '../Table';
-import Row from '../Table/components/Row';
-import { TableConfig } from '~/src/types/generic';
+import {
+  LoadingButton,
+  Row,
+  SectionWrapper,
+  TextArea,
+} from '@numaryhq/storybook';
 import { Metadata as MetadataType } from '~/src/types/ledger';
 import { Edit, LocalFlorist } from '@mui/icons-material';
 import Modal from '../Modal';
@@ -17,8 +19,9 @@ import {
   prettyJson,
   schema,
   submit,
-} from '~/src/components/Metadata/service';
+} from '~/src/components/Wrappers/Metadata/service';
 import { Box } from '@mui/material';
+import Table from '~/src/components/Wrappers/Table';
 
 const Metadata: FunctionComponent<MetadataProps> = ({
   metadata,
@@ -113,10 +116,14 @@ const Metadata: FunctionComponent<MetadataProps> = ({
     <SectionWrapper title={title}>
       <Table
         withPagination={false}
-        key={`${id}-metadata`}
         items={metadata}
-        columns={[{ key: 'metadata.value' }, { key: TableConfig.ACTIONS }]}
-        resource={`ledgers.${resource}.details`}
+        action={true}
+        columns={[
+          {
+            key: 'metadata.value',
+            label: t('common.table.metadata.columnLabel.value'),
+          },
+        ]}
         renderItem={(m: MetadataType) => (
           <Row
             keys={['value']}

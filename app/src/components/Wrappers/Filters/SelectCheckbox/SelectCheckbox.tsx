@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useSearchParams } from '@remix-run/react';
 import { Checkbox } from '@mui/material';
-import { SelectCheckboxProps } from '~/src/components/Filters/SelectCheckbox/types';
+import { SelectCheckboxProps } from '~/src/components/Wrappers/Filters/SelectCheckbox/types';
 import { buildQuery } from '~/src/utils/search';
 import { isArray } from 'lodash';
 import { URLSearchParamsInit } from 'react-router-dom';

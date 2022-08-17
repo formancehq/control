@@ -2,7 +2,7 @@ import { API_LEDGER, IApiClient } from '~/src/utils/api';
 import { getCurrentLedger } from '~/src/utils/localStorage';
 import { LedgerResources, LedgerSubResources } from '~/src/types/ledger';
 import * as yup from 'yup';
-import i18n from './../../translations';
+import i18n from '../../../translations';
 
 export const prettyJson = (json: JSON): string =>
   JSON.stringify(json, undefined, 4);

@@ -1,16 +1,16 @@
 import { Chip } from '@mui/material';
 import React, { FunctionComponent } from 'react';
 import { Payment } from '~/src/types/payment';
-import { TableConfig } from '~/src/types/generic';
-import { Amount, Date, LoadingButton } from '@numaryhq/storybook';
-import Row from '~/src/components/Table/components/Row';
-import Table from '../../Table';
+import { Amount, Date, LoadingButton, Row } from '@numaryhq/storybook';
 import { useNavigate } from 'react-router-dom';
 import { getRoute, PAYMENT_ROUTE } from '~/src/components/Navbar/routes';
 import { ArrowRight } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
+import Table from '~/src/components/Wrappers/Table';
 
 const PaymentList: FunctionComponent<{ payments: [] }> = ({ payments }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const renderRowActions = (payment: Payment) => (
     <LoadingButton
@@ -23,18 +23,22 @@ const PaymentList: FunctionComponent<{ payments: [] }> = ({ payments }) => {
   return (
     <Table
       id="payments-list"
-      key="pages.payments.tab"
       items={payments}
+      action={true}
       columns={[
-        { key: 'type' },
-        { key: 'provider' },
-        { key: 'status' },
-        { key: 'reference' },
-        { key: 'value' },
-        { key: 'date' },
-        { key: TableConfig.ACTIONS },
+        { key: 'type', label: t('pages.payments.table.columnLabel.type') },
+        {
+          key: 'provider',
+          label: t('pages.payments.table.columnLabel.provider'),
+        },
+        { key: 'status', label: t('pages.payments.table.columnLabel.status') },
+        {
+          key: 'reference',
+          label: t('pages.payments.table.columnLabel.reference'),
+        },
+        { key: 'value', label: t('pages.payments.table.columnLabel.value') },
+        { key: 'date', label: t('pages.payments.table.columnLabel.date') },
       ]}
-      resource="payments"
       renderItem={(payment: Payment, index: number) => (
         <Row
           key={index}

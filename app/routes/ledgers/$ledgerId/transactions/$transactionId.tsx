@@ -3,6 +3,7 @@ import {
   Amount,
   Date,
   Page,
+  Row,
   SectionWrapper,
   SourceDestination,
   Txid,
@@ -18,8 +19,6 @@ import {
   Transaction,
 } from '~/src/types/ledger';
 import { omit } from 'lodash';
-import Table from '../../../../src/components/Table';
-import Row from '~/src/components/Table/components/Row';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   getLedgerAccountDetailsRoute,
@@ -30,8 +29,9 @@ import { useTranslation } from 'react-i18next';
 import PostingsGraph from '~/src/components/Dataviz/PostingsGraph';
 import { MetaFunction } from '@remix-run/node';
 import { getCurrentLedger } from '~/src/utils/localStorage';
-import Metadata from '~/src/components/Metadata';
-import { prettyJson } from '~/src/components/Metadata/service';
+import Metadata from '~/src/components/Wrappers/Metadata';
+import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
+import Table from '~/src/components/Wrappers/Table';
 
 export const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(
@@ -99,16 +99,39 @@ export default function Index() {
         >
           <Table
             withPagination={false}
-            key={id}
             items={transaction.postings}
             columns={[
-              { key: 'txid' },
-              { key: 'amount' },
-              { key: 'source' },
-              { key: 'destination' },
-              { key: 'date' },
+              {
+                key: 'txid',
+                label: t(
+                  'pages.ledgers.transactions.details.table.columnLabel.txid'
+                ),
+              },
+              {
+                key: 'amount',
+                label: t(
+                  'pages.ledgers.transactions.details.table.columnLabel.amount'
+                ),
+              },
+              {
+                key: 'source',
+                label: t(
+                  'pages.ledgers.transactions.details.table.columnLabel.source'
+                ),
+              },
+              {
+                key: 'destination',
+                label: t(
+                  'pages.ledgers.transactions.details.table.columnLabel.destination'
+                ),
+              },
+              {
+                key: 'date',
+                label: t(
+                  'pages.ledgers.transactions.details.table.columnLabel.date'
+                ),
+              },
             ]}
-            resource={'ledgers.transactions.details'}
             renderItem={(posting: PostingHybrid, index) => (
               <Row
                 key={index}
