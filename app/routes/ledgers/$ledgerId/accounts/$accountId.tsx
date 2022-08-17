@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { MetaFunction } from '@remix-run/node';
-import { Page, SectionWrapper } from '@numaryhq/storybook';
+import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
 import { Box, Typography } from '@mui/material';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
@@ -14,15 +14,14 @@ import {
   Volume,
 } from '~/src/types/ledger';
 import { useFetcher, useLoaderData } from '@remix-run/react';
-import Table from '../../../../src/components/Table';
-import Row from '~/src/components/Table/components/Row';
-import TransactionList from '~/src/components/Lists/TransactionList';
+import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getCurrentLedger } from '~/src/utils/localStorage';
-import Metadata from '~/src/components/Metadata';
-import { prettyJson } from '~/src/components/Metadata/service';
+import Metadata from '~/src/components/Wrappers/Metadata';
+import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
+import Table from '~/src/components/Wrappers/Table';
 
 export const normalizeBalance = (account: Account): AccountHybrid => {
   if (account) {
@@ -97,10 +96,21 @@ export default function Index() {
               {account.balances && (
                 <Table
                   withPagination={false}
-                  key="accounts-balance"
                   items={account.balances}
-                  columns={[{ key: 'balance.asset' }, { key: 'balance.value' }]}
-                  resource="ledgers.accounts.details"
+                  columns={[
+                    {
+                      key: 'balance.asset',
+                      label: t(
+                        'pages.ledgers.accounts.details.table.columnLabel.balance.asset'
+                      ),
+                    },
+                    {
+                      key: 'balance.value',
+                      label: t(
+                        'pages.ledgers.accounts.details.table.columnLabel.balance.value'
+                      ),
+                    },
+                  ]}
                   renderItem={(balance: Balance, index) => (
                     <Row
                       key={index}
@@ -120,14 +130,27 @@ export default function Index() {
               {account.volumes && (
                 <Table
                   withPagination={false}
-                  key={`${id}-volume`}
                   items={account.volumes}
                   columns={[
-                    { key: 'volume.asset' },
-                    { key: 'volume.received' },
-                    { key: 'volume.sent' },
+                    {
+                      key: 'volume.asset',
+                      label: t(
+                        'pages.ledgers.accounts.details.table.columnLabel.volume.asset'
+                      ),
+                    },
+                    {
+                      key: 'volume.received',
+                      label: t(
+                        'pages.ledgers.accounts.details.table.columnLabel.volume.received'
+                      ),
+                    },
+                    {
+                      key: 'volume.sent',
+                      label: t(
+                        'pages.ledgers.accounts.details.table.columnLabel.volume.sent'
+                      ),
+                    },
                   ]}
-                  resource={'ledgers.accounts.details'}
                   renderItem={(volume: Volume, index) => (
                     <Row
                       key={index}
@@ -154,7 +177,6 @@ export default function Index() {
               account={id}
               withPagination={false}
               paginationSize={5}
-              showMore
             />
           </>
         </SectionWrapper>

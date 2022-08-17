@@ -5,7 +5,7 @@ import { API_SEARCH } from '~/src/utils/api';
 import { Transaction, TransactionHybrid } from '~/src/types/ledger';
 import { useSearchParams } from 'remix';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import { Cursor, TableConfig } from '~/src/types/generic';
+import { Cursor } from '~/src/types/generic';
 import {
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
@@ -15,15 +15,15 @@ import {
   Amount,
   Date,
   LoadingButton,
+  Row,
   SourceDestination,
   Txid,
 } from '@numaryhq/storybook';
-import Row from '~/src/components/Table/components/Row';
-import Table from '~/src/components/Table';
 import { buildQuery } from '~/src/utils/search';
-import { Box } from '@mui/material';
 import { ArrowRight } from '@mui/icons-material';
 import { useService } from '~/src/hooks/useService';
+import { useTranslation } from 'react-i18next';
+import Table from '~/src/components/Wrappers/Table';
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
@@ -43,7 +43,6 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   account,
   withPagination,
   paginationSize = 15,
-  showMore = false,
   currentLedger,
 }) => {
   const [transactions, setTransactions] = useState<Cursor<Transaction>>();
@@ -51,6 +50,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   const navigate = useNavigate();
   const query = buildQuery(searchParams);
   const { api } = useService();
+  const { t } = useTranslation();
   const accountDetailsSearchBody = {
     ...query,
     size: 5,
@@ -90,21 +90,34 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   return (
     <>
       <Table
-        id="ledger-transactions"
-        withFilters
         withPagination={withPagination}
         paginationSize={paginationSize}
-        key="ledgers.transactions"
         items={transactions}
+        action={true}
         columns={[
-          { key: 'txid' },
-          { key: 'value' },
-          { key: 'source' },
-          { key: 'destination' },
-          { key: 'date' },
-          { key: TableConfig.ACTIONS },
+          {
+            key: 'txid',
+            label: t('pages.ledgers.transactions.table.columnLabel.txid'),
+          },
+          {
+            key: 'value',
+            label: t('pages.ledgers.transactions.table.columnLabel.value'),
+          },
+          {
+            key: 'source',
+            label: t('pages.ledgers.transactions.table.columnLabel.source'),
+          },
+          {
+            key: 'destination',
+            label: t(
+              'pages.ledgers.transactions.table.columnLabel.destination'
+            ),
+          },
+          {
+            key: 'date',
+            label: t('pages.ledgers.transactions.table.columnLabel.date'),
+          },
         ]}
-        resource="ledgers.transactions"
         renderItem={(
           transaction: TransactionHybrid,
           index: number,
@@ -158,31 +171,6 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           );
         }}
       />
-      {showMore &&
-        transactions &&
-        transactions.total &&
-        transactions.total.value > paginationSize && (
-          <Box display="flex" justifyContent="flex-end">
-            {/*<TabButton*/}
-            {/*  label="Show more"*/}
-            {/*  onClick={*/}
-            {/*    () => null*/}
-            {/*    // decorUrl(*/}
-            {/*    //   history,*/}
-            {/*    //   `destination=${account},source=${account}`,*/}
-            {/*    //   undefined,*/}
-            {/*    //   SearchTargets.TRANSACTION,*/}
-            {/*    //   SearchPolicies.OR*/}
-            {/*    // )*/}
-            {/*  }*/}
-            {/*  content={*/}
-            {/*    <>*/}
-            {/*      <List fontSize="small" /> {t('pages.account.showMore')}*/}
-            {/*    </>*/}
-            {/*  }*/}
-            {/*/>*/}
-          </Box>
-        )}
     </>
   );
 };

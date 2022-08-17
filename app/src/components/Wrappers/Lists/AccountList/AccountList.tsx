@@ -3,15 +3,15 @@ import { Account } from '~/src/types/ledger';
 import { Cursor } from '~/src/types/generic';
 import { useNavigate } from 'react-router-dom';
 import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
-import Table from '~/src/components/Table';
 import { useSearchParams } from '@remix-run/react';
-import Row from '~/src/components/Table/components/Row';
 import { API_SEARCH } from '~/src/utils/api';
-import { SourceDestination } from '@numaryhq/storybook';
+import { Row, SourceDestination } from '@numaryhq/storybook';
 import { buildQuery } from '~/src/utils/search';
 import { SearchTargets } from '~/src/types/search';
-import { AccountListProps } from '~/src/components/Lists/AccountList/types';
+import { AccountListProps } from '~/src/components/Wrappers/Lists/AccountList/types';
 import { useService } from '~/src/hooks/useService';
+import { useTranslation } from 'react-i18next';
+import Table from '~/src/components/Wrappers/Table';
 
 const AccountList: FunctionComponent<AccountListProps> = ({
   currentLedger,
@@ -20,6 +20,7 @@ const AccountList: FunctionComponent<AccountListProps> = ({
   const [accounts, setAccounts] = useState<Cursor<Account>>();
   const navigate = useNavigate();
   const { api } = useService();
+  const { t } = useTranslation();
 
   useEffect(() => {
     (async () => {
@@ -47,11 +48,13 @@ const AccountList: FunctionComponent<AccountListProps> = ({
 
   return (
     <Table
-      id="ledger-accounts"
-      key="pages.ledgers.accounts.title"
       items={accounts}
-      columns={[{ key: 'address' }]}
-      resource="ledgers.accounts"
+      columns={[
+        {
+          key: 'address',
+          label: t('pages.ledgers.accounts.table.columnLabel.address'),
+        },
+      ]}
       renderItem={(account: Account, index) => (
         <Row key={index} keys={[renderAddress]} item={account} />
       )}

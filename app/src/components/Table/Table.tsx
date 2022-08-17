@@ -37,6 +37,7 @@ const Table: FunctionComponent<TableProps> = ({
   const [pageSize, setPageSize] = useState(paginationSize);
   const [data, setData] = useState([]);
   const [metas, setMetas] = useState({} as Cursor<any>);
+
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 

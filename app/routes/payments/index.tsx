@@ -12,7 +12,7 @@ import {
   Paper,
 } from '@mui/material';
 import { Payment, PaymentTypes } from '~/src/types/payment';
-import PaymentList from '~/src/components/Lists/PaymentList';
+import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
 import { API_SEARCH, ApiClient } from '~/src/utils/api';
 import { Cursor } from '~/src/types/generic';
@@ -23,7 +23,7 @@ import {
   KeyboardArrowUp,
 } from '@mui/icons-material';
 import { buildQuery } from '~/src/utils/search';
-import SelectCheckbox from '~/src/components/Filters/SelectCheckbox';
+import SelectCheckbox from '~/src/components/Wrappers/Filters/SelectCheckbox';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { URLSearchParamsInit } from 'react-router-dom';
 

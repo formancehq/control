@@ -12,8 +12,8 @@ import {
 import { Box } from '@mui/material';
 import { SearchTarget, SearchTargets } from '~/src/types/search';
 import { useTranslation } from 'react-i18next';
-import AccountList from '~/src/components/Lists/AccountList/AccountList';
-import TransactionList from '~/src/components/Lists/TransactionList/TransactionList';
+import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList';
+import TransactionList from '~/src/components/Wrappers/Lists/TransactionList/TransactionList';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import { LedgerInfo } from '~/src/types/ledger';
