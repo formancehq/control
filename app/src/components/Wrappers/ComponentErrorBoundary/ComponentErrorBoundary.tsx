@@ -24,19 +24,20 @@ const ComponentErrorBoundary: FunctionComponent<
     [Errors.UNAUTHORIZED]: () => navigate(getRoute(OVERVIEW_ROUTE)),
     [Errors.FORBIDDEN]: () => navigate(getRoute(OVERVIEW_ROUTE)),
   };
+  const key = get(actionMap, err, 'error');
   const action = get(actionMap, err, actionMap[Errors.ERROR]);
 
   return (
     <Page id={id} title={t(titlePage)}>
       <EmptyState
-        title={t(`common.boundaries.errorState.${err}.title`)}
+        title={t(`common.boundaries.errorState.${key}.title`)}
         description={`${t(
-          `common.boundaries.errorState.${err}.description`
+          `common.boundaries.errorState.${key}.description`
         )} 👇`}
       >
         <Box mt={3}>
           <LoadingButton
-            content={t(`common.boundaries.errorState.${err}.button`)}
+            content={t(`common.boundaries.errorState.${key}.button`)}
             variant="primary"
             endIcon={<Support />}
             onClick={() => action()}
