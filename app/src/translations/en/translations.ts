@@ -189,28 +189,34 @@ export default {
     common: {
       boundaries: {
         errorState: {
-          default: {
-            title: 'Oops, this content could not be displayed',
+          error: {
+            title: 'Well, this is unexpected. Sorry 🙏',
             description:
               'You can try again by refreshing your browser. If the error is still persisting, please feel free to ask for help on our discord.',
             button: 'Help !',
           },
-          microServiceDown: {
+          serviceDown: {
             title: 'Hm, we are experiencing technical difficulties.',
             description: 'You can checkout our status page to find out more.',
-            button: 'Status page',
+            button: 'Go to status page',
           },
-          resourceNotFound: {
-            title: 'Wow, looks like you trying to get a John Doe resource',
-            description: '',
+          notFound: {
+            title: 'Looks like what you are looking for is not here',
+            description: 'No John Doe here !',
+            button: 'Go back home',
+          },
+          unauthorized: {
+            title: 'Looks like you do not have required permission!',
+            description: 'Checkout with your admin !',
+            button: 'Go back home',
+          },
+          forbidden: {
+            title: 'Looks like you can not be here',
+            description: 'Sorry bro',
             button: 'Go back home',
           },
         },
-        401: 'Looks like you tried to visit a page that you do not have access',
-        404: 'Looks like you tried to visit a page that does not exist',
         title: 'Uh oh!',
-        default:
-          "Well, this is unexpected. Don't worry, it's not you - it's us ! Sorry 🙏",
       },
       soon: 'Soon!',
       title: 'Formance',

@@ -5,11 +5,25 @@ export const API_SEARCH = 'search';
 export const API_LEDGER = 'ledger';
 export const API_PAYMENT = 'payments';
 
+export const errorsMap = {
+  404: Errors.NOT_FOUND,
+  401: Errors.UNAUTHORIZED,
+  403: Errors.FORBIDDEN,
+  422: Errors.ERROR,
+  500: Errors.SERVICE_DOWN,
+  502: Errors.SERVICE_DOWN,
+  503: Errors.SERVICE_DOWN,
+};
+
 export interface IApiClient {
   baseUrl: string;
   decorateUrl: (uri: string) => string;
-  postResource: <T>(uri: string, body: any, path?: string) => Promise<T>;
-  getResource: <T>(params: string, path?: string) => Promise<T>;
+  postResource: <T>(
+    params: string,
+    body: any,
+    path?: string
+  ) => Promise<T | undefined>;
+  getResource: <T>(params: string, path?: string) => Promise<T | undefined>;
 }
 
 export class ApiClient implements IApiClient {
@@ -27,55 +41,65 @@ export class ApiClient implements IApiClient {
     }
   }
 
+  private static throwError(code = 422): Error {
+    const error = get(errorsMap, code, errorsMap['422']);
+    console.error('FORMANCE ERROR', error);
+
+    throw new Error(error);
+  }
+
   public decorateUrl(uri: string): string {
     return `${this.baseUrl}/${uri}`;
   }
 
   public async postResource<T>(
-    uri: string,
+    params: string,
     body: any,
     path?: string
-  ): Promise<T> {
-    let data: T;
-    let res: Response;
+  ): Promise<T | undefined> {
+    return this.handleRequest(params, body, path);
+  }
+
+  public async getResource<T>(
+    params: string,
+    path?: string
+  ): Promise<T | undefined> {
+    return this.handleRequest(params, undefined, path);
+  }
+
+  private async handleRequest<T>(
+    params: string,
+    body?: any,
+    path?: string
+  ): Promise<T | undefined> {
+    let data: T | undefined = undefined;
+    let res: Response | undefined = undefined;
     try {
-      res = await fetch(this.decorateUrl(uri), {
-        method: 'POST',
-        body: JSON.stringify(body),
-      });
+      if (body) {
+        res = await fetch(this.decorateUrl(params), {
+          method: 'POST',
+          body: JSON.stringify(body),
+        });
+      } else {
+        res = await fetch(this.decorateUrl(params));
+      }
       const json = await res.json();
+
       if (res && res.status === 204) {
         return {} as any;
       }
 
       data = path ? get(json, path) : json;
     } catch (e) {
-      throw new Error(Errors.MS_DOWN);
+      ApiClient.throwError(res?.status);
     }
 
     if (!data && res && res.status !== 204) {
-      throw new Error(Errors.NOT_FOUND);
+      ApiClient.throwError(res.status);
     }
 
-    return data;
-  }
-
-  public async getResource<T>(params: string, path?: string): Promise<T> {
-    let data;
-    let res;
-    try {
-      res = await fetch(this.decorateUrl(params));
-      const json = await res.json();
-
-      data = path ? get(json, path) : json;
-    } catch (e) {
-      throw new Error(Errors.MS_DOWN);
+    if (data) {
+      return data;
     }
-
-    if (!data && res && res.status !== 204) {
-      throw new Error(Errors.NOT_FOUND);
-    }
-
-    return data;
   }
 }

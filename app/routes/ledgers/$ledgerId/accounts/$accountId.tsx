@@ -10,7 +10,6 @@ import {
   AccountHybrid,
   Balance,
   LedgerResources,
-  Metadata as MetadataType,
   Volume,
 } from '~/src/types/ledger';
 import { useFetcher, useLoaderData } from '@remix-run/react';
@@ -24,32 +23,26 @@ import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
-export const normalizeBalance = (account: Account): AccountHybrid => {
-  if (account) {
-    return {
-      balances: account.balances
-        ? (Object.keys(account.balances).map((key: string) => ({
-            asset: key,
-            value: account.balances[key],
-          })) as Balance[])
-        : [],
-      volumes: account.volumes
-        ? (Object.keys(account.volumes).map((key) => ({
-            asset: key,
-            received: account.volumes[key].input,
-            sent: account.volumes[key].output,
-          })) as Volume[])
-        : [],
-      metadata: [{ value: prettyJson(account.metadata as JSON) }],
-    };
-  }
-
-  return {} as AccountHybrid;
-};
+const normalizeBalance = (account: Account): AccountHybrid => ({
+  balances: account.balances
+    ? (Object.keys(account.balances).map((key: string) => ({
+        asset: key,
+        value: account.balances[key],
+      })) as Balance[])
+    : [],
+  volumes: account.volumes
+    ? (Object.keys(account.volumes).map((key) => ({
+        asset: key,
+        received: account.volumes[key].input,
+        sent: account.volumes[key].output,
+      })) as Volume[])
+    : [],
+  metadata: [{ value: prettyJson(account.metadata) }],
+});
 
 export const meta: MetaFunction = () => ({
-  title: 'Account details for an account',
-  description: 'Display account details',
+  title: 'Account',
+  description: 'Show an account',
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -195,7 +188,7 @@ export default function Index() {
         {id && (
           <Metadata
             sync={sync}
-            metadata={account.metadata as MetadataType[]}
+            metadata={account.metadata}
             title={t('pages.ledgers.accounts.details.metadata.title')}
             resource={LedgerResources.ACCOUNTS}
             id={id}

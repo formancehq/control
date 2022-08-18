@@ -24,8 +24,8 @@ import { ledgers as ledgersConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
 export const meta: MetaFunction = () => ({
-  title: 'Ledger list',
-  description: 'Display list of accounts and transaction for a ledger',
+  title: 'Ledgers',
+  description: 'Show a list',
 });
 
 export const loader: LoaderFunction = async () => {
@@ -34,7 +34,7 @@ export const loader: LoaderFunction = async () => {
     'data'
   );
 
-  return res.config.storage.ledgers.map((ledger: string) => ({
+  return res?.config.storage.ledgers.map((ledger: string) => ({
     id: ledger,
     label: ledger,
   }));

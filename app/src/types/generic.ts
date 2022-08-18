@@ -16,6 +16,9 @@ export type Cursor<T> = {
 };
 
 export enum Errors {
-  NOT_FOUND = 'resourceNotFound',
-  MS_DOWN = 'microServiceDown',
+  NOT_FOUND = 'not_found',
+  UNAUTHORIZED = 'unauthorized',
+  FORBIDDEN = 'forbidden',
+  SERVICE_DOWN = 'service_down',
+  ERROR = 'error',
 }
