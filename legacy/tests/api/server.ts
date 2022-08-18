@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { searchResults } from './data';
+import * as mock from './data';
 import bodyParser from 'body-parser';
 
 export default (async () => {
@@ -9,29 +9,54 @@ export default (async () => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
-  // Search API
+  // Ledger api mock
+  app.get(
+    '/ledger/:ledger/accounts/:account',
+    (req: any, res: { send: (arg0: any) => void }) => {
+      res.send({ data: mock.account });
+    }
+  );
+  app.post(
+    '/ledger/:ledger/accounts/:account/metadata',
+    (req: any, res: { status: (arg0: number) => void }) => {
+      res.status(204);
+    }
+  );
+  app.get(
+    '/ledger/:ledger/transactions/:transaction',
+    (req: any, res: { send: (arg0: any) => void }) => {
+      res.send({ data: mock.transaction });
+    }
+  );
+  app.post(
+    '/ledger/:ledger/transactions/:transaction/metadata',
+    (req: any, res: { status: (arg0: number) => void }) => {
+      res.status(204);
+    }
+  );
+
+  // Payment api mock
+  app.get(
+    '/payments/payments/:payment',
+    (req: any, res: { send: (arg0: any) => void }) => {
+      res.send({ data: mock.payment });
+    }
+  );
+
+  // Search api mock
   app.post('/search', (req, res) => {
     const { body } = req;
-    if (body.target === 'PAYMENT') {
-      return res.send(searchResults.paymentsFirstPage);
-    }
-    if (body.target === 'ASSET') {
-      return res.send(searchResults.accountWorldDetailsAssets);
-    }
+    // if (body.target === 'PAYMENT') {
+    //   return res.send(searchResults.paymentsFirstPage);
+    // }
     if (!body.target && body.size === 3) {
-      return res.send(searchResults.worldAutocomplete);
+      return res.send(mock.autocomplete);
     }
     if (body.target === 'ACCOUNT' && !body.terms) {
-      return res.send(searchResults.accountsFirstPage);
+      return res.send(mock.accountList2);
     }
     if (body.target === 'TRANSACTION' && !body.terms) {
-      return res.send(searchResults.transactionsFirstPage);
-    }
-    if (body.target === 'ACCOUNT' && body.terms && body.terms.length > 0) {
-      return res.send(searchResults.worldAccountSearch);
-    }
-    if (body.target === 'TRANSACTION' && body.terms && body.terms.length > 0) {
-      return res.send(searchResults.worldTransactionSearch);
+      return res.send(mock.transactionList1);
     }
   });
 
