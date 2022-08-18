@@ -34,7 +34,7 @@ import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import Table from '~/src/components/Wrappers/Table';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
-export const normalizePostings = (data: Transaction): PostingHybrid[] =>
+const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(
     (posting: Posting) =>
       ({
@@ -44,8 +44,8 @@ export const normalizePostings = (data: Transaction): PostingHybrid[] =>
   );
 
 export const meta: MetaFunction = () => ({
-  title: 'Transaction details for a transaction',
-  description: 'Display transaction details',
+  title: 'Transaction',
+  description: 'Show a transaction',
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -75,7 +75,7 @@ export const loader: LoaderFunction = async ({
   if (transaction) {
     return {
       postings: normalizePostings(transaction),
-      metadata: [{ value: prettyJson(transaction.metadata as JSON) }],
+      metadata: [{ value: prettyJson(transaction.metadata) }],
     };
   }
 
@@ -186,7 +186,7 @@ export default function Index() {
         {id && (
           <Metadata
             sync={sync}
-            metadata={transaction.metadata as MetadataType[]}
+            metadata={transaction.metadata}
             title={t('pages.ledgers.transactions.details.metadata.title')}
             resource={LedgerResources.TRANSACTIONS}
             id={id}

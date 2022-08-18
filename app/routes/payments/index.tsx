@@ -35,7 +35,7 @@ const paymentTypes: { value: string; label: string }[] = [
 
 export const meta: MetaFunction = () => ({
   title: 'Payments',
-  description: 'Display payments list !',
+  description: 'Show a list',
 });
 
 export const loader: LoaderFunction = async ({ request }) => {

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ReactElement } from 'react';
 import { json } from '@remix-run/node';
 import {
   Links,
@@ -18,34 +19,33 @@ import {
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
+import { camelCase, get } from 'lodash';
 import { LoadingButton, theme } from '@numaryhq/storybook';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import Layout from '~/src/components/Layout';
-import { ApiClient } from '~/src/utils/api';
+import { ApiClient, errorsMap } from '~/src/utils/api';
 import { ServiceContext } from '~/src/contexts/service';
 import styles from './root.css';
 import { Home } from '@mui/icons-material';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
 
 interface DocumentProps {
   children: React.ReactNode;
   title?: string;
 }
 
-export function links() {
-  return [{ rel: 'stylesheet', href: styles }];
-}
+export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 
-export async function loader() {
-  return json({
+export const loader: LoaderFunction = async () =>
+  json({
     ENV: {
       API_URL_FRONT: process.env.API_URL_FRONT,
       API_URL_BACK: process.env.API_URL_BACK, // just in case of need
     },
   });
-}
 
 const Document = withEmotionCache(
   ({ children, title }: DocumentProps, emotionCache) => {
@@ -71,7 +71,7 @@ const Document = withEmotionCache(
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           <meta name="theme-color" content={theme.palette.primary.main} />
-          {title ? <title>{title}</title> : null}
+          <title>{title || 'Formance'}</title>
           <Meta />
           <Links />
           <link
@@ -102,7 +102,12 @@ const Document = withEmotionCache(
   }
 );
 
-const renderError = (navigate: NavigateFunction, t: any, message?: string) => (
+const renderError = (
+  navigate: NavigateFunction,
+  t: any,
+  message?: string,
+  description?: string
+): ReactElement => (
   <Backdrop
     sx={{
       zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -131,7 +136,10 @@ const renderError = (navigate: NavigateFunction, t: any, message?: string) => (
           {t('common.boundaries.title')}
         </Typography>
         <Typography variant="h2" mt={3}>
-          {message || t('common.boundaries.default')}
+          {message || t('common.boundaries.errorState.error.title')}
+        </Typography>
+        <Typography variant="body2" mt={3}>
+          {description || t('common.boundaries.errorState.error.description')}
         </Typography>
         <LoadingButton
           content="Go back home"
@@ -191,9 +199,9 @@ export default function App() {
 
 // https://remix.run/docs/en/v1/api/conventions#errorboundary
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  console.error(error);
 
   return (
     <Document title="Error!">
@@ -208,22 +216,13 @@ export function CatchBoundary() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  let message;
-  switch (caught.status) {
-    case 401:
-      message = t('common.boundaries.401');
-      break;
-    case 404:
-      message = t('common.boundaries.404');
-      break;
-
-    default:
-      throw new Error(caught.data || caught.statusText);
-  }
+  const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));
+  const message = t(`common.boundaries.errorState.${error}.title`);
+  const description = t(`common.boundaries.errorState.${error}.description`);
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>{renderError(navigate, t, message)}</Layout>
+      <Layout>{renderError(navigate, t, message, description)}</Layout>
     </Document>
   );
 }

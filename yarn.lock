@@ -1316,10 +1316,10 @@
   dependencies:
     json-parse-even-better-errors "^2.3.1"
 
-"@numaryhq/storybook@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@numaryhq/storybook/-/storybook-0.5.2.tgz#7426b336cece2012158ded157946f136979a281d"
-  integrity sha512-/ekVnJHzljiytHXiDt4hvyAYZBDbBqjgb60wLpD/Q8RPHV6goWJd0+oRy9ecvtNVppsWxKN3S2TNMAm4XKRb2A==
+"@numaryhq/storybook@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@numaryhq/storybook/-/storybook-0.5.3.tgz#89752a98a59bab4e3d63925f96ca18aeb7ac9517"
+  integrity sha512-QSmYOIXFYVQcn1DLdiMNvXdv6gO6U+sdH2ewyb8XgMq3tSvmu9tkciCPd4WZxdawCmaJwrDOt7QextWoIhdx7w==
 
 "@popperjs/core@^2.11.5":
   version "2.11.5"

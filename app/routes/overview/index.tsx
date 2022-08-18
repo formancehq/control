@@ -29,8 +29,8 @@ import { useNavigate } from 'react-router-dom';
 import { get } from 'lodash';
 
 export const meta: MetaFunction = () => ({
-  title: 'Dashboard',
-  description: 'Display beautiful metrics !',
+  title: 'Overview',
+  description: 'Show a dashboard with tasks and status',
 });
 
 const Item: FunctionComponent<{

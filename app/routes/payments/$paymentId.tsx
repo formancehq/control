@@ -9,8 +9,8 @@ import { Page } from '@numaryhq/storybook';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
 export const meta: MetaFunction = () => ({
-  title: 'Payment details',
-  description: 'Show a details for a payment',
+  title: 'Payment',
+  description: 'Show a payment',
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {

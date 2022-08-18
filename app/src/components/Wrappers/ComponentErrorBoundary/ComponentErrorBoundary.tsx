@@ -5,7 +5,7 @@ import { Support } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Errors } from '~/src/types/generic';
-import { get, noop } from 'lodash';
+import { camelCase, get } from 'lodash';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,15 +14,17 @@ const ComponentErrorBoundary: FunctionComponent<
 > = ({ id, title: titlePage, error }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const def = 'default';
-  const err = get(error, 'message', def);
+  const err = camelCase(get(error, 'message', 'error'));
 
   const actionMap = {
     [Errors.NOT_FOUND]: () =>
       window.open('https://discord.com/invite/xyHvcbzk4w'),
-    [Errors.MS_DOWN]: () => null,
-    [def]: () => navigate(getRoute(OVERVIEW_ROUTE)),
+    [Errors.SERVICE_DOWN]: () => null,
+    [Errors.ERROR]: () => navigate(getRoute(OVERVIEW_ROUTE)),
+    [Errors.UNAUTHORIZED]: () => navigate(getRoute(OVERVIEW_ROUTE)),
+    [Errors.FORBIDDEN]: () => navigate(getRoute(OVERVIEW_ROUTE)),
   };
+  const action = get(actionMap, err, actionMap[Errors.ERROR]);
 
   return (
     <Page id={id} title={t(titlePage)}>
@@ -37,7 +39,7 @@ const ComponentErrorBoundary: FunctionComponent<
             content={t(`common.boundaries.errorState.${err}.button`)}
             variant="primary"
             endIcon={<Support />}
-            onClick={() => get(actionMap, err, noop)()}
+            onClick={() => action()}
           />
         </Box>
       </EmptyState>
