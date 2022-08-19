@@ -158,6 +158,7 @@ export default function Index() {
                   >
                     <Box mt={3}>
                       <LoadingButton
+                        id="get-started"
                         content={t('pages.overview.emptyState.button')}
                         endIcon={<Bolt />}
                         onClick={() => navigate(getRoute(LEDGERS_ROUTE))}
@@ -171,7 +172,7 @@ export default function Index() {
                 <Typography variant="h1" color="secondary">
                   {t('pages.overview.status')}
                 </Typography>
-                <Box mt={3} display="flex">
+                <Box mt={3} display="flex" data-testid="stats-card">
                   <Box mr={3}>
                     <StatsCard
                       icon={<Topic />}
