@@ -148,6 +148,7 @@ export default function Index() {
           )}
           <Box>
             <SelectButton
+              id="select-ledger"
               label={getCurrentLedger() || t('pages.ledgers.select.label')}
               variant="dark"
               items={ledgers}

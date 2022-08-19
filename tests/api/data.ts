@@ -96,7 +96,6 @@ export const transaction = {
     },
   },
 };
-
 export const payment = {
   id: 'eyJwcm92aWRlciI6InN0cmlwZSIXVQaUZxVzAzWllpTm4wdEFmaHhiUSIsInR5cGUiOiJwYXktaW4ifQ==',
   reference: 'foo',
@@ -781,6 +780,16 @@ export const payment = {
       absolute: false,
     },
   ],
+};
+export const ledgers = {
+  server: 'numary-ledger',
+  version: 'v1.6.1',
+  config: {
+    storage: {
+      driver: 'postgres',
+      ledgers: ['foo-x-1', 'investing-app-demo-11', 'foo-1-x'],
+    },
+  },
 };
 
 // Search

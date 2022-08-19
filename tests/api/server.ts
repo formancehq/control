@@ -10,41 +10,35 @@ export default (async () => {
   app.use(bodyParser.json());
 
   // Ledger api mock
-  app.get(
-    '/ledger/:ledger/accounts/:account',
-    (req: any, res: { send: (arg0: any) => void }) => {
-      res.send({ data: mock.account });
-    }
-  );
+  app.get('/ledger/_info', (req: any, res: any) => {
+    res.send({ data: mock.ledgers });
+  });
+  app.get('/ledger/:ledger/accounts/:account', (req: any, res: any) => {
+    res.send({ data: mock.account });
+  });
   app.post(
     '/ledger/:ledger/accounts/:account/metadata',
-    (req: any, res: { status: (arg0: number) => void }) => {
+    (req: any, res: any) => {
       res.status(204);
     }
   );
-  app.get(
-    '/ledger/:ledger/transactions/:transaction',
-    (req: any, res: { send: (arg0: any) => void }) => {
-      res.send({ data: mock.transaction });
-    }
-  );
+  app.get('/ledger/:ledger/transactions/:transaction', (req: any, res: any) => {
+    res.send({ data: mock.transaction });
+  });
   app.post(
     '/ledger/:ledger/transactions/:transaction/metadata',
-    (req: any, res: { status: (arg0: number) => void }) => {
+    (req: any, res: any) => {
       res.status(204);
     }
   );
 
   // Payment api mock
-  app.get(
-    '/payments/payments/:payment',
-    (req: any, res: { send: (arg0: any) => void }) => {
-      res.send({ data: mock.payment });
-    }
-  );
+  app.get('/payments/payments/:payment', (req: any, res: any) => {
+    res.send({ data: mock.payment });
+  });
 
   // Search api mock
-  app.post('/search', (req, res) => {
+  app.post('/search', (req: any, res: any) => {
     const { body } = req;
     // if (body.target === 'PAYMENT') {
     //   return res.send(searchResults.paymentsFirstPage);

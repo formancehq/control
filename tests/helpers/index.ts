@@ -1,4 +1,4 @@
-import config from '../../playwright.config';
+import config from '../../legacy/playwright.config';
 import { expect, Page } from '@playwright/test';
 
 export const LEDGER_SLUG = 'voo-89084995';
