@@ -28,7 +28,6 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import PostingsGraph from '~/src/components/Dataviz/PostingsGraph';
 import { MetaFunction } from '@remix-run/node';
-import { getCurrentLedger } from '~/src/utils/localStorage';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import Table from '~/src/components/Wrappers/Table';
@@ -83,7 +82,10 @@ export const loader: LoaderFunction = async ({
 };
 
 export default function Index() {
-  const { transactionId: id } = useParams<{ transactionId: string }>();
+  const { transactionId: id, ledgerId } = useParams<{
+    transactionId: string;
+    ledgerId: string;
+  }>();
   const navigate = useNavigate();
   const loaderData = useLoaderData<{
     postings: PostingHybrid[];
@@ -94,53 +96,41 @@ export default function Index() {
   const transaction = fetcher.data || loaderData;
 
   const sync = () => {
-    fetcher.load(getLedgerTransactionDetailsRoute(id!, getCurrentLedger()!));
+    fetcher.load(getLedgerTransactionDetailsRoute(id!, ledgerId!));
   };
 
   const handleSourceDestinationAction = (id: string) => {
-    navigate(getLedgerAccountDetailsRoute(id, getCurrentLedger()!));
+    navigate(getLedgerAccountDetailsRoute(id, ledgerId!));
   };
 
   return (
     <Page id="transaction" title={id}>
       <>
         {/* Postings Section */}
-        <SectionWrapper
-          title={t('pages.ledgers.transactions.details.postings.title')}
-        >
+        <SectionWrapper title={t('pages.transaction.postings.title')}>
           <Table
             withPagination={false}
             items={transaction.postings}
             columns={[
               {
                 key: 'txid',
-                label: t(
-                  'pages.ledgers.transactions.details.table.columnLabel.txid'
-                ),
+                label: t('pages.transaction.table.columnLabel.txid'),
               },
               {
                 key: 'amount',
-                label: t(
-                  'pages.ledgers.transactions.details.table.columnLabel.amount'
-                ),
+                label: t('pages.transaction.table.columnLabel.amount'),
               },
               {
                 key: 'source',
-                label: t(
-                  'pages.ledgers.transactions.details.table.columnLabel.source'
-                ),
+                label: t('pages.transaction.table.columnLabel.source'),
               },
               {
                 key: 'destination',
-                label: t(
-                  'pages.ledgers.transactions.details.table.columnLabel.destination'
-                ),
+                label: t('pages.transaction.table.columnLabel.destination'),
               },
               {
                 key: 'date',
-                label: t(
-                  'pages.ledgers.transactions.details.table.columnLabel.date'
-                ),
+                label: t('pages.transaction.table.columnLabel.date'),
               },
             ]}
             renderItem={(posting: PostingHybrid, index) => (
@@ -176,9 +166,7 @@ export default function Index() {
         </SectionWrapper>
         {/* Graph Section */}
         {transaction.postings.length > 0 && (
-          <SectionWrapper
-            title={t('pages.ledgers.transactions.details.graph.title')}
-          >
+          <SectionWrapper title={t('pages.transaction.graph.title')}>
             <PostingsGraph postings={transaction.postings} />
           </SectionWrapper>
         )}
@@ -187,7 +175,7 @@ export default function Index() {
           <Metadata
             sync={sync}
             metadata={transaction.metadata}
-            title={t('pages.ledgers.transactions.details.metadata.title')}
+            title={t('pages.transaction.metadata.title')}
             resource={LedgerResources.TRANSACTIONS}
             id={id}
           />

@@ -1,3 +1,6 @@
+import { Account } from '~/src/types/ledger';
+import { Cursor } from '~/src/types/generic';
+
 export type AccountListProps = {
-  currentLedger: string;
+  accounts: Cursor<Account>;
 };

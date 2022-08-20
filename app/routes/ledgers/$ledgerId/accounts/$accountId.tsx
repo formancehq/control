@@ -4,24 +4,26 @@ import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
 import { Box, Typography } from '@mui/material';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
-import { API_LEDGER, ApiClient } from '~/src/utils/api';
+import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
 import {
   Account,
   AccountHybrid,
   Balance,
   LedgerResources,
+  Transaction,
   Volume,
 } from '~/src/types/ledger';
 import { useFetcher, useLoaderData } from '@remix-run/react';
-import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getCurrentLedger } from '~/src/utils/localStorage';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { Cursor } from '~/src/types/generic';
+import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 
 const normalizeBalance = (account: Account): AccountHybrid => ({
   balances: account.balances
@@ -49,7 +51,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
       id="account"
-      title="pages.ledgers.accounts.details.title"
+      title="pages.ledgers.account.title"
       error={error}
     />
   );
@@ -57,30 +59,52 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export const loader: LoaderFunction = async ({
   params,
-}): Promise<AccountHybrid | null> => {
+}): Promise<{
+  account: AccountHybrid;
+  transactions: Cursor<Transaction> | undefined;
+} | null> => {
   invariant(params.ledgerId, 'Expected params.ledgerId');
   invariant(params.accountId, 'Expected params.accountId');
-  const account = await new ApiClient().getResource<Account>(
+  const api = new ApiClient();
+  const account = await api.getResource<Account>(
     `${API_LEDGER}/${params.ledgerId}/${LedgerResources.ACCOUNTS}/${params.accountId}`,
     'data'
   );
+  const transactions = await api.postResource<Cursor<Transaction>>(
+    API_SEARCH,
+    {
+      size: 5,
+      policy: SearchPolicies.OR,
+      terms: [`destination=${params.accountId}`, `source=${params.accountId}`],
+      target: SearchTargets.TRANSACTION,
+    },
+    'cursor'
+  );
 
-  if (account) {
-    return normalizeBalance(account);
-  }
+  if (account)
+    return {
+      account: normalizeBalance(account),
+      transactions,
+    };
 
   return null;
 };
 
 export default function Index() {
-  const loaderData = useLoaderData<AccountHybrid>();
-  const { accountId: id } = useParams<{ accountId: string }>();
+  const loaderData = useLoaderData<{
+    account: AccountHybrid;
+    transactions: Cursor<Transaction>;
+  }>();
+  const { accountId: id, ledgerId } = useParams<{
+    accountId: string;
+    ledgerId: string;
+  }>();
   const { t } = useTranslation();
   const fetcher = useFetcher();
-  const account = fetcher.data || loaderData;
+  const account = fetcher.data?.account || loaderData.account;
 
   const sync = () => {
-    fetcher.load(getLedgerAccountDetailsRoute(id!, getCurrentLedger()!));
+    fetcher.load(getLedgerAccountDetailsRoute(id!, ledgerId!));
   };
 
   const renderValue = (
@@ -89,14 +113,12 @@ export default function Index() {
   ) => <Typography color={color}>{value}</Typography>;
 
   return (
-    <Page id="account" title={t('pages.ledgers.accounts.details.title')}>
+    <Page id="account" title={t('pages.account.title')}>
       <>
         <Box display="flex" justifyContent="space-between" mb={3}>
           {/* Balances Section */}
           <Box sx={{ width: '45%' }}>
-            <SectionWrapper
-              title={t('pages.ledgers.accounts.details.balances.title')}
-            >
+            <SectionWrapper title={t('pages.account.balances.title')}>
               {account.balances && (
                 <Table
                   withPagination={false}
@@ -104,15 +126,11 @@ export default function Index() {
                   columns={[
                     {
                       key: 'balance.asset',
-                      label: t(
-                        'pages.ledgers.accounts.details.table.columnLabel.balance.asset'
-                      ),
+                      label: t('pages.account.table.columnLabel.balance.asset'),
                     },
                     {
                       key: 'balance.value',
-                      label: t(
-                        'pages.ledgers.accounts.details.table.columnLabel.balance.value'
-                      ),
+                      label: t('pages.account.table.columnLabel.balance.value'),
                     },
                   ]}
                   renderItem={(balance: Balance, index) => (
@@ -128,9 +146,7 @@ export default function Index() {
           </Box>
           {/* Volumes Section */}
           <Box sx={{ width: '55%' }} pl={1}>
-            <SectionWrapper
-              title={t('pages.ledgers.accounts.details.volumes.title')}
-            >
+            <SectionWrapper title={t('pages.account.volumes.title')}>
               {account.volumes && (
                 <Table
                   withPagination={false}
@@ -138,21 +154,17 @@ export default function Index() {
                   columns={[
                     {
                       key: 'volume.asset',
-                      label: t(
-                        'pages.ledgers.accounts.details.table.columnLabel.volume.asset'
-                      ),
+                      label: t('pages.account.table.columnLabel.volume.asset'),
                     },
                     {
                       key: 'volume.received',
                       label: t(
-                        'pages.ledgers.accounts.details.table.columnLabel.volume.received'
+                        'pages.account.table.columnLabel.volume.received'
                       ),
                     },
                     {
                       key: 'volume.sent',
-                      label: t(
-                        'pages.ledgers.accounts.details.table.columnLabel.volume.sent'
-                      ),
+                      label: t('pages.account.table.columnLabel.volume.sent'),
                     },
                   ]}
                   renderItem={(volume: Volume, index) => (
@@ -172,16 +184,16 @@ export default function Index() {
           </Box>
         </Box>
         {/* Transactions Section */}
-        <SectionWrapper
-          title={t('pages.ledgers.accounts.details.transactions.title')}
-        >
+        <SectionWrapper title={t('pages.account.transactions.title')}>
           <>
-            <TransactionList
-              currentLedger={getCurrentLedger()!}
-              account={id}
-              withPagination={false}
-              paginationSize={5}
-            />
+            {loaderData.transactions && (
+              <TransactionList
+                withPagination={false}
+                transactions={
+                  loaderData.transactions as unknown as Cursor<Transaction>
+                }
+              />
+            )}
           </>
         </SectionWrapper>
         {/* Metadata Section */}
@@ -189,7 +201,7 @@ export default function Index() {
           <Metadata
             sync={sync}
             metadata={account.metadata}
-            title={t('pages.ledgers.accounts.details.metadata.title')}
+            title={t('pages.account.metadata.title')}
             resource={LedgerResources.ACCOUNTS}
             id={id}
           />

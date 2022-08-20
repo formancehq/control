@@ -50,11 +50,6 @@ export default {
         tasks: 'Tasks',
         subtitle: 'We hope all is well and you have a great day',
         hello: 'Hello !',
-        docsContent: 'Read the Docs',
-        airtableContent: 'Vote for Connectors',
-        discordContent: 'Join the Discord',
-        newsletterContent: 'Join the Newsletter',
-        githubContent: 'Star !',
         stats: {
           transactions: 'Transactions',
           accounts: 'Accounts',
@@ -65,14 +60,14 @@ export default {
           button: 'Get started',
         },
       },
-      transaction: {
-        title: 'Transaction',
-      },
       payment: {
         title: 'Payment',
       },
       payments: {
         title: 'Payments',
+        filters: {
+          type: 'Type',
+        },
         table: {
           columnLabel: {
             provider: 'Provider',
@@ -90,103 +85,95 @@ export default {
           tab: 'Payout',
         },
       },
-      ledgers: {
-        title: 'Ledgers',
-        emptyState: {
-          title: 'There is nothing here, yet',
-          description: 'You can start by selecting a ledger',
-        },
-        select: {
-          label: 'Select a ledger',
-        },
-        accounts: {
-          tab: 'Accounts',
-          title: 'Accounts',
-          table: {
-            columnLabel: {
-              address: 'Address',
+      account: {
+        title: 'Account',
+        table: {
+          columnLabel: {
+            balance: {
+              asset: 'Asset',
+              value: 'Balance',
             },
-          },
-          details: {
-            title: 'Account',
-            table: {
-              columnLabel: {
-                balance: {
-                  asset: 'Asset',
-                  value: 'Balance',
-                },
-                volume: {
-                  asset: 'Asset',
-                  sent: 'Sent',
-                  received: 'Received',
-                },
-                metadata: {
-                  key: 'Key',
-                  value: 'Value',
-                },
-              },
-            },
-            balances: {
-              title: 'Balances',
-            },
-            volumes: {
-              title: 'Volumes',
-            },
-            transactions: {
-              title: 'Transactions',
+            volume: {
+              asset: 'Asset',
+              sent: 'Sent',
+              received: 'Received',
             },
             metadata: {
-              title: 'Metadata',
+              key: 'Key',
+              value: 'Value',
             },
           },
+        },
+        balances: {
+          title: 'Balances',
+        },
+        volumes: {
+          title: 'Volumes',
         },
         transactions: {
           title: 'Transactions',
-          tab: 'Transactions',
-          table: {
-            columnLabel: {
-              txid: '# Txid',
-              status: 'Status',
-              value: 'Value',
-              source: 'Source',
-              destination: 'Destination',
-              date: 'Date',
-              actions: 'Actions',
-            },
+        },
+        metadata: {
+          title: 'Metadata',
+        },
+      },
+      accounts: {
+        tab: 'Accounts',
+        title: 'Accounts',
+        table: {
+          columnLabel: {
+            address: 'Address',
           },
-          details: {
-            title: 'Transaction',
-            table: {
-              columnLabel: {
-                metadata: {
-                  key: 'Key',
-                  value: 'Value',
-                },
-                txid: 'Txid',
-                status: 'Status',
-                amount: 'Amount',
-                source: 'Source',
-                destination: 'Destination',
-                date: 'Date',
-              },
-            },
-            transaction: {
-              title: 'Transaction',
-            },
-            postings: {
-              title: 'Postings',
-            },
-            graph: {
-              title: 'Graph',
-            },
+        },
+        filters: {},
+      },
+      transactions: {
+        title: 'Transactions',
+        tab: 'Transactions',
+        filters: {},
+        table: {
+          columnLabel: {
+            txid: '# Txid',
+            status: 'Status',
+            value: 'Value',
+            source: 'Source',
+            destination: 'Destination',
+            date: 'Date',
+            actions: 'Actions',
+          },
+        },
+      },
+      transaction: {
+        title: 'Transaction',
+        table: {
+          columnLabel: {
             metadata: {
-              title: 'Metadata',
+              key: 'Key',
+              value: 'Value',
             },
+            txid: 'Txid',
+            status: 'Status',
+            amount: 'Amount',
+            source: 'Source',
+            destination: 'Destination',
+            date: 'Date',
           },
+        },
+        postings: {
+          title: 'Postings',
+        },
+        graph: {
+          title: 'Graph',
+        },
+        metadata: {
+          title: 'Metadata',
         },
       },
     },
     common: {
+      filters: {
+        ledgers: 'Ledgers',
+      },
       boundaries: {
         errorState: {
           error: {

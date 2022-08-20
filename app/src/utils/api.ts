@@ -84,7 +84,6 @@ export class ApiClient implements IApiClient {
         res = await fetch(this.decorateUrl(params));
       }
       const json = await res.json();
-
       if (res && res.status === 204) {
         return {} as any;
       }

@@ -21,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 import { Account, Transaction } from '~/src/types/ledger';
 import { SearchTargets } from '~/src/types/search';
 import { Payment } from '~/src/types/payment';
-import { getCurrentLedger } from '~/src/utils/localStorage';
 import { useService } from '~/src/hooks/useService';
 
 export const normalizeSearch = (
@@ -33,7 +32,6 @@ export const normalizeSearch = (
   const accounts: Account[] = get(data, SearchTargets.ACCOUNT, []);
   const transactions: Transaction[] = get(data, SearchTargets.TRANSACTION, []);
   const payments: Payment[] = get(data, SearchTargets.PAYMENT, []);
-  const currentLedger = getCurrentLedger()!;
 
   return [
     {
@@ -43,7 +41,7 @@ export const normalizeSearch = (
         id: account.address,
         label: account.address,
         onClick: (id) => {
-          navigate(getLedgerAccountDetailsRoute(id, currentLedger));
+          navigate(getLedgerAccountDetailsRoute(id, account.ledger));
           close();
         },
       })),
@@ -55,7 +53,7 @@ export const normalizeSearch = (
         id: transaction.txid,
         label: `000${transaction.txid}`,
         onClick: (id) => {
-          navigate(getLedgerTransactionDetailsRoute(id, currentLedger));
+          navigate(getLedgerTransactionDetailsRoute(id, transaction.ledger));
           close();
         },
       })),
@@ -75,7 +73,7 @@ export const normalizeSearch = (
   ];
 };
 
-export const SearchSection: FunctionComponent = () => {
+export const SearchBar: FunctionComponent = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -130,4 +128,4 @@ export const SearchSection: FunctionComponent = () => {
     </Box>
   );
 };
-export default SearchSection;
+export default SearchBar;
