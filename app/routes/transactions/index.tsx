@@ -1,0 +1,65 @@
+import * as React from 'react';
+import type { MetaFunction } from '@remix-run/node';
+import { Form, useLoaderData } from '@remix-run/react';
+import { Page } from '@numaryhq/storybook';
+import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { LoaderFunction } from '@remix-run/server-runtime';
+import { API_SEARCH, ApiClient } from '~/src/utils/api';
+import { Transaction } from '~/src/types/ledger';
+import { buildQuery } from '~/src/components/Wrappers/Search/search';
+import { transactions as transactionsConfig } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import { Cursor } from '~/src/types/generic';
+import { useTranslation } from 'react-i18next';
+import { LedgerList } from '~/routes/ledgers/list';
+import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
+
+export const meta: MetaFunction = () => ({
+  title: 'Transactions',
+  description: 'Show a list',
+});
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const transactions = await new ApiClient().postResource<Cursor<Transaction>>(
+    API_SEARCH,
+    {
+      ...buildQuery(url.searchParams),
+      target: SearchTargets.TRANSACTION,
+      policy: SearchPolicies.OR,
+    },
+    'cursor'
+  );
+  if (transactions) {
+    return transactions;
+  }
+
+  return null;
+};
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <ComponentErrorBoundary
+      id={transactionsConfig.id}
+      title="pages.transactions.title"
+      error={error}
+    />
+  );
+}
+
+export default function Index() {
+  const transactions = useLoaderData<Cursor<Transaction>>();
+  const { t } = useTranslation();
+
+  return (
+    <Page id={transactionsConfig.id} title={t('pages.transactions.title')}>
+      <Form method="get">
+        <LedgerList />
+        <TransactionList
+          transactions={transactions as unknown as Cursor<Transaction>}
+          withPagination
+        />
+      </Form>
+    </Page>
+  );
+}

@@ -1,7 +1,8 @@
+import { Transaction } from '~/src/types/ledger';
+import { Cursor } from '~/src/types/generic';
+
 export type TransactionListProps = {
-  account?: string;
+  transactions: Cursor<Transaction>;
   withPagination: boolean;
   paginationSize?: number;
-  showMore?: boolean;
-  currentLedger: string;
 };

@@ -8,11 +8,11 @@ import {
 } from '@mui/material';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
-import SearchSection from './components/SearchSection';
 import { isArray } from 'lodash';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { routerConfig } from '~/src/components/Navbar/routes';
 import { useTranslation } from 'react-i18next';
+import SearchBar from '~/src/components/Wrappers/Search/SearchBar';
 
 const Navbar: FunctionComponent = () => {
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ const Navbar: FunctionComponent = () => {
               );
             })}
           </Box>
-          <SearchSection />
+          <SearchBar />
         </Toolbar>
       </AppBar>
     </Box>

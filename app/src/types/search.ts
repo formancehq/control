@@ -19,7 +19,7 @@ export type SearchTarget =
 export type SearchBody = {
   ledgers?: string[];
   size?: string | number;
-  terms?: string[] | string;
+  terms?: string[];
   cursor?: string;
   target?: SearchTarget;
   policy?: SearchPolicies.OR | SearchPolicies.AND;

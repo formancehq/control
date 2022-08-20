@@ -18,6 +18,7 @@ export type LedgerGetResourceData = {
 };
 
 export type Account = {
+  ledger: string;
   address: string;
   contract: string;
   metadata: any;
@@ -51,6 +52,7 @@ export type Posting = {
 };
 
 export type Transaction = {
+  ledger: string;
   hash: string;
   postings: Posting[];
   reference: string;

@@ -4,10 +4,8 @@ export const ACCOUNT_ROUTE = '/ledgers/:slug/accounts/:id';
 export const TRANSACTION_ROUTE = '/ledgers/:slug/transactions/:id';
 export const PAYMENTS_ROUTE = '/payments';
 export const PAYMENT_ROUTE = '/payments/:id';
-export const LEDGERS_ROUTE = '/ledgers';
-export const ORGANIZATION_ROUTE = '/organization';
-export const POST_SIGNUP_ROUTE = '/post-signup';
-export const PROFILE_ROUTE = '/profile';
+export const ACCOUNTS_ROUTE = '/accounts';
+export const TRANSACTIONS_ROUTE = '/transactions';
 
 export const getRoute = (uri: string, id?: number | string): string =>
   id !== undefined ? uri.replace(/:\w+/, id.toString(10)) : uri;
@@ -46,10 +44,21 @@ export const payments: RouterConfig = {
   path: getRoute(PAYMENTS_ROUTE),
 };
 
-export const ledgers: RouterConfig = {
-  id: 'ledgers',
-  label: 'navbar.title.ledgers',
-  path: getRoute(LEDGERS_ROUTE),
+export const accounts: RouterConfig = {
+  id: 'accounts',
+  label: 'navbar.title.accounts',
+  path: getRoute(ACCOUNTS_ROUTE),
 };
 
-export const routerConfig: RouterConfig[] = [overview, payments, ledgers];
+export const transactions: RouterConfig = {
+  id: 'transactions',
+  label: 'navbar.title.transactions',
+  path: getRoute(TRANSACTIONS_ROUTE),
+};
+
+export const routerConfig: RouterConfig[] = [
+  overview,
+  payments,
+  accounts,
+  transactions,
+];

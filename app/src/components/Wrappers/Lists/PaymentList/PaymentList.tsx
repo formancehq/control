@@ -7,8 +7,9 @@ import { getRoute, PAYMENT_ROUTE } from '~/src/components/Navbar/routes';
 import { ArrowRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import Table from '~/src/components/Wrappers/Table';
+import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 
-const PaymentList: FunctionComponent<{ payments: [] }> = ({ payments }) => {
+const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
