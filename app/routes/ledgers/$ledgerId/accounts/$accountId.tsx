@@ -110,7 +110,11 @@ export default function Index() {
   const renderValue = (
     value: number,
     color: 'error' | 'primary' | 'default' = 'default'
-  ) => <Typography color={color}>{value}</Typography>;
+  ) => (
+    <Typography color={color} variant="money">
+      {value}
+    </Typography>
+  );
 
   return (
     <Page id="account" title={t('pages.account.title')}>

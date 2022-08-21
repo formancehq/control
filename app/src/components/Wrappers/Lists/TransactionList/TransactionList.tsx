@@ -19,6 +19,7 @@ import {
 import { ArrowRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import Table from '~/src/components/Wrappers/Table';
+import { Box } from '@mui/material';
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
@@ -53,11 +54,13 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   };
 
   const renderRowActions = (transaction: TransactionHybrid) => (
-    <LoadingButton
-      id={`show-${transaction.txid}`}
-      onClick={() => handleAction(transaction)}
-      endIcon={<ArrowRight />}
-    />
+    <Box key={transaction.txid} component="span">
+      <LoadingButton
+        id={`show-${transaction.txid}`}
+        onClick={() => handleAction(transaction)}
+        endIcon={<ArrowRight />}
+      />
+    </Box>
   );
 
   return (
@@ -120,6 +123,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
                 <SourceDestination
                   key={transaction.txid}
                   label={transaction.source}
+                  color="blue"
                   onClick={() =>
                     handleSourceDestinationAction(
                       transaction.source,
@@ -130,6 +134,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
                 <SourceDestination
                   key={transaction.txid}
                   label={transaction.destination}
+                  color="blue"
                   onClick={() =>
                     handleSourceDestinationAction(
                       transaction.destination,

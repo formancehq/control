@@ -43,7 +43,7 @@ export class ApiClient implements IApiClient {
 
   private static throwError(code = 422): Error {
     const error = get(errorsMap, code, errorsMap['422']);
-    console.error('FORMANCE ERROR', error);
+    console.error('api -', error);
 
     throw new Error(error);
   }
@@ -78,6 +78,7 @@ export class ApiClient implements IApiClient {
       if (body) {
         res = await fetch(this.decorateUrl(params), {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
         });
       } else {

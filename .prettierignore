@@ -14,3 +14,4 @@ docker-compose.yml
 Dockerfile
 Dockerfile.local
 tsconfig.json
+/public

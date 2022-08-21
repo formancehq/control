@@ -40,18 +40,23 @@ export default (async () => {
   // Search api mock
   app.post('/search', (req: any, res: any) => {
     const { body } = req;
-    // if (body.target === 'PAYMENT') {
-    //   return res.send(searchResults.paymentsFirstPage);
-    // }
+    if (body.target === 'PAYMENT') {
+      return res.send(mock.paymentList1);
+    }
     if (!body.target && body.size === 3) {
       return res.send(mock.autocomplete);
     }
     if (body.target === 'ACCOUNT' && !body.terms) {
-      return res.send(mock.accountList2);
+      return res.send(mock.accountList1);
     }
     if (body.target === 'TRANSACTION' && !body.terms) {
       return res.send(mock.transactionList1);
     }
+    if (body.target === 'TRANSACTION' && body.terms.length === 2) {
+      return res.send(mock.transactionList1);
+    }
+
+    return res.send(422);
   });
 
   const port = process.env.PORT || 5001;

@@ -1,24 +1,50 @@
-import { Chip } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React, { FunctionComponent } from 'react';
-import { Payment } from '~/src/types/payment';
-import { Amount, Date, LoadingButton, Row } from '@numaryhq/storybook';
+import { Payment, PaymentTypes } from '~/src/types/payment';
+import { Amount, Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
 import { useNavigate } from 'react-router-dom';
 import { getRoute, PAYMENT_ROUTE } from '~/src/components/Navbar/routes';
-import { ArrowRight } from '@mui/icons-material';
+import { ArrowRight, NorthEast, SouthEast } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import Table from '~/src/components/Wrappers/Table';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
+import { get } from 'lodash';
+
+const providersMap = {
+  stripe: {
+    path: '/images/connectors/stripe.svg',
+    width: 28,
+  },
+  mangopay: {
+    path: '/images/connectors/mangopay.svg',
+    width: 90,
+  },
+  wize: {
+    path: '/images/connectors/wize.svg',
+    width: 'initial',
+  },
+  paypal: {
+    path: '/images/connectors/paypal.svg',
+    width: 30,
+  },
+  devengo: {
+    path: '/images/connectors/devengo.svg',
+    width: 80,
+  },
+};
 
 const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const renderRowActions = (payment: Payment) => (
-    <LoadingButton
-      id={`show-${payment.id}`}
-      onClick={() => navigate(getRoute(PAYMENT_ROUTE, payment.id))}
-      endIcon={<ArrowRight />}
-    />
+    <Box component="span" key={payment.id}>
+      <LoadingButton
+        id={`show-${payment.id}`}
+        onClick={() => navigate(getRoute(PAYMENT_ROUTE, payment.id))}
+        endIcon={<ArrowRight />}
+      />
+    </Box>
   );
 
   return (
@@ -31,6 +57,7 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
         {
           key: 'provider',
           label: t('pages.payments.table.columnLabel.provider'),
+          width: 30,
         },
         { key: 'status', label: t('pages.payments.table.columnLabel.status') },
         {
@@ -40,25 +67,62 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
         { key: 'value', label: t('pages.payments.table.columnLabel.value') },
         { key: 'date', label: t('pages.payments.table.columnLabel.date') },
       ]}
-      renderItem={(payment: Payment, index: number) => (
-        <Row
-          key={index}
-          keys={[
-            <Chip key={index} label={payment.type} variant="square" />,
-            'provider',
-            <Chip key={index} label={payment.status} variant="square" />,
-            <Chip key={index} label={payment.reference} variant="square" />,
-            <Amount
-              asset={payment.asset}
-              key={index}
-              amount={payment.amount}
-            />,
-            <Date key={index} timestamp={payment.date} />,
-          ]}
-          item={payment}
-          renderActions={() => renderRowActions(payment)}
-        />
-      )}
+      renderItem={(payment: Payment, index: number) => {
+        const logoAttr = get(providersMap, payment.provider.toLowerCase());
+
+        return (
+          <Row
+            key={index}
+            keys={[
+              <Chip
+                key={index}
+                label={payment.type}
+                variant="square"
+                color={payment.type === PaymentTypes.PAY_OUT ? 'red' : 'green'}
+                icon={
+                  payment.type === PaymentTypes.PAY_OUT ? (
+                    <NorthEast />
+                  ) : (
+                    <SouthEast />
+                  )
+                }
+              />,
+              <Box
+                component="span"
+                key={index}
+                display="flex"
+                alignItems="center"
+                sx={{
+                  '& img': {
+                    marginRight: 1,
+                    width: logoAttr ? logoAttr.width : 'initial',
+                  },
+                }}
+              >
+                {logoAttr && <img src={logoAttr.path} alt={payment.provider} />}
+                <Typography sx={{ textTransform: 'capitalize' }}>
+                  {payment.provider}
+                </Typography>
+              </Box>,
+              <Chip
+                key={index}
+                label={payment.status}
+                variant="square"
+                color={payment.status === 'succeeded' ? 'violet' : undefined}
+              />,
+              <Typography key={index}>{payment.reference}</Typography>,
+              <Amount
+                asset={payment.asset}
+                key={index}
+                amount={payment.initialAmount}
+              />,
+              <Date key={index} timestamp={payment.date} />,
+            ]}
+            item={payment}
+            renderActions={() => renderRowActions(payment)}
+          />
+        );
+      }}
     />
   );
 };
