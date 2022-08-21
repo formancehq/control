@@ -84,7 +84,7 @@ const Document = withEmotionCache(
           />
           <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,700&display=swap"
+            href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700&display=swap"
           />
           <meta
             name="emotion-insertion-point"
@@ -201,7 +201,7 @@ export default function App() {
 export function ErrorBoundary({ error }: { error: Error }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  console.error(error);
+  console.error('root -', error);
 
   return (
     <Document title="Error!">

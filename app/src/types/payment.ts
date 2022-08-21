@@ -24,7 +24,7 @@ export type Payment = {
   scheme: string;
   type: string;
   status: string;
-  amount: number;
+  initialAmount: number;
   asset: string;
   date: Date;
   raw: ObjectOf<any>;

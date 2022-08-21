@@ -114,6 +114,7 @@ export const SearchBar: FunctionComponent = () => {
   return (
     <Box>
       <LoadingButton
+        id="search"
         startIcon={<SearchOutlined />}
         onClick={handleOpen}
         variant="dark"

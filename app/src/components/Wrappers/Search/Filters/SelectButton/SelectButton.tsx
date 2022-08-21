@@ -20,6 +20,7 @@ const SelectButton: FunctionComponent<SelectButtonProps> = ({
       <LoadingButton
         content={label}
         variant="dark"
+        id="ledger-filter"
         startIcon={<ImportExport />}
         endIcon={!open ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
         onClick={handleOpen}
@@ -28,7 +29,7 @@ const SelectButton: FunctionComponent<SelectButtonProps> = ({
         <ClickAwayListener onClickAway={handleClose}>
           <Paper
             sx={{
-              position: 'relative',
+              position: 'absolute',
               zIndex: 999,
               marginLeft: 0,
             }}
