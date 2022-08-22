@@ -10,7 +10,11 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { isArray } from 'lodash';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { routerConfig } from '~/src/components/Navbar/routes';
+import {
+  getRoute,
+  OVERVIEW_ROUTE,
+  routerConfig,
+} from '~/src/components/Navbar/routes';
 import { useTranslation } from 'react-i18next';
 import SearchBar from '~/src/components/Wrappers/Search/SearchBar';
 
@@ -35,7 +39,11 @@ const Navbar: FunctionComponent = () => {
             justifyContent: 'space-between',
           }}
         >
-          <Box>
+          <Box
+            onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
+            sx={{ cursor: 'pointer' }}
+          >
+            {/* TODO add logo instead of hardcoded string */}
             <Typography variant="h6" noWrap component="div">
               FORMANCE
             </Typography>
