@@ -1,115 +1,174 @@
 import {
-  AccountBalanceWallet,
-  PaymentOutlined,
+  AccountBalance,
+  CreditCard,
   SearchOutlined,
-  Topic,
 } from '@mui/icons-material';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import * as React from 'react';
-import { FunctionComponent, useCallback, useState } from 'react';
-import { LoadingButton, Search, Suggestion } from '@numaryhq/storybook';
-import { debounce, get } from 'lodash';
-import { API_SEARCH } from '~/src/utils/api';
-import { useNavigate } from 'react-router-dom';
-import {
-  getLedgerAccountDetailsRoute,
-  getLedgerTransactionDetailsRoute,
-  getRoute,
-  PAYMENT_ROUTE,
-} from '~/src/components/Navbar/routes';
-import { useTranslation } from 'react-i18next';
-import { Account, Transaction } from '~/src/types/ledger';
-import { SearchTargets } from '~/src/types/search';
-import { Payment } from '~/src/types/payment';
-import { useService } from '~/src/hooks/useService';
+import { FunctionComponent, useState } from 'react';
+import { Chip, LoadingButton, Search, Txid } from '@numaryhq/storybook';
 
-export const normalizeSearch = (
-  data: any,
-  navigate: any,
-  t: any,
-  close: () => void
-): Suggestion[] => {
-  const accounts: Account[] = get(data, SearchTargets.ACCOUNT, []);
-  const transactions: Transaction[] = get(data, SearchTargets.TRANSACTION, []);
-  const payments: Payment[] = get(data, SearchTargets.PAYMENT, []);
+const onClick = (id: number | string) => id;
+type Suggestion<T> = {
+  label?: string;
+  viewAll: boolean;
+  items: T[] | [];
+};
 
-  return [
+const accounts: Suggestion<any> = {
+  viewAll: true,
+  items: [
     {
-      label: t('pages.ledgers.accounts.title'),
-      icon: <AccountBalanceWallet />,
-      items: accounts.map((account: Account) => ({
-        id: account.address,
-        label: account.address,
-        onClick: (id) => {
-          navigate(getLedgerAccountDetailsRoute(id, account.ledger));
-          close();
-        },
-      })),
+      id: 1,
+      label: 'world:000679472',
+      ledger: 'main-production',
+      onClick,
     },
     {
-      label: t('pages.ledgers.transactions.title'),
-      icon: <Topic />,
-      items: transactions.map((transaction: Transaction) => ({
-        id: transaction.txid,
-        label: `000${transaction.txid}`,
-        onClick: (id) => {
-          navigate(getLedgerTransactionDetailsRoute(id, transaction.ledger));
-          close();
-        },
-      })),
+      id: 2,
+      label: 'world:000679473',
+      ledger: 'production',
+      onClick,
     },
     {
-      label: t('pages.payments.title'),
-      icon: <PaymentOutlined />,
-      items: payments.map((payment: Payment) => ({
-        id: payment.id,
-        label: payment.type,
-        onClick: (id) => {
-          navigate(getRoute(PAYMENT_ROUTE, id));
-          close();
-        },
-      })),
+      id: 2,
+      label: 'world:000679476',
+      ledger: 'production',
+      onClick,
     },
-  ];
+  ],
+};
+
+const transactions: Suggestion<any> = {
+  viewAll: true,
+  items: [
+    {
+      id: 1,
+      ledger: 'main-production',
+      source: 'world:0006',
+      label: '1',
+      onClick,
+    },
+    {
+      id: 2,
+      ledger: 'production',
+      source: 'world:0006',
+      label: '2',
+      onClick,
+    },
+    {
+      id: 3,
+      label: '3',
+      ledger: 'production',
+      source: 'world:0006',
+      onClick,
+    },
+  ],
 };
 
 export const SearchBar: FunctionComponent = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setSuggestions([]);
-    setOpen(false);
-  };
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { api } = useService();
-  const [loading, setLoading] = useState(true);
+  const handleClose = () => setOpen(false);
 
-  const debouncedRequest = useCallback(
-    debounce(async (value: string) => {
-      const load = await api.postResource<any>(
-        API_SEARCH,
-        {
-          terms: [value],
-          size: 3,
-        },
-        'data'
-      );
-      if (load) {
-        setSuggestions(normalizeSearch(load, navigate, t, handleClose));
-        setLoading(false);
-      }
-    }, 200),
-    []
+  // TODo improve
+
+  const renderChildren = (value: string) => (
+    <Box
+      sx={{
+        overflowY: 'auto',
+        display: 'flex',
+        width: 800,
+        mt: 2,
+        borderRadius: '4px',
+      }}
+    >
+      <Box
+        p={2}
+        sx={{
+          width: 60,
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: ({ palette }) => palette.neutral[50],
+          borderRight: ({ palette }) => `1px solid ${palette.neutral[200]}`,
+        }}
+      >
+        <LoadingButton
+          variant="dark"
+          startIcon={<AccountBalance />}
+          sx={{ width: 50, marginTop: 2 }}
+        />
+        <LoadingButton
+          variant="stroke"
+          startIcon={<CreditCard />}
+          sx={{ width: 50, marginTop: 2 }}
+        />
+        <LoadingButton
+          variant="stroke"
+          content={<Typography variant="bold">R</Typography>}
+          sx={{ width: 50, marginTop: 2 }}
+        />
+      </Box>
+      <Box
+        sx={{
+          backgroundColor: ({ palette }) => palette.neutral[0],
+          width: 740,
+          height: 400,
+          p: 2,
+          overflowY: 'auto',
+        }}
+      >
+        <Typography variant="bold">
+          Result for {value} accross ledgers
+        </Typography>
+        {renderLedger(accounts, 'Account')}
+        {renderLedger(transactions, 'Transaction')}
+      </Box>
+    </Box>
   );
 
-  const handleOnChange = (event: any) => {
-    const value = event.target.value;
-    if (value.length >= 2) {
-      debouncedRequest(value);
-    }
-  };
+  const renderLedger = (data: any, target: string) => (
+    <Box mt={1}>
+      {data.items.map((item: any, index: number) => (
+        <>
+          <Box
+            key={index}
+            sx={{
+              display: 'flex',
+              paddingTop: 1,
+              paddingBottom: 1,
+              columnGap: '100px',
+            }}
+          >
+            <Chip
+              label={target === 'Account' ? 'Account' : 'Transaction'}
+              color={target === 'Account' ? 'default' : 'blue'}
+              variant="square"
+            />
+            {target === 'Account' ? (
+              <Typography>{item.label}</Typography>
+            ) : (
+              <Box display="inline-flex" alignItems="center">
+                <Txid id={item.label} />
+                <Typography ml={1}>{item.source}</Typography>
+              </Box>
+            )}
+            <Chip
+              label={item.ledger}
+              variant="square"
+              icon={<AccountBalance fontSize="small" />}
+              sx={{ '& .MuiChip-icon': ({ palette }) => palette.neutral[300] }}
+            />
+          </Box>
+        </>
+      ))}
+      {data.viewAll && (
+        <Box display="flex" justifyContent="center" mt={1} mb={1}>
+          <LoadingButton content={`View all ${target}`} />
+        </Box>
+      )}
+    </Box>
+  );
 
   return (
     <Box>
@@ -121,10 +180,8 @@ export const SearchBar: FunctionComponent = () => {
       />
       <Search
         open={open}
-        onChange={handleOnChange}
         onClose={handleClose}
-        suggestions={suggestions}
-        loading={loading}
+        renderChildren={(value) => renderChildren(value)}
       />
     </Box>
   );

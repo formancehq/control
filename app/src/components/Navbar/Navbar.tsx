@@ -1,20 +1,9 @@
-import {
-  AppBar,
-  Box,
-  ListItemButton,
-  ListItemText,
-  Toolbar,
-  Typography,
-} from '@mui/material';
+import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { isArray } from 'lodash';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  getRoute,
-  OVERVIEW_ROUTE,
-  routerConfig,
-} from '~/src/components/Navbar/routes';
+import { routerConfig } from '~/src/components/Navbar/routes';
 import { useTranslation } from 'react-i18next';
 import SearchBar from '~/src/components/Wrappers/Search/SearchBar';
 
@@ -24,7 +13,14 @@ const Navbar: FunctionComponent = () => {
   const { t } = useTranslation();
 
   return (
-    <Box sx={{ height: '80px' }}>
+    <Box
+      sx={{
+        height: '80px',
+        '& .MuiPaper-root': {
+          borderRadius: '0 !important',
+        },
+      }}
+    >
       <AppBar
         position="static"
         sx={{
@@ -39,11 +35,7 @@ const Navbar: FunctionComponent = () => {
             justifyContent: 'space-between',
           }}
         >
-          <Box
-            onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
-            sx={{ cursor: 'pointer' }}
-          >
-            {/* TODO add logo instead of hardcoded string */}
+          <Box>
             <Typography variant="h6" noWrap component="div">
               FORMANCE
             </Typography>
@@ -55,7 +47,7 @@ const Navbar: FunctionComponent = () => {
                 : path === location.pathname;
 
               return (
-                <ListItemButton
+                <Button
                   key={id}
                   onClick={() =>
                     navigate(
@@ -68,8 +60,9 @@ const Navbar: FunctionComponent = () => {
                     padding: '8px 16px',
                     height: '40px',
                     minWidth: '54px',
+                    textTransform: 'none',
                     backgroundColor: ({ palette }) =>
-                      selected ? palette.neutral[0] : 'inherit',
+                      selected ? palette.neutral[0] : palette.neutral[900],
                     color: ({ palette }) =>
                       selected ? palette.neutral[900] : 'inherit',
                     '&:hover': {
@@ -78,8 +71,8 @@ const Navbar: FunctionComponent = () => {
                     },
                   }}
                 >
-                  <ListItemText primary={t(label)} />
-                </ListItemButton>
+                  {t(label)}
+                </Button>
               );
             })}
           </Box>

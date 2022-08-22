@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { MetaFunction } from '@remix-run/node';
 import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
 import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
@@ -102,16 +102,14 @@ export default function Index() {
   const { t } = useTranslation();
   const fetcher = useFetcher();
   const account = fetcher.data?.account || loaderData.account;
+  const { palette } = useTheme();
 
   const sync = () => {
     fetcher.load(getLedgerAccountDetailsRoute(id!, ledgerId!));
   };
 
-  const renderValue = (
-    value: number,
-    color: 'error' | 'primary' | 'default' = 'default'
-  ) => (
-    <Typography color={color} variant="money">
+  const renderValue = (value: number, color: string) => (
+    <Typography sx={{ color }} variant="money">
       {value}
     </Typography>
   );
@@ -140,7 +138,11 @@ export default function Index() {
                   renderItem={(balance: Balance, index) => (
                     <Row
                       key={index}
-                      keys={['asset', () => renderValue(balance.value)]}
+                      keys={[
+                        'asset',
+                        () =>
+                          renderValue(balance.value, palette.default.normal),
+                      ]}
                       item={balance}
                     />
                   )}
@@ -176,8 +178,8 @@ export default function Index() {
                       key={index}
                       keys={[
                         'asset',
-                        () => renderValue(volume.received, 'primary'),
-                        () => renderValue(volume.sent, 'error'),
+                        () => renderValue(volume.received, palette.blue.darker),
+                        () => renderValue(volume.sent, palette.red.darker),
                       ]}
                       item={volume}
                     />
