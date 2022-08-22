@@ -13,6 +13,7 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import { Cursor } from '~/src/types/generic';
 import { useTranslation } from 'react-i18next';
 import { LedgerList } from '~/routes/ledgers/list';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 
 export const meta: MetaFunction = () => ({
   title: 'Accounts',
@@ -54,7 +55,10 @@ export default function Index() {
   return (
     <Page id={accountsConfig.id} title={t('pages.accounts.title')}>
       <Form method="get">
-        <LedgerList />
+        {/* TODO remove width when having multiple filter*/}
+        <FiltersBar>
+          <LedgerList />
+        </FiltersBar>
         <AccountList accounts={accounts as Cursor<Account>} />
       </Form>
     </Page>

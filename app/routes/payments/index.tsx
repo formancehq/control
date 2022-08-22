@@ -1,10 +1,9 @@
 import * as React from 'react';
 import type { MetaFunction } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { Page } from '@numaryhq/storybook';
+import { AutocompleteSelect, Page } from '@numaryhq/storybook';
 import { useTranslation } from 'react-i18next';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { MenuItem } from '@mui/material';
 import { Payment, PaymentTypes } from '~/src/types/payment';
 import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
@@ -13,9 +12,10 @@ import { Cursor } from '~/src/types/generic';
 import { buildQuery } from '~/src/components/Wrappers/Search/search';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import { Filters } from '~/src/components/Wrappers/Search/Filters/filters';
-import SelectCheckbox from '~/src/components/Wrappers/Search/Filters/SelectCheckbox/SelectCheckbox';
-import SelectButton from '~/src/components/Wrappers/Search/Filters/SelectButton';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import SelectCheckbox from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/SelectCheckbox';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import { SelectCheckboxItem } from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/types';
 
 const paymentTypes: { value: string; label: string }[] = [
   { value: `type=${PaymentTypes.PAY_IN}`, label: PaymentTypes.PAY_IN },
@@ -60,19 +60,24 @@ export default function Index() {
   return (
     <Page title={t('pages.payments.title')} id={paymentsConfig.id}>
       <Form method="get">
-        <SelectButton label={t('pages.payments.filters.type')}>
-          <>
-            {paymentTypes.map(({ label, value }, index) => (
-              <MenuItem key={index} value={label}>
-                <SelectCheckbox
-                  value={value}
-                  name={Filters.LEDGERS}
-                  label={label}
-                />
-              </MenuItem>
-            ))}
-          </>
-        </SelectButton>
+        <FiltersBar>
+          <AutocompleteSelect
+            noOptionsText={t('common.noResults')}
+            placeholder={t('pages.payments.filters.type')}
+            name="payment-type-autocomplete"
+            multiple
+            id="payment-type-autocomplete"
+            options={paymentTypes as readonly any[]}
+            disableCloseOnSelect
+            getOptionLabel={(option: SelectCheckboxItem) => option.label}
+            renderOption={(props: any, option: SelectCheckboxItem) => (
+              <li {...props}>
+                <SelectCheckbox value={option.label} name={Filters.TERMS} />
+              </li>
+            )}
+            style={{ width: 200 }}
+          />
+        </FiltersBar>
         <PaymentList payments={payments} />
       </Form>
     </Page>

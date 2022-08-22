@@ -2,8 +2,8 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useSearchParams } from '@remix-run/react';
 import { Checkbox, ListItemText } from '@mui/material';
 import { buildQuery } from '~/src/components/Wrappers/Search/search';
-import { SelectCheckboxProps } from '~/src/components/Wrappers/Search/Filters/SelectCheckbox/types';
-import { Filters } from '~/src/components/Wrappers/Search/Filters/filters';
+import { SelectCheckboxProps } from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/types';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import { URLSearchParamsInit } from 'react-router-dom';
 
 const SelectCheckbox: FunctionComponent<SelectCheckboxProps> = ({

@@ -5,12 +5,11 @@ import { LoaderFunction } from '@remix-run/server-runtime';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import { LedgerInfo } from '~/src/types/ledger';
 import { useFetcher } from '@remix-run/react';
-import { MenuItem } from '@mui/material';
-import { Filters } from '~/src/components/Wrappers/Search/Filters/filters';
-import SelectCheckbox from '~/src/components/Wrappers/Search/Filters/SelectCheckbox/SelectCheckbox';
-import SelectButton from '~/src/components/Wrappers/Search/Filters/SelectButton';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import SelectCheckbox from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/SelectCheckbox';
 import { useTranslation } from 'react-i18next';
-import { SelectCheckboxItem } from '~/src/components/Wrappers/Search/Filters/SelectCheckbox/types';
+import { SelectCheckboxItem } from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/types';
+import { AutocompleteSelect } from '@numaryhq/storybook';
 
 export const meta: MetaFunction = () => ({
   title: 'Ledgers',
@@ -43,15 +42,21 @@ export function LedgerList() {
   }, []);
 
   return (
-    <SelectButton label={t('common.filters.ledgers')}>
-      <>
-        {fetcher.data &&
-          fetcher.data.map(({ id, label }) => (
-            <MenuItem key={id} value={label}>
-              <SelectCheckbox value={label} name={Filters.LEDGERS} />
-            </MenuItem>
-          ))}
-      </>
-    </SelectButton>
+    <AutocompleteSelect
+      noOptionsText={t('common.noResults')}
+      placeholder={t('common.filters.ledgers')}
+      name="ledgers-autocomplete"
+      multiple
+      id="ledgers-autocomplete"
+      options={fetcher.data ? (fetcher.data as readonly any[]) : []}
+      disableCloseOnSelect
+      getOptionLabel={(option: SelectCheckboxItem) => option.label}
+      renderOption={(props: any, option: SelectCheckboxItem) => (
+        <li {...props}>
+          <SelectCheckbox value={option.label} name={Filters.LEDGERS} />
+        </li>
+      )}
+      style={{ width: 200 }}
+    />
   );
 }
