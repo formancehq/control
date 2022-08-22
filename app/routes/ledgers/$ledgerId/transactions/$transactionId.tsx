@@ -32,6 +32,7 @@ import Metadata from '~/src/components/Wrappers/Metadata';
 import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import Table from '~/src/components/Wrappers/Table';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import { Box, Typography } from '@mui/material';
 
 const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(
@@ -104,7 +105,26 @@ export default function Index() {
   };
 
   return (
-    <Page id="transaction" title={id}>
+    <Page
+      id="transaction"
+      title={
+        <Box
+          component="span"
+          display="inline-flex"
+          alignItems="center"
+          alignSelf="center"
+        >
+          <Typography variant="h1">{t('pages.transaction.title')}</Typography>
+          <Box
+            sx={{ '& .MuiTypography-money': { fontSize: 24 } }}
+            mt="4px"
+            ml={1}
+          >
+            <Txid id={parseInt(id!)} />
+          </Box>
+        </Box>
+      }
+    >
       <>
         {/* Postings Section */}
         <SectionWrapper title={t('pages.transaction.postings.title')}>
