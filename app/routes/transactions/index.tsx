@@ -13,6 +13,7 @@ import { Cursor } from '~/src/types/generic';
 import { useTranslation } from 'react-i18next';
 import { LedgerList } from '~/routes/ledgers/list';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 
 export const meta: MetaFunction = () => ({
   title: 'Transactions',
@@ -54,7 +55,9 @@ export default function Index() {
   return (
     <Page id={transactionsConfig.id} title={t('pages.transactions.title')}>
       <Form method="get">
-        <LedgerList />
+        <FiltersBar>
+          <LedgerList />
+        </FiltersBar>
         <TransactionList
           transactions={transactions as unknown as Cursor<Transaction>}
           withPagination
