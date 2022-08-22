@@ -124,8 +124,9 @@ const Metadata: FunctionComponent<MetadataProps> = ({
             label: t('common.table.metadata.columnLabel.value'),
           },
         ]}
-        renderItem={(m: MetadataType) => (
+        renderItem={(m: MetadataType, index) => (
           <Row
+            key={index}
             keys={['value']}
             item={m}
             renderActions={() => renderRowActions(m)}
