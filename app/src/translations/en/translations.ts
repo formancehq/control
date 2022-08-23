@@ -209,6 +209,7 @@ export default {
       },
     },
     common: {
+      showMore: 'Show more',
       filters: {
         ledgers: 'Ledgers',
       },
@@ -266,7 +267,8 @@ export default {
         copied: 'Copied! ✔️',
       },
       search: {
-        more: 'More',
+        viewAll: 'View all {{target}}',
+        title: 'Results for "{{value}}" accross ledgers',
       },
       dialog: {
         createTitle: 'Create',

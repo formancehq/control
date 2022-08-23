@@ -7,6 +7,15 @@ import { Box, Typography } from '@mui/material';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { Chip, LoadingButton, Search, Txid } from '@numaryhq/storybook';
+import { SearchTargets } from '~/src/types/search';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import {
+  ACCOUNTS_ROUTE,
+  getRoute,
+  PAYMENTS_ROUTE,
+  TRANSACTIONS_ROUTE,
+} from '~/src/components/Navbar/routes';
 
 const onClick = (id: number | string) => id;
 type Suggestion<T> = {
@@ -65,13 +74,28 @@ const transactions: Suggestion<any> = {
     },
   ],
 };
-
+// TODo improve
 export const SearchBar: FunctionComponent = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  // TODo improve
+  const handleViewAll = (target: SearchTargets, value: string) => {
+    const params = `?terms=${value}&target=${target}&size=15`;
+
+    switch (target) {
+      case SearchTargets.ACCOUNT:
+        return navigate(`${getRoute(ACCOUNTS_ROUTE)}${params}`);
+      case SearchTargets.TRANSACTION:
+        return navigate(`${getRoute(TRANSACTIONS_ROUTE)}${params}`);
+      case SearchTargets.PAYMENT:
+        return navigate(`${getRoute(PAYMENTS_ROUTE)}${params}`);
+      default:
+        return null;
+    }
+  };
 
   const renderChildren = (value: string) => (
     <Box
@@ -83,6 +107,7 @@ export const SearchBar: FunctionComponent = () => {
         borderRadius: '4px',
       }}
     >
+      {/* Left block */}
       <Box
         p={2}
         sx={{
@@ -109,6 +134,7 @@ export const SearchBar: FunctionComponent = () => {
           sx={{ width: 50, marginTop: 2 }}
         />
       </Box>
+      {/* Right block */}
       <Box
         sx={{
           backgroundColor: ({ palette }) => palette.neutral[0],
@@ -119,15 +145,15 @@ export const SearchBar: FunctionComponent = () => {
         }}
       >
         <Typography variant="bold">
-          Result for {value} accross ledgers
+          {t('common.search.title', { value })}
         </Typography>
-        {renderLedger(accounts, 'Account')}
-        {renderLedger(transactions, 'Transaction')}
+        {renderLedger(accounts, SearchTargets.ACCOUNT, value)}
+        {renderLedger(transactions, SearchTargets.TRANSACTION, value)}
       </Box>
     </Box>
   );
 
-  const renderLedger = (data: any, target: string) => (
+  const renderLedger = (data: any, target: SearchTargets, value: string) => (
     <Box mt={1}>
       {data.items.map((item: any, index: number) => (
         <>
@@ -137,15 +163,19 @@ export const SearchBar: FunctionComponent = () => {
               display: 'flex',
               paddingTop: 1,
               paddingBottom: 1,
-              columnGap: '100px',
+              columnGap: '120px',
             }}
           >
             <Chip
-              label={target === 'Account' ? 'Account' : 'Transaction'}
-              color={target === 'Account' ? 'default' : 'blue'}
+              label={
+                target === SearchTargets.ACCOUNT
+                  ? t('pages.account.title')
+                  : t('pages.transactions.title')
+              }
+              color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
               variant="square"
             />
-            {target === 'Account' ? (
+            {target === SearchTargets.ACCOUNT ? (
               <Typography>{item.label}</Typography>
             ) : (
               <Box display="inline-flex" alignItems="center">
@@ -163,8 +193,14 @@ export const SearchBar: FunctionComponent = () => {
         </>
       ))}
       {data.viewAll && (
-        <Box display="flex" justifyContent="center" mt={1} mb={1}>
-          <LoadingButton content={`View all ${target}`} />
+        <Box display="flex" justifyContent="center" mt={2} mb={2}>
+          <LoadingButton
+            variant="stroke"
+            content={`${t('common.search.viewAll', {
+              target: target.toLowerCase(),
+            })}s`}
+            onClick={() => handleViewAll(target, value)}
+          />
         </Box>
       )}
     </Box>
@@ -172,6 +208,7 @@ export const SearchBar: FunctionComponent = () => {
 
   return (
     <Box>
+      {/* TODo add transparent variant ?*/}
       <LoadingButton
         id="search"
         startIcon={<SearchOutlined />}
