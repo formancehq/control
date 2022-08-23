@@ -1,5 +1,4 @@
 import { API_LEDGER, IApiClient } from '~/src/utils/api';
-import { getCurrentLedger } from '~/src/utils/localStorage';
 import { LedgerResources, LedgerSubResources } from '~/src/types/ledger';
 import * as yup from 'yup';
 import i18n from '../../../translations';
@@ -11,12 +10,11 @@ export const submit = async (
   json: string,
   id: string,
   resource: LedgerResources.TRANSACTIONS | LedgerResources.ACCOUNTS,
+  ledger: string,
   api: IApiClient
 ): Promise<boolean | undefined> =>
   await api.postResource<boolean>(
-    `${API_LEDGER}/${getCurrentLedger()}/${resource}/${id}/${
-      LedgerSubResources.METADATA
-    }`,
+    `${API_LEDGER}/${ledger}/${resource}/${id}/${LedgerSubResources.METADATA}`,
     json
   );
 
