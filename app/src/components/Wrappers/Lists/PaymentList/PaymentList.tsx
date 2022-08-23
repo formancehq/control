@@ -9,29 +9,7 @@ import { useTranslation } from 'react-i18next';
 import Table from '~/src/components/Wrappers/Table';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 import { get } from 'lodash';
-
-const providersMap = {
-  stripe: {
-    path: '/images/connectors/stripe.svg',
-    width: 28,
-  },
-  mangopay: {
-    path: '/images/connectors/mangopay.svg',
-    width: 90,
-  },
-  wize: {
-    path: '/images/connectors/wize.svg',
-    width: 'initial',
-  },
-  paypal: {
-    path: '/images/connectors/paypal.svg',
-    width: 30,
-  },
-  devengo: {
-    path: '/images/connectors/devengo.svg',
-    width: 80,
-  },
-};
+import { providersMap } from '~/src/utils/providersMap';
 
 const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
   const navigate = useNavigate();

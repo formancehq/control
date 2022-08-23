@@ -5,24 +5,28 @@ import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { Box, Chip, Divider, Typography } from '@mui/material';
+import { Box, Divider, Tooltip, Typography } from '@mui/material';
 import {
   Date,
   DividerWithSpace,
+  JsonViewer,
   Page,
   Row,
-  Table,
+  Chip,
   theme,
 } from '@numaryhq/storybook';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import StopIcon from '@mui/icons-material/Stop';
-import { JSONTree } from 'react-json-tree';
 import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
 import { API_PAYMENT, ApiClient } from '~/src/utils/api';
 import { copyTokenToClipboard } from '~/src/utils/clipboard';
+import Table from '~/src/components/Wrappers/Table';
+import { get } from 'lodash';
+import { providersMap } from '~/src/utils/providersMap';
+import { LoadingButton } from '@mui/lab';
 
-// this will be deleted when Reconciliation is done
+// TODO remove this when Reconciliation is done
 interface Reconciliation {
   transactionValue: string;
   city: string;
@@ -59,27 +63,25 @@ export const loader: LoaderFunction = async ({ params }) => {
   };
 };
 
-const themeRawData = {
-  base00: theme.palette.neutral[900],
-  base01: theme.palette.neutral[100],
-  base02: theme.palette.neutral[100],
-  base03: theme.palette.neutral[100],
-  base04: theme.palette.neutral[100],
-  base05: theme.palette.neutral[100],
-  base06: theme.palette.neutral[100],
-  base07: theme.palette.neutral[100],
-  base08: theme.palette.default.bright,
-  base09: theme.palette.neutral[900],
-  base0A: theme.palette.yellow.darker,
-  base0B: theme.palette.default.normal,
-  base0C: theme.palette.default.darker,
-  base0D: theme.palette.neutral[0],
-  base0E: theme.palette.default.bright,
-  base0F: theme.palette.default.bright,
-};
+const boxWithCopyToClipboard = (
+  title: string,
+  id: string,
+  color: string,
+  tooltipTitle: string
+) => {
+  const [open, setOpen] = React.useState(false);
+  const copyToClipBoard = () => {
+    handleOpen();
+    copyTokenToClipboard(id);
+  };
 
-const boxWithCopyToClipboard = (title: string, id: string, color: string) => {
-  const copyToClipBoard = () => copyTokenToClipboard(id);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   return (
     <Box
@@ -93,7 +95,7 @@ const boxWithCopyToClipboard = (title: string, id: string, color: string) => {
         backgroundColor: color,
       }}
     >
-      <Typography>{title}</Typography>
+      <Typography variant="bold">{title}</Typography>
       <Box
         sx={{
           display: 'flex',
@@ -102,17 +104,20 @@ const boxWithCopyToClipboard = (title: string, id: string, color: string) => {
         }}
       >
         <Typography noWrap>{id}</Typography>
-        <ContentCopy color="action" onClick={copyToClipBoard} />
+        <Tooltip
+          open={open}
+          onClose={handleClose}
+          // onOpen={handleOpen}
+          title={tooltipTitle}
+        >
+          <LoadingButton id="copyToCliboardWrapper">
+            <ContentCopy color="action" onClick={copyToClipBoard} />
+          </LoadingButton>
+        </Tooltip>
       </Box>
     </Box>
   );
 };
-
-const chipsWithColor = (
-  label: string,
-  backgroundColor: string,
-  color?: string
-) => <Chip label={label} variant="square" sx={{ backgroundColor, color }} />;
 
 const eventsJournalItem = (eventTitle: string, date: string) => (
   <Box
@@ -143,9 +148,10 @@ const dataItem = (title: string, children: ReactElement) => (
       display: 'flex',
       padding: '5px 0 5px 0',
       justifyContent: 'space-between',
+      alignItems: 'center',
     }}
   >
-    <Typography variant="action">{title}:</Typography>
+    <Typography variant="bold">{title}:</Typography>
     <Box
       sx={{
         display: 'flex',
@@ -199,6 +205,7 @@ interface PaymentDetailsLoaderWrap {
 export default function PaymentDetails() {
   const { details } = useLoaderData<PaymentDetailsLoaderWrap>();
   const { t } = useTranslation();
+  const logoAttr = get(providersMap, details.provider);
 
   return (
     <Page
@@ -227,12 +234,18 @@ export default function PaymentDetails() {
           {boxWithCopyToClipboard(
             t('pages.payment.id'),
             details.id,
-            theme.palette.blue.light
+            theme.palette.blue.light,
+            t('pages.payment.copyToClipboardTooltip', {
+              value: 'id',
+            })
           )}
           {boxWithCopyToClipboard(
             t('pages.payment.reference'),
             details.id,
-            theme.palette.violet.light
+            theme.palette.violet.light,
+            t('pages.payment.copyToClipboardTooltip', {
+              value: 'reference',
+            })
           )}
         </Box>
         <DividerWithSpace />
@@ -253,23 +266,26 @@ export default function PaymentDetails() {
           >
             {dataItem(
               t('pages.payment.type'),
-              chipsWithColor(
-                'Pay-in',
-                theme.palette.green.light,
-                theme.palette.green.darker
-              )
+              <Chip color="green" label={details.type} variant="square" />
             )}
             {dataItem(
               t('pages.payment.processor'),
-              <Box sx={{ m: '10px' }}>{details.provider}</Box>
+              <Box
+                sx={{
+                  m: '10px',
+                  '& img': {
+                    marginRight: 1,
+                    width: logoAttr ? logoAttr.width : 'initial',
+                  },
+                }}
+              >
+                {logoAttr && <img src={logoAttr.path} alt={details.provider} />}
+              </Box>
             )}
+
             {dataItem(
               t('pages.payment.status'),
-              chipsWithColor(
-                details.status,
-                theme.palette.green.light,
-                theme.palette.green.darker
-              )
+              <Chip color="green" label={details.status} variant="square" />
             )}
           </Box>
 
@@ -282,11 +298,11 @@ export default function PaymentDetails() {
           >
             {dataItem(
               t('pages.payment.netValue'),
-              <>{details.initialAmount}</>
+              <>{`${details.asset} ${details.initialAmount}`}</>
             )}
             {dataItem(
               t('pages.payment.initialAmount'),
-              <>{details.initialAmount}</>
+              <>{`${details.asset} ${details.initialAmount}`}</>
             )}
           </Box>
         </Box>
@@ -325,15 +341,9 @@ export default function PaymentDetails() {
           {t('pages.payment.reconciliation.subTitle')}
         </Typography>
 
+        {/* TODO replace this when Reconciliation is done */}
+
         <Table
-          labels={{
-            pagination: {
-              showing: 'Showing',
-              separator: '/',
-              results: 'results',
-            },
-            noResults: 'No results',
-          }}
           id="no-result"
           items={[]}
           columns={[
@@ -343,8 +353,6 @@ export default function PaymentDetails() {
           ]}
           withPagination={false}
           withHeader={false}
-          onNext={() => null}
-          onPrevious={() => null}
           renderItem={(reconciliationItem: Reconciliation, index: number) => (
             <Row
               item={reconciliationItem}
@@ -378,19 +386,12 @@ export default function PaymentDetails() {
         <Typography variant="headline">
           {t('pages.payment.metadata')}
         </Typography>
+
+        {/* TODO replace this when Metadata is done */}
+
         <Table
-          labels={{
-            pagination: {
-              showing: 'Showing',
-              separator: '/',
-              results: 'results',
-            },
-            noResults: 'No results',
-          }}
           withPagination={false}
           key={details.id}
-          onNext={() => null}
-          onPrevious={() => null}
           withHeader={false}
           items={[]}
           columns={[
@@ -433,13 +434,14 @@ export default function PaymentDetails() {
         </Typography>
         <Box
           sx={{
+            background: ({ palette }) => palette.neutral[900],
             '& li': {
               fontFamily: ({ typography }) => typography.fontFamily,
               fontSize: ({ typography }) => typography.body1.fontSize,
             },
           }}
         >
-          <JSONTree data={details.raw} theme={themeRawData} />
+          <JsonViewer jsonData={details.raw} />
         </Box>
       </Box>
     </Page>

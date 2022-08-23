@@ -64,6 +64,8 @@ export default {
         title: 'Payments Details',
         stripeBtnTitle: 'View on Stripe dashboard',
         id: 'ID',
+        copyToClipboardTooltip:
+          '{{value}} has successfully been copied to clipboard !',
         reference: 'Reference',
         type: 'Type',
         processor: 'Processor',
