@@ -198,6 +198,7 @@ export default function Index() {
                 transactions={
                   loaderData.transactions as unknown as Cursor<Transaction>
                 }
+                showMore
               />
             )}
           </>
