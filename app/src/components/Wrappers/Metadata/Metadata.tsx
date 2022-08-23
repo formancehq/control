@@ -21,6 +21,7 @@ import {
   submit,
 } from '~/src/components/Wrappers/Metadata/service';
 import { Box } from '@mui/material';
+import { useParams } from 'react-router-dom';
 
 const Metadata: FunctionComponent<MetadataProps> = ({
   metadata,
@@ -38,11 +39,14 @@ const Metadata: FunctionComponent<MetadataProps> = ({
     control,
     trigger,
   } = useForm<FormInput>({ resolver: yupResolver(schema), mode: 'onChange' });
-
+  const { ledgerId } = useParams<{
+    ledgerId: string;
+  }>();
+  // TODO use it with FunctionAction from remix
   const onSave = async () => {
     const validated = await trigger('json');
     if (validated) {
-      await submit(JSON.parse(getValues('json')), id, resource, api);
+      await submit(JSON.parse(getValues('json')), id, resource, ledgerId!, api);
       sync();
     }
   };
