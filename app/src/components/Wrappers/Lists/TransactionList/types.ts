@@ -5,4 +5,5 @@ export type TransactionListProps = {
   transactions: Cursor<Transaction>;
   withPagination: boolean;
   paginationSize?: number;
+  showMore?: boolean;
 };

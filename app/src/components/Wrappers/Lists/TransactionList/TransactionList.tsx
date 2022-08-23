@@ -6,8 +6,10 @@ import { Cursor } from '~/src/types/generic';
 import {
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
+  getRoute,
+  TRANSACTIONS_ROUTE,
 } from '~/src/components/Navbar/routes';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Amount,
   Date,
@@ -20,6 +22,7 @@ import { ArrowRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import Table from '~/src/components/Wrappers/Table';
 import { Box } from '@mui/material';
+import { SearchTargets } from '~/src/types/search';
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
@@ -39,10 +42,14 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   transactions,
   withPagination,
   paginationSize = 15,
+  showMore = false,
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const transactionsNormalized = normalize(transactions);
+  const { accountId } = useParams<{
+    accountId: string;
+  }>();
 
   const handleAction = (transaction: TransactionHybrid) =>
     navigate(
@@ -52,6 +59,15 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   const handleSourceDestinationAction = (id: string, ledger: string) => {
     navigate(getLedgerAccountDetailsRoute(id, ledger));
   };
+
+  const handleShowMore = () =>
+    navigate(
+      `${getRoute(
+        TRANSACTIONS_ROUTE
+      )}?terms=${`destination=${accountId!}`}&terms=${`source=${accountId!}`}&target=${
+        SearchTargets.TRANSACTION
+      }&size=15`
+    );
 
   const renderRowActions = (transaction: TransactionHybrid) => (
     <Box key={transaction.txid} component="span">
@@ -153,6 +169,15 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           );
         }}
       />
+      {showMore && (
+        <Box display="flex" justifyContent="flex-end" mt={1}>
+          <LoadingButton
+            variant="stroke"
+            content={t('common.showMore')}
+            onClick={handleShowMore}
+          />
+        </Box>
+      )}
     </>
   );
 };
