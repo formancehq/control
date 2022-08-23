@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { MetadataProps } from './types';
 import {
+  JsonViewer,
   LoadingButton,
   Row,
   SectionWrapper,
@@ -59,80 +60,88 @@ const Metadata: FunctionComponent<MetadataProps> = ({
   };
 
   const renderRowActions = (metadata: MetadataType) => (
-    <Modal
-      button={{
-        id: `edit-${id}-button`,
-        onClick: () => {
-          setValue('json', `${metadata.value}`, {
-            shouldValidate: true,
-          });
-        },
-        endIcon: <Edit />,
-      }}
-      modal={{
-        PaperProps: { sx: { minWidth: '500px' } },
-        title: t('common.dialog.updateTitle'),
-        actions: {
-          cancel: {
-            onClick: noop,
-            label: t('common.dialog.cancelButton'),
+    <div>
+      <Modal
+        button={{
+          id: `edit-${id}-button`,
+          onClick: () => {
+            setValue('json', `${metadata.value}`, {
+              shouldValidate: true,
+            });
           },
-          save: {
-            onClick: onSave,
-            label: t('common.dialog.saveButton'),
-            disabled: !!errors.json,
+          endIcon: <Edit />,
+        }}
+        modal={{
+          PaperProps: { sx: { minWidth: '500px' } },
+          title: t('common.dialog.updateTitle'),
+          actions: {
+            cancel: {
+              onClick: noop,
+              label: t('common.dialog.cancelButton'),
+            },
+            save: {
+              onClick: onSave,
+              label: t('common.dialog.saveButton'),
+              disabled: !!errors.json,
+            },
           },
-        },
-      }}
-    >
-      <form>
-        <Box display="flex" justifyContent="end" mb={1}>
-          <LoadingButton
-            startIcon={<LocalFlorist />}
-            content={t('common.forms.metadata.json.prettify')}
-            onClick={handlePrettify}
-            variant="stroke"
-          />
-        </Box>
-        <Controller
-          name="json"
-          control={control}
-          render={({ field }) => (
-            <TextArea
-              {...field}
-              aria-label="text-area"
-              minRows={10}
-              error={!!errors.json}
-              errorMessage={errors.json?.message}
-              placeholder={t('common.forms.metadata.json.placeholder')}
+        }}
+      >
+        <form>
+          <Box display="flex" justifyContent="end" mb={1}>
+            <LoadingButton
+              startIcon={<LocalFlorist />}
+              content={t('common.forms.metadata.json.prettify')}
+              onClick={handlePrettify}
+              variant="stroke"
             />
-          )}
-        />
-      </form>
-    </Modal>
+          </Box>
+          <Controller
+            name="json"
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                {...field}
+                aria-label="text-area"
+                minRows={10}
+                error={!!errors.json}
+                errorMessage={errors.json?.message}
+                placeholder={t('common.forms.metadata.json.placeholder')}
+              />
+            )}
+          />
+        </form>
+      </Modal>
+    </div>
   );
 
   return (
     <SectionWrapper title={title}>
-      <Table
-        withPagination={false}
-        items={metadata}
-        action={true}
-        columns={[
-          {
-            key: 'metadata.value',
-            label: t('common.table.metadata.columnLabel.value'),
-          },
-        ]}
-        renderItem={(m: MetadataType, index) => (
-          <Row
-            key={index}
-            keys={['value']}
-            item={m}
-            renderActions={() => renderRowActions(m)}
-          />
-        )}
-      />
+      <Box
+        sx={{
+          '& td': { background: ({ palette }) => palette.neutral[900] },
+        }}
+      >
+        <Table
+          withPagination={false}
+          items={metadata}
+          action={true}
+          columns={[
+            {
+              key: 'metadata.value',
+              label: t('common.table.metadata.columnLabel.value'),
+            },
+          ]}
+          renderItem={(metadataItem: MetadataType, index) => (
+            <Row
+              key={index}
+              keys={[<JsonViewer key={index} jsonData={metadataItem.value} />]}
+              item={metadataItem}
+              renderActions={() => renderRowActions(metadataItem)}
+            />
+          )}
+        />
+      </Box>
     </SectionWrapper>
   );
 };
