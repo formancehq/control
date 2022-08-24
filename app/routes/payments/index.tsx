@@ -9,7 +9,7 @@ import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
 import { API_SEARCH, ApiClient } from '~/src/utils/api';
 import { Cursor } from '~/src/types/generic';
-import { buildQuery } from '~/src/components/Wrappers/Search/search';
+import { buildQuery } from '~/src/utils/search';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';

@@ -172,6 +172,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
       {showMore && (
         <Box display="flex" justifyContent="flex-end" mt={1}>
           <LoadingButton
+            id="show-more"
             variant="stroke"
             content={t('common.showMore')}
             onClick={handleShowMore}

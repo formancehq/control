@@ -6,7 +6,7 @@ import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { API_SEARCH, ApiClient } from '~/src/utils/api';
 import { Transaction } from '~/src/types/ledger';
-import { buildQuery } from '~/src/components/Wrappers/Search/search';
+import { buildQuery } from '~/src/utils/search';
 import { transactions as transactionsConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { Cursor } from '~/src/types/generic';
