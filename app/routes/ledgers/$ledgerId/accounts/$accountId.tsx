@@ -115,7 +115,25 @@ export default function Index() {
   );
 
   return (
-    <Page id="account" title={t('pages.account.title')}>
+    <Page
+      id="account"
+      title={
+        <Box
+          component="span"
+          display="inline-flex"
+          alignItems="center"
+          alignSelf="center"
+        >
+          <Typography variant="h1">{t('pages.account.title')}</Typography>
+          <Typography
+            variant="h2"
+            sx={{ color: ({ palette }) => palette.neutral[600], ml: 1 }}
+          >
+            {id}
+          </Typography>
+        </Box>
+      }
+    >
       <>
         <Box display="flex" justifyContent="space-between" mb={3}>
           {/* Balances Section */}

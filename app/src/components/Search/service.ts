@@ -67,7 +67,7 @@ const normalizeTransactions = (
   items: transactions.map((transaction) => ({
     id: `${transaction.txid}`,
     label: `${transaction.txid}`,
-    source: 'test',
+    source: transaction.postings[0].source,
     ledger: transaction.ledger,
     onClick: (t: Transaction) => t,
   })),
