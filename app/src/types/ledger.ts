@@ -9,8 +9,6 @@ export enum LedgerSubResources {
   METADATA = 'metadata',
 }
 
-export type Metadata = { value: any };
-
 export type LedgerGetResourceData = {
   cursor: Cursor<any>;
   err: any;

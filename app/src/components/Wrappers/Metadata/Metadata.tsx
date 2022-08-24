@@ -3,7 +3,6 @@ import { MetadataProps } from './types';
 import {
   JsonViewer,
   LoadingButton,
-  Row,
   SectionWrapper,
   TextArea,
 } from '@numaryhq/storybook';
@@ -22,7 +21,6 @@ import {
   submit,
 } from '~/src/components/Wrappers/Metadata/service';
 import { Box } from '@mui/material';
-import Table from '~/src/components/Wrappers/Table';
 
 const Metadata: FunctionComponent<MetadataProps> = ({
   metadata,
@@ -60,7 +58,7 @@ const Metadata: FunctionComponent<MetadataProps> = ({
   };
 
   const renderRowActions = (metadata: MetadataType) => (
-    <div>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
       <Modal
         button={{
           id: `edit-${id}-button`,
@@ -69,6 +67,7 @@ const Metadata: FunctionComponent<MetadataProps> = ({
               shouldValidate: true,
             });
           },
+          variant: 'dark',
           endIcon: <Edit />,
         }}
         modal={{
@@ -112,35 +111,31 @@ const Metadata: FunctionComponent<MetadataProps> = ({
           />
         </form>
       </Modal>
-    </div>
+    </Box>
   );
 
   return (
     <SectionWrapper title={title}>
       <Box
         sx={{
-          '& td': { background: ({ palette }) => palette.neutral[900] },
+          display: 'flex',
+          background: ({ palette }) => palette.neutral[900],
+          justifyContent: 'space-between',
+          alignItems: 'self-start',
+          p: '20px',
+          '& ul': {
+            marginTop: '0px !important',
+          },
+          '& li': {
+            fontFamily: ({ typography }) => typography.fontFamily,
+            fontSize: ({ typography }) => typography.body1.fontSize,
+          },
         }}
       >
-        <Table
-          withPagination={false}
-          items={metadata}
-          action={true}
-          columns={[
-            {
-              key: 'metadata.value',
-              label: t('common.table.metadata.columnLabel.value'),
-            },
-          ]}
-          renderItem={(metadataItem: MetadataType, index) => (
-            <Row
-              key={index}
-              keys={[<JsonViewer key={index} jsonData={metadataItem.value} />]}
-              item={metadataItem}
-              renderActions={() => renderRowActions(metadataItem)}
-            />
-          )}
+        <JsonViewer
+          jsonData={[{ value: { metadata1: '250', metadata2: '350' } }]}
         />
+        {renderRowActions(metadata)}
       </Box>
     </SectionWrapper>
   );
