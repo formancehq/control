@@ -33,7 +33,7 @@ import {
   getSuggestions,
   suggestionsFactory,
 } from '~/src/components/Search/service';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 
 // TODo improve
 const Search: FunctionComponent = () => {
@@ -55,22 +55,26 @@ const Search: FunctionComponent = () => {
   >();
   const { api } = useService();
 
-  // TODO remove when Search storybook component will not be wrapped by a form
-  const handleOnChange = (e: any) => {
+  const handleOnKeyDown = (e: any) => {
     const value = e.target.value;
+    if (e.keyCode === 27) {
+      setSuggestions(undefined);
+      setValue(undefined);
+      handleClose();
+    }
     if (value.length > 2) {
-      setValue(value);
+      if (e.keyCode === 13) {
+        setValue(value);
+      }
     }
   };
-  // TODO uncomment when Search storybook component will not be wrapped by a form
-  // const handleOnKeyDown = (e: any) => {
-  //   const value = e.target.value;
-  //   if (value.length > 2) {
-  //     if (e.keyCode === 13) {
-  //       setValue(value);
-  //     }
-  //   }
-  // };
+
+  const handleOnChange = (e: any) => {
+    const value = e.target.value;
+    if (isEmpty(value)) {
+      setSuggestions(undefined);
+    }
+  };
 
   const handleTargetChange = (target: SearchTarget) => {
     setTarget(target);
@@ -270,8 +274,8 @@ const Search: FunctionComponent = () => {
       />
       <SbSearch
         open={open}
+        onKeyDown={handleOnKeyDown}
         onChange={handleOnChange}
-        // onKeyDown={handleOnKeyDown}
         onClose={handleClose}
         renderChildren={(value) => {
           if (value) {
