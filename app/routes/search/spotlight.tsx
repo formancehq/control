@@ -16,6 +16,8 @@ import {
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
 } from '~/src/components/Navbar/routes';
+import { ActionFunction, MetaFunction } from '@remix-run/node';
+import { useSubmit } from '@remix-run/react';
 
 const onClick = (id: number | string) => id;
 type Suggestion<T> = {
@@ -74,6 +76,16 @@ const transactions: Suggestion<any> = {
     },
   ],
 };
+
+export const meta: MetaFunction = () => ({
+  title: 'Ledgers',
+  description: 'Get a list',
+});
+
+export const action: ActionFunction = async ({ request }) => {
+  console.log('do something');
+};
+
 // TODo improve
 export const SearchBar: FunctionComponent = () => {
   const [open, setOpen] = useState(false);
@@ -81,6 +93,13 @@ export const SearchBar: FunctionComponent = () => {
   const handleClose = () => setOpen(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const submit = useSubmit();
+
+  const handleOnKeyDown = (e: any) => {
+    if (e.keyCode === 13) {
+      submit(e.target, { replace: true });
+    }
+  };
 
   const handleViewAll = (target: SearchTargets, value: string) => {
     const params = `?terms=${value}&target=${target}&size=15`;
@@ -119,18 +138,15 @@ export const SearchBar: FunctionComponent = () => {
         }}
       >
         <LoadingButton
+          id="ledgers"
           variant="dark"
           startIcon={<AccountBalance />}
           sx={{ width: 50, marginTop: 2 }}
         />
         <LoadingButton
+          id="payments"
           variant="stroke"
           startIcon={<CreditCard />}
-          sx={{ width: 50, marginTop: 2 }}
-        />
-        <LoadingButton
-          variant="stroke"
-          content={<Typography variant="bold">R</Typography>}
           sx={{ width: 50, marginTop: 2 }}
         />
       </Box>
@@ -156,41 +172,39 @@ export const SearchBar: FunctionComponent = () => {
   const renderLedger = (data: any, target: SearchTargets, value: string) => (
     <Box mt={1}>
       {data.items.map((item: any, index: number) => (
-        <>
-          <Box
-            key={index}
-            sx={{
-              display: 'flex',
-              paddingTop: 1,
-              paddingBottom: 1,
-              columnGap: '120px',
-            }}
-          >
-            <Chip
-              label={
-                target === SearchTargets.ACCOUNT
-                  ? t('pages.account.title')
-                  : t('pages.transactions.title')
-              }
-              color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
-              variant="square"
-            />
-            {target === SearchTargets.ACCOUNT ? (
-              <Typography>{item.label}</Typography>
-            ) : (
-              <Box display="inline-flex" alignItems="center">
-                <Txid id={item.label} />
-                <Typography ml={1}>{item.source}</Typography>
-              </Box>
-            )}
-            <Chip
-              label={item.ledger}
-              variant="square"
-              icon={<AccountBalance fontSize="small" />}
-              sx={{ '& .MuiChip-icon': ({ palette }) => palette.neutral[300] }}
-            />
-          </Box>
-        </>
+        <Box
+          key={index}
+          sx={{
+            display: 'flex',
+            paddingTop: 1,
+            paddingBottom: 1,
+            columnGap: '120px',
+          }}
+        >
+          <Chip
+            label={
+              target === SearchTargets.ACCOUNT
+                ? t('pages.account.title')
+                : t('pages.transactions.title')
+            }
+            color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
+            variant="square"
+          />
+          {target === SearchTargets.ACCOUNT ? (
+            <Typography>{item.label}</Typography>
+          ) : (
+            <Box display="inline-flex" alignItems="center">
+              <Txid id={item.label} />
+              <Typography ml={1}>{item.source}</Typography>
+            </Box>
+          )}
+          <Chip
+            label={item.ledger}
+            variant="square"
+            icon={<AccountBalance fontSize="small" />}
+            sx={{ '& .MuiChip-icon': ({ palette }) => palette.neutral[300] }}
+          />
+        </Box>
       ))}
       {data.viewAll && (
         <Box display="flex" justifyContent="center" mt={2} mb={2}>
@@ -217,6 +231,7 @@ export const SearchBar: FunctionComponent = () => {
       />
       <Search
         open={open}
+        onKeyDown={handleOnKeyDown}
         onClose={handleClose}
         renderChildren={(value) => renderChildren(value)}
       />

@@ -7,7 +7,7 @@ import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { API_SEARCH, ApiClient } from '~/src/utils/api';
 import { Account } from '~/src/types/ledger';
-import { buildQuery } from '~/src/components/Wrappers/Search/search';
+import { buildQuery } from '~/src/utils/search';
 import { accounts as accountsConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { Cursor } from '~/src/types/generic';

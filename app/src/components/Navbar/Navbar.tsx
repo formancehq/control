@@ -5,7 +5,7 @@ import { isArray } from 'lodash';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { routerConfig } from '~/src/components/Navbar/routes';
 import { useTranslation } from 'react-i18next';
-import SearchBar from '~/src/components/Wrappers/Search/SearchBar';
+import SearchBar from '~/routes/search/spotlight';
 
 const Navbar: FunctionComponent = () => {
   const navigate = useNavigate();
