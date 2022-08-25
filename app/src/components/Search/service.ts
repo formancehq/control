@@ -10,11 +10,13 @@ import { Account, Transaction } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
 import { Cursor } from '~/src/types/generic';
 import { API_SEARCH, IApiClient } from '~/src/utils/api';
+import i18n from './../../translations';
 
-function normalize<T>(items: Array<T>, total: number) {
+function normalize<T>(items: Array<T>, total: number, targetLabel: string) {
   return {
     viewAll: total > 3,
     items: [],
+    targetLabel: i18n.t(targetLabel),
   };
 }
 
@@ -22,11 +24,11 @@ const normalizeAccounts = (
   accounts: Account[],
   total: number
 ): Suggestion<Account, { ledger: string }> => ({
-  ...normalize(accounts, total),
+  ...normalize(accounts, total, 'common.search.targets.account'),
   items: accounts.map((account) => ({
     id: account.address,
     label: account.address,
-    ledger: account.ledger,
+    ledger: account.ledger || 'main-production',
     onClick: (a: Account) => a,
   })),
 });
@@ -35,7 +37,7 @@ const normalizePayments = (
   payments: Payment[],
   total: number
 ): PaymentSuggestions => ({
-  ...normalize(payments, total),
+  ...normalize(payments, total, 'common.search.targets.payment'),
   items: payments.map((payment) => ({
     id: payment.id,
     label: payment.reference,
@@ -63,12 +65,12 @@ const normalizeTransactions = (
   transactions: Transaction[],
   total: number
 ): TransactionsSuggestions => ({
-  ...normalize(transactions, total),
+  ...normalize(transactions, total, 'common.search.targets.transaction'),
   items: transactions.map((transaction) => ({
     id: `${transaction.txid}`,
     label: `${transaction.txid}`,
     source: transaction.postings[0].source,
-    ledger: transaction.ledger,
+    ledger: transaction.ledger || 'main-production-1234',
     onClick: (t: Transaction) => t,
   })),
 });
@@ -86,6 +88,6 @@ export function suggestionsFactory(
     case SearchTargets.PAYMENT:
       return normalizePayments(suggestions as Payment[], total);
     default:
-      return normalize(suggestions as any, total);
+      return normalize(suggestions as any, total, '');
   }
 }

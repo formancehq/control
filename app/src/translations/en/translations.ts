@@ -161,6 +161,7 @@ export default {
         table: {
           columnLabel: {
             address: 'Address',
+            ledger: 'Ledger',
           },
         },
         filters: {},
@@ -176,6 +177,7 @@ export default {
             value: 'Value',
             source: 'Source',
             destination: 'Destination',
+            ledger: 'Ledger',
             date: 'Date',
             actions: 'Actions',
           },
@@ -254,7 +256,6 @@ export default {
             value: 'Value',
           },
         },
-        search: 'Search',
         pagination: {
           showing: 'Showing',
           results: 'results',
@@ -269,6 +270,12 @@ export default {
       search: {
         viewAll: 'View all {{target}}',
         title: 'Results for "{{value}}" accross ledgers',
+        placeholder: 'Search anything',
+        targets: {
+          account: 'Account',
+          transaction: 'Transaction',
+          payment: 'Payment',
+        },
       },
       dialog: {
         createTitle: 'Create',

@@ -3,7 +3,7 @@ import {
   CreditCard,
   SearchOutlined,
 } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import * as React from 'react';
 import { FunctionComponent, useEffect, useState } from 'react';
 import {
@@ -18,13 +18,17 @@ import {
   SearchResource,
   SearchTarget,
   SearchTargets,
+  SuggestionItem,
   TransactionsSuggestions,
 } from '~/src/types/search';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   ACCOUNTS_ROUTE,
+  getLedgerAccountDetailsRoute,
+  getLedgerTransactionDetailsRoute,
   getRoute,
+  PAYMENT_ROUTE,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
 } from '~/src/components/Navbar/routes';
@@ -34,12 +38,11 @@ import {
   suggestionsFactory,
 } from '~/src/components/Search/service';
 import { get, isEmpty } from 'lodash';
+import { useOpen } from '~/src/hooks/useOpen';
 
 // TODo improve
 const Search: FunctionComponent = () => {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [open, handleOpen, handleClose] = useOpen();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [value, setValue] = useState<string>();
@@ -78,6 +81,7 @@ const Search: FunctionComponent = () => {
 
   const handleTargetChange = (target: SearchTarget) => {
     setTarget(target);
+    setSuggestions(undefined);
   };
 
   useEffect(() => {
@@ -142,12 +146,30 @@ const Search: FunctionComponent = () => {
     }
   };
 
+  const handleOnClick = (item: SuggestionItem<any>, target: SearchTarget) => {
+    handleClose();
+    switch (target) {
+      case SearchTargets.ACCOUNT:
+        return navigate(
+          getLedgerAccountDetailsRoute(item.id, get(item, 'ledger'))
+        );
+      case SearchTargets.TRANSACTION:
+        return navigate(
+          getLedgerTransactionDetailsRoute(item.id, get(item, 'ledger'))
+        );
+      case SearchTargets.PAYMENT:
+        return navigate(getRoute(PAYMENT_ROUTE, item.id));
+      default:
+        return null;
+    }
+  };
+
   const renderChildren = (value: string) => (
     <Box
       sx={{
         overflowY: 'auto',
         display: 'flex',
-        width: 800,
+        width: 900,
         mt: 2,
         borderRadius: '4px',
       }}
@@ -184,7 +206,7 @@ const Search: FunctionComponent = () => {
       <Box
         sx={{
           backgroundColor: ({ palette }) => palette.neutral[0],
-          width: 740,
+          width: 800,
           height: 400,
           p: 2,
           overflowY: 'auto',
@@ -196,15 +218,22 @@ const Search: FunctionComponent = () => {
         {suggestions && (
           <>
             {/* TODO avoid lodash get cheat for wrong type*/}
-            {renderLedger(
-              get(suggestions, 'accounts'),
-              SearchTargets.ACCOUNT,
-              value
+            {target === SearchTargets.LEDGER && (
+              <>
+                {renderSuggestion(
+                  get(suggestions, 'accounts'),
+                  SearchTargets.ACCOUNT,
+                  value
+                )}
+                {renderSuggestion(
+                  get(suggestions, 'transactions'),
+                  SearchTargets.TRANSACTION,
+                  value
+                )}
+              </>
             )}
-            {renderLedger(
-              get(suggestions, 'transactions'),
-              SearchTargets.TRANSACTION,
-              value
+            {target !== SearchTargets.LEDGER && (
+              <>{renderSuggestion(suggestions, target, value)}</>
             )}
           </>
         )}
@@ -212,45 +241,58 @@ const Search: FunctionComponent = () => {
     </Box>
   );
 
-  const renderLedger = (data: any, target: SearchTargets, value: string) => (
-    <Box mt={1}>
+  //todo type
+  const renderSuggestion = (
+    data: any,
+    target: SearchTargets,
+    value: string
+  ) => (
+    <Box mt={3}>
       {data.items.map((item: any, index: number) => (
-        <Box
+        <Grid
+          container
           key={index}
-          sx={{
-            display: 'flex',
-            paddingTop: 1,
-            paddingBottom: 1,
-            columnGap: '120px',
-          }}
+          onClick={() => handleOnClick(item, target)}
+          mt={2}
+          mb={2}
+          sx={{ cursor: 'pointer' }}
         >
-          <Chip
-            label={
-              target === SearchTargets.ACCOUNT
-                ? t('pages.account.title')
-                : t('pages.transactions.title')
-            }
-            color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
-            variant="square"
-          />
-          {target === SearchTargets.ACCOUNT ? (
-            <Typography>{item.label}</Typography>
-          ) : (
-            <Box display="inline-flex" alignItems="center">
-              <Txid id={item.label} />
-              <Typography ml={1}>{item.source}</Typography>
-            </Box>
-          )}
-          <Chip
-            label={item.ledger}
-            variant="square"
-            icon={<AccountBalance fontSize="small" />}
-            sx={{ '& .MuiChip-icon': ({ palette }) => palette.neutral[300] }}
-          />
-        </Box>
+          <Grid item xs={3}>
+            <Chip
+              label={data.targetLabel}
+              color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
+              variant="square"
+            />
+          </Grid>
+          <Grid item xs={5}>
+            {item.source ? (
+              <Box display="inline-flex" alignItems="center">
+                <Txid id={item.label} />
+                <Typography ml={1}>{item.source}</Typography>
+              </Box>
+            ) : (
+              <Typography>{item.label}</Typography>
+            )}
+          </Grid>
+          <Grid item xs={4}>
+            {item.ledger && (
+              <Chip
+                label={item.ledger}
+                variant="square"
+                icon={<AccountBalance fontSize="small" />}
+                sx={{
+                  '& .MuiChip-icon': ({ palette }) => palette.neutral[300],
+                  display: 'flex',
+                  float: 'right',
+                }}
+              />
+            )}
+          </Grid>
+        </Grid>
       ))}
+
       {data.viewAll && (
-        <Box display="flex" justifyContent="center" mt={2} mb={2}>
+        <Box display="flex" justifyContent="center" mt={2} mb={4}>
           <LoadingButton
             variant="stroke"
             content={`${t('common.search.viewAll', {
@@ -274,6 +316,9 @@ const Search: FunctionComponent = () => {
       />
       <SbSearch
         open={open}
+        placeholder={t('common.search.placeholder')}
+        name="terms"
+        required={true}
         onKeyDown={handleOnKeyDown}
         onChange={handleOnChange}
         onClose={handleClose}

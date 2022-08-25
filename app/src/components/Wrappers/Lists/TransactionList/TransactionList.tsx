@@ -12,6 +12,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Amount,
+  Chip,
   Date,
   LoadingButton,
   Row,
@@ -103,6 +104,11 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
             key: 'destination',
             label: t('pages.transactions.table.columnLabel.destination'),
           },
+
+          {
+            key: 'ledger',
+            label: t('pages.transactions.table.columnLabel.ledger'),
+          },
           {
             key: 'date',
             label: t('pages.transactions.table.columnLabel.date'),
@@ -157,6 +163,12 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
                       transaction.ledger
                     )
                   }
+                />,
+                <Chip
+                  key={index}
+                  label={transaction.ledger}
+                  variant="square"
+                  color="brown"
                 />,
                 <Date
                   key={transaction.txid}
