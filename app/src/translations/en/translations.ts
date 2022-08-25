@@ -50,6 +50,21 @@ export default {
         tasks: 'Tasks',
         subtitle: 'We hope all is well and you have a great day',
         hello: 'Hello !',
+        setUp: {
+          sectionTitle: 'Set-up',
+          connexion: {
+            title: 'Add Connection',
+            description:
+              'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+            buttonText: 'Go to connectors',
+          },
+          ledger: {
+            title: 'Submit Ledger Transactions ',
+            description:
+              'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+            buttonText: 'Add Ledger Transaction',
+          },
+        },
         stats: {
           transactions: 'Transactions',
           accounts: 'Accounts',
