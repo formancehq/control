@@ -1,10 +1,16 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import type { MetaFunction } from '@remix-run/node';
-import { Box, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { overview } from '~/src/components/Navbar/routes';
-import { Page, StatsCard } from '@numaryhq/storybook';
-import { AccountBalanceWallet, Topic } from '@mui/icons-material';
+import {
+  OnBoarding,
+  Page,
+  StatsCard,
+  theme,
+  TitleWithBar,
+} from '@numaryhq/storybook';
+import { AccountBalanceWallet, Add, Topic } from '@mui/icons-material';
 import { API_LEDGER } from '~/src/utils/api';
 import { getCurrentLedger } from '~/src/utils/localStorage';
 import { useService } from '~/src/hooks/useService';
@@ -106,9 +112,10 @@ export default function Index() {
               {/*</Box>*/}
               {/*  STATUS */}
               <Box mt={5}>
-                <Typography variant="h1" color="secondary">
-                  {t('pages.overview.status')}
-                </Typography>
+                <TitleWithBar
+                  title={t('pages.overview.status')}
+                  titleColor={theme.palette.neutral[0]}
+                />
                 <Box mt={3} display="flex" data-testid="stats-card">
                   <Box mr={3}>
                     <StatsCard
@@ -132,8 +139,41 @@ export default function Index() {
           </Page>
         </Box>
       </Box>
+      {/* SET-UP */}
+      <Page
+        title={<TitleWithBar title={t('pages.overview.setUp.sectionTitle')} />}
+        id="tasks"
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <OnBoarding
+            title={t('pages.overview.setUp.connexion.title')}
+            description={t('pages.overview.setUp.connexion.description')}
+          >
+            <Button variant="outlined" sx={{ mt: '12px' }} startIcon={<Add />}>
+              {t('pages.overview.setUp.connexion.buttonText')}
+            </Button>
+          </OnBoarding>
+          <OnBoarding
+            title={t('pages.overview.setUp.ledger.title')}
+            description={t('pages.overview.setUp.ledger.description')}
+          >
+            <Button variant="outlined" sx={{ mt: '12px' }} startIcon={<Add />}>
+              {t('pages.overview.setUp.ledger.buttonText')}
+            </Button>
+          </OnBoarding>
+        </Box>
+      </Page>
+
       {/*  TASKS */}
-      <Page title="Tasks" id="tasks">
+      <Page
+        title={<TitleWithBar title={t('pages.overview.tasks')} />}
+        id="tasks"
+      >
         <></>
       </Page>
     </>
