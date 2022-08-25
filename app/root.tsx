@@ -9,7 +9,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
   useLoaderData,
 } from '@remix-run/react';
 import { withEmotionCache } from '@emotion/react';
@@ -19,11 +18,10 @@ import {
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
-import { camelCase, get } from 'lodash';
 import { LoadingButton, theme } from '@numaryhq/storybook';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import Layout from '~/src/components/Layout';
-import { ApiClient, errorsMap } from '~/src/utils/api';
+import { ApiClient } from '~/src/utils/api';
 import { ServiceContext } from '~/src/contexts/service';
 import styles from './root.css';
 import { Home } from '@mui/icons-material';
@@ -31,6 +29,7 @@ import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
+import { useService } from '~/src/hooks/useService';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -201,28 +200,12 @@ export default function App() {
 export function ErrorBoundary({ error }: { error: Error }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  console.error('root -', error);
+  const { api } = useService();
+  api.throwError(error, 'app/root', undefined);
 
   return (
     <Document title="Error!">
       <Layout>{renderError(navigate, t)}</Layout>
-    </Document>
-  );
-}
-
-// https://remix.run/docs/en/v1/api/conventions#catchboundary
-export function CatchBoundary() {
-  const caught = useCatch();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-
-  const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));
-  const message = t(`common.boundaries.errorState.${error}.title`);
-  const description = t(`common.boundaries.errorState.${error}.description`);
-
-  return (
-    <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>{renderError(navigate, t, message, description)}</Layout>
     </Document>
   );
 }

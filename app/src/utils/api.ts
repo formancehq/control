@@ -24,6 +24,7 @@ export interface IApiClient {
     path?: string
   ) => Promise<T | undefined>;
   getResource: <T>(params: string, path?: string) => Promise<T | undefined>;
+  throwError: (stack?: any, from?: string, response?: Response) => Error;
 }
 
 export class ApiClient implements IApiClient {
@@ -41,11 +42,20 @@ export class ApiClient implements IApiClient {
     }
   }
 
-  private static throwError(code = 422): Error {
-    const error = get(errorsMap, code, errorsMap['422']);
-    console.error('api -', error);
+  throwError(stack?: any, from?: string, response?: Response): Error {
+    const e = get(errorsMap, response?.status || 422, errorsMap['422']);
+    console.error({
+      from: from || 'utils/api',
+      response: {
+        status: response?.status,
+        message: response?.statusText,
+        url: response?.url,
+      },
+      stack,
+      page: typeof window !== 'undefined' ? window.location : '',
+    });
 
-    throw new Error(error);
+    throw new Error(e);
   }
 
   public decorateUrl(uri: string): string {
@@ -74,9 +84,10 @@ export class ApiClient implements IApiClient {
   ): Promise<T | undefined> {
     let data: T | undefined = undefined;
     let res: Response | undefined = undefined;
+    const uri = this.decorateUrl(params);
     try {
       if (body) {
-        res = await fetch(this.decorateUrl(params), {
+        res = await fetch(uri, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
@@ -91,11 +102,11 @@ export class ApiClient implements IApiClient {
 
       data = path ? get(json, path) : json;
     } catch (e) {
-      ApiClient.throwError(res?.status);
+      this.throwError(e, undefined, res);
     }
 
     if (!data && res && res.status !== 204) {
-      ApiClient.throwError(res.status);
+      this.throwError(undefined, undefined, res);
     }
 
     if (data) {
