@@ -4,18 +4,19 @@ import Navbar from '~/src/components/Navbar';
 import { LayoutProps } from '~/src/components/Layout/types';
 import { Breadcrumbs } from '@numaryhq/storybook';
 import { useMatch, useParams } from 'react-router-dom';
+import { useNavigate } from 'remix';
+import { breadcrumbsFactory } from '~/src/components/Layout/service';
 
 const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   const params = useParams();
-  const target = params.accountId ? 'accounts' : 'transactions';
-  const ledgerRoute = useMatch(`/ledgers/:ledgerId/${target}/:${target}Id`);
-  // todo handle new breadcrumb
-  const links = [] as any;
+  const navigate = useNavigate();
+  const match = (pattern: string): boolean => !!useMatch(pattern);
+  const links = breadcrumbsFactory(params, match, navigate);
 
   return (
     <>
       <Navbar />
-      {ledgerRoute && <Breadcrumbs links={links} />}
+      {links && <Breadcrumbs links={links} />}
       {children}
     </>
   );

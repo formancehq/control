@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { MetaFunction } from '@remix-run/node';
 import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Grid, Typography, useTheme } from '@mui/material';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
 import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
@@ -105,6 +105,7 @@ export default function Index() {
   const { palette } = useTheme();
 
   const sync = () => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     fetcher.load(getLedgerAccountDetailsRoute(id!, ledgerId!));
   };
 
@@ -115,101 +116,88 @@ export default function Index() {
   );
 
   return (
-    <Page
-      id="account"
-      title={
-        <Box
-          component="span"
-          display="inline-flex"
-          alignItems="center"
-          alignSelf="center"
-        >
-          <Typography variant="h1">{t('pages.account.title')}</Typography>
-          <Typography
-            variant="h2"
-            sx={{
-              color: ({ palette }) => palette.neutral[600],
-              ml: 1,
-              mt: '3px',
-            }}
-          >
-            {id}
-          </Typography>
-        </Box>
-      }
-    >
+    <Page id="account" title={id}>
       <>
         <Box display="flex" justifyContent="space-between" mb={3}>
           {/* Balances Section */}
-          <Box sx={{ width: '45%' }}>
-            <SectionWrapper title={t('pages.account.balances.title')}>
-              {account.balances && (
-                <Table
-                  withPagination={false}
-                  items={account.balances}
-                  columns={[
-                    {
-                      key: 'balance.asset',
-                      label: t('pages.account.table.columnLabel.balance.asset'),
-                    },
-                    {
-                      key: 'balance.value',
-                      label: t('pages.account.table.columnLabel.balance.value'),
-                    },
-                  ]}
-                  renderItem={(balance: Balance, index) => (
-                    <Row
-                      key={index}
-                      keys={[
-                        'asset',
-                        () =>
-                          renderValue(balance.value, palette.default.normal),
-                      ]}
-                      item={balance}
-                    />
-                  )}
-                />
-              )}
-            </SectionWrapper>
-          </Box>
-          {/* Volumes Section */}
-          <Box sx={{ width: '55%' }} pl={1}>
-            <SectionWrapper title={t('pages.account.volumes.title')}>
-              {account.volumes && (
-                <Table
-                  withPagination={false}
-                  items={account.volumes}
-                  columns={[
-                    {
-                      key: 'volume.asset',
-                      label: t('pages.account.table.columnLabel.volume.asset'),
-                    },
-                    {
-                      key: 'volume.received',
-                      label: t(
-                        'pages.account.table.columnLabel.volume.received'
-                      ),
-                    },
-                    {
-                      key: 'volume.sent',
-                      label: t('pages.account.table.columnLabel.volume.sent'),
-                    },
-                  ]}
-                  renderItem={(volume: Volume, index) => (
-                    <Row
-                      key={index}
-                      keys={[
-                        'asset',
-                        () => renderValue(volume.received, palette.blue.darker),
-                        () => renderValue(volume.sent, palette.red.darker),
-                      ]}
-                      item={volume}
-                    />
-                  )}
-                />
-              )}
-            </SectionWrapper>
-          </Box>
+          <Grid container spacing="26px">
+            <Grid item xs={6}>
+              <SectionWrapper title={t('pages.account.balances.title')}>
+                {account.balances && (
+                  <Table
+                    withPagination={false}
+                    items={account.balances}
+                    columns={[
+                      {
+                        key: 'balance.asset',
+                        label: t(
+                          'pages.account.table.columnLabel.balance.asset'
+                        ),
+                      },
+                      {
+                        key: 'balance.value',
+                        label: t(
+                          'pages.account.table.columnLabel.balance.value'
+                        ),
+                      },
+                    ]}
+                    renderItem={(balance: Balance, index) => (
+                      <Row
+                        key={index}
+                        keys={[
+                          'asset',
+                          () =>
+                            renderValue(balance.value, palette.default.normal),
+                        ]}
+                        item={balance}
+                      />
+                    )}
+                  />
+                )}
+              </SectionWrapper>
+            </Grid>
+
+            <Grid item xs={6}>
+              <SectionWrapper title={t('pages.account.volumes.title')}>
+                {account.volumes && (
+                  <Table
+                    withPagination={false}
+                    items={account.volumes}
+                    columns={[
+                      {
+                        key: 'volume.asset',
+                        label: t(
+                          'pages.account.table.columnLabel.volume.asset'
+                        ),
+                      },
+                      {
+                        key: 'volume.received',
+                        label: t(
+                          'pages.account.table.columnLabel.volume.received'
+                        ),
+                      },
+                      {
+                        key: 'volume.sent',
+                        label: t('pages.account.table.columnLabel.volume.sent'),
+                      },
+                    ]}
+                    renderItem={(volume: Volume, index) => (
+                      <Row
+                        key={index}
+                        keys={[
+                          'asset',
+                          () =>
+                            renderValue(volume.received, palette.blue.darker),
+                          () => renderValue(volume.sent, palette.red.darker),
+                        ]}
+                        item={volume}
+                      />
+                    )}
+                  />
+                )}
+              </SectionWrapper>
+            </Grid>
+          </Grid>
         </Box>
         {/* Transactions Section */}
         <SectionWrapper title={t('pages.account.transactions.title')}>

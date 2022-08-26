@@ -267,6 +267,14 @@ export default {
       tooltip: {
         copied: 'Copied! ✔️',
       },
+      breadcrumbs: {
+        targets: {
+          payments: 'Payments',
+          ledgers: 'Ledgers',
+          accounts: 'Accounts',
+          transactions: 'Transactions',
+        },
+      },
       search: {
         viewAll: 'View all {{target}}',
         title: 'Results for "{{value}}" accross {{target}}',
