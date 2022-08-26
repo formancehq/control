@@ -5,7 +5,7 @@ import { LoaderFunction } from '@remix-run/server-runtime';
 import invariant from 'tiny-invariant';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { Box, Divider, Tooltip, Typography } from '@mui/material';
+import { Box, Divider, Grid, Tooltip, Typography } from '@mui/material';
 import {
   Date,
   DividerWithSpace,
@@ -14,6 +14,7 @@ import {
   Row,
   Chip,
   theme,
+  SectionWrapper,
 } from '@numaryhq/storybook';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ContentCopy from '@mui/icons-material/ContentCopy';
@@ -22,9 +23,9 @@ import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
 import { API_PAYMENT, ApiClient } from '~/src/utils/api';
 import { copyTokenToClipboard } from '~/src/utils/clipboard';
 import Table from '~/src/components/Wrappers/Table';
-import { get } from 'lodash';
-import { providersMap } from '~/src/utils/providersMap';
 import { LoadingButton } from '@mui/lab';
+import { PayInChips } from '~/src/components/PayInChips';
+import { ProviderPicture } from '~/src/components/ProviderPicture';
 
 // TODO remove this when Reconciliation is done
 interface Reconciliation {
@@ -88,10 +89,8 @@ const boxWithCopyToClipboard = (
       sx={{
         display: 'flex',
         alignItems: 'center',
+        p: '10px 10px 10px 26px',
         justifyContent: 'space-between',
-        padding: '0 20px 0 20px',
-        width: '45%',
-        height: 50,
         backgroundColor: color,
       }}
     >
@@ -100,7 +99,8 @@ const boxWithCopyToClipboard = (
         sx={{
           display: 'flex',
           width: '70%',
-          justifyContent: 'space-around',
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}
       >
         <Typography noWrap>{id}</Typography>
@@ -124,7 +124,7 @@ const eventsJournalItem = (eventTitle: string, date: string) => (
     sx={{
       display: 'flex',
       width: '100%',
-      padding: '10px 0 10px 0',
+      padding: '5px 0 5px 0',
       justifyContent: 'space-between',
     }}
   >
@@ -137,7 +137,7 @@ const eventsJournalItem = (eventTitle: string, date: string) => (
       sx={{ display: 'flex', alignItems: 'center' }}
     >
       <Divider sx={{ width: '200px', marginRight: '20px' }} />
-      <Date timestamp={date} format="DD/MM/YYYY" />
+      <Date timestamp={date} format="MM/DD/YYYY" />
     </Typography>
   </Box>
 );
@@ -147,6 +147,7 @@ const dataItem = (title: string, children: ReactElement) => (
     sx={{
       display: 'flex',
       padding: '5px 0 5px 0',
+      minHeight: '30px',
       justifyContent: 'space-between',
       alignItems: 'center',
     }}
@@ -192,7 +193,7 @@ const titleHeader = (title: string, date: string) => (
     </Typography>
     <Date
       timestamp={date}
-      format="DD/MM/YYYY"
+      format="MM/DD/YYYY"
       color={theme.palette.neutral[600]}
     />
   </Box>
@@ -205,7 +206,6 @@ interface PaymentDetailsLoaderWrap {
 export default function PaymentDetails() {
   const { details } = useLoaderData<PaymentDetailsLoaderWrap>();
   const { t } = useTranslation();
-  const logoAttr = get(providersMap, details.provider);
 
   return (
     <Page
@@ -219,36 +219,35 @@ export default function PaymentDetails() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          padding: '20px',
+          padding: '20px 20px 4px 20px',
           backgroundColor: 'white',
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            width: '100%',
-            paddingBottom: '20px',
-          }}
-        >
-          {boxWithCopyToClipboard(
-            t('pages.payment.id'),
-            details.id,
-            theme.palette.blue.light,
-            t('pages.payment.copyToClipboardTooltip', {
-              value: 'id',
-            })
-          )}
-          {boxWithCopyToClipboard(
-            t('pages.payment.reference'),
-            details.id,
-            theme.palette.violet.light,
-            t('pages.payment.copyToClipboardTooltip', {
-              value: 'reference',
-            })
-          )}
-        </Box>
-        <DividerWithSpace />
+        <Grid container spacing={1}>
+          <Grid item md={6}>
+            {boxWithCopyToClipboard(
+              t('pages.payment.id'),
+              details.id,
+              theme.palette.blue.light,
+              t('pages.payment.copyToClipboardTooltip', {
+                value: 'id',
+              })
+            )}
+          </Grid>
+          <Grid item md={6}>
+            {boxWithCopyToClipboard(
+              t('pages.payment.reference'),
+              details.id,
+              theme.palette.violet.light,
+              t('pages.payment.copyToClipboardTooltip', {
+                value: 'reference',
+              })
+            )}
+          </Grid>
+        </Grid>
+
+        <DividerWithSpace pt="32px" mb="32px" />
+
         <Box
           sx={{
             display: 'flex',
@@ -266,21 +265,11 @@ export default function PaymentDetails() {
           >
             {dataItem(
               t('pages.payment.type'),
-              <Chip color="green" label={details.type} variant="square" />
+              <PayInChips type={details.type} />
             )}
             {dataItem(
               t('pages.payment.processor'),
-              <Box
-                sx={{
-                  m: '10px',
-                  '& img': {
-                    marginRight: 1,
-                    width: logoAttr ? logoAttr.width : 'initial',
-                  },
-                }}
-              >
-                {logoAttr && <img src={logoAttr.path} alt={details.provider} />}
-              </Box>
+              <ProviderPicture provider={details.provider} />
             )}
 
             {dataItem(
@@ -306,143 +295,151 @@ export default function PaymentDetails() {
             )}
           </Box>
         </Box>
-        <DividerWithSpace />
-        <Typography variant="headline">
-          {t('pages.payment.eventJournal.title')}
-        </Typography>
-        {details.adjustments.map(
-          (adjustments: AdjustmentsItem, index: number) => (
-            <div key={index}>
-              {eventsJournalItem(
-                t('pages.payment.eventJournal.statusChange', {
-                  value1: details.initialAmount,
-                  value2: adjustments.amount,
-                }),
-                adjustments.date
+
+        <DividerWithSpace pt="32px" mb="0px" />
+
+        <SectionWrapper title={t('pages.payment.eventJournal.title')}>
+          <>
+            {details.adjustments.map(
+              (adjustments: AdjustmentsItem, index: number) => (
+                <div key={index}>
+                  {eventsJournalItem(
+                    t('pages.payment.eventJournal.statusChange', {
+                      value1: details.initialAmount,
+                      value2: adjustments.amount,
+                    }),
+                    adjustments.date
+                  )}
+                  {eventsJournalItem(
+                    t('pages.payment.eventJournal.netValueChange', {
+                      value1: details.status,
+                      value2: adjustments.status,
+                    }),
+                    adjustments.date
+                  )}
+                </div>
+              )
+            )}
+          </>
+        </SectionWrapper>
+
+        <DividerWithSpace pt="16px" mb="0px" />
+
+        <SectionWrapper title={t('pages.payment.reconciliation.title')}>
+          <>
+            <Typography
+              variant="footNote"
+              sx={{ color: ({ palette }) => palette.grey[600] }}
+            >
+              {t('pages.payment.reconciliation.subTitle')}
+            </Typography>
+            <Table
+              id="no-result"
+              items={[]}
+              columns={[
+                { key: 'id', label: 'Uniq Id' },
+                { key: 'name', label: 'Lastname' },
+                { key: 'status', label: 'Status' },
+              ]}
+              withPagination={false}
+              withHeader={false}
+              renderItem={(
+                reconciliationItem: Reconciliation,
+                index: number
+              ) => (
+                <Row
+                  item={reconciliationItem}
+                  keys={[
+                    <Typography key={index}>
+                      {reconciliationItem.transactionValue}
+                    </Typography>,
+                    <Chip
+                      key={index}
+                      label={reconciliationItem.city}
+                      variant="square"
+                    />,
+                    <Chip
+                      key={index}
+                      label={reconciliationItem.transactionId}
+                      variant="square"
+                    />,
+                    <Typography key={index}>
+                      {reconciliationItem.transactionValue}
+                    </Typography>,
+                    <Typography key={index} variant="footNote">
+                      {reconciliationItem.date}
+                    </Typography>,
+                  ]}
+                />
               )}
-              {eventsJournalItem(
-                t('pages.payment.eventJournal.netValueChange', {
-                  value1: details.status,
-                  value2: adjustments.status,
-                }),
-                adjustments.date
-              )}
-            </div>
-          )
-        )}
-        <DividerWithSpace />
-        <Typography variant="headline" sx={{ pb: '10px' }}>
-          {t('pages.payment.reconciliation.title')}
-        </Typography>
-        <Typography
-          variant="footNote"
-          sx={{ color: ({ palette }) => palette.grey[600] }}
-        >
-          {t('pages.payment.reconciliation.subTitle')}
-        </Typography>
+            />
+          </>
+        </SectionWrapper>
 
         {/* TODO replace this when Reconciliation is done */}
 
-        <Table
-          id="no-result"
-          items={[]}
-          columns={[
-            { key: 'id', label: 'Uniq Id' },
-            { key: 'name', label: 'Lastname' },
-            { key: 'status', label: 'Status' },
-          ]}
-          withPagination={false}
-          withHeader={false}
-          renderItem={(reconciliationItem: Reconciliation, index: number) => (
-            <Row
-              item={reconciliationItem}
-              keys={[
-                <Typography key={index}>
-                  {reconciliationItem.transactionValue}
-                </Typography>,
-                <Chip
-                  key={index}
-                  label={reconciliationItem.city}
-                  variant="square"
-                />,
-                <Chip
-                  key={index}
-                  label={reconciliationItem.transactionId}
-                  variant="square"
-                />,
-                <Typography key={index}>
-                  {reconciliationItem.transactionValue}
-                </Typography>,
-                <Typography key={index} variant="footNote">
-                  {reconciliationItem.date}
-                </Typography>,
-              ]}
-            />
-          )}
-        />
-
-        <DividerWithSpace />
-
-        <Typography variant="headline">
-          {t('pages.payment.metadata')}
-        </Typography>
+        <DividerWithSpace pt="16px" mb="0px" />
 
         {/* TODO replace this when Metadata is done */}
+        <SectionWrapper title={t('pages.payment.metadata')}>
+          <Table
+            withPagination={false}
+            key={details.id}
+            withHeader={false}
+            items={[]}
+            columns={[
+              { key: 'id', label: 'Uniq Id' },
+              { key: 'name', label: 'Lastname' },
+              { key: 'status', label: 'Status' },
+            ]}
+            renderItem={(reconciliationItem: Reconciliation, index: number) => (
+              <Row
+                item={reconciliationItem}
+                keys={[
+                  <Typography key={index}>
+                    {reconciliationItem.transactionValue}
+                  </Typography>,
+                  <Chip
+                    key={index}
+                    label={reconciliationItem.city}
+                    variant="square"
+                  />,
+                  <Chip
+                    key={index}
+                    label={reconciliationItem.transactionId}
+                    variant="square"
+                  />,
+                  <Typography key={index}>
+                    {reconciliationItem.transactionValue}
+                  </Typography>,
+                  <Typography key={index} variant="footNote">
+                    {reconciliationItem.date}
+                  </Typography>,
+                ]}
+              />
+            )}
+          />
+        </SectionWrapper>
 
-        <Table
-          withPagination={false}
-          key={details.id}
-          withHeader={false}
-          items={[]}
-          columns={[
-            { key: 'id', label: 'Uniq Id' },
-            { key: 'name', label: 'Lastname' },
-            { key: 'status', label: 'Status' },
-          ]}
-          renderItem={(reconciliationItem: Reconciliation, index: number) => (
-            <Row
-              item={reconciliationItem}
-              keys={[
-                <Typography key={index}>
-                  {reconciliationItem.transactionValue}
-                </Typography>,
-                <Chip
-                  key={index}
-                  label={reconciliationItem.city}
-                  variant="square"
-                />,
-                <Chip
-                  key={index}
-                  label={reconciliationItem.transactionId}
-                  variant="square"
-                />,
-                <Typography key={index}>
-                  {reconciliationItem.transactionValue}
-                </Typography>,
-                <Typography key={index} variant="footNote">
-                  {reconciliationItem.date}
-                </Typography>,
-              ]}
-            />
-          )}
-        />
+        <DividerWithSpace pt="16px" mb="0px" />
 
-        <DividerWithSpace />
-
-        <Typography variant="headline">
-          {t('pages.payment.rawObject')}
-        </Typography>
-        <Box
-          sx={{
-            background: ({ palette }) => palette.neutral[900],
-            '& li': {
-              fontFamily: ({ typography }) => typography.fontFamily,
-              fontSize: ({ typography }) => typography.body1.fontSize,
-            },
-          }}
+        <SectionWrapper
+          title={t('pages.payment.rawObject')}
+          sx={{ mb: '0px !important' }}
         >
-          <JsonViewer jsonData={details.raw} />
-        </Box>
+          <Box
+            sx={{
+              p: '5px 10px 10px 10px',
+              background: ({ palette }) => palette.neutral[900],
+              '& li': {
+                fontFamily: ({ typography }) => typography.fontFamily,
+                fontSize: ({ typography }) => typography.body1.fontSize,
+              },
+            }}
+          >
+            <JsonViewer jsonData={details.raw} />
+          </Box>
+        </SectionWrapper>
       </Box>
     </Page>
   );

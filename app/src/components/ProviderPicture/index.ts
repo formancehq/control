@@ -1,0 +1,1 @@
+export { ProviderPicture } from './ProviderPicture';

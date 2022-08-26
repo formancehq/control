@@ -22,7 +22,7 @@ export type Payment = {
   provider: string;
   reference: string;
   scheme: string;
-  type: string;
+  type: PaymentTypes;
   status: string;
   initialAmount: number;
   asset: string;
@@ -36,7 +36,7 @@ export type PaymentDetail = {
   createdAt: string;
   reference: string;
   scheme: string;
-  type: string;
+  type: PaymentTypes;
   status: string;
   initialAmount: number;
   asset: string;
