@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import type { MetaFunction } from '@remix-run/node';
-import { Box, Button } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import { overview } from '~/src/components/Navbar/routes';
 import {
+  LoadingButton,
   OnBoarding,
   Page,
   StatsCard,
@@ -11,20 +12,73 @@ import {
   TitleWithBar,
 } from '@numaryhq/storybook';
 import { AccountBalanceWallet, Add, Topic } from '@mui/icons-material';
-import { API_LEDGER } from '~/src/utils/api';
+import { ApiClient, API_LEDGER, API_SEARCH } from '~/src/utils/api';
 import { getCurrentLedger } from '~/src/utils/localStorage';
 import { useService } from '~/src/hooks/useService';
 import { useTranslation } from 'react-i18next';
 import { get } from 'lodash';
+import { LoaderFunction } from '@remix-run/server-runtime';
+import { Cursor } from '~/src/types/generic';
+import { Payment } from '~/src/types/payment';
+import { SearchTargets } from '~/src/types/search';
+import { useLoaderData } from '@remix-run/react';
+import { Account } from '~/src/types/ledger';
+import { json } from '@remix-run/node';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
   description: 'Show a dashboard with tasks and status',
 });
 
+interface LoaderReturnValue {
+  accounts: Cursor<Account> | undefined;
+  payments: Cursor<Payment> | undefined;
+}
+
+export const loader: LoaderFunction = async () => {
+  const payments = await new ApiClient().postResource<Cursor<Payment>>(
+    API_SEARCH,
+    {
+      target: SearchTargets.PAYMENT,
+      size: 1,
+    },
+    'cursor'
+  );
+
+  const accounts = await new ApiClient().postResource<Cursor<Account>>(
+    API_SEARCH,
+    {
+      target: SearchTargets.ACCOUNT,
+      size: 1,
+    },
+    'cursor'
+  );
+
+  return json({ accounts, payments });
+};
+
 export default function Index() {
   const { api } = useService();
   const { t } = useTranslation();
+  const accountsAndPaymentsData =
+    useLoaderData<LoaderReturnValue>() as LoaderReturnValue;
+
+  // TODO check if the back send us back a serialized value so we don't have to use get anymore
+
+  const accounts = get(
+    accountsAndPaymentsData,
+    'accounts.total.value',
+    0
+  ) as number;
+
+  const payments = get(
+    accountsAndPaymentsData,
+    'payments.total.value',
+    0
+  ) as number;
+
+  const shouldDisplaySetup = payments === 0 || accounts === 0;
+
   const [stats, setStats] = useState<{
     accounts: number;
     transactions: number;
@@ -140,34 +194,63 @@ export default function Index() {
         </Box>
       </Box>
       {/* SET-UP */}
-      <Page
-        title={<TitleWithBar title={t('pages.overview.setUp.sectionTitle')} />}
-        id="tasks"
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
+      {shouldDisplaySetup && (
+        <Page
+          title={
+            <TitleWithBar title={t('pages.overview.setUp.sectionTitle')} />
+          }
+          id="tasks"
         >
-          <OnBoarding
-            title={t('pages.overview.setUp.connexion.title')}
-            description={t('pages.overview.setUp.connexion.description')}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
           >
-            <Button variant="outlined" sx={{ mt: '12px' }} startIcon={<Add />}>
-              {t('pages.overview.setUp.connexion.buttonText')}
-            </Button>
-          </OnBoarding>
-          <OnBoarding
-            title={t('pages.overview.setUp.ledger.title')}
-            description={t('pages.overview.setUp.ledger.description')}
-          >
-            <Button variant="outlined" sx={{ mt: '12px' }} startIcon={<Add />}>
-              {t('pages.overview.setUp.ledger.buttonText')}
-            </Button>
-          </OnBoarding>
-        </Box>
-      </Page>
+            {payments === 0 && (
+              <OnBoarding
+                title={t('pages.overview.setUp.connexion.title')}
+                description={t('pages.overview.setUp.connexion.description')}
+              >
+                <Link
+                  href="https://docs.formance.com/oss/payments/reference/api"
+                  underline="none"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <LoadingButton
+                    variant="stroke"
+                    content={t('pages.overview.setUp.connexion.buttonText')}
+                    sx={{ mt: '12px' }}
+                    startIcon={<Add />}
+                  />
+                </Link>
+              </OnBoarding>
+            )}
+            {accounts === 0 && (
+              <OnBoarding
+                title={t('pages.overview.setUp.ledger.title')}
+                description={t('pages.overview.setUp.ledger.description')}
+              >
+                <Link
+                  href="https://docs.formance.com/oss/ledger/reference/api"
+                  underline="none"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <LoadingButton
+                    variant="stroke"
+                    href="https://docs.formance.com/oss/ledger/reference/api"
+                    content={t('pages.overview.setUp.ledger.buttonText')}
+                    sx={{ mt: '12px' }}
+                    startIcon={<Add />}
+                  />
+                </Link>
+              </OnBoarding>
+            )}
+          </Box>
+        </Page>
+      )}
 
       {/*  TASKS */}
       <Page
