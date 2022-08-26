@@ -32,20 +32,21 @@ export type SearchBody = {
 
 export type SearchResource = Account[] | Transaction[] | Payment[] | Asset[];
 
-export type Suggestion<T, X> = {
+export type Suggestion<T> = {
   viewAll: boolean;
-  items: Array<SuggestionItem<T> & X>;
+  items: Array<SuggestionItem & T>;
 };
 
-export type SuggestionItem<T> = {
+export type SuggestionItem = {
   id: string;
   label?: string;
-  onClick: (_item: T) => void;
 };
 
-export type AccountSuggestions = Suggestion<Account, { ledger: string }>;
-export type TransactionsSuggestions = Suggestion<
-  Transaction,
-  { source: string }
->;
-export type PaymentSuggestions = Suggestion<Payment, { type: PaymentType }>;
+export type AccountSuggestions = Suggestion<{ ledger: string }>;
+export type TransactionsSuggestions = Suggestion<{ source: string }>;
+export type PaymentSuggestions = Suggestion<{
+  type: PaymentType;
+  provider: string;
+  asset: string;
+  amount: number;
+}>;

@@ -269,9 +269,10 @@ export default {
       },
       search: {
         viewAll: 'View all {{target}}',
-        title: 'Results for "{{value}}" accross ledgers',
+        title: 'Results for "{{value}}" accross {{target}}',
         placeholder: 'Search anything',
         targets: {
+          ledger: 'Ledger',
           account: 'Account',
           transaction: 'Transaction',
           payment: 'Payment',

@@ -72,7 +72,6 @@ const Document = withEmotionCache(
           <meta name="theme-color" content={theme.palette.primary.main} />
           <title>{title || 'Formance'}</title>
           <Meta />
-          <Links />
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
@@ -85,6 +84,7 @@ const Document = withEmotionCache(
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700&display=swap"
           />
+          <Links />
           <meta
             name="emotion-insertion-point"
             content="emotion-insertion-point"
