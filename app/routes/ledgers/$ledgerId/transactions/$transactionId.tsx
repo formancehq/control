@@ -52,7 +52,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
       id="transaction"
-      title="pages.ledgers.transactions.details.title"
+      title="pages.transaction.title"
       error={error}
     />
   );

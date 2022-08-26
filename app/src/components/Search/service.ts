@@ -12,6 +12,21 @@ import { Cursor } from '~/src/types/generic';
 import { API_SEARCH, IApiClient } from '~/src/utils/api';
 import i18n from './../../translations';
 
+export const getSuggestions = async (
+  target: SearchTargets,
+  value: string,
+  api: IApiClient
+) =>
+  await api.postResource<Cursor<Account | Transaction | Payment>>(
+    API_SEARCH,
+    {
+      target,
+      terms: [value],
+      size: 3,
+    },
+    'cursor'
+  );
+
 function normalize<T>(items: Array<T>, total: number, targetLabel: string) {
   return {
     viewAll: total > 3,
@@ -28,8 +43,7 @@ const normalizeAccounts = (
   items: accounts.map((account) => ({
     id: account.address,
     label: account.address,
-    ledger: account.ledger || 'main-production',
-    onClick: (a: Account) => a,
+    ledger: account.ledger,
   })),
 });
 
@@ -38,28 +52,15 @@ const normalizePayments = (
   total: number
 ): PaymentSuggestions => ({
   ...normalize(payments, total, 'common.search.targets.payment'),
-  items: payments.map((payment) => ({
+  items: payments.map((payment: Payment) => ({
     id: payment.id,
     label: payment.reference,
     type: payment.type,
-    onClick: (p: Payment) => p,
+    provider: payment.provider,
+    amount: payment.initialAmount,
+    asset: payment.asset,
   })),
 });
-
-export const getSuggestions = async (
-  target: SearchTargets,
-  value: string,
-  api: IApiClient
-) =>
-  await api.postResource<Cursor<Account | Transaction | Payment>>(
-    API_SEARCH,
-    {
-      target,
-      terms: [value],
-      size: 3,
-    },
-    'cursor'
-  );
 
 const normalizeTransactions = (
   transactions: Transaction[],
@@ -70,8 +71,7 @@ const normalizeTransactions = (
     id: `${transaction.txid}`,
     label: `${transaction.txid}`,
     source: transaction.postings[0].source,
-    ledger: transaction.ledger || 'main-production-1234',
-    onClick: (t: Transaction) => t,
+    ledger: transaction.ledger,
   })),
 });
 

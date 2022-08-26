@@ -51,7 +51,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
       id="account"
-      title="pages.ledgers.account.title"
+      title="pages.account.title"
       error={error}
     />
   );
@@ -127,7 +127,11 @@ export default function Index() {
           <Typography variant="h1">{t('pages.account.title')}</Typography>
           <Typography
             variant="h2"
-            sx={{ color: ({ palette }) => palette.neutral[600], ml: 1 }}
+            sx={{
+              color: ({ palette }) => palette.neutral[600],
+              ml: 1,
+              mt: '3px',
+            }}
           >
             {id}
           </Typography>

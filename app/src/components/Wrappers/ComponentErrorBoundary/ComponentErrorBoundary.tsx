@@ -14,7 +14,7 @@ const ComponentErrorBoundary: FunctionComponent<
 > = ({ id, title: titlePage, error }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const err = camelCase(get(error, 'message', 'error'));
+  const key = camelCase(get(error, 'message', 'error'));
 
   const actionMap = {
     [Errors.NOT_FOUND]: () =>
@@ -24,8 +24,8 @@ const ComponentErrorBoundary: FunctionComponent<
     [Errors.UNAUTHORIZED]: () => navigate(getRoute(OVERVIEW_ROUTE)),
     [Errors.FORBIDDEN]: () => navigate(getRoute(OVERVIEW_ROUTE)),
   };
-  const key = get(actionMap, err, 'error');
-  const action = get(actionMap, err, actionMap[Errors.ERROR]);
+
+  const action = get(actionMap, key, actionMap[Errors.ERROR]);
 
   return (
     <Page id={id} title={t(titlePage)}>
