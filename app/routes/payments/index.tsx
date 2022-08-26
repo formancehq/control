@@ -58,7 +58,7 @@ export default function Index() {
   const payments = useLoaderData();
 
   return (
-    <Page title={t('pages.payments.title')} id={paymentsConfig.id}>
+    <Page id={paymentsConfig.id}>
       <Form method="get">
         <FiltersBar>
           <AutocompleteSelect

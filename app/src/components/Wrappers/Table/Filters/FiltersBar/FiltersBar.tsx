@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 const FiltersBar: FunctionComponent<{ children: ReactElement }> = ({
   children,
 }) => (
-  <Box display="flex" id="filters-bar" ml="4px">
+  <Box display="flex" id="filters-bar" mb="26px">
     {children}
   </Box>
 );

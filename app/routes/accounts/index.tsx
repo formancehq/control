@@ -11,7 +11,6 @@ import { buildQuery } from '~/src/utils/search';
 import { accounts as accountsConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { Cursor } from '~/src/types/generic';
-import { useTranslation } from 'react-i18next';
 import { LedgerList } from '~/routes/ledgers/list';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 
@@ -50,10 +49,9 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export default function Index() {
   const accounts = useLoaderData<Cursor<Account>>();
-  const { t } = useTranslation();
 
   return (
-    <Page id={accountsConfig.id} title={t('pages.accounts.title')}>
+    <Page id={accountsConfig.id}>
       <Form method="get">
         {/* TODO remove width when having multiple filter*/}
         <FiltersBar>

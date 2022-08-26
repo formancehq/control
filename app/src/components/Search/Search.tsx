@@ -156,7 +156,7 @@ const Search: FunctionComponent = () => {
     }
   };
 
-  const handleOnClick = (item: SuggestionItem<any>, target: SearchTarget) => {
+  const handleOnClick = (item: SuggestionItem, target: SearchTarget) => {
     handleClose();
     switch (target) {
       case SearchTargets.ACCOUNT:
@@ -174,6 +174,7 @@ const Search: FunctionComponent = () => {
     }
   };
 
+  // TODO improve with target factory instead of multiple conditions
   const renderChildren = (value: string) => {
     const noResults =
       get(
@@ -238,10 +239,13 @@ const Search: FunctionComponent = () => {
               )}s`.toLowerCase(),
             })}
           </Typography>
-          {/*{noResults && <Typography mt={2}>{t('common.noResults')}</Typography>}*/}
           {noResults && !loading && (
             <Box mt={4}>
-              <EmptyState description={t('common.noResults')} title="" />
+              <EmptyState
+                description={t('common.noResults')}
+                title=""
+                sx={{ border: 0 }}
+              />
             </Box>
           )}
           {loading && (
@@ -402,6 +406,7 @@ const Search: FunctionComponent = () => {
         startIcon={<SearchOutlined />}
         onClick={handleOpen}
         variant="dark"
+        sx={{ background: 'transparent !important' }}
       />
       <SbSearch
         open={open}

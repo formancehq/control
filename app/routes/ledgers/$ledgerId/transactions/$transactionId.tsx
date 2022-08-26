@@ -97,10 +97,12 @@ export default function Index() {
   const transaction = fetcher.data || loaderData;
 
   const sync = () => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     fetcher.load(getLedgerTransactionDetailsRoute(id!, ledgerId!));
   };
 
   const handleSourceDestinationAction = (id: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     navigate(getLedgerAccountDetailsRoute(id, ledgerId!));
   };
 
@@ -120,6 +122,7 @@ export default function Index() {
             mt="4px"
             ml={1}
           >
+            {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
             <Txid id={parseInt(id!)} />
           </Box>
         </Box>
@@ -166,6 +169,7 @@ export default function Index() {
                   <SourceDestination
                     key={posting.txid}
                     label={posting.source}
+                    color="blue"
                     onClick={() =>
                       handleSourceDestinationAction(posting.source)
                     }
@@ -173,6 +177,7 @@ export default function Index() {
                   <SourceDestination
                     key={posting.txid}
                     label={posting.destination}
+                    color="blue"
                     onClick={() =>
                       handleSourceDestinationAction(posting.destination)
                     }

@@ -65,6 +65,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
     navigate(
       `${getRoute(
         TRANSACTIONS_ROUTE
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       )}?terms=${`destination=${accountId!}`}&terms=${`source=${accountId!}`}&target=${
         SearchTargets.TRANSACTION
       }&size=15`
@@ -86,7 +87,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
         withPagination={withPagination}
         paginationSize={paginationSize}
         items={transactionsNormalized}
-        action={true}
+        action
         columns={[
           {
             key: 'txid',

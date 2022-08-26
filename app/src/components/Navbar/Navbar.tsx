@@ -3,7 +3,11 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { isArray } from 'lodash';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { routerConfig } from '~/src/components/Navbar/routes';
+import {
+  getRoute,
+  OVERVIEW_ROUTE,
+  routerConfig,
+} from '~/src/components/Navbar/routes';
 import { useTranslation } from 'react-i18next';
 import Search from './../Search';
 
@@ -15,9 +19,9 @@ const Navbar: FunctionComponent = () => {
   return (
     <Box
       sx={{
-        height: '80px',
         '& .MuiPaper-root': {
           borderRadius: '0 !important',
+          boxShadow: 'none',
         },
       }}
     >
@@ -36,7 +40,14 @@ const Navbar: FunctionComponent = () => {
           }}
         >
           <Box>
-            <Typography variant="h6" noWrap component="div">
+            {/* TODO replace by logo*/}
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{ cursor: 'pointer' }}
+              component="div"
+              onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
+            >
               FORMANCE
             </Typography>
           </Box>
@@ -58,6 +69,7 @@ const Navbar: FunctionComponent = () => {
                   sx={{
                     gap: '8px',
                     padding: '8px 16px',
+                    margin: '0px 4px 0px 4px',
                     height: '40px',
                     minWidth: '54px',
                     textTransform: 'none',
