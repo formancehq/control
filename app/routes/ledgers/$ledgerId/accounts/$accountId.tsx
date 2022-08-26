@@ -17,7 +17,6 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Metadata from '~/src/components/Wrappers/Metadata';
-import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
@@ -39,7 +38,7 @@ const normalizeBalance = (account: Account): AccountHybrid => ({
         sent: account.volumes[key].output,
       })) as Volume[])
     : [],
-  metadata: [{ value: prettyJson(account.metadata) }],
+  metadata: account.metadata,
 });
 
 export const meta: MetaFunction = () => ({

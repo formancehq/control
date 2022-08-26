@@ -7,14 +7,15 @@ import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Box, Divider, Grid, Tooltip, Typography } from '@mui/material';
 import {
+  Amount,
+  Chip,
   Date,
   DividerWithSpace,
   JsonViewer,
   Page,
   Row,
-  Chip,
-  theme,
   SectionWrapper,
+  theme,
 } from '@numaryhq/storybook';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ContentCopy from '@mui/icons-material/ContentCopy';
@@ -23,9 +24,9 @@ import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
 import { API_PAYMENT, ApiClient } from '~/src/utils/api';
 import { copyTokenToClipboard } from '~/src/utils/clipboard';
 import Table from '~/src/components/Wrappers/Table';
-import { LoadingButton } from '@mui/lab';
 import { PayInChips } from '~/src/components/PayInChips';
 import { ProviderPicture } from '~/src/components/ProviderPicture';
+import { LoadingButton } from '@mui/lab';
 
 // TODO remove this when Reconciliation is done
 interface Reconciliation {
@@ -71,9 +72,9 @@ const boxWithCopyToClipboard = (
   tooltipTitle: string
 ) => {
   const [open, setOpen] = React.useState(false);
-  const copyToClipBoard = () => {
+  const copyToClipBoard = async () => {
     handleOpen();
-    copyTokenToClipboard(id);
+    await copyTokenToClipboard(id);
   };
 
   const handleClose = () => {
@@ -110,6 +111,7 @@ const boxWithCopyToClipboard = (
           // onOpen={handleOpen}
           title={tooltipTitle}
         >
+          {/* TODO use LoadingButton from @numaryhq/storybook*/}
           <LoadingButton id="copyToCliboardWrapper">
             <ContentCopy color="action" onClick={copyToClipBoard} />
           </LoadingButton>
@@ -137,7 +139,7 @@ const eventsJournalItem = (eventTitle: string, date: string) => (
       sx={{ display: 'flex', alignItems: 'center' }}
     >
       <Divider sx={{ width: '200px', marginRight: '20px' }} />
-      <Date timestamp={date} format="MM/DD/YYYY" />
+      <Date timestamp={date} format="M/D/YYYY" />
     </Typography>
   </Box>
 );
@@ -182,18 +184,12 @@ const titleHeader = (title: string, date: string) => (
       alignItems: 'baseline',
     }}
   >
-    <Typography variant="h1" sx={{ pr: '10px' }}>
+    <Typography variant="h1" pr={1}>
       {title}
-    </Typography>
-    <Typography
-      variant="body1"
-      sx={{ pr: '5px', color: theme.palette.neutral[600] }}
-    >
-      Date
     </Typography>
     <Date
       timestamp={date}
-      format="MM/DD/YYYY"
+      format="M/D/YYYY"
       color={theme.palette.neutral[600]}
     />
   </Box>
@@ -207,239 +203,162 @@ export default function PaymentDetails() {
   const { details } = useLoaderData<PaymentDetailsLoaderWrap>();
   const { t } = useTranslation();
 
+  const Divider = <DividerWithSpace pt="24px" mb="0px" />;
+
   return (
     <Page
       id="payment"
       title={titleHeader(t('pages.payment.title'), details.createdAt)}
-      onClick={() => null}
-      actionLabel={t('pages.payment.stripeBtnTitle')}
-      actionId="add-lorem"
     >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '20px 20px 4px 20px',
-          backgroundColor: 'white',
-        }}
-      >
-        <Grid container spacing={1}>
-          <Grid item md={6}>
-            {boxWithCopyToClipboard(
-              t('pages.payment.id'),
-              details.id,
-              theme.palette.blue.light,
-              t('pages.payment.copyToClipboardTooltip', {
-                value: 'id',
-              })
-            )}
-          </Grid>
-          <Grid item md={6}>
-            {boxWithCopyToClipboard(
-              t('pages.payment.reference'),
-              details.id,
-              theme.palette.violet.light,
-              t('pages.payment.copyToClipboardTooltip', {
-                value: 'reference',
-              })
-            )}
-          </Grid>
-        </Grid>
-
-        <DividerWithSpace pt="32px" mb="32px" />
-
+      <Box mt="26px">
+        {/* ID */}
         <Box
           sx={{
             display: 'flex',
-            width: '100%',
-            justifyContent: 'space-around',
+            flexDirection: 'column',
+            padding: '26px',
+            backgroundColor: theme.palette.neutral[0],
           }}
         >
+          <Grid container spacing="26px">
+            <Grid item xs={6}>
+              {boxWithCopyToClipboard(
+                t('pages.payment.id'),
+                details.id,
+                theme.palette.blue.light,
+                t('pages.payment.copyToClipboardTooltip', {
+                  value: 'id',
+                })
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              {boxWithCopyToClipboard(
+                t('pages.payment.reference'),
+                details.id,
+                theme.palette.violet.light,
+                t('pages.payment.copyToClipboardTooltip', {
+                  value: 'reference',
+                })
+              )}
+            </Grid>
+          </Grid>
+          {Divider}
+
+          {/* Description */}
           <Box
             sx={{
               display: 'flex',
-              width: '45%',
-              flexDirection: 'column',
-              justifyContent: 'start',
+              width: '100%',
+              justifyContent: 'space-around',
+              mt: '26px',
             }}
           >
-            {dataItem(
-              t('pages.payment.type'),
-              <PayInChips type={details.type} />
-            )}
-            {dataItem(
-              t('pages.payment.processor'),
-              <ProviderPicture provider={details.provider} />
-            )}
-
-            {dataItem(
-              t('pages.payment.status'),
-              <Chip color="green" label={details.status} variant="square" />
-            )}
-          </Box>
-
-          <Box
-            sx={{
-              display: 'flex',
-              width: '45%',
-              flexDirection: 'column',
-            }}
-          >
-            {dataItem(
-              t('pages.payment.netValue'),
-              <>{`${details.asset} ${details.initialAmount}`}</>
-            )}
-            {dataItem(
-              t('pages.payment.initialAmount'),
-              <>{`${details.asset} ${details.initialAmount}`}</>
-            )}
-          </Box>
-        </Box>
-
-        <DividerWithSpace pt="32px" mb="0px" />
-
-        <SectionWrapper title={t('pages.payment.eventJournal.title')}>
-          <>
-            {details.adjustments.map(
-              (adjustments: AdjustmentsItem, index: number) => (
-                <div key={index}>
-                  {eventsJournalItem(
-                    t('pages.payment.eventJournal.statusChange', {
-                      value1: details.initialAmount,
-                      value2: adjustments.amount,
-                    }),
-                    adjustments.date
-                  )}
-                  {eventsJournalItem(
-                    t('pages.payment.eventJournal.netValueChange', {
-                      value1: details.status,
-                      value2: adjustments.status,
-                    }),
-                    adjustments.date
-                  )}
-                </div>
-              )
-            )}
-          </>
-        </SectionWrapper>
-
-        <DividerWithSpace pt="16px" mb="0px" />
-
-        <SectionWrapper title={t('pages.payment.reconciliation.title')}>
-          <>
-            <Typography
-              variant="footNote"
-              sx={{ color: ({ palette }) => palette.grey[600] }}
+            <Box
+              sx={{
+                display: 'flex',
+                width: '45%',
+                flexDirection: 'column',
+                justifyContent: 'start',
+              }}
             >
-              {t('pages.payment.reconciliation.subTitle')}
-            </Typography>
+              {dataItem(
+                t('pages.payment.type'),
+                <PayInChips type={details.type} />
+              )}
+              {dataItem(
+                t('pages.payment.processor'),
+                <ProviderPicture provider={details.provider} />
+              )}
+
+              {dataItem(
+                t('pages.payment.status'),
+                <Chip color="violet" label={details.status} variant="square" />
+              )}
+            </Box>
+
+            <Box
+              sx={{
+                display: 'flex',
+                width: '45%',
+                flexDirection: 'column',
+              }}
+            >
+              {dataItem(
+                t('pages.payment.netValue'),
+                <Amount amount={details.initialAmount} asset={details.asset} />
+              )}
+              {dataItem(
+                t('pages.payment.initialAmount'),
+                <Amount amount={details.initialAmount} asset={details.asset} />
+              )}
+            </Box>
+          </Box>
+          {Divider}
+
+          {/* Events journals */}
+          <SectionWrapper title={t('pages.payment.eventJournal.title')}>
+            <>
+              {details.adjustments.map(
+                (adjustments: AdjustmentsItem, index: number) => (
+                  <div key={index}>
+                    {eventsJournalItem(
+                      t('pages.payment.eventJournal.statusChange', {
+                        value1: details.initialAmount,
+                        value2: adjustments.amount,
+                      }),
+                      adjustments.date
+                    )}
+                    {eventsJournalItem(
+                      t('pages.payment.eventJournal.netValueChange', {
+                        value1: details.status,
+                        value2: adjustments.status,
+                      }),
+                      adjustments.date
+                    )}
+                  </div>
+                )
+              )}
+            </>
+          </SectionWrapper>
+          {Divider}
+
+          {/* Reconciliation*/}
+          <SectionWrapper title={t('pages.payment.reconciliation.title')}>
             <Table
-              id="no-result"
+              id="reconciliation"
               items={[]}
-              columns={[
-                { key: 'id', label: 'Uniq Id' },
-                { key: 'name', label: 'Lastname' },
-                { key: 'status', label: 'Status' },
-              ]}
+              columns={[]}
               withPagination={false}
               withHeader={false}
-              renderItem={(
-                reconciliationItem: Reconciliation,
-                index: number
-              ) => (
-                <Row
-                  item={reconciliationItem}
-                  keys={[
-                    <Typography key={index}>
-                      {reconciliationItem.transactionValue}
-                    </Typography>,
-                    <Chip
-                      key={index}
-                      label={reconciliationItem.city}
-                      variant="square"
-                    />,
-                    <Chip
-                      key={index}
-                      label={reconciliationItem.transactionId}
-                      variant="square"
-                    />,
-                    <Typography key={index}>
-                      {reconciliationItem.transactionValue}
-                    </Typography>,
-                    <Typography key={index} variant="footNote">
-                      {reconciliationItem.date}
-                    </Typography>,
-                  ]}
-                />
+              renderItem={(reconciliationItem: Reconciliation) => (
+                <Row item={reconciliationItem} keys={[]} />
               )}
             />
-          </>
-        </SectionWrapper>
+          </SectionWrapper>
+          {Divider}
 
-        {/* TODO replace this when Reconciliation is done */}
+          {/* Metadata */}
+          {/* TODO replace this when Metadata is done */}
+          <SectionWrapper title={t('pages.payment.metadata')}>
+            <Table
+              id="metadata"
+              withPagination={false}
+              key={details.id}
+              withHeader={false}
+              items={[]}
+              columns={[]}
+              renderItem={(reconciliationItem: Reconciliation) => (
+                <Row item={reconciliationItem} keys={[]} />
+              )}
+            />
+          </SectionWrapper>
+          {Divider}
 
-        <DividerWithSpace pt="16px" mb="0px" />
-
-        {/* TODO replace this when Metadata is done */}
-        <SectionWrapper title={t('pages.payment.metadata')}>
-          <Table
-            withPagination={false}
-            key={details.id}
-            withHeader={false}
-            items={[]}
-            columns={[
-              { key: 'id', label: 'Uniq Id' },
-              { key: 'name', label: 'Lastname' },
-              { key: 'status', label: 'Status' },
-            ]}
-            renderItem={(reconciliationItem: Reconciliation, index: number) => (
-              <Row
-                item={reconciliationItem}
-                keys={[
-                  <Typography key={index}>
-                    {reconciliationItem.transactionValue}
-                  </Typography>,
-                  <Chip
-                    key={index}
-                    label={reconciliationItem.city}
-                    variant="square"
-                  />,
-                  <Chip
-                    key={index}
-                    label={reconciliationItem.transactionId}
-                    variant="square"
-                  />,
-                  <Typography key={index}>
-                    {reconciliationItem.transactionValue}
-                  </Typography>,
-                  <Typography key={index} variant="footNote">
-                    {reconciliationItem.date}
-                  </Typography>,
-                ]}
-              />
-            )}
-          />
-        </SectionWrapper>
-
-        <DividerWithSpace pt="16px" mb="0px" />
-
-        <SectionWrapper
-          title={t('pages.payment.rawObject')}
-          sx={{ mb: '0px !important' }}
-        >
-          <Box
-            sx={{
-              p: '5px 10px 10px 10px',
-              background: ({ palette }) => palette.neutral[900],
-              '& li': {
-                fontFamily: ({ typography }) => typography.fontFamily,
-                fontSize: ({ typography }) => typography.body1.fontSize,
-              },
-            }}
-          >
+          {/* Raw object */}
+          <SectionWrapper title={t('pages.payment.rawObject')}>
             <JsonViewer jsonData={details.raw} />
-          </Box>
-        </SectionWrapper>
+          </SectionWrapper>
+        </Box>
       </Box>
     </Page>
   );

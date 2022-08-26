@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import type { MetaFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import { Box, Link } from '@mui/material';
 import { overview } from '~/src/components/Navbar/routes';
 import {
@@ -11,10 +11,8 @@ import {
   theme,
   TitleWithBar,
 } from '@numaryhq/storybook';
-import { AccountBalanceWallet, Add, Topic } from '@mui/icons-material';
-import { ApiClient, API_LEDGER, API_SEARCH } from '~/src/utils/api';
-import { getCurrentLedger } from '~/src/utils/localStorage';
-import { useService } from '~/src/hooks/useService';
+import { AccountBalance, NorthEast } from '@mui/icons-material';
+import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
 import { useTranslation } from 'react-i18next';
 import { get } from 'lodash';
 import { LoaderFunction } from '@remix-run/server-runtime';
@@ -22,8 +20,7 @@ import { Cursor } from '~/src/types/generic';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
 import { useLoaderData } from '@remix-run/react';
-import { Account } from '~/src/types/ledger';
-import { json } from '@remix-run/node';
+import { Account, LedgerInfo } from '~/src/types/ledger';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -33,10 +30,14 @@ export const meta: MetaFunction = () => ({
 interface LoaderReturnValue {
   accounts: Cursor<Account> | undefined;
   payments: Cursor<Payment> | undefined;
+  ledgers: { slug: string; stats: number; color: string }[] | [];
 }
 
+const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
+
 export const loader: LoaderFunction = async () => {
-  const payments = await new ApiClient().postResource<Cursor<Payment>>(
+  const api = new ApiClient();
+  const payments = await api.postResource<Cursor<Payment>>(
     API_SEARCH,
     {
       target: SearchTargets.PAYMENT,
@@ -45,7 +46,7 @@ export const loader: LoaderFunction = async () => {
     'cursor'
   );
 
-  const accounts = await new ApiClient().postResource<Cursor<Account>>(
+  const accounts = await api.postResource<Cursor<Account>>(
     API_SEARCH,
     {
       target: SearchTargets.ACCOUNT,
@@ -54,50 +55,43 @@ export const loader: LoaderFunction = async () => {
     'cursor'
   );
 
-  return json({ accounts, payments });
+  const ledgersList = await api.getResource<LedgerInfo>(
+    `${API_LEDGER}/_info`,
+    'data'
+  );
+
+  if (ledgersList) {
+    const ledgers = ledgersList.config.storage.ledgers.map(
+      async (ledger: string) => {
+        const stats = await api.getResource<any>(
+          `${API_LEDGER}/${ledger}/stats`,
+          'data'
+        );
+
+        return {
+          slug: ledger,
+          stats,
+          color: colors[Math.floor(Math.random() * colors.length)],
+        };
+      }
+    );
+
+    return Promise.all(ledgers).then((values) =>
+      json({ accounts, payments, ledgers: values })
+    );
+  }
+
+  return json({ accounts, payments, ledgers: [] });
 };
 
 export default function Index() {
-  const { api } = useService();
   const { t } = useTranslation();
-  const accountsAndPaymentsData =
-    useLoaderData<LoaderReturnValue>() as LoaderReturnValue;
+  const data = useLoaderData<LoaderReturnValue>() as LoaderReturnValue;
 
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
-
-  const accounts = get(
-    accountsAndPaymentsData,
-    'accounts.total.value',
-    0
-  ) as number;
-
-  const payments = get(
-    accountsAndPaymentsData,
-    'payments.total.value',
-    0
-  ) as number;
-
+  const accounts = get(data, 'accounts.total.value', 0) as number;
+  const payments = get(data, 'payments.total.value', 0) as number;
   const shouldDisplaySetup = payments === 0 || accounts === 0;
-
-  const [stats, setStats] = useState<{
-    accounts: number;
-    transactions: number;
-  }>();
-
-  useEffect(() => {
-    (async () => {
-      const currentLedger = getCurrentLedger();
-      if (currentLedger) {
-        const load = await api.getResource<any>(
-          `${API_LEDGER}/${getCurrentLedger()}/stats`,
-          'data'
-        );
-        if (load) {
-          setStats(load);
-        }
-      }
-    })();
-  }, []);
 
   return (
     <>
@@ -170,41 +164,114 @@ export default function Index() {
                   title={t('pages.overview.status')}
                   titleColor={theme.palette.neutral[0]}
                 />
-                <Box mt={3} display="flex" data-testid="stats-card">
-                  <Box mr={3}>
-                    <StatsCard
-                      icon={<Topic />}
-                      variant="violet"
-                      title={t('pages.overview.stats.transactions')}
-                      mainValue={`${get(stats, 'transactions', '0')}`}
-                    />
-                  </Box>
-                  <Box>
-                    <StatsCard
-                      icon={<AccountBalanceWallet />}
-                      variant="brown"
-                      title={t('pages.overview.stats.accounts')}
-                      mainValue={`${get(stats, 'accounts', '0')}`}
-                    />
-                  </Box>
+                <Box
+                  mt={3}
+                  display="flex"
+                  data-testid="stats-card"
+                  justifyContent={
+                    data.ledgers.length > 0 ? 'center' : 'flex-start'
+                  }
+                >
+                  {data.ledgers.length > 0 ? (
+                    data.ledgers.map((ledger, index) => (
+                      <Box mr={3} key={index}>
+                        <StatsCard
+                          key={index}
+                          icon={<AccountBalance />}
+                          variant={ledger.color as any}
+                          title1={t('pages.overview.stats.transactions')}
+                          title2={t('pages.overview.stats.accounts')}
+                          chipValue={ledger.slug}
+                          value1={`${get(ledger, 'stats.transactions', '0')}`}
+                          value2={`${get(ledger, 'stats.accounts', '0')}`}
+                        />
+                      </Box>
+                    ))
+                  ) : (
+                    <Box mr={3}>
+                      <StatsCard
+                        icon={<AccountBalance />}
+                        variant="violet"
+                        title1={t('pages.overview.stats.transactions')}
+                        title2={t('pages.overview.stats.accounts')}
+                        chipValue="get-started"
+                        value1="0"
+                        value2="0"
+                      />
+                    </Box>
+                  )}
                 </Box>
               </Box>
             </>
           </Page>
         </Box>
       </Box>
+
+      {/* TASKS */}
+      <Page
+        title={<TitleWithBar title={t('pages.overview.tasks.title')} />}
+        id="tasks"
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            mt: '26px',
+            gap: '26px',
+            justifyContent: 'space-between',
+          }}
+        >
+          <OnBoarding
+            title={t('pages.overview.tasks.tuto.title')}
+            description={t('pages.overview.tasks.tuto.description')}
+          >
+            <Link
+              href="https://docs.formance.com/oss/ledger/get-started/hello-world"
+              underline="none"
+              target="_blank"
+              rel="noopener"
+            >
+              <LoadingButton
+                variant="dark"
+                content={t('pages.overview.tasks.tuto.buttonText')}
+                sx={{ mt: '12px' }}
+                startIcon={<NorthEast />}
+              />
+            </Link>
+          </OnBoarding>
+          <OnBoarding
+            title={t('pages.overview.tasks.useCaseLib.title')}
+            description={t('pages.overview.tasks.useCaseLib.description')}
+          >
+            <Link
+              href="https://www.formance.com/use-cases-library"
+              underline="none"
+              target="_blank"
+              rel="noopener"
+            >
+              <LoadingButton
+                variant="dark"
+                content={t('pages.overview.tasks.useCaseLib.buttonText')}
+                sx={{ mt: '12px' }}
+                startIcon={<NorthEast />}
+              />
+            </Link>
+          </OnBoarding>
+        </Box>
+      </Page>
+
       {/* SET-UP */}
       {shouldDisplaySetup && (
         <Page
           title={
             <TitleWithBar title={t('pages.overview.setUp.sectionTitle')} />
           }
-          id="tasks"
+          id="setup"
         >
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
+              mt: '26px',
             }}
           >
             {payments === 0 && (
@@ -219,10 +286,10 @@ export default function Index() {
                   rel="noopener"
                 >
                   <LoadingButton
-                    variant="stroke"
+                    variant="dark"
                     content={t('pages.overview.setUp.connexion.buttonText')}
                     sx={{ mt: '12px' }}
-                    startIcon={<Add />}
+                    startIcon={<NorthEast />}
                   />
                 </Link>
               </OnBoarding>
@@ -239,11 +306,11 @@ export default function Index() {
                   rel="noopener"
                 >
                   <LoadingButton
-                    variant="stroke"
+                    variant="dark"
                     href="https://docs.formance.com/oss/ledger/reference/api"
                     content={t('pages.overview.setUp.ledger.buttonText')}
                     sx={{ mt: '12px' }}
-                    startIcon={<Add />}
+                    startIcon={<NorthEast />}
                   />
                 </Link>
               </OnBoarding>
@@ -251,14 +318,6 @@ export default function Index() {
           </Box>
         </Page>
       )}
-
-      {/*  TASKS */}
-      <Page
-        title={<TitleWithBar title={t('pages.overview.tasks')} />}
-        id="tasks"
-      >
-        <></>
-      </Page>
     </>
   );
 }

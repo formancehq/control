@@ -47,22 +47,34 @@ export default {
       overview: {
         title: 'Overview',
         status: 'Status',
-        tasks: 'Tasks',
+        tasks: {
+          title: 'Tasks',
+          tuto: {
+            title: 'Hello World',
+            description: 'Start quickly by following our  tutorial',
+            buttonText: 'Go to the docs',
+          },
+          useCaseLib: {
+            title: 'Use cases',
+            description: 'Checkout what use case you want to implement',
+            buttonText: 'Go to the library',
+          },
+        },
         subtitle: 'We hope all is well and you have a great day',
         hello: 'Hello !',
         setUp: {
           sectionTitle: 'Set-up',
           connexion: {
-            title: 'Add Connection',
+            title: 'Add connection',
             description:
-              'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+              'Add connectors for your favorites PSP and get analyse payments.',
             buttonText: 'Go to connectors',
           },
           ledger: {
-            title: 'Submit Ledger Transactions ',
+            title: 'Submit ledger transactions ',
             description:
-              'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-            buttonText: 'Add Ledger Transaction',
+              'Create transactions and accounts, and checkout financial flows',
+            buttonText: 'Add ledger transaction',
           },
         },
         stats: {
@@ -76,7 +88,7 @@ export default {
         },
       },
       payment: {
-        title: 'Payments Details',
+        title: 'Payment',
         stripeBtnTitle: 'View on Stripe dashboard',
         id: 'ID',
         copyToClipboardTooltip:

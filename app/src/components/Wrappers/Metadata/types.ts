@@ -1,7 +1,8 @@
-import { LedgerResources, Metadata } from '~/src/types/ledger';
+import { LedgerResources } from '~/src/types/ledger';
+import { ObjectOf } from '~/src/types/generic';
 
 export type MetadataProps = {
-  metadata: Metadata;
+  metadata: ObjectOf<any>;
   title: string;
   resource: LedgerResources.ACCOUNTS | LedgerResources.TRANSACTIONS;
   id: string;

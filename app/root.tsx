@@ -21,7 +21,7 @@ import {
 import { LoadingButton, theme } from '@numaryhq/storybook';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import Layout from '~/src/components/Layout';
-import { ApiClient } from '~/src/utils/api';
+import { ApiClient, logger } from '~/src/utils/api';
 import { ServiceContext } from '~/src/contexts/service';
 import styles from './root.css';
 import { Home } from '@mui/icons-material';
@@ -29,7 +29,6 @@ import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
-import { useService } from '~/src/hooks/useService';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -200,8 +199,7 @@ export default function App() {
 export function ErrorBoundary({ error }: { error: Error }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { api } = useService();
-  api.throwError(error, 'app/root', undefined);
+  logger(error, 'app/root', undefined);
 
   return (
     <Document title="Error!">

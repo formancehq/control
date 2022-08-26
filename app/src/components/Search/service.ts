@@ -11,13 +11,16 @@ import { Payment } from '~/src/types/payment';
 import { Cursor } from '~/src/types/generic';
 import { API_SEARCH, IApiClient } from '~/src/utils/api';
 import i18n from './../../translations';
+import { isEmpty } from 'lodash';
 
 export const getSuggestions = async (
   target: SearchTargets,
   value: string,
   api: IApiClient
-) =>
-  await api.postResource<Cursor<Account | Transaction | Payment>>(
+) => {
+  const results = await api.postResource<
+    Cursor<Account | Transaction | Payment>
+  >(
     API_SEARCH,
     {
       target,
@@ -26,6 +29,13 @@ export const getSuggestions = async (
     },
     'cursor'
   );
+
+  if (isEmpty(results)) {
+    return { data: [], total: 0 };
+  }
+
+  return results;
+};
 
 function normalize<T>(items: Array<T>, total: number, targetLabel: string) {
   return {
@@ -38,7 +48,7 @@ function normalize<T>(items: Array<T>, total: number, targetLabel: string) {
 const normalizeAccounts = (
   accounts: Account[],
   total: number
-): Suggestion<Account, { ledger: string }> => ({
+): Suggestion<{ ledger: string }> => ({
   ...normalize(accounts, total, 'common.search.targets.account'),
   items: accounts.map((account) => ({
     id: account.address,
@@ -78,7 +88,7 @@ const normalizeTransactions = (
 export function suggestionsFactory(
   suggestions: SearchResource,
   target: SearchTargets,
-  total: number
+  total = 0
 ): AccountSuggestions | TransactionsSuggestions | PaymentSuggestions {
   switch (target) {
     case SearchTargets.ACCOUNT:

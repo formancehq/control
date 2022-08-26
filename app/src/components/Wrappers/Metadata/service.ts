@@ -2,8 +2,9 @@ import { API_LEDGER, IApiClient } from '~/src/utils/api';
 import { LedgerResources, LedgerSubResources } from '~/src/types/ledger';
 import * as yup from 'yup';
 import i18n from '../../../translations';
+import { ObjectOf } from '~/src/types/generic';
 
-export const prettyJson = (json: JSON): string =>
+export const prettyJson = (json: JSON | ObjectOf<any>): string =>
   JSON.stringify(json, undefined, 4);
 
 export const submit = async (

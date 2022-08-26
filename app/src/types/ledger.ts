@@ -1,4 +1,4 @@
-import { Cursor } from './generic';
+import { ObjectOf } from './generic';
 
 export enum LedgerResources {
   ACCOUNTS = 'accounts',
@@ -8,12 +8,6 @@ export enum LedgerResources {
 export enum LedgerSubResources {
   METADATA = 'metadata',
 }
-
-export type LedgerGetResourceData = {
-  cursor: Cursor<any>;
-  err: any;
-  ok: boolean;
-};
 
 export type Account = {
   ledger: string;
@@ -68,19 +62,19 @@ export type PostingHybrid = {
   asset: string;
   destination: string;
   source: string;
-  metadata: Metadata[];
+  metadata: ObjectOf<any>;
 };
 
 export type TransactionHybrid = Omit<Transaction, 'postings' | 'metadata'> &
   Posting & {
     postingId: number;
-    metadata: Metadata[];
+    metadata: ObjectOf<any>;
   };
 
 export type AccountHybrid = {
   balances: Balance[];
   volumes: Volume[];
-  metadata: Metadata[];
+  metadata: ObjectOf<any>;
 };
 
 export type LedgerInfo = {
