@@ -56,7 +56,7 @@ export function LedgerList() {
           <SelectCheckbox value={option.label} name={Filters.LEDGERS} />
         </li>
       )}
-      style={{ width: 200 }}
+      style={{ width: 350 }}
     />
   );
 }

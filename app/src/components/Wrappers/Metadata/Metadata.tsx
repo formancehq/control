@@ -6,7 +6,6 @@ import {
   SectionWrapper,
   TextArea,
 } from '@numaryhq/storybook';
-import { Metadata as MetadataType } from '~/src/types/ledger';
 import { Edit, LocalFlorist } from '@mui/icons-material';
 import Modal from '../Modal';
 import { useTranslation } from 'react-i18next';
@@ -46,6 +45,7 @@ const Metadata: FunctionComponent<MetadataProps> = ({
   const onSave = async () => {
     const validated = await trigger('json');
     if (validated) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       await submit(JSON.parse(getValues('json')), id, resource, ledgerId!, api);
       sync();
     }
@@ -61,13 +61,13 @@ const Metadata: FunctionComponent<MetadataProps> = ({
     }
   };
 
-  const renderRowActions = (metadata: MetadataType) => (
+  const renderRowActions = (metadata: string) => (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
       <Modal
         button={{
           id: `edit-${id}-button`,
           onClick: () => {
-            setValue('json', `${metadata.value}`, {
+            setValue('json', metadata, {
               shouldValidate: true,
             });
           },
@@ -136,10 +136,8 @@ const Metadata: FunctionComponent<MetadataProps> = ({
           },
         }}
       >
-        <JsonViewer
-          jsonData={[{ value: { metadata1: '250', metadata2: '350' } }]}
-        />
-        {renderRowActions(metadata)}
+        <JsonViewer jsonData={metadata} />
+        {renderRowActions(prettyJson(metadata))}
       </Box>
     </SectionWrapper>
   );

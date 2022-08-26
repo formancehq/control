@@ -13,7 +13,6 @@ import invariant from 'tiny-invariant';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import {
   LedgerResources,
-  Metadata as MetadataType,
   Posting,
   PostingHybrid,
   Transaction,
@@ -29,10 +28,10 @@ import { useTranslation } from 'react-i18next';
 import PostingsGraph from '~/src/components/Dataviz/PostingsGraph';
 import { MetaFunction } from '@remix-run/node';
 import Metadata from '~/src/components/Wrappers/Metadata';
-import { prettyJson } from '~/src/components/Wrappers/Metadata/service';
 import Table from '~/src/components/Wrappers/Table';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { Box, Typography } from '@mui/material';
+import { ObjectOf } from '~/src/types/generic';
 
 const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(
@@ -62,7 +61,7 @@ export const loader: LoaderFunction = async ({
   params,
 }): Promise<{
   postings: PostingHybrid[];
-  metadata: MetadataType[];
+  metadata: ObjectOf<any>;
 } | null> => {
   invariant(params.ledgerId, 'Expected params.ledgerId');
   invariant(params.transactionId, 'Expected params.transactionId');
@@ -75,7 +74,7 @@ export const loader: LoaderFunction = async ({
   if (transaction) {
     return {
       postings: normalizePostings(transaction),
-      metadata: [{ value: prettyJson(transaction.metadata) }],
+      metadata: transaction.metadata,
     };
   }
 
@@ -90,7 +89,7 @@ export default function Index() {
   const navigate = useNavigate();
   const loaderData = useLoaderData<{
     postings: PostingHybrid[];
-    metadata: MetadataType[];
+    metadata: ObjectOf<any>;
   }>();
   const { t } = useTranslation();
   const fetcher = useFetcher();
@@ -110,12 +109,7 @@ export default function Index() {
     <Page
       id="transaction"
       title={
-        <Box
-          component="span"
-          display="inline-flex"
-          alignItems="center"
-          alignSelf="center"
-        >
+        <Box component="span" display="flex" alignItems="baseline">
           <Typography variant="h1">{t('pages.transaction.title')}</Typography>
           <Box
             sx={{ '& .MuiTypography-money': { fontSize: 24 } }}

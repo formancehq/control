@@ -1,9 +1,7 @@
 import {
   AccountBalance,
   CreditCard,
-  NorthEast,
   SearchOutlined,
-  SouthEast,
 } from '@mui/icons-material';
 import { Box, CircularProgress, Grid, Typography } from '@mui/material';
 import * as React from 'react';
@@ -43,8 +41,8 @@ import {
 } from '~/src/components/Search/service';
 import { get, isEmpty } from 'lodash';
 import { useOpen } from '~/src/hooks/useOpen';
-import { PaymentTypes } from '~/src/types/payment';
-import { providersMap } from '~/src/utils/providersMap';
+import { PayInChips } from '~/src/components/PayInChips';
+import { ProviderPicture } from '~/src/components/ProviderPicture';
 
 // TODo improve
 const Search: FunctionComponent = () => {
@@ -111,12 +109,12 @@ const Search: FunctionComponent = () => {
               accounts: suggestionsFactory(
                 accounts.data as SearchResource,
                 SearchTargets.ACCOUNT,
-                accounts.total.value
+                get(accounts, 'total.value')
               ) as AccountSuggestions,
               transactions: suggestionsFactory(
                 transactions.data as SearchResource,
                 SearchTargets.TRANSACTION,
-                transactions.total.value
+                get(transactions, 'total.value')
               ) as TransactionsSuggestions,
             } as {
               accounts: AccountSuggestions;
@@ -132,7 +130,7 @@ const Search: FunctionComponent = () => {
               suggestionsFactory(
                 results.data as SearchResource,
                 target,
-                results.total.value
+                get(results, 'total.value')
               )
             );
           stopLoading();
@@ -284,105 +282,65 @@ const Search: FunctionComponent = () => {
   //todo type
   const renderSuggestion = (data: any, target: SearchTarget, value: string) => (
     <Box mt={3}>
-      {data.items.map((item: any, index: number) => {
-        const logoAttr = get(
-          providersMap,
-          get(item, 'provider', '').toLowerCase()
-        );
-
-        return (
-          <Grid
-            container
-            key={index}
-            onClick={() => handleOnClick(item, target)}
-            p={1}
-            sx={{
-              cursor: 'pointer',
-              ':hover': {
-                background: ({ palette }) => palette.neutral[50],
-                borderRadius: '4px',
-              },
-            }}
-          >
-            <Grid item xs={3}>
-              {target === SearchTargets.PAYMENT ? (
-                // todo use wrapper component for Search and PaymentList
-                <Chip
-                  label={item.type}
-                  color={item.type === PaymentTypes.PAY_OUT ? 'red' : 'green'}
-                  icon={
-                    item.type === PaymentTypes.PAY_OUT ? (
-                      <NorthEast />
-                    ) : (
-                      <SouthEast />
-                    )
-                  }
-                  variant="square"
-                />
-              ) : (
-                <Chip
-                  label={data.targetLabel}
-                  color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
-                  variant="square"
-                />
-              )}
-            </Grid>
-            <Grid item xs={5}>
-              {item.source ? (
-                <Box display="inline-flex" alignItems="center">
-                  <Txid id={item.label} />
-                  <Typography ml={1}>{item.source}</Typography>
-                </Box>
-              ) : (
-                <Typography>{item.label}</Typography>
-              )}
-            </Grid>
-            <Grid item xs={4}>
-              {item.ledger && (
-                <Chip
-                  label={item.ledger}
-                  variant="square"
-                  icon={<AccountBalance fontSize="small" />}
-                  sx={{
-                    '& .MuiChipIcon': ({ palette }) => palette.neutral[300],
-                    display: 'flex',
-                    float: 'right',
-                  }}
-                />
-              )}
-              {item.provider && (
-                <Box display="flex" alignItems="center">
-                  {/*todo use wrapper component for Search and PaymentList*/}
-                  <Box
-                    component="span"
-                    key={index}
-                    display="flex"
-                    alignItems="center"
-                    sx={{
-                      '& img': {
-                        marginRight: 1,
-                        width: logoAttr ? logoAttr.width : 'initial',
-                      },
-                      display: 'flex',
-                      float: 'right',
-                    }}
-                  >
-                    {logoAttr && (
-                      <img src={logoAttr.path} alt={data.provider} />
-                    )}
-                    <Typography sx={{ textTransform: 'capitalize' }}>
-                      {data.provider}
-                    </Typography>
-                  </Box>
-                  <Box ml={6}>
-                    <Amount amount={item.amount} asset={item.asset} />
-                  </Box>
-                </Box>
-              )}
-            </Grid>
+      {data.items.map((item: any, index: number) => (
+        <Grid
+          container
+          key={index}
+          onClick={() => handleOnClick(item, target)}
+          p={1}
+          sx={{
+            cursor: 'pointer',
+            ':hover': {
+              background: ({ palette }) => palette.neutral[50],
+              borderRadius: '4px',
+            },
+          }}
+        >
+          <Grid item xs={3}>
+            {target === SearchTargets.PAYMENT ? (
+              <PayInChips key={index} type={item.type} />
+            ) : (
+              <Chip
+                label={data.targetLabel}
+                color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
+                variant="square"
+              />
+            )}
           </Grid>
-        );
-      })}
+          <Grid item xs={5}>
+            {item.source ? (
+              <Box display="inline-flex" alignItems="center">
+                <Txid id={item.label} />
+                <Typography ml={1}>{item.source}</Typography>
+              </Box>
+            ) : (
+              <Typography>{item.label}</Typography>
+            )}
+          </Grid>
+          <Grid item xs={4}>
+            {item.ledger && (
+              <Chip
+                label={item.ledger}
+                variant="square"
+                icon={<AccountBalance fontSize="small" />}
+                sx={{
+                  '& .MuiChipIcon': ({ palette }) => palette.neutral[300],
+                  display: 'flex',
+                  float: 'right',
+                }}
+              />
+            )}
+            {item.provider && (
+              <Box display="flex" alignItems="center">
+                <ProviderPicture provider={item.provider} />
+                <Box ml={6}>
+                  <Amount amount={item.amount} asset={item.asset} />
+                </Box>
+              </Box>
+            )}
+          </Grid>
+        </Grid>
+      ))}
 
       {data.viewAll && (
         <Box display="flex" justifyContent="center" mt={2} mb={4}>

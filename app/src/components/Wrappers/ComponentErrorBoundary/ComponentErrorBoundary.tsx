@@ -26,24 +26,27 @@ const ComponentErrorBoundary: FunctionComponent<
   };
 
   const action = get(actionMap, key, actionMap[Errors.ERROR]);
+  const translation = get(actionMap, key) ? key : 'error';
 
   return (
     <Page id={id} title={t(titlePage)}>
-      <EmptyState
-        title={t(`common.boundaries.errorState.${key}.title`)}
-        description={`${t(
-          `common.boundaries.errorState.${key}.description`
-        )} 👇`}
-      >
-        <Box mt={3}>
-          <LoadingButton
-            content={t(`common.boundaries.errorState.${key}.button`)}
-            variant="primary"
-            endIcon={<Support />}
-            onClick={() => action()}
-          />
-        </Box>
-      </EmptyState>
+      <Box mt={1}>
+        <EmptyState
+          title={t(`common.boundaries.errorState.${translation}.title`)}
+          description={`${t(
+            `common.boundaries.errorState.${translation}.description`
+          )} 👇`}
+        >
+          <Box mt={3}>
+            <LoadingButton
+              content={t(`common.boundaries.errorState.${translation}.button`)}
+              variant="primary"
+              endIcon={<Support />}
+              onClick={() => action()}
+            />
+          </Box>
+        </EmptyState>
+      </Box>
     </Page>
   );
 };

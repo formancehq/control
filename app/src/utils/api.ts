@@ -5,6 +5,20 @@ export const API_SEARCH = 'search';
 export const API_LEDGER = 'ledger';
 export const API_PAYMENT = 'payments';
 
+export const logger = (stack?: any, from?: string, response?: Response) => {
+  // eslint-disable-next-line no-console
+  console.error({
+    from: from || 'utils/api',
+    response: {
+      status: response?.status,
+      message: response?.statusText,
+      url: response?.url,
+    },
+    stack,
+    page: typeof window !== 'undefined' ? window.location : '',
+  });
+};
+
 export const errorsMap = {
   404: Errors.NOT_FOUND,
   401: Errors.UNAUTHORIZED,
@@ -44,16 +58,7 @@ export class ApiClient implements IApiClient {
 
   throwError(stack?: any, from?: string, response?: Response): Error {
     const e = get(errorsMap, response?.status || 422, errorsMap['422']);
-    console.error({
-      from: from || 'utils/api',
-      response: {
-        status: response?.status,
-        message: response?.statusText,
-        url: response?.url,
-      },
-      stack,
-      page: typeof window !== 'undefined' ? window.location : '',
-    });
+    logger(stack, from, response);
 
     throw new Error(e);
   }
@@ -102,6 +107,11 @@ export class ApiClient implements IApiClient {
 
       data = path ? get(json, path) : json;
     } catch (e) {
+      // TODO backend need to fix the search 503 api error !!!!!!!!
+      // remove this mock once backend search is fixed
+      if (params === 'search' && res?.status === 503) {
+        return {} as any;
+      }
       this.throwError(e, undefined, res);
     }
 

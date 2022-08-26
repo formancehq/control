@@ -1331,10 +1331,10 @@
   dependencies:
     json-parse-even-better-errors "^2.3.1"
 
-"@numaryhq/storybook@^0.6.25":
-  version "0.6.25"
-  resolved "https://registry.yarnpkg.com/@numaryhq/storybook/-/storybook-0.6.25.tgz#4fda061ce5c79050dd911c9025c1abeb2a945006"
-  integrity sha512-Q2DgUFmhDQscgy2n9qQdpXlvn0+8qdV2QbQTzLWaU/J6ZLV2zrKnev4Zp4UtwNXpSMlACUY4LYfeQclt9M9+uw==
+"@numaryhq/storybook@^0.6.28":
+  version "0.6.28"
+  resolved "https://registry.yarnpkg.com/@numaryhq/storybook/-/storybook-0.6.28.tgz#525a1080ec8dd4dabb90627d092ff00a9e098f03"
+  integrity sha512-Z7FPw0SW/u6Z48Hchyt5qbchisMtwqsEBg3w5xPZQqKy/VaF+9cxrcJpIxPLpY3+rY18vFoF2xl++8DBnFhRDg==
 
 "@playwright/test@^1.25.0":
   version "1.25.0"
