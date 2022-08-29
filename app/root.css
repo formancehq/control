@@ -11,6 +11,29 @@ body {
   border: none;
 }
 
+/* Graph styles */
+.Graph {
+  background-color: #fff;
+  margin-top: 24px;
+}
+
+.Graph svg g polygon {
+  fill: #fff;
+}
+
+.Graph .node text,
+.edge text {
+  font-family: Roboto Mono, monospace;
+}
+
+.Graph .node ellipse {
+  fill: #ffffff;
+}
+
+.Graph .edge polygon {
+  fill: #000000;
+}
+
 /* DatePicker field */
 #date .MuiIconButton-root,
 #date .MuiIconButton-root:hover {
