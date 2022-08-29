@@ -171,10 +171,11 @@ export default function Index() {
                   flexWrap="wrap"
                   data-testid="stats-card"
                   justifyContent="flex-start"
+                  gap="26px"
                 >
                   {data.ledgers.length > 0 ? (
                     data.ledgers.map((ledger, index) => (
-                      <Box mr={3} key={index} mt={3}>
+                      <Box key={index}>
                         <StatsCard
                           key={index}
                           icon={<AccountBalance />}
@@ -213,16 +214,17 @@ export default function Index() {
         id="tasks"
       >
         <Box
-          sx={{
-            display: 'flex',
-            mt: '26px',
-            gap: '26px',
-            justifyContent: 'space-between',
-          }}
+          mt={3}
+          display="flex"
+          flexWrap="wrap"
+          data-testid="tasks"
+          justifyContent="flex-start"
+          gap="26px"
         >
           <OnBoarding
             title={t('pages.overview.tasks.tuto.title')}
             description={t('pages.overview.tasks.tuto.description')}
+            width="400px"
           >
             <Link
               href="https://docs.formance.com/oss/ledger/get-started/hello-world"
@@ -241,6 +243,7 @@ export default function Index() {
           <OnBoarding
             title={t('pages.overview.tasks.useCaseLib.title')}
             description={t('pages.overview.tasks.useCaseLib.description')}
+            width="400px"
           >
             <Link
               href="https://www.formance.com/use-cases-library"
@@ -268,16 +271,17 @@ export default function Index() {
           id="setup"
         >
           <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              mt: '26px',
-            }}
+            display="flex"
+            flexWrap="wrap"
+            data-testid="setup"
+            justifyContent="flex-start"
+            gap="26px"
           >
             {payments === 0 && (
               <OnBoarding
                 title={t('pages.overview.setUp.connexion.title')}
                 description={t('pages.overview.setUp.connexion.description')}
+                width="400px"
               >
                 <Link
                   href="https://docs.formance.com/oss/payments/reference/api"
@@ -298,6 +302,7 @@ export default function Index() {
               <OnBoarding
                 title={t('pages.overview.setUp.ledger.title')}
                 description={t('pages.overview.setUp.ledger.description')}
+                width="400px"
               >
                 <Link
                   href="https://docs.formance.com/oss/ledger/reference/api"

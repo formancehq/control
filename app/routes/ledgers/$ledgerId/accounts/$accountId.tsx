@@ -138,6 +138,7 @@ export default function Index() {
                         label: t(
                           'pages.account.table.columnLabel.balance.value'
                         ),
+                        width: 20,
                       },
                     ]}
                     renderItem={(balance: Balance, index) => (
@@ -178,6 +179,7 @@ export default function Index() {
                       {
                         key: 'volume.sent',
                         label: t('pages.account.table.columnLabel.volume.sent'),
+                        width: 20,
                       },
                     ]}
                     renderItem={(volume: Volume, index) => (

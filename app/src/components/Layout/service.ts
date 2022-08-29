@@ -96,12 +96,12 @@ export const breadcrumbsFactory = (
   if (transactionsRoute) {
     return buildLedgerBreadcrumbs(
       'transactions',
-      params.transactionsId,
+      params.transactionId,
       params.ledgerId,
       {
         list: getRoute(TRANSACTIONS_ROUTE),
         details: getLedgerTransactionDetailsRoute(
-          params.transactionsId,
+          params.transactionId,
           params.ledgerId
         ),
       },

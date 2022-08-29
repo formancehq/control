@@ -1342,10 +1342,10 @@
   dependencies:
     json-parse-even-better-errors "^2.3.1"
 
-"@numaryhq/storybook@^0.6.31":
-  version "0.6.31"
-  resolved "https://registry.yarnpkg.com/@numaryhq/storybook/-/storybook-0.6.31.tgz#e43d84dbd6d92f42b904e37dcb8eeba1d38dc663"
-  integrity sha512-LRWUd2W98JaWXsHR49B5Riz8/3U7HPPZz964vkvC9cOKDaT9mHJ5EpvmkX7mZjJvKzcPV/HgDpIHmKXAXnMsyw==
+"@numaryhq/storybook@^0.6.38":
+  version "0.6.38"
+  resolved "https://registry.yarnpkg.com/@numaryhq/storybook/-/storybook-0.6.38.tgz#5d5d7ae6e832573d6763a704b8084145d52a78db"
+  integrity sha512-Gj3oMYuGJxcdI3LPetixySblvQGcsPtvnXgT9YtE/RCZXySy9XEKML3aPPJKjDDm4BjQiw7q3xLiu/5rGfgFdQ==
 
 "@playwright/test@^1.25.0":
   version "1.25.1"

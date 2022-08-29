@@ -100,10 +100,10 @@ export class ApiClient implements IApiClient {
       } else {
         res = await fetch(this.decorateUrl(params));
       }
-      const json = await res.json();
       if (res && res.status === 204) {
         return {} as any;
       }
+      const json = await res.json();
 
       data = path ? get(json, path) : json;
     } catch (e) {
@@ -116,6 +116,8 @@ export class ApiClient implements IApiClient {
     }
 
     if (!data && res && res.status !== 204) {
+      console.log('WHAT2');
+
       this.throwError(undefined, undefined, res);
     }
 
