@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import { providersMap } from '~/src/utils/providersMap';
 import { ProviderPictureProps } from './types';
 
-export const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
+const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
   provider,
 }) => {
   const logoAttr = get(providersMap, provider.toLowerCase());
@@ -26,3 +26,5 @@ export const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
     </Box>
   );
 };
+
+export default ProviderPicture;

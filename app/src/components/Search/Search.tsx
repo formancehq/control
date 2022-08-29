@@ -41,8 +41,8 @@ import {
 } from '~/src/components/Search/service';
 import { get, isEmpty } from 'lodash';
 import { useOpen } from '~/src/hooks/useOpen';
-import { PayInChips } from '~/src/components/PayInChips';
-import { ProviderPicture } from '~/src/components/ProviderPicture';
+import PayInChips from '~/src/components/Wrappers/PayInChips';
+import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 
 // TODo improve
 const Search: FunctionComponent = () => {

@@ -4,7 +4,7 @@ import React, { FunctionComponent } from 'react';
 import { PaymentTypes } from '~/src/types/payment';
 import { PayInChipsProps } from './types';
 
-export const PayInChips: FunctionComponent<PayInChipsProps> = ({ type }) => (
+const PayInChips: FunctionComponent<PayInChipsProps> = ({ type }) => (
   <Chip
     label={type}
     variant="square"
@@ -12,3 +12,5 @@ export const PayInChips: FunctionComponent<PayInChipsProps> = ({ type }) => (
     icon={type === PaymentTypes.PAY_OUT ? <NorthEast /> : <SouthEast />}
   />
 );
+
+export default PayInChips;

@@ -24,8 +24,8 @@ import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
 import { API_PAYMENT, ApiClient } from '~/src/utils/api';
 import { copyTokenToClipboard } from '~/src/utils/clipboard';
 import Table from '~/src/components/Wrappers/Table';
-import { PayInChips } from '~/src/components/PayInChips';
-import { ProviderPicture } from '~/src/components/ProviderPicture';
+import PayInChips from '~/src/components/Wrappers/PayInChips';
+import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import { LoadingButton } from '@mui/lab';
 
 // TODO remove this when Reconciliation is done

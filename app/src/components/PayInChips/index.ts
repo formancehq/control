@@ -1,1 +1,0 @@
-export { PayInChips } from './PayinChips';

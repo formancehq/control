@@ -8,8 +8,8 @@ import { ArrowRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import Table from '~/src/components/Wrappers/Table';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
-import { PayInChips } from '~/src/components/PayInChips';
-import { ProviderPicture } from '~/src/components/ProviderPicture';
+import PayInChips from '~/src/components/Wrappers/PayInChips';
+import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 
 const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
   const navigate = useNavigate();
