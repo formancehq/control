@@ -158,6 +158,7 @@ export default function Index() {
               {/*    />*/}
               {/*  </Box>*/}
               {/*</Box>*/}
+
               {/*  STATUS */}
               <Box mt={5}>
                 <TitleWithBar
@@ -167,14 +168,13 @@ export default function Index() {
                 <Box
                   mt={3}
                   display="flex"
+                  flexWrap="wrap"
                   data-testid="stats-card"
-                  justifyContent={
-                    data.ledgers.length > 0 ? 'center' : 'flex-start'
-                  }
+                  justifyContent="flex-start"
                 >
                   {data.ledgers.length > 0 ? (
                     data.ledgers.map((ledger, index) => (
-                      <Box mr={3} key={index}>
+                      <Box mr={3} key={index} mt={3}>
                         <StatsCard
                           key={index}
                           icon={<AccountBalance />}
