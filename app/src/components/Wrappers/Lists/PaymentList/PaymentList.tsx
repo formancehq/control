@@ -19,7 +19,11 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
     <Box component="span" key={payment.id}>
       <LoadingButton
         id={`show-${payment.id}`}
-        onClick={() => navigate(getRoute(PAYMENT_ROUTE, payment.id))}
+        onClick={() =>
+          navigate(getRoute(PAYMENT_ROUTE, payment.id), {
+            state: { provider: payment.provider, reference: payment.reference },
+          })
+        }
         endIcon={<ArrowRight />}
       />
     </Box>

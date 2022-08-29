@@ -11,18 +11,34 @@ import {
 import i18n from './../../translations';
 import { BreadcrumbsLink } from '@numaryhq/storybook';
 
+export type State = {
+  provider: string;
+  reference: string;
+};
+
 const buildPaymentBreadcrumbs = (
   navigate: NavigateFunction,
-  id: string
-): BreadcrumbsLink[] => [
-  {
+  id: string,
+  state?: State
+): BreadcrumbsLink[] => {
+  const bread = {
     label: i18n.t('common.breadcrumbs.targets.payments'),
     onClick: () => navigate(getRoute(PAYMENTS_ROUTE)),
-  },
-  {
-    label: id,
-  },
-];
+  };
+  if (state && state.provider && state.reference) {
+    return [
+      bread,
+      {
+        label: state.provider,
+      },
+      {
+        label: state.reference,
+      },
+    ];
+  } else {
+    return [bread, { label: id }];
+  }
+};
 
 const buildLedgerBreadcrumbs = (
   target: string,
@@ -52,7 +68,8 @@ const buildLedgerBreadcrumbs = (
 export const breadcrumbsFactory = (
   params: ObjectOf<any>,
   match: (pattern: string) => boolean,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  state?: unknown
 ): BreadcrumbsLink[] | undefined => {
   const accountsRoute = match('/ledgers/:ledgerId/accounts/:accountId');
   const transactionsRoute = match(
@@ -93,7 +110,7 @@ export const breadcrumbsFactory = (
   }
 
   if (paymentsRoute) {
-    return buildPaymentBreadcrumbs(navigate, params.paymentId);
+    return buildPaymentBreadcrumbs(navigate, params.paymentId, state as State);
   }
 
   return undefined;
