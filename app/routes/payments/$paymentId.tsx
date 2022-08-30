@@ -12,6 +12,7 @@ import {
   Date,
   DividerWithSpace,
   JsonViewer,
+  LoadingButton,
   Page,
   Row,
   SectionWrapper,
@@ -26,7 +27,6 @@ import { copyTokenToClipboard } from '~/src/utils/clipboard';
 import Table from '~/src/components/Wrappers/Table';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
-import { LoadingButton } from '@mui/lab';
 
 // TODO remove this when Reconciliation is done
 interface Reconciliation {
@@ -90,33 +90,36 @@ const boxWithCopyToClipboard = (
       sx={{
         display: 'flex',
         alignItems: 'center',
-        p: '10px 10px 10px 26px',
+        p: '15px',
         justifyContent: 'space-between',
         backgroundColor: color,
       }}
     >
+      {/* TODO Add Tooltip */}
       <Typography variant="bold">{title}</Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          width: '70%',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
+
+      <Typography noWrap sx={{ maxWidth: '250px' }}>
+        {id}
+      </Typography>
+      <Tooltip
+        open={open}
+        onClose={handleClose}
+        // onOpen={handleOpen}
+        title={tooltipTitle}
       >
-        <Typography noWrap>{id}</Typography>
-        <Tooltip
-          open={open}
-          onClose={handleClose}
-          // onOpen={handleOpen}
-          title={tooltipTitle}
-        >
+        <Box component="span">
           {/* TODO use LoadingButton from @numaryhq/storybook*/}
-          <LoadingButton id="copyToCliboardWrapper">
-            <ContentCopy color="action" onClick={copyToClipBoard} />
-          </LoadingButton>
-        </Tooltip>
-      </Box>
+          <LoadingButton
+            id="copyToCliboardWrapper"
+            sx={{
+              minWidth: 0,
+              height: 0,
+              p: 0,
+            }}
+            startIcon={<ContentCopy color="action" onClick={copyToClipBoard} />}
+          />
+        </Box>
+      </Tooltip>
     </Box>
   );
 };
@@ -234,7 +237,7 @@ export default function PaymentDetails() {
             <Grid item xs={6}>
               {boxWithCopyToClipboard(
                 t('pages.payment.reference'),
-                details.id,
+                details.reference,
                 theme.palette.violet.light,
                 t('pages.payment.copyToClipboardTooltip', {
                   value: 'reference',
@@ -244,55 +247,62 @@ export default function PaymentDetails() {
           </Grid>
           {Divider}
 
-          {/* Description */}
-          <Box
-            sx={{
-              display: 'flex',
-              width: '100%',
-              justifyContent: 'space-around',
-              mt: '26px',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                width: '45%',
-                flexDirection: 'column',
-                justifyContent: 'start',
-              }}
-            >
-              {dataItem(
-                t('pages.payment.type'),
-                <PayInChips type={details.type} />
-              )}
-              {dataItem(
-                t('pages.payment.processor'),
-                <ProviderPicture provider={details.provider} />
-              )}
+          {/* Description2 */}
+          <Grid container spacing="26px">
+            <Grid item xs={6}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'start',
+                  p: '15px',
+                }}
+              >
+                {dataItem(
+                  t('pages.payment.type'),
+                  <PayInChips type={details.type} />
+                )}
+                {dataItem(
+                  t('pages.payment.processor'),
+                  <ProviderPicture provider={details.provider} />
+                )}
 
-              {dataItem(
-                t('pages.payment.status'),
-                <Chip color="violet" label={details.status} variant="square" />
-              )}
-            </Box>
+                {dataItem(
+                  t('pages.payment.status'),
+                  <Chip
+                    color="violet"
+                    label={details.status}
+                    variant="square"
+                  />
+                )}
+              </Box>
+            </Grid>
+            <Grid item xs={6}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  p: '15px',
+                }}
+              >
+                {dataItem(
+                  t('pages.payment.netValue'),
+                  <Amount
+                    amount={details.initialAmount}
+                    asset={details.asset}
+                  />
+                )}
+                {dataItem(
+                  t('pages.payment.initialAmount'),
+                  <Amount
+                    amount={details.initialAmount}
+                    asset={details.asset}
+                  />
+                )}
+              </Box>
+            </Grid>
+          </Grid>
 
-            <Box
-              sx={{
-                display: 'flex',
-                width: '45%',
-                flexDirection: 'column',
-              }}
-            >
-              {dataItem(
-                t('pages.payment.netValue'),
-                <Amount amount={details.initialAmount} asset={details.asset} />
-              )}
-              {dataItem(
-                t('pages.payment.initialAmount'),
-                <Amount amount={details.initialAmount} asset={details.asset} />
-              )}
-            </Box>
-          </Box>
           {Divider}
 
           {/* Events journals */}
