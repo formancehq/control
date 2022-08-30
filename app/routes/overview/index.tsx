@@ -19,8 +19,10 @@ import { LoaderFunction } from '@remix-run/server-runtime';
 import { Cursor } from '~/src/types/generic';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { Account, LedgerInfo } from '~/src/types/ledger';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import { LedgerList } from '../ledgers/list';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -92,6 +94,8 @@ export default function Index() {
   const accounts = get(data, 'accounts.total.value', 0) as number;
   const payments = get(data, 'payments.total.value', 0) as number;
   const shouldDisplaySetup = payments === 0 || accounts === 0;
+  const [searchParams] = useSearchParams();
+  const urlParamsLedgers = searchParams.getAll('ledgers');
 
   return (
     <>
@@ -161,10 +165,24 @@ export default function Index() {
 
               {/*  STATUS */}
               <Box mt={5}>
-                <TitleWithBar
-                  title={t('pages.overview.status')}
-                  titleColor={theme.palette.neutral[0]}
-                />
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    '& div': { marginBottom: '0px !important' },
+                  }}
+                >
+                  <TitleWithBar
+                    title={t('pages.overview.status')}
+                    titleColor={theme.palette.neutral[0]}
+                  />
+                  {data.ledgers.length > 3 && (
+                    <FiltersBar>
+                      <LedgerList />
+                    </FiltersBar>
+                  )}
+                </Box>
+
                 <Box
                   mt={3}
                   display="flex"
@@ -174,20 +192,26 @@ export default function Index() {
                   gap="26px"
                 >
                   {data.ledgers.length > 0 ? (
-                    data.ledgers.map((ledger, index) => (
-                      <Box key={index}>
-                        <StatsCard
-                          key={index}
-                          icon={<AccountBalance />}
-                          variant={ledger.color as any}
-                          title1={t('pages.overview.stats.transactions')}
-                          title2={t('pages.overview.stats.accounts')}
-                          chipValue={ledger.slug}
-                          value1={`${get(ledger, 'stats.transactions', '0')}`}
-                          value2={`${get(ledger, 'stats.accounts', '0')}`}
-                        />
-                      </Box>
-                    ))
+                    data.ledgers
+                      .filter((currentLedger) =>
+                        urlParamsLedgers.length === 0
+                          ? true
+                          : urlParamsLedgers.includes(currentLedger.slug)
+                      )
+                      .map((ledger, index) => (
+                        <Box key={index}>
+                          <StatsCard
+                            key={index}
+                            icon={<AccountBalance />}
+                            variant={ledger.color as any}
+                            title1={t('pages.overview.stats.transactions')}
+                            title2={t('pages.overview.stats.accounts')}
+                            chipValue={ledger.slug}
+                            value1={`${get(ledger, 'stats.transactions', '0')}`}
+                            value2={`${get(ledger, 'stats.accounts', '0')}`}
+                          />
+                        </Box>
+                      ))
                   ) : (
                     <Box mr={3}>
                       <StatsCard
@@ -233,6 +257,7 @@ export default function Index() {
               rel="noopener"
             >
               <LoadingButton
+                id="taskTutoButton"
                 variant="dark"
                 content={t('pages.overview.tasks.tuto.buttonText')}
                 sx={{ mt: '12px' }}
@@ -252,6 +277,7 @@ export default function Index() {
               rel="noopener"
             >
               <LoadingButton
+                id="taskUseCaseLibButton"
                 variant="dark"
                 content={t('pages.overview.tasks.useCaseLib.buttonText')}
                 sx={{ mt: '12px' }}
@@ -284,6 +310,7 @@ export default function Index() {
                 width="400px"
               >
                 <Link
+                  id="setUpPayments"
                   href="https://docs.formance.com/oss/payments/reference/api"
                   underline="none"
                   target="_blank"
@@ -312,6 +339,7 @@ export default function Index() {
                 >
                   <LoadingButton
                     variant="dark"
+                    id="setUpLedger"
                     href="https://docs.formance.com/oss/ledger/reference/api"
                     content={t('pages.overview.setUp.ledger.buttonText')}
                     sx={{ mt: '12px' }}
