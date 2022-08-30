@@ -3,6 +3,7 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { isArray } from 'lodash';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { theme } from '@numaryhq/storybook';
 import {
   getRoute,
   OVERVIEW_ROUTE,
@@ -10,6 +11,7 @@ import {
 } from '~/src/components/Navbar/routes';
 import { useTranslation } from 'react-i18next';
 import Search from './../Search';
+import LinkWrapper from '../Wrappers/LinkWrapper';
 
 const Navbar: FunctionComponent = () => {
   const navigate = useNavigate();
@@ -58,33 +60,33 @@ const Navbar: FunctionComponent = () => {
                 : path === location.pathname;
 
               return (
-                <Button
+                <LinkWrapper
                   key={id}
-                  onClick={() =>
-                    navigate(
-                      isArray(path) ? (path[0] as string) : (path as string),
-                      { replace: true }
-                    )
-                  }
-                  sx={{
-                    gap: '8px',
-                    padding: '8px 16px',
-                    margin: '0px 4px 0px 4px',
-                    height: '40px',
-                    minWidth: '54px',
-                    textTransform: 'none',
-                    backgroundColor: ({ palette }) =>
-                      selected ? palette.neutral[0] : palette.neutral[900],
-                    color: ({ palette }) =>
-                      selected ? palette.neutral[900] : 'inherit',
-                    '&:hover': {
-                      backgroundColor: ({ palette }) =>
-                        selected ? palette.neutral[0] : palette.neutral[800],
-                    },
-                  }}
+                  prefetch="intent"
+                  to={isArray(path) ? (path[0] as string) : (path as string)}
+                  color={selected ? theme.palette.neutral[900] : 'inherit'}
                 >
-                  {t(label)}
-                </Button>
+                  <Button
+                    sx={{
+                      gap: '8px',
+                      padding: '8px 16px',
+                      margin: '0px 4px 0px 4px',
+                      height: '40px',
+                      minWidth: '54px',
+                      textTransform: 'none',
+                      backgroundColor: ({ palette }) =>
+                        selected ? palette.neutral[0] : palette.neutral[900],
+                      color: ({ palette }) =>
+                        selected ? palette.neutral[900] : 'inherit',
+                      '&:hover': {
+                        backgroundColor: ({ palette }) =>
+                          selected ? palette.neutral[0] : palette.neutral[800],
+                      },
+                    }}
+                  >
+                    {t(label)}
+                  </Button>
+                </LinkWrapper>
               );
             })}
           </Box>
