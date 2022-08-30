@@ -67,7 +67,7 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
               key={index}
               amount={payment.initialAmount}
             />,
-            <Date key={index} timestamp={payment.date} />,
+            <Date key={index} timestamp={payment.createdAt} />,
           ]}
           item={payment}
           renderActions={() => renderRowActions(payment)}
