@@ -6,16 +6,17 @@ export enum PaymentTypes {
   OTHER = 'other',
 }
 
-export enum PaymentStatuses {
-  REFUNDED = 'refunded',
-  AUTHORIZED = 'authorized',
-  COMPLETED = 'completed',
-}
-
 export type PaymentType =
   | PaymentTypes.PAY_IN
   | PaymentTypes.PAY_OUT
   | PaymentTypes.OTHER;
+
+export enum PaymentStatuses {
+  SUCCEEDED = 'succeeded',
+  CANCELLED = 'cancelled',
+  FAILED = 'failed',
+  PENDING = 'pending',
+}
 
 export type Payment = {
   id: string;

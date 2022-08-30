@@ -117,6 +117,7 @@ export default {
         title: 'Payments',
         filters: {
           type: 'Type',
+          status: 'Status',
         },
         table: {
           columnLabel: {
