@@ -26,7 +26,7 @@ export type Payment = {
   status: string;
   initialAmount: number;
   asset: string;
-  date: Date;
+  createdAt: Date;
   raw: ObjectOf<any>;
 };
 
