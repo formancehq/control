@@ -18,6 +18,14 @@ export enum PaymentStatuses {
   PENDING = 'pending',
 }
 
+export enum PaymentProviders {
+  DEVENGO = 'devengo',
+  STRIPE = 'stripe',
+  MONGOPAY = 'mangopay',
+  WIZE = 'wize',
+  PAYPAL = 'paypal',
+}
+
 export type Payment = {
   id: string;
   provider: string;

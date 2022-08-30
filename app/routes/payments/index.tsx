@@ -8,7 +8,12 @@ import {
 } from '@numaryhq/storybook';
 import { useTranslation } from 'react-i18next';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { Payment, PaymentStatuses, PaymentTypes } from '~/src/types/payment';
+import {
+  Payment,
+  PaymentProviders,
+  PaymentStatuses,
+  PaymentTypes,
+} from '~/src/types/payment';
 import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
 import { API_SEARCH, ApiClient } from '~/src/utils/api';
@@ -16,26 +21,26 @@ import { Cursor } from '~/src/types/generic';
 import { buildQuery } from '~/src/utils/search';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
-import SelectCheckbox from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/SelectCheckbox';
+import {
+  buildOptions,
+  renderOption,
+} from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import Text from '~/src/components/Wrappers/Table/Filters/Text';
 
-const paymentTypes: AutocompleteOption[] = [
-  { id: `type=${PaymentTypes.PAY_IN}`, label: PaymentTypes.PAY_IN },
-  { id: `type=${PaymentTypes.PAY_OUT}`, label: PaymentTypes.PAY_OUT },
+const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
+const paymentProviders = [
+  PaymentProviders.STRIPE,
+  PaymentProviders.DEVENGO,
+  PaymentProviders.MONGOPAY,
+  PaymentProviders.WIZE,
+  PaymentProviders.PAYPAL,
 ];
-
-const paymentStatus: AutocompleteOption[] = [
-  { id: `status=${PaymentStatuses.PENDING}`, label: PaymentStatuses.PENDING },
-  {
-    id: `status=${PaymentStatuses.SUCCEEDED}`,
-    label: PaymentStatuses.SUCCEEDED,
-  },
-  { id: `status=${PaymentStatuses.FAILED}`, label: PaymentStatuses.FAILED },
-  {
-    id: `status=${PaymentStatuses.CANCELLED}`,
-    label: PaymentStatuses.CANCELLED,
-  },
+const paymentStatus = [
+  PaymentStatuses.PENDING,
+  PaymentStatuses.SUCCEEDED,
+  PaymentStatuses.FAILED,
+  PaymentStatuses.CANCELLED,
 ];
 
 export const meta: MetaFunction = () => ({
@@ -77,11 +82,8 @@ export default function Index() {
     multiple: true,
     disableCloseOnSelect: true,
     getOptionLabel: (option: AutocompleteOption) => option.label,
-    renderOption: (props: any, option: AutocompleteOption) => (
-      <li {...props}>
-        <SelectCheckbox value={option.label} name={Filters.TERMS} />
-      </li>
-    ),
+    renderOption: (props: any, option: AutocompleteOption) =>
+      renderOption(props, option),
     style: { width: 250 },
   };
 
@@ -92,18 +94,37 @@ export default function Index() {
           <>
             <AutocompleteSelect
               id="payment-type-autocomplete"
-              options={paymentTypes as readonly any[]}
+              options={buildOptions(paymentTypes, 'type') as readonly any[]}
               name="payment-type-autocomplete"
               placeholder={t('pages.payments.filters.type')}
               {...props}
             />
             <AutocompleteSelect
               id="payment-status-autocomplete"
-              options={paymentStatus as readonly any[]}
+              options={buildOptions(paymentStatus, 'status') as readonly any[]}
               name="payment-status-autocomplete"
               placeholder={t('pages.payments.filters.status')}
               {...props}
             />
+            <AutocompleteSelect
+              id="payment-provider-autocomplete"
+              options={
+                buildOptions(paymentProviders, 'provider') as readonly any[]
+              }
+              name="payment-provider-autocomplete"
+              placeholder={t('pages.payments.filters.provider')}
+              {...props}
+            />
+            <Text
+              placeholder={t('pages.payments.filters.reference')}
+              name="reference"
+            />
+            {/* TODO uncomment when Search API is ready to filter on initialAmount*/}
+            {/* https://linear.app/formance/issue/NUM-778/search-add-initialamount-to-searchable-field-payment-target*/}
+            {/*<Text*/}
+            {/*  placeholder={t('pages.payments.filters.value')}*/}
+            {/*  name="initialAmount"*/}
+            {/*/>*/}
           </>
         </FiltersBar>
         <PaymentList payments={payments} />

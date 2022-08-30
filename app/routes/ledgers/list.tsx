@@ -5,11 +5,13 @@ import { LoaderFunction } from '@remix-run/server-runtime';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import { LedgerInfo } from '~/src/types/ledger';
 import { useFetcher } from '@remix-run/react';
-import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
-import SelectCheckbox from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/SelectCheckbox';
+import {
+  Filters,
+  renderOption,
+} from '~/src/components/Wrappers/Table/Filters/filters';
 import { useTranslation } from 'react-i18next';
 import { SelectCheckboxItem } from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/types';
-import { AutocompleteSelect } from '@numaryhq/storybook';
+import { AutocompleteOption, AutocompleteSelect } from '@numaryhq/storybook';
 
 export const meta: MetaFunction = () => ({
   title: 'Ledgers',
@@ -50,12 +52,10 @@ export function LedgerList() {
       id="ledgers-autocomplete"
       options={fetcher.data ? (fetcher.data as readonly any[]) : []}
       disableCloseOnSelect
-      getOptionLabel={(option: SelectCheckboxItem) => option.label}
-      renderOption={(props: any, option: SelectCheckboxItem) => (
-        <li {...props}>
-          <SelectCheckbox value={option.label} name={Filters.LEDGERS} />
-        </li>
-      )}
+      getOptionLabel={(option: AutocompleteOption) => option.label}
+      renderOption={(props: any, option: AutocompleteOption) =>
+        renderOption(props, option, Filters.LEDGERS)
+      }
       style={{ width: 350 }}
     />
   );

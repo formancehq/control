@@ -1,21 +1,23 @@
+import { PaymentProviders } from '~/src/types/payment';
+
 export const providersMap = {
-  stripe: {
+  [PaymentProviders.STRIPE]: {
     path: '/images/connectors/stripe.svg',
     width: 28,
   },
-  mangopay: {
+  [PaymentProviders.MONGOPAY]: {
     path: '/images/connectors/mangopay.svg',
     width: 90,
   },
-  wize: {
+  [PaymentProviders.WIZE]: {
     path: '/images/connectors/wize.svg',
     width: 'initial',
   },
-  paypal: {
+  [PaymentProviders.PAYPAL]: {
     path: '/images/connectors/paypal.svg',
     width: 30,
   },
-  devengo: {
+  [PaymentProviders.DEVENGO]: {
     path: '/images/connectors/devengo.svg',
     width: 80,
   },

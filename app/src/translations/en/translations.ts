@@ -118,6 +118,9 @@ export default {
         filters: {
           type: 'Type',
           status: 'Status',
+          provider: 'Provider',
+          reference: 'Reference',
+          value: 'Value',
         },
         table: {
           columnLabel: {
