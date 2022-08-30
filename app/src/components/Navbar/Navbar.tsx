@@ -51,7 +51,7 @@ const Navbar: FunctionComponent = () => {
               FORMANCE
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
             {routerConfig.map(({ label, path, id }) => {
               const selected = isArray(path)
                 ? path[0] === location.pathname
