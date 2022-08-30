@@ -21,7 +21,7 @@
     "@mui/icons-material": "^5.8.4",
     "@mui/lab": "^5.0.0-alpha.92",
     "@mui/material": "latest",
-    "@numaryhq/storybook": "^0.6.38",
+    "@numaryhq/storybook": "^0.6.40",
     "@remix-run/react": "latest",
     "@remix-run/serve": "latest",
     "graphviz-react": "^1.2.1",
