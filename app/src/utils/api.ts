@@ -72,8 +72,6 @@ export class ApiClient implements IApiClient {
     body: any,
     path?: string
   ): Promise<T | undefined> {
-    console.log('boody', body);
-
     return this.handleRequest(params, body, path);
   }
 
