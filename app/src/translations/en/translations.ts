@@ -121,6 +121,8 @@ export default {
           provider: 'Provider',
           reference: 'Reference',
           value: 'Value',
+          source: 'Source',
+          destination: 'Destination',
         },
         table: {
           columnLabel: {

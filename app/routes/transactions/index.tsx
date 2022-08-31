@@ -13,6 +13,8 @@ import { Cursor } from '~/src/types/generic';
 import { LedgerList } from '~/routes/ledgers/list';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import Text from '~/src/components/Wrappers/Table/Filters/Text';
+import { useTranslation } from 'react-i18next';
 
 export const meta: MetaFunction = () => ({
   title: 'Transactions',
@@ -49,12 +51,27 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export default function Index() {
   const transactions = useLoaderData<Cursor<Transaction>>();
+  const { t } = useTranslation();
 
   return (
     <Page id={transactionsConfig.id}>
       <Form method="get">
         <FiltersBar>
-          <LedgerList />
+          <>
+            <LedgerList />
+            <Text
+              placeholder={t('pages.payments.filters.value')}
+              name="amount"
+            />
+            <Text
+              placeholder={t('pages.payments.filters.source')}
+              name="source"
+            />
+            <Text
+              placeholder={t('pages.payments.filters.destination')}
+              name="destination"
+            />
+          </>
         </FiltersBar>
         <TransactionList
           transactions={transactions as unknown as Cursor<Transaction>}
