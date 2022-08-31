@@ -169,7 +169,9 @@ export default function Index() {
                   sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    '& div': { marginBottom: '0px !important' },
+                    '& .MuiBox-root': {
+                      marginBottom: '0px',
+                    },
                   }}
                 >
                   <TitleWithBar
@@ -257,7 +259,7 @@ export default function Index() {
               rel="noopener"
             >
               <LoadingButton
-                id="taskTutoButton"
+                id="task-tuto-button"
                 variant="dark"
                 content={t('pages.overview.tasks.tuto.buttonText')}
                 sx={{ mt: '12px' }}
@@ -277,7 +279,7 @@ export default function Index() {
               rel="noopener"
             >
               <LoadingButton
-                id="taskUseCaseLibButton"
+                id="task-use-case-libButton"
                 variant="dark"
                 content={t('pages.overview.tasks.useCaseLib.buttonText')}
                 sx={{ mt: '12px' }}
@@ -299,7 +301,7 @@ export default function Index() {
           <Box
             display="flex"
             flexWrap="wrap"
-            data-testid="setup"
+            data-testid="set-up"
             justifyContent="flex-start"
             gap="26px"
           >
@@ -310,7 +312,7 @@ export default function Index() {
                 width="400px"
               >
                 <Link
-                  id="setUpPayments"
+                  id="set-up-payments"
                   href="https://docs.formance.com/oss/payments/reference/api"
                   underline="none"
                   target="_blank"
@@ -339,7 +341,7 @@ export default function Index() {
                 >
                   <LoadingButton
                     variant="dark"
-                    id="setUpLedger"
+                    id="set-up-ledger"
                     href="https://docs.formance.com/oss/ledger/reference/api"
                     content={t('pages.overview.setUp.ledger.buttonText')}
                     sx={{ mt: '12px' }}
