@@ -358,13 +358,12 @@ const Search: FunctionComponent = () => {
 
   return (
     <>
-      {/* TODo add transparent variant ?*/}
       <LoadingButton
         id="trigger-search"
         startIcon={<SearchOutlined />}
         onClick={handleOpen}
-        variant="dark"
-        sx={{ background: 'transparent !important' }}
+        variant="transparent"
+        sx={{ color: ({ palette }) => palette.neutral[0] }}
       />
       <SbSearch
         open={open}

@@ -95,12 +95,12 @@ const boxWithCopyToClipboard = (
         backgroundColor: color,
       }}
     >
-      {/* TODO Add Tooltip */}
       <Typography variant="bold">{title}</Typography>
-
-      <Typography noWrap sx={{ maxWidth: '250px' }}>
-        {id}
-      </Typography>
+      <Tooltip title={id}>
+        <Typography noWrap sx={{ maxWidth: '250px' }}>
+          {id}
+        </Typography>
+      </Tooltip>
       <Tooltip
         open={open}
         onClose={handleClose}
@@ -108,9 +108,9 @@ const boxWithCopyToClipboard = (
         title={tooltipTitle}
       >
         <Box component="span">
-          {/* TODO use LoadingButton from @numaryhq/storybook*/}
           <LoadingButton
             id="copyToCliboardWrapper"
+            variant="transparent"
             sx={{
               minWidth: 0,
               height: 0,
@@ -312,16 +312,16 @@ export default function PaymentDetails() {
                 (adjustments: AdjustmentsItem, index: number) => (
                   <div key={index}>
                     {eventsJournalItem(
-                      t('pages.payment.eventJournal.statusChange', {
-                        value1: details.initialAmount,
-                        value2: adjustments.amount,
+                      t('pages.payment.eventJournal.netValueChange', {
+                        value1: details.status,
+                        value2: adjustments.status,
                       }),
                       adjustments.date
                     )}
                     {eventsJournalItem(
-                      t('pages.payment.eventJournal.netValueChange', {
-                        value1: details.status,
-                        value2: adjustments.status,
+                      t('pages.payment.eventJournal.statusChange', {
+                        value1: details.initialAmount,
+                        value2: adjustments.amount,
                       }),
                       adjustments.date
                     )}
