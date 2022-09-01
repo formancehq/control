@@ -1,12 +1,12 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useSearchParams } from '@remix-run/react';
-import { Checkbox, ListItemText } from '@mui/material';
+import { Checkbox as MuiCheckbox, ListItemText } from '@mui/material';
 import { buildQuery } from '~/src/utils/search';
-import { SelectCheckboxProps } from '~/src/components/Wrappers/Table/Filters/SelectCheckbox/types';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import { URLSearchParamsInit } from 'react-router-dom';
+import { CheckboxProps } from './types';
 
-const SelectCheckbox: FunctionComponent<SelectCheckboxProps> = ({
+const Checkbox: FunctionComponent<CheckboxProps> = ({
   name,
   value,
   label = value,
@@ -21,7 +21,7 @@ const SelectCheckbox: FunctionComponent<SelectCheckboxProps> = ({
 
   return (
     <>
-      <Checkbox
+      <MuiCheckbox
         name={name}
         value={value}
         checked={checked}
@@ -54,4 +54,4 @@ const SelectCheckbox: FunctionComponent<SelectCheckboxProps> = ({
     </>
   );
 };
-export default SelectCheckbox;
+export default Checkbox;

@@ -1,11 +1,7 @@
 import * as React from 'react';
 import type { MetaFunction } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import {
-  AutocompleteOption,
-  AutocompleteSelect,
-  Page,
-} from '@numaryhq/storybook';
+import { Page } from '@numaryhq/storybook';
 import { useTranslation } from 'react-i18next';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import {
@@ -21,12 +17,9 @@ import { Cursor } from '~/src/types/generic';
 import { buildQuery } from '~/src/utils/search';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import {
-  buildOptions,
-  renderOption,
-} from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
+import Select from '~/src/components/Wrappers/Table/Filters/Select';
 
 const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
 const paymentProviders = [
@@ -77,43 +70,32 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export default function Index() {
   const { t } = useTranslation();
   const payments = useLoaderData();
-  const props = {
-    noOptionsText: t('common.noResults'),
-    multiple: true,
-    disableCloseOnSelect: true,
-    getOptionLabel: (option: AutocompleteOption) => option.label,
-    renderOption: (props: any, option: AutocompleteOption) =>
-      renderOption(props, option),
-    style: { width: 250 },
-  };
 
   return (
     <Page id={paymentsConfig.id}>
       <Form method="get">
         <FiltersBar>
           <>
-            <AutocompleteSelect
+            <Select
               id="payment-type-autocomplete"
-              options={buildOptions(paymentTypes, 'type') as readonly any[]}
+              options={paymentTypes}
+              field="type"
               name="payment-type-autocomplete"
               placeholder={t('pages.payments.filters.type')}
-              {...props}
             />
-            <AutocompleteSelect
+            <Select
               id="payment-status-autocomplete"
-              options={buildOptions(paymentStatus, 'status') as readonly any[]}
+              options={paymentStatus}
+              field="status"
               name="payment-status-autocomplete"
               placeholder={t('pages.payments.filters.status')}
-              {...props}
             />
-            <AutocompleteSelect
+            <Select
               id="payment-provider-autocomplete"
-              options={
-                buildOptions(paymentProviders, 'provider') as readonly any[]
-              }
+              options={paymentProviders}
+              field="provider"
               name="payment-provider-autocomplete"
               placeholder={t('pages.payments.filters.provider')}
-              {...props}
             />
             <Text
               placeholder={t('pages.payments.filters.reference')}

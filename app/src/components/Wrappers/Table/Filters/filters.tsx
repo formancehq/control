@@ -1,18 +1,20 @@
 import { AutocompleteOption } from '@numaryhq/storybook';
-import SelectCheckbox from '~/src/components/Wrappers/Table/Filters/SelectCheckbox';
 import * as React from 'react';
+import Checkbox from './Checkbox';
 
 export enum Filters {
   TERMS = 'terms',
   LEDGERS = 'ledgers',
 }
 
+export const getFieldValue = (field: string): string => field.split('=')[1];
+
 export const buildOptions = (
   arr: string[],
-  key: string
+  field?: string
 ): AutocompleteOption[] =>
   arr.map((item) => ({
-    id: `${key}=${item}`,
+    id: `${field ? `${field}=` : ''}${item}`,
     label: item,
   }));
 
@@ -22,7 +24,7 @@ export const renderOption = (
   name?: Filters.TERMS | Filters.LEDGERS
 ) => (
   <li {...props}>
-    <SelectCheckbox
+    <Checkbox
       value={option.id}
       name={name || Filters.TERMS}
       label={option.label}

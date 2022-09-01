@@ -6,6 +6,7 @@ import { Chip, TextField } from '@numaryhq/storybook';
 import { buildQuery } from '~/src/utils/search';
 import { URLSearchParamsInit } from 'react-router-dom';
 import { TextProps } from '~/src/components/Wrappers/Table/Filters/Text/types';
+import { getFieldValue } from '../filters';
 
 const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,11 +56,12 @@ const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
           p: 0,
         }}
       />
-      {active && (
+      {active && value && (
         <Box mt={1}>
           <Chip
-            label={value}
+            label={getFieldValue(value)}
             variant="square"
+            color={'secondary' as 'default'}
             onDelete={() => setActive(false)}
           />
         </Box>
