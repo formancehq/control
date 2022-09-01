@@ -19,20 +19,25 @@ export type State = {
 const buildPaymentBreadcrumbs = (
   navigate: NavigateFunction,
   id: string,
-  state?: State
+  urlSearchParams: URLSearchParams
 ): BreadcrumbsLink[] => {
   const bread = {
     label: i18n.t('common.breadcrumbs.targets.payments'),
     onClick: () => navigate(getRoute(PAYMENTS_ROUTE)),
   };
-  if (state && state.provider && state.reference) {
+  const provider = urlSearchParams.get('provider');
+  const reference = urlSearchParams.get('reference');
+
+  console.log(provider, reference);
+
+  if (provider && reference) {
     return [
       bread,
       {
-        label: state.provider,
+        label: provider,
       },
       {
-        label: state.reference,
+        label: reference,
       },
     ];
   } else {
@@ -69,7 +74,7 @@ export const breadcrumbsFactory = (
   params: ObjectOf<any>,
   match: (pattern: string) => boolean,
   navigate: NavigateFunction,
-  state?: unknown
+  urlSearchParams: URLSearchParams
 ): BreadcrumbsLink[] | undefined => {
   const accountsRoute = match('/ledgers/:ledgerId/accounts/:accountId');
   const transactionsRoute = match(
@@ -110,7 +115,7 @@ export const breadcrumbsFactory = (
   }
 
   if (paymentsRoute) {
-    return buildPaymentBreadcrumbs(navigate, params.paymentId, state as State);
+    return buildPaymentBreadcrumbs(navigate, params.paymentId, urlSearchParams);
   }
 
   return undefined;

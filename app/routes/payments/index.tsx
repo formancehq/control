@@ -18,8 +18,8 @@ import { buildQuery } from '~/src/utils/search';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
-import Text from '~/src/components/Wrappers/Table/Filters/Text';
 import Select from '~/src/components/Wrappers/Table/Filters/Select';
+import Text from '~/src/components/Wrappers/Table/Filters/Text';
 
 const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
 const paymentProviders = [
