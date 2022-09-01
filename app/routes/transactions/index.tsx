@@ -59,10 +59,12 @@ export default function Index() {
         <FiltersBar>
           <>
             <LedgerList />
-            <Text
-              placeholder={t('pages.payments.filters.value')}
-              name="amount"
-            />
+            {/* TODO uncomment when Search API is ready to filter on amount*/}
+            {/* https://linear.app/formance/issue/NUM-778/search-minor-improvements-searchable-field-empty-data*/}
+            {/*<Text*/}
+            {/*  placeholder={t('pages.payments.filters.value')}*/}
+            {/*  name="amount"*/}
+            {/*/>*/}
             <Text
               placeholder={t('pages.payments.filters.source')}
               name="source"

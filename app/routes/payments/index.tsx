@@ -102,7 +102,7 @@ export default function Index() {
               name="reference"
             />
             {/* TODO uncomment when Search API is ready to filter on initialAmount*/}
-            {/* https://linear.app/formance/issue/NUM-778/search-add-initialamount-to-searchable-field-payment-target*/}
+            {/* https://linear.app/formance/issue/NUM-778/search-minor-improvements-searchable-field-empty-data*/}
             {/*<Text*/}
             {/*  placeholder={t('pages.payments.filters.value')}*/}
             {/*  name="initialAmount"*/}
