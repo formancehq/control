@@ -24,7 +24,7 @@ const Select: FunctionComponent<SelectProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Box>
+    <Box width={width}>
       <AutocompleteSelect
         id={id}
         options={buildOptions(options, field) as readonly any[]}
@@ -42,7 +42,7 @@ const Select: FunctionComponent<SelectProps> = ({
         }
         style={{ width }}
       />
-      <Box display="flex" gap={1}>
+      <Box display="flex" gap={1} flexWrap="wrap">
         <SelectedTags field={field} name={type} />
       </Box>
     </Box>

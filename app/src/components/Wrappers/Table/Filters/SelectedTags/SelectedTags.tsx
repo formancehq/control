@@ -15,11 +15,9 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const all = searchParams.getAll(name);
-  console.log(name);
   const chips = all.filter((item) =>
     field ? first(item.split('=')) === field : item
   );
-  console.log(chips, all);
   const onDelete = (item: string) => {
     const query = buildQuery(searchParams) as any;
     query.terms = query.terms

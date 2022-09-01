@@ -39,6 +39,7 @@ const ComponentErrorBoundary: FunctionComponent<
         >
           <Box mt={3}>
             <LoadingButton
+              id="error-boundary"
               content={t(`common.boundaries.errorState.${translation}.button`)}
               variant="primary"
               endIcon={<Support />}
