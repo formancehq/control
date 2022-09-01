@@ -91,6 +91,7 @@ export class ApiClient implements IApiClient {
     let res: Response | undefined = undefined;
     const uri = this.decorateUrl(params);
     try {
+      const startTime = new Date().getTime();
       if (body) {
         res = await fetch(uri, {
           method: 'POST',
@@ -103,6 +104,12 @@ export class ApiClient implements IApiClient {
       if (res && res.status === 204) {
         return {} as any;
       }
+      console.info({
+        timeElapsed: `${new Date().getTime() - startTime}ms`,
+        url: res?.url,
+        body: body,
+      });
+
       const json = await res.json();
 
       data = path ? get(json, path) : json;
