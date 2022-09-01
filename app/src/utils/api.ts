@@ -116,8 +116,6 @@ export class ApiClient implements IApiClient {
     }
 
     if (!data && res && res.status !== 204) {
-      console.log('WHAT2');
-
       this.throwError(undefined, undefined, res);
     }
 
