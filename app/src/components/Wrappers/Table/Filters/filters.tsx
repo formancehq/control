@@ -23,11 +23,10 @@ export const renderOption = (
   option: AutocompleteOption,
   name?: Filters.TERMS | Filters.LEDGERS
 ) => (
-  <li {...props}>
-    <Checkbox
-      value={option.id}
-      name={name || Filters.TERMS}
-      label={option.label}
-    />
-  </li>
+  <Checkbox
+    key={option.id}
+    value={option.id}
+    name={name || Filters.TERMS}
+    label={option.label}
+  />
 );
