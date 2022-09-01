@@ -178,9 +178,9 @@ export default function Index() {
                     title={t('pages.overview.status')}
                     titleColor={theme.palette.neutral[0]}
                   />
-                  {data.ledgers.length > 3 && (
+                  {data.ledgers.length > 1 && (
                     <FiltersBar>
-                      <LedgerList />
+                      <LedgerList variant="dark" />
                     </FiltersBar>
                   )}
                 </Box>

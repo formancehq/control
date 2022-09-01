@@ -1,10 +1,10 @@
-export type SelectCheckboxProps = {
+export type CheckboxProps = {
   name: string;
   label?: string;
   value: string;
 };
 
-export type SelectCheckboxItem = {
+export type CheckboxItem = {
   id: string;
   label: string;
 };
