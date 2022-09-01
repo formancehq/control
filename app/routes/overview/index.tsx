@@ -1,6 +1,6 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import type { MetaFunction } from '@remix-run/node';
-import { json } from '@remix-run/node';
 import { Box, Link } from '@mui/material';
 import { overview } from '~/src/components/Navbar/routes';
 import {
@@ -12,17 +12,17 @@ import {
   TitleWithBar,
 } from '@numaryhq/storybook';
 import { AccountBalance, NorthEast } from '@mui/icons-material';
-import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
+import { API_LEDGER, API_SEARCH, IApiClient } from '~/src/utils/api';
 import { useTranslation } from 'react-i18next';
 import { get } from 'lodash';
-import { LoaderFunction } from '@remix-run/server-runtime';
 import { Cursor } from '~/src/types/generic';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
-import { useLoaderData, useSearchParams } from '@remix-run/react';
+import { useSearchParams } from '@remix-run/react';
 import { Account, LedgerInfo } from '~/src/types/ledger';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { LedgerList } from '../ledgers/list';
+import { useService } from '~/src/hooks/useService';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -37,8 +37,7 @@ interface LoaderReturnValue {
 
 const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 
-export const loader: LoaderFunction = async () => {
-  const api = new ApiClient();
+export const getData = async (api: IApiClient) => {
   const payments = await api.postResource<Cursor<Payment>>(
     API_SEARCH,
     {
@@ -78,24 +77,38 @@ export const loader: LoaderFunction = async () => {
       }
     );
 
-    return Promise.all(ledgers).then((values) =>
-      json({ accounts, payments, ledgers: values })
-    );
+    return Promise.all(ledgers).then((values) => ({
+      accounts,
+      payments,
+      ledgers: values,
+    }));
   }
 
-  return json({ accounts, payments, ledgers: [] });
+  return { accounts, payments, ledgers: [] };
 };
 
 export default function Index() {
   const { t } = useTranslation();
-  const data = useLoaderData<LoaderReturnValue>() as LoaderReturnValue;
+
+  const [data, setData] = useState<any>();
 
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
   const accounts = get(data, 'accounts.total.value', 0) as number;
   const payments = get(data, 'payments.total.value', 0) as number;
+  const ledgers = get(data, 'ledgers', []);
   const shouldDisplaySetup = payments === 0 || accounts === 0;
   const [searchParams] = useSearchParams();
   const urlParamsLedgers = searchParams.getAll('ledgers');
+  const { api } = useService();
+
+  useEffect(() => {
+    (async () => {
+      const results = await getData(api);
+      if (results) {
+        setData(results);
+      }
+    })();
+  }, []);
 
   return (
     <>
@@ -178,7 +191,7 @@ export default function Index() {
                     title={t('pages.overview.status')}
                     titleColor={theme.palette.neutral[0]}
                   />
-                  {data.ledgers.length > 1 && (
+                  {ledgers.length > 1 && (
                     <FiltersBar>
                       <LedgerList variant="dark" />
                     </FiltersBar>
@@ -193,8 +206,8 @@ export default function Index() {
                   justifyContent="flex-start"
                   gap="26px"
                 >
-                  {data.ledgers.length > 0 ? (
-                    data.ledgers
+                  {ledgers.length > 0 ? (
+                    ledgers
                       .filter((currentLedger) =>
                         urlParamsLedgers.length === 0
                           ? true
