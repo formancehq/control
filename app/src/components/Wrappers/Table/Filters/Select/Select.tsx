@@ -8,7 +8,6 @@ import {
   renderOption,
 } from '~/src/components/Wrappers/Table/Filters/filters';
 import { Box } from '@mui/material';
-import SelectedTags from '~/src/components/Wrappers/Table/Filters/SelectedTags/SelectedTags';
 import { SelectProps } from './types';
 
 const Select: FunctionComponent<SelectProps> = ({
@@ -42,9 +41,6 @@ const Select: FunctionComponent<SelectProps> = ({
         }
         style={{ width }}
       />
-      <Box display="flex" gap={1} flexWrap="wrap">
-        <SelectedTags field={field} name={type} />
-      </Box>
     </Box>
   );
 };

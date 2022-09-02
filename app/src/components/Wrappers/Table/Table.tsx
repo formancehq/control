@@ -4,6 +4,9 @@ import { Table as SbTable } from '@numaryhq/storybook';
 import { useTranslation } from 'react-i18next';
 import { TableProps } from '~/src/components/Wrappers/Table/types';
 import { useSearchParams } from '@remix-run/react';
+import { Box } from '@mui/material';
+import SelectedTags from '~/src/components/Wrappers/Table/Filters/SelectedTags/SelectedTags';
+import { useTableFilters } from '~/src/hooks/useTableFilters';
 
 const Table: FunctionComponent<TableProps> = ({
   action = false,
@@ -12,6 +15,8 @@ const Table: FunctionComponent<TableProps> = ({
 }) => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { filters } = useTableFilters();
+
   const columnsConfig = action
     ? [
         ...columns,
@@ -38,6 +43,15 @@ const Table: FunctionComponent<TableProps> = ({
 
   return (
     <SbTable
+      activeFilters={
+        <Box display="flex" gap={1} flexWrap="wrap">
+          {filters &&
+            filters.length > 0 &&
+            filters.map(({ field, name }, index) => (
+              <SelectedTags field={field} name={name} key={index} />
+            ))}
+        </Box>
+      }
       {...props}
       labels={{
         pagination: {

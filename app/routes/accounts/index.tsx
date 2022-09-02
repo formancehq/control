@@ -13,6 +13,8 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import { Cursor } from '~/src/types/generic';
 import { LedgerList } from '~/routes/ledgers/list';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import { TableFiltersContext } from '~/src/contexts/tableFilters';
 
 export const meta: MetaFunction = () => ({
   title: 'Accounts',
@@ -52,13 +54,19 @@ export default function Index() {
 
   return (
     <Page id={accountsConfig.id}>
-      <Form method="get">
-        {/* TODO remove width when having multiple filter*/}
-        <FiltersBar>
-          <LedgerList />
-        </FiltersBar>
-        <AccountList accounts={accounts as Cursor<Account>} />
-      </Form>
+      <TableFiltersContext.Provider
+        value={{
+          filters: [{ field: 'ledgers', name: Filters.LEDGERS }],
+        }}
+      >
+        <Form method="get">
+          {/* TODO remove width when having multiple filter*/}
+          <FiltersBar>
+            <LedgerList />
+          </FiltersBar>
+          <AccountList accounts={accounts as Cursor<Account>} />
+        </Form>
+      </TableFiltersContext.Provider>
     </Page>
   );
 }
