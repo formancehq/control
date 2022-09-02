@@ -28,8 +28,6 @@ const buildPaymentBreadcrumbs = (
   const provider = urlSearchParams.get('provider');
   const reference = urlSearchParams.get('reference');
 
-  console.log(provider, reference);
-
   if (provider && reference) {
     return [
       bread,

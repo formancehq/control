@@ -15,6 +15,8 @@ import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
 import { useTranslation } from 'react-i18next';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import { TableFiltersContext } from '~/src/contexts/tableFilters';
 
 export const meta: MetaFunction = () => ({
   title: 'Transactions',
@@ -55,31 +57,44 @@ export default function Index() {
 
   return (
     <Page id={transactionsConfig.id}>
-      <Form method="get">
-        <FiltersBar>
-          <>
-            <LedgerList />
-            {/* TODO uncomment when Search API is ready to filter on amount*/}
-            {/* https://linear.app/formance/issue/NUM-778/search-minor-improvements-searchable-field-empty-data*/}
-            {/*<Text*/}
-            {/*  placeholder={t('pages.payments.filters.value')}*/}
-            {/*  name="amount"*/}
-            {/*/>*/}
-            <Text
-              placeholder={t('pages.payments.filters.source')}
-              name="source"
-            />
-            <Text
-              placeholder={t('pages.payments.filters.destination')}
-              name="destination"
-            />
-          </>
-        </FiltersBar>
-        <TransactionList
-          transactions={transactions as unknown as Cursor<Transaction>}
-          withPagination
-        />
-      </Form>
+      <TableFiltersContext.Provider
+        value={{
+          filters: [
+            { field: 'ledgers', name: Filters.LEDGERS },
+            {
+              field: 'source',
+              name: Filters.TERMS,
+            },
+            { field: 'destination', name: Filters.TERMS },
+          ],
+        }}
+      >
+        <Form method="get">
+          <FiltersBar>
+            <>
+              <LedgerList />
+              {/* TODO uncomment when Search API is ready to filter on amount*/}
+              {/* https://linear.app/formance/issue/NUM-778/search-minor-improvements-searchable-field-empty-data*/}
+              {/*<Text*/}
+              {/*  placeholder={t('pages.payments.filters.value')}*/}
+              {/*  name="amount"*/}
+              {/*/>*/}
+              <Text
+                placeholder={t('pages.payments.filters.source')}
+                name="source"
+              />
+              <Text
+                placeholder={t('pages.payments.filters.destination')}
+                name="destination"
+              />
+            </>
+          </FiltersBar>
+          <TransactionList
+            transactions={transactions as unknown as Cursor<Transaction>}
+            withPagination
+          />
+        </Form>
+      </TableFiltersContext.Provider>
     </Page>
   );
 }

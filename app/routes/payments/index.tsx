@@ -20,6 +20,8 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Select from '~/src/components/Wrappers/Table/Filters/Select';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
+import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 
 const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
 const paymentProviders = [
@@ -73,44 +75,55 @@ export default function Index() {
 
   return (
     <Page id={paymentsConfig.id}>
-      <Form method="get">
-        <FiltersBar>
-          <>
-            <Select
-              id="payment-type-autocomplete"
-              options={paymentTypes}
-              field="type"
-              name="payment-type-autocomplete"
-              placeholder={t('pages.payments.filters.type')}
-            />
-            <Select
-              id="payment-status-autocomplete"
-              options={paymentStatus}
-              field="status"
-              name="payment-status-autocomplete"
-              placeholder={t('pages.payments.filters.status')}
-            />
-            <Select
-              id="payment-provider-autocomplete"
-              options={paymentProviders}
-              field="provider"
-              name="payment-provider-autocomplete"
-              placeholder={t('pages.payments.filters.provider')}
-            />
-            <Text
-              placeholder={t('pages.payments.filters.reference')}
-              name="reference"
-            />
-            {/* TODO uncomment when Search API is ready to filter on initialAmount*/}
-            {/* https://linear.app/formance/issue/NUM-778/search-minor-improvements-searchable-field-empty-data*/}
-            {/*<Text*/}
-            {/*  placeholder={t('pages.payments.filters.value')}*/}
-            {/*  name="initialAmount"*/}
-            {/*/>*/}
-          </>
-        </FiltersBar>
-        <PaymentList payments={payments} />
-      </Form>
+      <TableFiltersContext.Provider
+        value={{
+          filters: [
+            { field: 'type', name: Filters.TERMS },
+            { field: 'status', name: Filters.TERMS },
+            { field: 'provider', name: Filters.TERMS },
+            { field: 'reference', name: Filters.TERMS },
+          ],
+        }}
+      >
+        <Form method="get">
+          <FiltersBar>
+            <>
+              <Select
+                id="payment-type-autocomplete"
+                options={paymentTypes}
+                field="type"
+                name="payment-type-autocomplete"
+                placeholder={t('pages.payments.filters.type')}
+              />
+              <Select
+                id="payment-status-autocomplete"
+                options={paymentStatus}
+                field="status"
+                name="payment-status-autocomplete"
+                placeholder={t('pages.payments.filters.status')}
+              />
+              <Select
+                id="payment-provider-autocomplete"
+                options={paymentProviders}
+                field="provider"
+                name="payment-provider-autocomplete"
+                placeholder={t('pages.payments.filters.provider')}
+              />
+              <Text
+                placeholder={t('pages.payments.filters.reference')}
+                name="reference"
+              />
+              {/* TODO uncomment when Search API is ready to filter on initialAmount*/}
+              {/* https://linear.app/formance/issue/NUM-778/search-minor-improvements-searchable-field-empty-data*/}
+              {/*<Text*/}
+              {/*  placeholder={t('pages.payments.filters.value')}*/}
+              {/*  name="initialAmount"*/}
+              {/*/>*/}
+            </>
+          </FiltersBar>
+          <PaymentList payments={payments} />
+        </Form>
+      </TableFiltersContext.Provider>
     </Page>
   );
 }

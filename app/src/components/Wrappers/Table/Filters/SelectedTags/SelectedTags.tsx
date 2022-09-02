@@ -37,7 +37,6 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
             <Chip
               label={field ? getFieldValue(item) : item}
               variant="square"
-              color={'secondary' as 'default'}
               onDelete={() => onDelete(item)}
             />
           </Box>
