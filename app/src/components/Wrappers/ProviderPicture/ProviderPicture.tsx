@@ -7,6 +7,7 @@ import { ProviderPictureProps } from './types';
 const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
   provider,
 }) => {
+  // TODO when provider will be an Enum and not a string radash should work
   const logoAttr = get(providersMap, provider.toLowerCase());
 
   return (

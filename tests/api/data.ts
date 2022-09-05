@@ -1,4 +1,4 @@
-import { range } from 'lodash';
+import { list } from 'radash';
 
 export const LEDGER_SLUG = 'foo-x-1';
 
@@ -805,7 +805,7 @@ export const transactionList1 = {
     hasMore: true,
     total: { value: 7000, relation: 'eq' },
     next: 'eyJ0YXJnZXQiOiJUUkFOU0FDVElPTiIsInNvcnQiOlt7ImtleSI6InR4aWQiLCJvcmRlciI6ImRlc2MifV0sInNlYXJjaEFmdGVyIjpbNjk4NV0sImxlZGdlcnMiOlsiZm9vLXgtMSJdLCJzaXplIjoxNSwidGVybVBvbGljeSI6IiIsInJldmVyc2UiOmZhbHNlLCJ0ZXJtcyI6bnVsbH0K',
-    data: range(15).map((value) => ({
+    data: list(0, 15).map((value) => ({
       ...transaction,
       txid: value,
     })),
@@ -817,7 +817,7 @@ export const accountList1 = {
     pageSize: 15,
     hasMore: true,
     total: { value: 6003, relation: 'eq' },
-    data: range(15).map((value) => ({
+    data: list(0, 15).map((value) => ({
       ...account,
       address: `world:${value}:${+new Date()}`,
     })),
@@ -831,7 +831,7 @@ export const paymentList1 = {
     hasMore: true,
     total: { value: 6003, relation: 'eq' },
     next: 'eyJ0YXJnZXQiOiJBQ0NPVU5UIiwic29ydCI6W3sia2V5IjoiYWRkcmVzcyIsIm9yZGVyIjoiZGVzYyJ9XSwic2VhcmNoQWZ0ZXIiOlsidXNlcnM6OTg4OndpdGhkcmF3YWxzOjRheHFwMHBqcGw2ejVsOWUwIl0sImxlZGdlcnMiOm51bGwsInNpemUiOjE1LCJ0ZXJtUG9saWN5IjoiIiwicmV2ZXJzZSI6ZmFsc2UsInRlcm1zIjpudWxsfQo=',
-    data: range(15).map((value) => {
+    data: list(0, 15).map((value) => {
       let type = 'pay-in';
       let provider = 'stripe';
       let status = 'succeeded';

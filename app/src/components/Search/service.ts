@@ -31,7 +31,7 @@ export const getSuggestions = async (
   );
 
   if (isEmpty(results)) {
-    return { data: [], total: 0 };
+    return { data: [], total: { value: 0, relation: '' } };
   }
 
   return results;

@@ -14,7 +14,7 @@ import {
 import { AccountBalance, NorthEast } from '@mui/icons-material';
 import { API_LEDGER, API_SEARCH, IApiClient } from '~/src/utils/api';
 import { useTranslation } from 'react-i18next';
-import { get } from 'lodash';
+import { get } from 'radash';
 import { Cursor } from '~/src/types/generic';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
@@ -32,7 +32,16 @@ export const meta: MetaFunction = () => ({
 interface LoaderReturnValue {
   accounts: Cursor<Account> | undefined;
   payments: Cursor<Payment> | undefined;
-  ledgers: { slug: string; stats: number; color: string }[] | [];
+  ledgers:
+    | {
+        slug: string;
+        stats: {
+          accounts: number;
+          transactions: number;
+        };
+        color: string;
+      }[]
+    | [];
 }
 
 const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
@@ -90,12 +99,12 @@ export const getData = async (api: IApiClient) => {
 export default function Index() {
   const { t } = useTranslation();
 
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<LoaderReturnValue | Record<string, never>>();
 
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
-  const accounts = get(data, 'accounts.total.value', 0) as number;
-  const payments = get(data, 'payments.total.value', 0) as number;
-  const ledgers = get(data, 'ledgers', []);
+  const accounts = get(data, (apiData) => apiData?.accounts?.total.value, 0);
+  const payments = get(data, (apiData) => apiData?.payments?.total.value, 0);
+  const ledgers = get(data, (apiData) => apiData?.ledgers, []);
   const shouldDisplaySetup = payments === 0 || accounts === 0;
   const [searchParams] = useSearchParams();
   const urlParamsLedgers = searchParams.getAll('ledgers');
@@ -191,7 +200,7 @@ export default function Index() {
                     title={t('pages.overview.status')}
                     titleColor={theme.palette.neutral[0]}
                   />
-                  {ledgers.length > 1 && (
+                  {ledgers && ledgers.length > 1 && (
                     <FiltersBar>
                       <LedgerList variant="dark" />
                     </FiltersBar>
@@ -206,7 +215,7 @@ export default function Index() {
                   justifyContent="flex-start"
                   gap="26px"
                 >
-                  {ledgers.length > 0 ? (
+                  {ledgers && ledgers.length > 0 ? (
                     ledgers
                       .filter((currentLedger) =>
                         urlParamsLedgers.length === 0
@@ -222,8 +231,16 @@ export default function Index() {
                             title1={t('pages.overview.stats.transactions')}
                             title2={t('pages.overview.stats.accounts')}
                             chipValue={ledger.slug}
-                            value1={`${get(ledger, 'stats.transactions', '0')}`}
-                            value2={`${get(ledger, 'stats.accounts', '0')}`}
+                            value1={`${get(
+                              ledger,
+                              (apiData) => apiData?.stats.transactions,
+                              0
+                            )}`}
+                            value2={`${get(
+                              ledger,
+                              (apiData) => apiData?.stats.accounts,
+                              0
+                            )}`}
                           />
                         </Box>
                       ))
@@ -325,13 +342,13 @@ export default function Index() {
                 width="400px"
               >
                 <Link
-                  id="set-up-payments"
                   href="https://docs.formance.com/oss/payments/reference/api"
                   underline="none"
                   target="_blank"
                   rel="noopener"
                 >
                   <LoadingButton
+                    id="set-up-payments"
                     variant="dark"
                     content={t('pages.overview.setUp.connexion.buttonText')}
                     sx={{ mt: '12px' }}
@@ -353,8 +370,8 @@ export default function Index() {
                   rel="noopener"
                 >
                   <LoadingButton
-                    variant="dark"
                     id="set-up-ledger"
+                    variant="dark"
                     href="https://docs.formance.com/oss/ledger/reference/api"
                     content={t('pages.overview.setUp.ledger.buttonText')}
                     sx={{ mt: '12px' }}

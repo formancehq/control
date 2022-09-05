@@ -5,7 +5,7 @@ import { Support } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Errors } from '~/src/types/generic';
-import { camelCase, get } from 'lodash';
+import { camal, get } from 'radash';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ const ComponentErrorBoundary: FunctionComponent<
 > = ({ id, title: titlePage, error }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const key = camelCase(get(error, 'message', 'error'));
+  const key = camal(get(error, (error) => error.message, 'error'));
 
   const actionMap = {
     [Errors.NOT_FOUND]: () =>

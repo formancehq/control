@@ -1,7 +1,7 @@
 import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
-import { isArray } from 'lodash';
+import { isArray } from 'radash';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { theme } from '@numaryhq/storybook';
 import {
@@ -63,7 +63,7 @@ const Navbar: FunctionComponent = () => {
                 <LinkWrapper
                   key={id}
                   prefetch="intent"
-                  to={isArray(path) ? (path[0] as string) : (path as string)}
+                  to={isArray(path) ? path[0] : (path as string)}
                   color={selected ? theme.palette.neutral[900] : 'inherit'}
                 >
                   <Button

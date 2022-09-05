@@ -1,10 +1,10 @@
+import * as React from 'react';
 import {
   AccountBalance,
   CreditCard,
   SearchOutlined,
 } from '@mui/icons-material';
 import { Box, CircularProgress, Grid, Typography } from '@mui/material';
-import * as React from 'react';
 import { FunctionComponent, useEffect, useState } from 'react';
 import {
   Amount,
@@ -39,7 +39,8 @@ import {
   getSuggestions,
   suggestionsFactory,
 } from '~/src/components/Search/service';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty } from 'radash';
+import { get as lodashGet } from 'lodash';
 import { useOpen } from '~/src/hooks/useOpen';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
@@ -109,12 +110,12 @@ const Search: FunctionComponent = () => {
               accounts: suggestionsFactory(
                 accounts.data as SearchResource,
                 SearchTargets.ACCOUNT,
-                get(accounts, 'total.value')
+                get(accounts, (account) => account.total.value)
               ) as AccountSuggestions,
               transactions: suggestionsFactory(
                 transactions.data as SearchResource,
                 SearchTargets.TRANSACTION,
-                get(transactions, 'total.value')
+                get(transactions, (transactions) => transactions.total.value)
               ) as TransactionsSuggestions,
             } as {
               accounts: AccountSuggestions;
@@ -130,7 +131,7 @@ const Search: FunctionComponent = () => {
               suggestionsFactory(
                 results.data as SearchResource,
                 target,
-                get(results, 'total.value')
+                get(results, (result) => result.total.value)
               )
             );
           stopLoading();
@@ -159,11 +160,11 @@ const Search: FunctionComponent = () => {
     switch (target) {
       case SearchTargets.ACCOUNT:
         return navigate(
-          getLedgerAccountDetailsRoute(item.id, get(item, 'ledger'))
+          getLedgerAccountDetailsRoute(item.id, lodashGet(item, 'ledger'))
         );
       case SearchTargets.TRANSACTION:
         return navigate(
-          getLedgerTransactionDetailsRoute(item.id, get(item, 'ledger'))
+          getLedgerTransactionDetailsRoute(item.id, lodashGet(item, 'ledger'))
         );
       case SearchTargets.PAYMENT:
         return navigate(getRoute(PAYMENT_ROUTE, item.id));
@@ -175,10 +176,14 @@ const Search: FunctionComponent = () => {
   // TODO improve with target factory instead of multiple conditions
   const renderChildren = (value: string) => {
     const noResults =
-      get(
+      lodashGet(
         suggestions,
         'transactions.items',
-        get(suggestions, 'accounts.items', get(suggestions, 'items', []))
+        lodashGet(
+          suggestions,
+          'accounts.items',
+          lodashGet(suggestions, 'items', [])
+        )
       ).length === 0;
 
     return (
@@ -258,12 +263,12 @@ const Search: FunctionComponent = () => {
               {target === SearchTargets.LEDGER && (
                 <>
                   {renderSuggestion(
-                    get(suggestions, 'accounts'),
+                    lodashGet(suggestions, 'accounts'),
                     SearchTargets.ACCOUNT,
                     value
                   )}
                   {renderSuggestion(
-                    get(suggestions, 'transactions'),
+                    lodashGet(suggestions, 'transactions'),
                     SearchTargets.TRANSACTION,
                     value
                   )}

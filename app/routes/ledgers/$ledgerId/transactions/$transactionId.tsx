@@ -17,7 +17,7 @@ import {
   PostingHybrid,
   Transaction,
 } from '~/src/types/ledger';
-import { omit } from 'lodash';
+import { omit } from 'radash';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   getLedgerAccountDetailsRoute,

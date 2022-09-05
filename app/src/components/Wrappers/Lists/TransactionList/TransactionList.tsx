@@ -1,5 +1,5 @@
-import { flatten, get, head, omit } from 'lodash';
 import React, { FunctionComponent } from 'react';
+import { flat, get, first, omit } from 'radash';
 import { TransactionListProps } from './types';
 import { Transaction, TransactionHybrid } from '~/src/types/ledger';
 import { Cursor } from '~/src/types/generic';
@@ -28,13 +28,16 @@ import { SearchTargets } from '~/src/types/search';
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
     ...cursor,
-    data: flatten(
-      get(cursor, 'data', []).map((transaction: Transaction) =>
-        get(transaction, 'postings', []).map((posting, index) => ({
-          ...posting,
-          postingId: index,
-          ...omit(transaction, 'postings'),
-        }))
+    data: flat(
+      get(cursor, (cursorData) => cursorData.data, []).map(
+        (transaction: Transaction) =>
+          get(transaction, (cursorData) => cursorData.postings, []).map(
+            (posting, index) => ({
+              ...posting,
+              postingId: index,
+              ...omit(transaction, ['postings']),
+            })
+          )
       )
     ),
   } as unknown as Cursor<Transaction>);
@@ -123,11 +126,11 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           const groupedByTxid = data.filter(
             (a: TransactionHybrid) => a.txid === transaction.txid
           );
-          const first = head(groupedByTxid) as TransactionHybrid;
+          const firstValue = first(groupedByTxid);
           const displayElement =
-            first.destination === transaction.destination &&
-            first.source === transaction.source &&
-            first.txid === transaction.txid;
+            firstValue.destination === transaction.destination &&
+            firstValue.source === transaction.source &&
+            firstValue.txid === transaction.txid;
 
           return (
             <Row

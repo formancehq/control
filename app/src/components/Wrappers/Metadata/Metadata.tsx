@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { MetadataProps } from './types';
 import {
   JsonViewer,
+  noop,
   LoadingButton,
   SectionWrapper,
   TextArea,
@@ -10,7 +11,6 @@ import { Edit, LocalFlorist } from '@mui/icons-material';
 import Modal from '../Modal';
 import { useTranslation } from 'react-i18next';
 import { useService } from '~/src/hooks/useService';
-import { noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {

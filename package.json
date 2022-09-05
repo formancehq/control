@@ -27,6 +27,7 @@
     "graphviz-react": "^1.2.1",
     "i18next": "^21.8.16",
     "lodash": "^4.17.21",
+    "radash": "^7.1.0",
     "react": "latest",
     "react-dom": "latest",
     "react-hook-form": "^7.34.2",
