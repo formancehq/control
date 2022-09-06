@@ -6,7 +6,7 @@ import { URLSearchParamsInit } from 'react-router-dom';
 import { Chip } from '@numaryhq/storybook';
 import { SelectedTagsProps } from '~/src/components/Wrappers/Table/Filters/SelectedTags/types';
 import { Box } from '@mui/material';
-import { getFieldValue } from '../filters';
+import { Filters, getFieldValue } from '../filters';
 import { first } from 'lodash';
 
 const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
@@ -16,7 +16,7 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const all = searchParams.getAll(name);
   const chips = all.filter((item) =>
-    field ? first(item.split('=')) === field : item
+    name === Filters.TERMS ? first(item.split('=')) === field : item
   );
   const onDelete = (item: string) => {
     const query = buildQuery(searchParams) as any;
