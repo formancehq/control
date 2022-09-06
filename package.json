@@ -32,6 +32,7 @@
     "react-hook-form": "^7.34.2",
     "react-i18next": "^11.18.3",
     "react-json-tree": "^0.17.0",
+    "react-spring": "^9.5.2",
     "remix": "latest",
     "tiny-invariant": "^1.2.0",
     "yup": "^0.32.11"
