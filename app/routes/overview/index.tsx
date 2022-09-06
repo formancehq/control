@@ -29,11 +29,13 @@ export const meta: MetaFunction = () => ({
   description: 'Show a dashboard with tasks and status',
 });
 
-interface LoaderReturnValue {
+type Ledger = { slug: string; stats: number; color: string };
+
+type LoaderReturnValue = {
   accounts: Cursor<Account> | undefined;
   payments: Cursor<Payment> | undefined;
-  ledgers: { slug: string; stats: number; color: string }[] | [];
-}
+  ledgers: Ledger[] | [];
+};
 
 const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 
@@ -90,7 +92,7 @@ export const getData = async (api: IApiClient) => {
 export default function Index() {
   const { t } = useTranslation();
 
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<LoaderReturnValue>();
 
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
   const accounts = get(data, 'accounts.total.value', 0) as number;
@@ -208,12 +210,12 @@ export default function Index() {
                 >
                   {ledgers.length > 0 ? (
                     ledgers
-                      .filter((currentLedger) =>
+                      .filter((currentLedger: Ledger): Ledger[] | boolean =>
                         urlParamsLedgers.length === 0
                           ? true
                           : urlParamsLedgers.includes(currentLedger.slug)
                       )
-                      .map((ledger, index) => (
+                      .map((ledger: Ledger, index: number) => (
                         <Box key={index}>
                           <StatsCard
                             key={index}
@@ -253,7 +255,7 @@ export default function Index() {
         id="tasks"
       >
         <Box
-          mt={3}
+          mt="26px"
           display="flex"
           flexWrap="wrap"
           data-testid="tasks"
@@ -312,6 +314,7 @@ export default function Index() {
           id="setup"
         >
           <Box
+            mt="26px"
             display="flex"
             flexWrap="wrap"
             data-testid="set-up"

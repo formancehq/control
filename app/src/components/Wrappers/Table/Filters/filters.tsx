@@ -7,7 +7,13 @@ export enum Filters {
   LEDGERS = 'ledgers',
 }
 
-export const getFieldValue = (field: string): string => field.split('=')[1];
+// TODO improve
+export const getFieldValue = (field: string): string => {
+  const isTerms = field.split('=').length > 1;
+  const formatted = field.replace(/=/g, ': ');
+
+  return isTerms ? formatted : `ledger: ${field}`;
+};
 
 export const buildOptions = (
   arr: string[],
