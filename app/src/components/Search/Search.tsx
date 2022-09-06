@@ -91,50 +91,60 @@ const Search: FunctionComponent = () => {
 
   useEffect(() => {
     (async () => {
-      if (value) {
-        load();
-        if (target === SearchTargets.LEDGER) {
-          const accounts = await getSuggestions(
-            SearchTargets.ACCOUNT,
-            value,
-            api
-          );
-          const transactions = await getSuggestions(
-            SearchTargets.TRANSACTION,
-            value,
-            api
-          );
-          if (accounts && transactions && accounts.data && transactions.data) {
-            const items = {
-              accounts: suggestionsFactory(
-                accounts.data as SearchResource,
-                SearchTargets.ACCOUNT,
-                get(accounts, 'total.value')
-              ) as AccountSuggestions,
-              transactions: suggestionsFactory(
-                transactions.data as SearchResource,
-                SearchTargets.TRANSACTION,
-                get(transactions, 'total.value')
-              ) as TransactionsSuggestions,
-            } as {
-              accounts: AccountSuggestions;
-              transactions: TransactionsSuggestions;
-            };
-            setSuggestions(items);
+      try {
+        if (value) {
+          load();
+          if (target === SearchTargets.LEDGER) {
+            const accounts = await getSuggestions(
+              SearchTargets.ACCOUNT,
+              value,
+              api
+            );
+            const transactions = await getSuggestions(
+              SearchTargets.TRANSACTION,
+              value,
+              api
+            );
+            if (
+              accounts &&
+              transactions &&
+              accounts.data &&
+              transactions.data
+            ) {
+              const items = {
+                accounts: suggestionsFactory(
+                  accounts.data as SearchResource,
+                  SearchTargets.ACCOUNT,
+                  get(accounts, 'total.value')
+                ) as AccountSuggestions,
+                transactions: suggestionsFactory(
+                  transactions.data as SearchResource,
+                  SearchTargets.TRANSACTION,
+                  get(transactions, 'total.value')
+                ) as TransactionsSuggestions,
+              } as {
+                accounts: AccountSuggestions;
+                transactions: TransactionsSuggestions;
+              };
+              setSuggestions(items);
+              stopLoading();
+            }
+          } else {
+            const results = await getSuggestions(target, value, api);
+            if (results && results.data && target)
+              setSuggestions(
+                suggestionsFactory(
+                  results.data as SearchResource,
+                  target,
+                  get(results, 'total.value')
+                )
+              );
             stopLoading();
           }
-        } else {
-          const results = await getSuggestions(target, value, api);
-          if (results && results.data && target)
-            setSuggestions(
-              suggestionsFactory(
-                results.data as SearchResource,
-                target,
-                get(results, 'total.value')
-              )
-            );
-          stopLoading();
         }
+      } catch (e) {
+        stopLoading();
+        setSuggestions(undefined);
       }
     })();
   }, [value, target]);

@@ -9,6 +9,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useCatch,
   useLoaderData,
 } from '@remix-run/react';
 import { withEmotionCache } from '@emotion/react';
@@ -21,7 +22,7 @@ import {
 import { LoadingButton, theme } from '@numaryhq/storybook';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import Layout from '~/src/components/Layout';
-import { ApiClient, logger } from '~/src/utils/api';
+import { ApiClient, errorsMap, logger } from '~/src/utils/api';
 import { ServiceContext } from '~/src/contexts/service';
 import styles from './root.css';
 import { Home } from '@mui/icons-material';
@@ -29,6 +30,7 @@ import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
+import { camelCase, get } from 'lodash';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -140,35 +142,12 @@ const renderError = (
           {description || t('common.boundaries.errorState.error.description')}
         </Typography>
         <LoadingButton
+          id="go-back-home"
           content="Go back home"
           variant="primary"
           startIcon={<Home />}
           onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
           sx={{ mt: 5 }}
-        />
-      </Box>
-      <Box
-        sx={{
-          borderBottom: ({ palette }) => `1px solid ${palette.neutral[200]}`,
-          borderLeft: ({ palette }) => `1px solid ${palette.neutral[200]}`,
-          width: 180,
-        }}
-      >
-        <Box
-          sx={{
-            width: '100%',
-            height: 150,
-            position: 'absolute',
-          }}
-        />
-        <Box
-          sx={{
-            borderBottom: ({ palette }) => `1px solid ${palette.neutral[200]}`,
-            width: 450,
-            height: 150,
-            top: 300,
-            position: 'absolute',
-          }}
         />
       </Box>
     </Box>
@@ -204,6 +183,22 @@ export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <Document title="Error!">
       <Layout>{renderError(navigate, t)}</Layout>
+    </Document>
+  );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));
+  const message = t(`common.boundaries.errorState.${error}.title`);
+  const description = t(`common.boundaries.errorState.${error}.description`);
+
+  return (
+    <Document title={`${caught.status} ${caught.statusText}`}>
+      <Layout>{renderError(navigate, t, message, description)}</Layout>
     </Document>
   );
 }

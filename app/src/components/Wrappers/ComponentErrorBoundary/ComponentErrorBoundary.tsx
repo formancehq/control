@@ -11,41 +11,47 @@ import { useNavigate } from 'react-router-dom';
 
 const ComponentErrorBoundary: FunctionComponent<
   ComponentErrorBoundaryProps
-> = ({ id, title: titlePage, error }) => {
+> = ({ id, title: titlePage, error, showAction = true }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const key = camelCase(get(error, 'message', 'error'));
+  const key = get(error, 'message', 'error');
 
   const actionMap = {
-    [Errors.NOT_FOUND]: () =>
+    [Errors.NOT_FOUND]: () => navigate(getRoute(OVERVIEW_ROUTE)),
+    [Errors.SERVICE_DOWN]: () =>
       window.open('https://discord.com/invite/xyHvcbzk4w'),
-    [Errors.SERVICE_DOWN]: () => null,
     [Errors.ERROR]: () => navigate(getRoute(OVERVIEW_ROUTE)),
     [Errors.UNAUTHORIZED]: () => navigate(getRoute(OVERVIEW_ROUTE)),
     [Errors.FORBIDDEN]: () => navigate(getRoute(OVERVIEW_ROUTE)),
   };
 
   const action = get(actionMap, key, actionMap[Errors.ERROR]);
-  const translation = get(actionMap, key) ? key : 'error';
+  const translation = get(actionMap, key) ? camelCase(key) : 'error';
 
   return (
     <Page id={id} title={t(titlePage)}>
       <Box mt={1}>
         <EmptyState
           title={t(`common.boundaries.errorState.${translation}.title`)}
-          description={`${t(
+          description={t(
             `common.boundaries.errorState.${translation}.description`
-          )} 👇`}
+          )}
         >
-          <Box mt={3}>
-            <LoadingButton
-              id="error-boundary"
-              content={t(`common.boundaries.errorState.${translation}.button`)}
-              variant="primary"
-              endIcon={<Support />}
-              onClick={() => action()}
-            />
-          </Box>
+          <>
+            {showAction && (
+              <Box mt={3}>
+                <LoadingButton
+                  id="error-boundary"
+                  content={t(
+                    `common.boundaries.errorState.${translation}.button`
+                  )}
+                  variant="primary"
+                  endIcon={<Support />}
+                  onClick={() => action()}
+                />
+              </Box>
+            )}
+          </>
         </EmptyState>
       </Box>
     </Page>

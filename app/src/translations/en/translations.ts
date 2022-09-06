@@ -247,9 +247,8 @@ export default {
             button: 'Go to status page',
           },
           notFound: {
-            title: 'Looks like what you are looking for is not here',
-            description: 'No John Doe here !',
-            button: 'Go back home',
+            title: '',
+            description: 'Hm, no results found',
           },
           unauthorized: {
             title: 'Looks like you do not have required permission!',
