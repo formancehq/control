@@ -59,7 +59,6 @@ export class ApiClient implements IApiClient {
   throwError(stack?: any, from?: string, response?: Response): Error {
     const e = get(errorsMap, response?.status || 422, errorsMap['422']);
     logger(stack, from, response);
-
     throw new Error(e);
   }
 
@@ -113,7 +112,7 @@ export class ApiClient implements IApiClient {
       const json = await res.json();
 
       data = path ? get(json, path) : json;
-    } catch (e) {
+    } catch (e: any) {
       // TODO backend need to fix the search 503 api error !!!!!!!!
       // remove this mock once backend search is fixed
       if (params === 'search' && res?.status === 503) {

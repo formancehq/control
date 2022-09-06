@@ -53,6 +53,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
       id="transaction"
       title="pages.transaction.title"
       error={error}
+      showAction={false}
     />
   );
 }
