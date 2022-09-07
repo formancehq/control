@@ -12,7 +12,7 @@ import {
   TitleWithBar,
 } from '@numaryhq/storybook';
 import { AccountBalance, NorthEast } from '@mui/icons-material';
-import { ApiClient, API_LEDGER, API_SEARCH } from '~/src/utils/api';
+import { ApiClient, API_LEDGER, API_SEARCH, IApiClient } from '~/src/utils/api';
 import { useTranslation } from 'react-i18next';
 import { get } from 'lodash';
 import { Cursor } from '~/src/types/generic';
@@ -27,6 +27,7 @@ import {
   animated,
 } from 'react-spring';
 import { useOpen } from '~/src/hooks/useOpen';
+import { useService } from '~/src/hooks/useService';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -43,9 +44,10 @@ type LoaderReturnValue = {
 
 const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 
-const getData = async (ledgersList: string[]) => {
+const getData = async (ledgersList: string[], api: IApiClient) => {
   const ledgers = ledgersList.map(async (ledger: string) => {
-    const stats = await new ApiClient().getResource<any>(
+    // Todo remove any
+    const stats = await api.getResource<any>(
       `${API_LEDGER}/${ledger}/stats`,
       'data'
     );
@@ -91,7 +93,7 @@ export default function Index() {
   const { t } = useTranslation();
   const [stats, setStats] = useState<Ledger[]>([]);
   const data = useLoaderData<LoaderReturnValue>();
-
+  const { api } = useService();
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
   const accounts = get(data, 'accounts.total.value', 0) as number;
   const payments = get(data, 'payments.total.value', 0) as number;
@@ -109,7 +111,7 @@ export default function Index() {
 
   useEffect(() => {
     (async () => {
-      const results = await getData(ledgers);
+      const results = await getData(ledgers, api);
       if (results) {
         setStats(results);
       }
