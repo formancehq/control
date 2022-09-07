@@ -44,13 +44,13 @@ const Table: FunctionComponent<TableProps> = ({
   return (
     <SbTable
       activeFilters={
-        <Box display="flex" gap={1} flexWrap="wrap">
-          {filters &&
-            filters.length > 0 &&
-            filters.map(({ field, name }, index) => (
+        filters && filters.length > 0 ? (
+          <Box display="flex" gap={1} flexWrap="wrap">
+            {filters.map(({ field, name }, index) => (
               <SelectedTags field={field} name={name} key={index} />
             ))}
-        </Box>
+          </Box>
+        ) : undefined
       }
       {...props}
       labels={{
