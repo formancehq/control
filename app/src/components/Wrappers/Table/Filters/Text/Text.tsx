@@ -29,16 +29,12 @@ const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
             const formattedValue = `${name}=${value}`;
             const query = buildQuery(searchParams) as any;
             const found = query.terms
-              ? query.terms.find((val: string) => val === value)
+              ? query.terms.find((val: string) => val === formattedValue)
               : undefined;
             if (!found) {
               query.terms = query.terms
                 ? [...query.terms, formattedValue]
                 : [formattedValue];
-            } else {
-              query.terms = query.terms
-                ? query.terms.filter((val: string) => val !== formattedValue)
-                : [];
             }
             setSearchParams(query as URLSearchParamsInit);
           }
