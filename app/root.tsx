@@ -16,6 +16,7 @@ import { withEmotionCache } from '@emotion/react';
 import {
   Backdrop,
   Box,
+  CircularProgress,
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
@@ -31,6 +32,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
 import { camelCase, get } from 'lodash';
+import { useOpen } from './src/hooks/useOpen';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -158,18 +160,37 @@ const renderError = (
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
   const { ENV } = useLoaderData();
+  const [loading, _load, stopLoading] = useOpen(true);
+
+  React.useEffect(() => {
+    stopLoading();
+  });
 
   return (
     <Document>
-      <ServiceContext.Provider
-        value={{
-          api: new ApiClient(ENV.API_URL_FRONT),
-        }}
-      >
-        <Layout>
-          <Outlet />
-        </Layout>
-      </ServiceContext.Provider>
+      {loading ? (
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: theme.palette.neutral[0],
+          }}
+        >
+          <CircularProgress size={30} />
+        </Box>
+      ) : (
+        <ServiceContext.Provider
+          value={{
+            api: new ApiClient(ENV.API_URL_FRONT),
+          }}
+        >
+          <Layout>
+            <Outlet />
+          </Layout>
+        </ServiceContext.Provider>
+      )}
     </Document>
   );
 }

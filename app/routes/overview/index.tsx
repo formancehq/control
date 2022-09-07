@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import type { MetaFunction } from '@remix-run/node';
-import { Box, Link } from '@mui/material';
+import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import { Box, CircularProgress, Link } from '@mui/material';
 import { overview } from '~/src/components/Navbar/routes';
 import {
   LoadingButton,
@@ -12,17 +12,21 @@ import {
   TitleWithBar,
 } from '@numaryhq/storybook';
 import { AccountBalance, NorthEast } from '@mui/icons-material';
-import { API_LEDGER, API_SEARCH, IApiClient } from '~/src/utils/api';
+import { ApiClient, API_LEDGER, API_SEARCH } from '~/src/utils/api';
 import { useTranslation } from 'react-i18next';
 import { get } from 'lodash';
 import { Cursor } from '~/src/types/generic';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
-import { useSearchParams } from '@remix-run/react';
+import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { Account, LedgerInfo } from '~/src/types/ledger';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { LedgerList } from '../ledgers/list';
-import { useService } from '~/src/hooks/useService';
+import {
+  useTransition as useAnimationTransition,
+  animated,
+} from 'react-spring';
+import { useOpen } from '~/src/hooks/useOpen';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -34,13 +38,30 @@ type Ledger = { slug: string; stats: number; color: string };
 type LoaderReturnValue = {
   accounts: Cursor<Account> | undefined;
   payments: Cursor<Payment> | undefined;
-  ledgers: Ledger[] | [];
+  ledgers: string[] | [];
 };
 
 const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 
-export const getData = async (api: IApiClient) => {
-  const payments = await api.postResource<Cursor<Payment>>(
+const getData = async (ledgersList: string[]) => {
+  const ledgers = ledgersList.map(async (ledger: string) => {
+    const stats = await new ApiClient().getResource<any>(
+      `${API_LEDGER}/${ledger}/stats`,
+      'data'
+    );
+
+    return {
+      slug: ledger,
+      stats,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    };
+  });
+
+  return Promise.all(ledgers).then((values) => values);
+};
+
+export const loader: LoaderFunction = async () => {
+  const payments = await new ApiClient().postResource<Cursor<Payment>>(
     API_SEARCH,
     {
       target: SearchTargets.PAYMENT,
@@ -49,7 +70,7 @@ export const getData = async (api: IApiClient) => {
     'cursor'
   );
 
-  const accounts = await api.postResource<Cursor<Account>>(
+  const accounts = await new ApiClient().postResource<Cursor<Account>>(
     API_SEARCH,
     {
       target: SearchTargets.ACCOUNT,
@@ -58,41 +79,18 @@ export const getData = async (api: IApiClient) => {
     'cursor'
   );
 
-  const ledgersList = await api.getResource<LedgerInfo>(
+  const ledgersList = await new ApiClient().getResource<LedgerInfo>(
     `${API_LEDGER}/_info`,
-    'data'
+    'data.config.storage.ledgers'
   );
 
-  if (ledgersList) {
-    const ledgers = ledgersList.config.storage.ledgers.map(
-      async (ledger: string) => {
-        const stats = await api.getResource<any>(
-          `${API_LEDGER}/${ledger}/stats`,
-          'data'
-        );
-
-        return {
-          slug: ledger,
-          stats,
-          color: colors[Math.floor(Math.random() * colors.length)],
-        };
-      }
-    );
-
-    return Promise.all(ledgers).then((values) => ({
-      accounts,
-      payments,
-      ledgers: values,
-    }));
-  }
-
-  return { accounts, payments, ledgers: [] };
+  return { accounts, payments, ledgers: ledgersList };
 };
 
 export default function Index() {
   const { t } = useTranslation();
-
-  const [data, setData] = useState<LoaderReturnValue>();
+  const [stats, setStats] = useState<Ledger[]>([]);
+  const data = useLoaderData<LoaderReturnValue>();
 
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
   const accounts = get(data, 'accounts.total.value', 0) as number;
@@ -101,14 +99,21 @@ export default function Index() {
   const shouldDisplaySetup = payments === 0 || accounts === 0;
   const [searchParams] = useSearchParams();
   const urlParamsLedgers = searchParams.getAll('ledgers');
-  const { api } = useService();
+  const [loading, _load, stopLoading] = useOpen(true);
+
+  const loadingTransition = useAnimationTransition(ledgers.length, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
 
   useEffect(() => {
     (async () => {
-      const results = await getData(api);
+      const results = await getData(ledgers);
       if (results) {
-        setData(results);
+        setStats(results);
       }
+      stopLoading();
     })();
   }, []);
 
@@ -208,39 +213,65 @@ export default function Index() {
                   justifyContent="flex-start"
                   gap="26px"
                 >
-                  {ledgers.length > 0 ? (
-                    ledgers
-                      .filter((currentLedger: Ledger): Ledger[] | boolean =>
-                        urlParamsLedgers.length === 0
-                          ? true
-                          : urlParamsLedgers.includes(currentLedger.slug)
-                      )
-                      .map((ledger: Ledger, index: number) => (
-                        <Box key={index}>
+                  {loading && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '276px',
+                      }}
+                    >
+                      <CircularProgress size={30} color="secondary" />
+                    </Box>
+                  )}
+
+                  {/* TODO Add Transition Between loading state and empty/not empty state */}
+
+                  {loadingTransition((props, ledgersLength) =>
+                    ledgersLength > 0 ? (
+                      stats
+                        .filter((currentLedger: Ledger): Ledger[] | boolean =>
+                          urlParamsLedgers.length === 0
+                            ? true
+                            : urlParamsLedgers.includes(currentLedger.slug)
+                        )
+                        .map((ledger: Ledger, index: number) => (
+                          <animated.div key={index} style={props}>
+                            <Box>
+                              <StatsCard
+                                key={index}
+                                icon={<AccountBalance />}
+                                variant={ledger.color as any}
+                                title1={t('pages.overview.stats.transactions')}
+                                title2={t('pages.overview.stats.accounts')}
+                                chipValue={ledger.slug}
+                                value1={`${get(
+                                  ledger,
+                                  'stats.transactions',
+                                  '0'
+                                )}`}
+                                value2={`${get(ledger, 'stats.accounts', '0')}`}
+                              />
+                            </Box>
+                          </animated.div>
+                        ))
+                    ) : (
+                      <animated.div style={props}>
+                        <Box mr={3}>
                           <StatsCard
-                            key={index}
                             icon={<AccountBalance />}
-                            variant={ledger.color as any}
+                            variant="violet"
                             title1={t('pages.overview.stats.transactions')}
                             title2={t('pages.overview.stats.accounts')}
-                            chipValue={ledger.slug}
-                            value1={`${get(ledger, 'stats.transactions', '0')}`}
-                            value2={`${get(ledger, 'stats.accounts', '0')}`}
+                            chipValue="get-started"
+                            value1="0"
+                            value2="0"
                           />
                         </Box>
-                      ))
-                  ) : (
-                    <Box mr={3}>
-                      <StatsCard
-                        icon={<AccountBalance />}
-                        variant="violet"
-                        title1={t('pages.overview.stats.transactions')}
-                        title2={t('pages.overview.stats.accounts')}
-                        chipValue="get-started"
-                        value1="0"
-                        value2="0"
-                      />
-                    </Box>
+                      </animated.div>
+                    )
                   )}
                 </Box>
               </Box>

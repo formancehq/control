@@ -1,7 +1,9 @@
 import React from 'react';
 
-export function useOpen(): [boolean, () => void, () => void] {
-  const [open, setOpen] = React.useState(false);
+export function useOpen(
+  defaultValue = false
+): [boolean, () => void, () => void] {
+  const [open, setOpen] = React.useState(defaultValue);
   const handleOpen = () => {
     setOpen(true);
   };
