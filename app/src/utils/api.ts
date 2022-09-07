@@ -103,11 +103,6 @@ export class ApiClient implements IApiClient {
       if (res && res.status === 204) {
         return {} as any;
       }
-      console.info({
-        timeElapsed: `${new Date().getTime() - startTime}ms`,
-        url: res?.url,
-        body: body,
-      });
 
       const json = await res.json();
 
