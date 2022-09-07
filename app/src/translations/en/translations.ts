@@ -249,6 +249,7 @@ export default {
           notFound: {
             title: '',
             description: 'Hm, no results found',
+            button: 'Go back home',
           },
           unauthorized: {
             title: 'Looks like you do not have required permission!',

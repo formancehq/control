@@ -48,6 +48,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
       id="payment"
       title="pages.payment.title"
       error={error}
+      showAction={false}
     />
   );
 }
