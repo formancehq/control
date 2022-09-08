@@ -1,4 +1,5 @@
 import { test } from '@playwright/test';
+
 import { getFrontendRoute } from './helpers';
 
 test.describe.parallel('Starter suite', () => {

@@ -1,8 +1,12 @@
-import { NorthEast, SouthEast } from '@mui/icons-material';
-import { Chip } from '@numaryhq/storybook';
 import React, { FunctionComponent } from 'react';
-import { PaymentTypes } from '~/src/types/payment';
+
+import { NorthEast, SouthEast } from '@mui/icons-material';
+
 import { PayInChipsProps } from './types';
+
+import { Chip } from '@numaryhq/storybook';
+
+import { PaymentTypes } from '~/src/types/payment';
 
 const PayInChips: FunctionComponent<PayInChipsProps> = ({ type }) => (
   <Chip

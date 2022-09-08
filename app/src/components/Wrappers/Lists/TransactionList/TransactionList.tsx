@@ -1,15 +1,13 @@
-import { flatten, get, head, omit } from 'lodash';
 import React, { FunctionComponent } from 'react';
-import { TransactionListProps } from './types';
-import { Transaction, TransactionHybrid } from '~/src/types/ledger';
-import { Cursor } from '~/src/types/generic';
-import {
-  getLedgerAccountDetailsRoute,
-  getLedgerTransactionDetailsRoute,
-  getRoute,
-  TRANSACTIONS_ROUTE,
-} from '~/src/components/Navbar/routes';
+
+import { ArrowRight } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import { flatten, get, head, omit } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+
+import { TransactionListProps } from './types';
+
 import {
   Amount,
   Chip,
@@ -19,10 +17,16 @@ import {
   SourceDestination,
   Txid,
 } from '@numaryhq/storybook';
-import { ArrowRight } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+
+import {
+  getLedgerAccountDetailsRoute,
+  getLedgerTransactionDetailsRoute,
+  getRoute,
+  TRANSACTIONS_ROUTE,
+} from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
-import { Box } from '@mui/material';
+import { Cursor } from '~/src/types/generic';
+import { Transaction, TransactionHybrid } from '~/src/types/ledger';
 import { SearchTargets } from '~/src/types/search';
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>

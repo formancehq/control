@@ -1,11 +1,15 @@
 import type { ReactElement } from 'react';
 import * as React from 'react';
-import type { MetaFunction } from '@remix-run/node';
-import { LoaderFunction } from '@remix-run/server-runtime';
-import invariant from 'tiny-invariant';
-import { useLoaderData } from '@remix-run/react';
-import { useTranslation } from 'react-i18next';
+
+import ContentCopy from '@mui/icons-material/ContentCopy';
+import StopIcon from '@mui/icons-material/Stop';
 import { Box, Divider, Grid, Tooltip, Typography } from '@mui/material';
+import type { MetaFunction } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import { LoaderFunction } from '@remix-run/server-runtime';
+import { useTranslation } from 'react-i18next';
+import invariant from 'tiny-invariant';
+
 import {
   Amount,
   Chip,
@@ -18,15 +22,14 @@ import {
   SectionWrapper,
   theme,
 } from '@numaryhq/storybook';
+
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import StopIcon from '@mui/icons-material/Stop';
+import PayInChips from '~/src/components/Wrappers/PayInChips';
+import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import Table from '~/src/components/Wrappers/Table';
 import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
 import { API_PAYMENT, ApiClient } from '~/src/utils/api';
 import { copyTokenToClipboard } from '~/src/utils/clipboard';
-import Table from '~/src/components/Wrappers/Table';
-import PayInChips from '~/src/components/Wrappers/PayInChips';
-import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 
 // TODO remove this when Reconciliation is done
 interface Reconciliation {

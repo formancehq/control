@@ -1,17 +1,22 @@
-import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
+
+import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import { isArray } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
+
+import Search from './../Search';
+
 import { theme } from '@numaryhq/storybook';
+
+import LinkWrapper from '../Wrappers/LinkWrapper';
+
 import {
   getRoute,
   OVERVIEW_ROUTE,
   routerConfig,
 } from '~/src/components/Navbar/routes';
-import { useTranslation } from 'react-i18next';
-import Search from './../Search';
-import LinkWrapper from '../Wrappers/LinkWrapper';
 
 const Navbar: FunctionComponent = () => {
   const navigate = useNavigate();

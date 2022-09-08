@@ -1,12 +1,15 @@
 import React, { FunctionComponent } from 'react';
-import { TableConfig } from '~/src/types/generic';
-import { Table as SbTable } from '@numaryhq/storybook';
-import { useTranslation } from 'react-i18next';
-import { TableProps } from '~/src/components/Wrappers/Table/types';
-import { useSearchParams } from '@remix-run/react';
+
 import { Box } from '@mui/material';
+import { useSearchParams } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
+
+import { Table as SbTable } from '@numaryhq/storybook';
+
 import SelectedTags from '~/src/components/Wrappers/Table/Filters/SelectedTags/SelectedTags';
+import { TableProps } from '~/src/components/Wrappers/Table/types';
 import { useTableFilters } from '~/src/hooks/useTableFilters';
+import { TableConfig } from '~/src/types/generic';
 
 const Table: FunctionComponent<TableProps> = ({
   action = false,

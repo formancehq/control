@@ -1,5 +1,5 @@
-import { Transaction } from '~/src/types/ledger';
 import { Cursor } from '~/src/types/generic';
+import { Transaction } from '~/src/types/ledger';
 
 export type TransactionListProps = {
   transactions: Cursor<Transaction>;

@@ -1,14 +1,18 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
-import { AutocompleteOption, AutocompleteSelect } from '@numaryhq/storybook';
+
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+
+import { SelectProps } from './types';
+
+import { AutocompleteOption, AutocompleteSelect } from '@numaryhq/storybook';
+
 import {
   buildOptions,
   Filters,
   renderOption,
 } from '~/src/components/Wrappers/Table/Filters/filters';
-import { Box } from '@mui/material';
-import { SelectProps } from './types';
 
 const Select: FunctionComponent<SelectProps> = ({
   id,

@@ -1,12 +1,15 @@
 import * as React from 'react';
-import createEmotionCache from './src/utils/createEmotionCache';
-import { theme } from '@numaryhq/storybook';
-import { ThemeProvider } from '@mui/material/styles';
+
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
+import { ThemeProvider } from '@mui/material/styles';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/server-runtime';
 import { renderToString } from 'react-dom/server';
+
+import createEmotionCache from './src/utils/createEmotionCache';
+
+import { theme } from '@numaryhq/storybook';
 
 export default async function handleRequest(
   request: Request,

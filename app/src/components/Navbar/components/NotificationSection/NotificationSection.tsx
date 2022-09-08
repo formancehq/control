@@ -1,7 +1,8 @@
-import { NotificationsOutlined } from '@mui/icons-material';
-import { Box, Tooltip } from '@mui/material';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
+
+import { NotificationsOutlined } from '@mui/icons-material';
+import { Box, Tooltip } from '@mui/material';
 
 export const NotificationSection: FunctionComponent = () => (
   <Box mr={2} display="flex">

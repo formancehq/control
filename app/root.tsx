@@ -1,5 +1,15 @@
 import * as React from 'react';
 import { ReactElement } from 'react';
+
+import { withEmotionCache } from '@emotion/react';
+import { Home } from '@mui/icons-material';
+import {
+  Backdrop,
+  Box,
+  CircularProgress,
+  Typography,
+  unstable_useEnhancedEffect as useEnhancedEffect,
+} from '@mui/material';
 import { json } from '@remix-run/node';
 import {
   Links,
@@ -12,27 +22,21 @@ import {
   useCatch,
   useLoaderData,
 } from '@remix-run/react';
-import { withEmotionCache } from '@emotion/react';
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  Typography,
-  unstable_useEnhancedEffect as useEnhancedEffect,
-} from '@mui/material';
-import { LoadingButton, theme } from '@numaryhq/storybook';
-import ClientStyleContext from '~/src/contexts/clientStyleContext';
-import Layout from '~/src/components/Layout';
-import { ApiClient, errorsMap, logger } from '~/src/utils/api';
-import { ServiceContext } from '~/src/contexts/service';
-import styles from './root.css';
-import { Home } from '@mui/icons-material';
-import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
 import { camelCase, get } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+
+import styles from './root.css';
 import { useOpen } from './src/hooks/useOpen';
+
+import { LoadingButton, theme } from '@numaryhq/storybook';
+
+import Layout from '~/src/components/Layout';
+import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import ClientStyleContext from '~/src/contexts/clientStyleContext';
+import { ServiceContext } from '~/src/contexts/service';
+import { ApiClient, errorsMap, logger } from '~/src/utils/api';
 
 interface DocumentProps {
   children: React.ReactNode;

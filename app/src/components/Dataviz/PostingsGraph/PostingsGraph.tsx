@@ -1,8 +1,11 @@
-import { Box } from '@mui/material';
 import React, { FunctionComponent } from 'react';
-import { PostingsGraphProps } from './types';
-import { Posting } from '~/src/types/ledger';
+
+import { Box } from '@mui/material';
 import Graphviz from 'graphviz-react';
+
+import { PostingsGraphProps } from './types';
+
+import { Posting } from '~/src/types/ledger';
 
 const PostingsGraph: FunctionComponent<PostingsGraphProps> = ({ postings }) => {
   let dot = '';

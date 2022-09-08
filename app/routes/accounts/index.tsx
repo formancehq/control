@@ -1,20 +1,23 @@
 import * as React from 'react';
+
 import type { MetaFunction } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { Page } from '@numaryhq/storybook';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { API_SEARCH, ApiClient } from '~/src/utils/api';
-import { Account } from '~/src/types/ledger';
-import { buildQuery } from '~/src/utils/search';
+
+import { Page } from '@numaryhq/storybook';
+
+import { LedgerList } from '~/routes/ledgers/list';
 import { accounts as accountsConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import { Cursor } from '~/src/types/generic';
-import { LedgerList } from '~/routes/ledgers/list';
-import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { Cursor } from '~/src/types/generic';
+import { Account } from '~/src/types/ledger';
+import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { API_SEARCH, ApiClient } from '~/src/utils/api';
+import { buildQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
   title: 'Accounts',

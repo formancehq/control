@@ -1,7 +1,8 @@
-import express from 'express';
-import cors from 'cors';
-import * as mock from './data';
 import bodyParser from 'body-parser';
+import cors from 'cors';
+import express from 'express';
+
+import * as mock from './data';
 
 export default (async () => {
   const app = express();

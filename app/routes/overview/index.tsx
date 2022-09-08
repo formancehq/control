@@ -1,8 +1,17 @@
-import * as React from 'react';
 import { useEffect, useState } from 'react';
-import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import * as React from 'react';
+
+import { AccountBalance, NorthEast } from '@mui/icons-material';
 import { Box, CircularProgress, Link } from '@mui/material';
-import { overview } from '~/src/components/Navbar/routes';
+import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import { useLoaderData, useSearchParams } from '@remix-run/react';
+import { get } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import {
+  useTransition as useAnimationTransition,
+  animated,
+} from 'react-spring';
+
 import {
   LoadingButton,
   OnBoarding,
@@ -11,23 +20,18 @@ import {
   theme,
   TitleWithBar,
 } from '@numaryhq/storybook';
-import { AccountBalance, NorthEast } from '@mui/icons-material';
-import { ApiClient, API_LEDGER, API_SEARCH, IApiClient } from '~/src/utils/api';
-import { useTranslation } from 'react-i18next';
-import { get } from 'lodash';
-import { Cursor } from '~/src/types/generic';
-import { Payment } from '~/src/types/payment';
-import { SearchTargets } from '~/src/types/search';
-import { useLoaderData, useSearchParams } from '@remix-run/react';
-import { Account, LedgerInfo } from '~/src/types/ledger';
-import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+
 import { LedgerList } from '../ledgers/list';
-import {
-  useTransition as useAnimationTransition,
-  animated,
-} from 'react-spring';
+
+import { overview } from '~/src/components/Navbar/routes';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
+import { Cursor } from '~/src/types/generic';
+import { Account, LedgerInfo } from '~/src/types/ledger';
+import { Payment } from '~/src/types/payment';
+import { SearchTargets } from '~/src/types/search';
+import { ApiClient, API_LEDGER, API_SEARCH, IApiClient } from '~/src/utils/api';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -101,7 +105,8 @@ export default function Index() {
   const shouldDisplaySetup = payments === 0 || accounts === 0;
   const [searchParams] = useSearchParams();
   const urlParamsLedgers = searchParams.getAll('ledgers');
-  const [loading, _load, stopLoading] = useOpen(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, load, stopLoading] = useOpen(true);
 
   const loadingTransition = useAnimationTransition(ledgers.length, {
     from: { opacity: 0 },

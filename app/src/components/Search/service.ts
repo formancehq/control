@@ -1,3 +1,10 @@
+import { isEmpty } from 'lodash';
+
+import i18n from './../../translations';
+
+import { Cursor } from '~/src/types/generic';
+import { Account, Transaction } from '~/src/types/ledger';
+import { Payment } from '~/src/types/payment';
 import {
   AccountSuggestions,
   PaymentSuggestions,
@@ -6,12 +13,7 @@ import {
   Suggestion,
   TransactionsSuggestions,
 } from '~/src/types/search';
-import { Account, Transaction } from '~/src/types/ledger';
-import { Payment } from '~/src/types/payment';
-import { Cursor } from '~/src/types/generic';
 import { API_SEARCH, IApiClient } from '~/src/utils/api';
-import i18n from './../../translations';
-import { isEmpty } from 'lodash';
 
 export const getSuggestions = async (
   target: SearchTargets,

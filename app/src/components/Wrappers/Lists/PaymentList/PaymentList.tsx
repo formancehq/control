@@ -1,15 +1,18 @@
 import React, { FunctionComponent } from 'react';
-import { Box, Typography } from '@mui/material';
-import { Payment } from '~/src/types/payment';
-import { Amount, Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
-import { useNavigate } from 'react-router-dom';
-import { getRoute, PAYMENT_ROUTE } from '~/src/components/Navbar/routes';
+
 import { ArrowRight } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import Table from '~/src/components/Wrappers/Table';
+import { useNavigate } from 'react-router-dom';
+
+import { Amount, Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
+
+import { getRoute, PAYMENT_ROUTE } from '~/src/components/Navbar/routes';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import Table from '~/src/components/Wrappers/Table';
+import { Payment } from '~/src/types/payment';
 
 const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
   const navigate = useNavigate();
