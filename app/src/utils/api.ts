@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+
 import { Errors } from '~/src/types/generic';
 
 export const API_SEARCH = 'search';

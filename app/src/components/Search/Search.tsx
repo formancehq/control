@@ -1,11 +1,16 @@
+import * as React from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
+
 import {
   AccountBalance,
   CreditCard,
   SearchOutlined,
 } from '@mui/icons-material';
 import { Box, CircularProgress, Grid, Typography } from '@mui/material';
-import * as React from 'react';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { get, isEmpty } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+
 import {
   Amount,
   Chip,
@@ -14,17 +19,7 @@ import {
   Search as SbSearch,
   Txid,
 } from '@numaryhq/storybook';
-import {
-  AccountSuggestions,
-  PaymentSuggestions,
-  SearchResource,
-  SearchTarget,
-  SearchTargets,
-  SuggestionItem,
-  TransactionsSuggestions,
-} from '~/src/types/search';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+
 import {
   ACCOUNTS_ROUTE,
   getLedgerAccountDetailsRoute,
@@ -34,15 +29,23 @@ import {
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
 } from '~/src/components/Navbar/routes';
-import { useService } from '~/src/hooks/useService';
 import {
   getSuggestions,
   suggestionsFactory,
 } from '~/src/components/Search/service';
-import { get, isEmpty } from 'lodash';
-import { useOpen } from '~/src/hooks/useOpen';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import { useOpen } from '~/src/hooks/useOpen';
+import { useService } from '~/src/hooks/useService';
+import {
+  AccountSuggestions,
+  PaymentSuggestions,
+  SearchResource,
+  SearchTarget,
+  SearchTargets,
+  SuggestionItem,
+  TransactionsSuggestions,
+} from '~/src/types/search';
 
 // TODo improve
 const Search: FunctionComponent = () => {

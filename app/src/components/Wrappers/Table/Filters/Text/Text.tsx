@@ -1,12 +1,15 @@
 import React, { FunctionComponent } from 'react';
-import { useSearchParams } from '@remix-run/react';
+
 import { Box } from '@mui/material';
-import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
-import { TextField } from '@numaryhq/storybook';
-import { buildQuery } from '~/src/utils/search';
-import { URLSearchParamsInit } from 'react-router-dom';
-import { TextProps } from '~/src/components/Wrappers/Table/Filters/Text/types';
+import { useSearchParams } from '@remix-run/react';
 import { isEmpty } from 'lodash';
+import { URLSearchParamsInit } from 'react-router-dom';
+
+import { TextField } from '@numaryhq/storybook';
+
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import { TextProps } from '~/src/components/Wrappers/Table/Filters/Text/types';
+import { buildQuery } from '~/src/utils/search';
 
 const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
   const [searchParams, setSearchParams] = useSearchParams();

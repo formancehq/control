@@ -1,8 +1,11 @@
 import React, { FunctionComponent } from 'react';
-import { get } from 'lodash';
+
 import { Box, Typography } from '@mui/material';
-import { providersMap } from '~/src/utils/providersMap';
+import { get } from 'lodash';
+
 import { ProviderPictureProps } from './types';
+
+import { providersMap } from '~/src/utils/providersMap';
 
 const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
   provider,

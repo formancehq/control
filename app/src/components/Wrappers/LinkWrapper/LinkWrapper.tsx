@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from 'react';
+
 import { Box } from '@mui/material';
 import { Link } from 'remix';
+
 import { LinkWrapperProps } from './types';
 
 const LinkWrapper: FunctionComponent<LinkWrapperProps> = ({

@@ -1,27 +1,30 @@
 import * as React from 'react';
+
 import type { MetaFunction } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { Page } from '@numaryhq/storybook';
-import { useTranslation } from 'react-i18next';
 import { LoaderFunction } from '@remix-run/server-runtime';
+import { useTranslation } from 'react-i18next';
+
+import { Page } from '@numaryhq/storybook';
+
+import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import Select from '~/src/components/Wrappers/Table/Filters/Select';
+import Text from '~/src/components/Wrappers/Table/Filters/Text';
+import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { Cursor } from '~/src/types/generic';
 import {
   Payment,
   PaymentProviders,
   PaymentStatuses,
   PaymentTypes,
 } from '~/src/types/payment';
-import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
-import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
-import { API_SEARCH, ApiClient } from '~/src/utils/api';
-import { Cursor } from '~/src/types/generic';
-import { buildQuery } from '~/src/utils/search';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
-import Select from '~/src/components/Wrappers/Table/Filters/Select';
-import Text from '~/src/components/Wrappers/Table/Filters/Text';
-import { TableFiltersContext } from '~/src/contexts/tableFilters';
-import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import { API_SEARCH, ApiClient } from '~/src/utils/api';
+import { buildQuery } from '~/src/utils/search';
 
 const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
 const paymentProviders = [

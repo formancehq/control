@@ -1,13 +1,17 @@
 import React, { FunctionComponent } from 'react';
-import { EmptyState, LoadingButton, Page } from '@numaryhq/storybook';
-import { ComponentErrorBoundaryProps } from './types';
+
 import { Support } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { Errors } from '~/src/types/generic';
 import { camelCase, get } from 'lodash';
-import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
+import { ComponentErrorBoundaryProps } from './types';
+
+import { EmptyState, LoadingButton, Page } from '@numaryhq/storybook';
+
+import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import { Errors } from '~/src/types/generic';
 
 const ComponentErrorBoundary: FunctionComponent<
   ComponentErrorBoundaryProps

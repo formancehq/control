@@ -1,6 +1,8 @@
 import React, { FunctionComponent, useState } from 'react';
-import { LoadingButton, Modal as SbModal } from '@numaryhq/storybook';
+
 import { ModalProps } from './types';
+
+import { LoadingButton, Modal as SbModal } from '@numaryhq/storybook';
 
 const Modal: FunctionComponent<ModalProps> = ({ children, modal, button }) => {
   const [open, setOpen] = useState(false);

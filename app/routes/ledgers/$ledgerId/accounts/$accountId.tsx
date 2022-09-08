@@ -1,10 +1,21 @@
 import * as React from 'react';
-import type { MetaFunction } from '@remix-run/node';
-import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
+
 import { Box, Grid, Typography, useTheme } from '@mui/material';
+import type { MetaFunction } from '@remix-run/node';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
-import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
+
+import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
+
+import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
+import Metadata from '~/src/components/Wrappers/Metadata';
+import Table from '~/src/components/Wrappers/Table';
+import { Cursor } from '~/src/types/generic';
 import {
   Account,
   AccountHybrid,
@@ -13,16 +24,8 @@ import {
   Transaction,
   Volume,
 } from '~/src/types/ledger';
-import { useFetcher, useLoaderData } from '@remix-run/react';
-import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import Metadata from '~/src/components/Wrappers/Metadata';
-import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
-import Table from '~/src/components/Wrappers/Table';
-import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import { Cursor } from '~/src/types/generic';
-import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
+import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
 
 const normalizeBalance = (account: Account): AccountHybrid => ({
   balances: account.balances

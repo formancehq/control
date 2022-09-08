@@ -1,4 +1,14 @@
 import * as React from 'react';
+
+import { Box, Typography } from '@mui/material';
+import { MetaFunction } from '@remix-run/node';
+import { useFetcher, useLoaderData } from '@remix-run/react';
+import { LoaderFunction } from '@remix-run/server-runtime';
+import { omit } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
+import invariant from 'tiny-invariant';
+
 import {
   Amount,
   Date,
@@ -8,30 +18,23 @@ import {
   SourceDestination,
   Txid,
 } from '@numaryhq/storybook';
-import { LoaderFunction } from '@remix-run/server-runtime';
-import invariant from 'tiny-invariant';
-import { API_LEDGER, ApiClient } from '~/src/utils/api';
+
+import PostingsGraph from '~/src/components/Dataviz/PostingsGraph';
+import {
+  getLedgerAccountDetailsRoute,
+  getLedgerTransactionDetailsRoute,
+} from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import Metadata from '~/src/components/Wrappers/Metadata';
+import Table from '~/src/components/Wrappers/Table';
+import { ObjectOf } from '~/src/types/generic';
 import {
   LedgerResources,
   Posting,
   PostingHybrid,
   Transaction,
 } from '~/src/types/ledger';
-import { omit } from 'lodash';
-import { useNavigate, useParams } from 'react-router-dom';
-import {
-  getLedgerAccountDetailsRoute,
-  getLedgerTransactionDetailsRoute,
-} from '~/src/components/Navbar/routes';
-import { useFetcher, useLoaderData } from '@remix-run/react';
-import { useTranslation } from 'react-i18next';
-import PostingsGraph from '~/src/components/Dataviz/PostingsGraph';
-import { MetaFunction } from '@remix-run/node';
-import Metadata from '~/src/components/Wrappers/Metadata';
-import Table from '~/src/components/Wrappers/Table';
-import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import { Box, Typography } from '@mui/material';
-import { ObjectOf } from '~/src/types/generic';
+import { API_LEDGER, ApiClient } from '~/src/utils/api';
 
 const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(

@@ -1,13 +1,17 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
-import { useSearchParams } from '@remix-run/react';
-import { buildQuery } from '~/src/utils/search';
-import { URLSearchParamsInit } from 'react-router-dom';
-import { Chip } from '@numaryhq/storybook';
-import { SelectedTagsProps } from '~/src/components/Wrappers/Table/Filters/SelectedTags/types';
+
 import { Box } from '@mui/material';
-import { Filters, getFieldValue } from '../filters';
+import { useSearchParams } from '@remix-run/react';
 import { first } from 'lodash';
+import { URLSearchParamsInit } from 'react-router-dom';
+
+import { Chip } from '@numaryhq/storybook';
+
+import { Filters, getFieldValue } from '../filters';
+
+import { SelectedTagsProps } from '~/src/components/Wrappers/Table/Filters/SelectedTags/types';
+import { buildQuery } from '~/src/utils/search';
 
 const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
   name,

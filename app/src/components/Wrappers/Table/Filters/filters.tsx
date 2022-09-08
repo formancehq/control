@@ -1,6 +1,8 @@
-import { AutocompleteOption } from '@numaryhq/storybook';
 import * as React from 'react';
+
 import Checkbox from './Checkbox';
+
+import { AutocompleteOption } from '@numaryhq/storybook';
 
 export enum Filters {
   TERMS = 'terms',

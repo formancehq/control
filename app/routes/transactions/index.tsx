@@ -1,22 +1,25 @@
 import * as React from 'react';
+
 import type { MetaFunction } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { Page } from '@numaryhq/storybook';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { API_SEARCH, ApiClient } from '~/src/utils/api';
-import { Transaction } from '~/src/types/ledger';
-import { buildQuery } from '~/src/utils/search';
+import { useTranslation } from 'react-i18next';
+
+import { Page } from '@numaryhq/storybook';
+
+import { LedgerList } from '~/routes/ledgers/list';
 import { transactions as transactionsConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import { Cursor } from '~/src/types/generic';
-import { LedgerList } from '~/routes/ledgers/list';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
-import { useTranslation } from 'react-i18next';
-import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { Cursor } from '~/src/types/generic';
+import { Transaction } from '~/src/types/ledger';
+import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { API_SEARCH, ApiClient } from '~/src/utils/api';
+import { buildQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
   title: 'Transactions',

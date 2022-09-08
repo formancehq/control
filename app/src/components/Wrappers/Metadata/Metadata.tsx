@@ -1,26 +1,31 @@
 import React, { FunctionComponent } from 'react';
+
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Edit, LocalFlorist } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import { noop } from 'lodash';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+
 import { MetadataProps } from './types';
+
 import {
   JsonViewer,
   LoadingButton,
   SectionWrapper,
   TextArea,
 } from '@numaryhq/storybook';
-import { Edit, LocalFlorist } from '@mui/icons-material';
+
 import Modal from '../Modal';
-import { useTranslation } from 'react-i18next';
-import { useService } from '~/src/hooks/useService';
-import { noop } from 'lodash';
-import { Controller, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+
 import {
   FormInput,
   prettyJson,
   schema,
   submit,
 } from '~/src/components/Wrappers/Metadata/service';
-import { Box } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useService } from '~/src/hooks/useService';
 
 const Metadata: FunctionComponent<MetadataProps> = ({
   metadata,

@@ -1,18 +1,21 @@
 import React, { FunctionComponent } from 'react';
-import { Account } from '~/src/types/ledger';
+
+import { ArrowRight } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
+
 import {
   Chip,
   LoadingButton,
   Row,
   SourceDestination,
 } from '@numaryhq/storybook';
+
+import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
 import { AccountListProps } from '~/src/components/Wrappers/Lists/AccountList/types';
-import { useTranslation } from 'react-i18next';
 import Table from '~/src/components/Wrappers/Table';
-import { Box } from '@mui/material';
-import { ArrowRight } from '@mui/icons-material';
+import { Account } from '~/src/types/ledger';
 
 const AccountList: FunctionComponent<AccountListProps> = ({ accounts }) => {
   const navigate = useNavigate();

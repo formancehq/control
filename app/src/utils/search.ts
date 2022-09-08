@@ -1,5 +1,6 @@
-import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
 import { identity, pickBy, toNumber } from 'lodash';
+
+import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
 
 export const buildQuery = (searchParams: URLSearchParams): SearchBody => {
   const terms = searchParams.getAll('terms');

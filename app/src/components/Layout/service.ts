@@ -1,5 +1,9 @@
-import { ObjectOf } from '~/src/types/generic';
 import { NavigateFunction } from '@remix-run/react';
+
+import i18n from './../../translations';
+
+import { BreadcrumbsLink } from '@numaryhq/storybook';
+
 import {
   ACCOUNTS_ROUTE,
   getLedgerAccountDetailsRoute,
@@ -8,8 +12,7 @@ import {
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
 } from '~/src/components/Navbar/routes';
-import i18n from './../../translations';
-import { BreadcrumbsLink } from '@numaryhq/storybook';
+import { ObjectOf } from '~/src/types/generic';
 
 export type State = {
   provider: string;
