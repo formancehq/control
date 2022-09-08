@@ -7,36 +7,27 @@ import { LoaderFunction } from '@remix-run/server-runtime';
 import { Page } from '@numaryhq/storybook';
 
 import { LedgerList } from '~/routes/ledgers/list';
-import { accounts as accountsConfig } from '~/src/components/Navbar/routes';
+import { reports as reportsConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList';
+import ReportList from '~/src/components/Wrappers/Lists/ReportList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { TableFiltersContext } from '~/src/contexts/tableFilters';
-import { Cursor } from '~/src/types/generic';
-import { Account } from '~/src/types/ledger';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import { API_SEARCH, ApiClient } from '~/src/utils/api';
-import { buildQuery } from '~/src/utils/search';
+import { Report } from '~/src/types/report';
+import { API_REPORT, ApiClient } from '~/src/utils/api';
 
 export const meta: MetaFunction = () => ({
-  title: 'Accounts',
+  title: 'Reports',
   description: 'Show a list',
 });
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const url = new URL(request.url);
-  const accounts = await new ApiClient().postResource<Cursor<Account>>(
-    API_SEARCH,
-    {
-      ...buildQuery(url.searchParams),
-      target: SearchTargets.ACCOUNT,
-      policy: SearchPolicies.OR,
-    },
-    'cursor'
+export const loader: LoaderFunction = async (): Promise<Report[] | null> => {
+  const reports = await new ApiClient().getResource<Report[]>(
+    API_REPORT,
+    'data'
   );
-  if (accounts) {
-    return accounts;
+  if (reports) {
+    return reports;
   }
 
   return null;
@@ -45,18 +36,18 @@ export const loader: LoaderFunction = async ({ request }) => {
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
-      id={accountsConfig.id}
-      title="pages.accounts.title"
+      id={reportsConfig.id}
+      title="pages.reports.title"
       error={error}
     />
   );
 }
 
 export default function Index() {
-  const accounts = useLoaderData<Cursor<Account>>();
+  const reports = useLoaderData<Report[]>();
 
   return (
-    <Page id={accountsConfig.id}>
+    <Page id={reportsConfig.id}>
       <TableFiltersContext.Provider
         value={{
           filters: [{ field: 'ledgers', name: Filters.LEDGERS }],
@@ -66,7 +57,7 @@ export default function Index() {
           <FiltersBar>
             <LedgerList />
           </FiltersBar>
-          <AccountList accounts={accounts as Cursor<Account>} />
+          <ReportList reports={reports as unknown as Report[]} />
         </Form>
       </TableFiltersContext.Provider>
     </Page>

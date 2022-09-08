@@ -6,6 +6,7 @@ export const PAYMENTS_ROUTE = '/payments';
 export const PAYMENT_ROUTE = '/payments/:id';
 export const ACCOUNTS_ROUTE = '/accounts';
 export const TRANSACTIONS_ROUTE = '/transactions';
+export const REPORTS_ROUTE = '/reports';
 
 export const getRoute = (uri: string, id?: number | string): string =>
   id !== undefined ? uri.replace(/:\w+/, id.toString(10)) : uri;
@@ -56,9 +57,16 @@ export const transactions: RouterConfig = {
   path: getRoute(TRANSACTIONS_ROUTE),
 };
 
+export const reports: RouterConfig = {
+  id: 'reports',
+  label: 'navbar.title.reports',
+  path: getRoute(REPORTS_ROUTE),
+};
+
 export const routerConfig: RouterConfig[] = [
   overview,
   payments,
   accounts,
   transactions,
+  reports,
 ];

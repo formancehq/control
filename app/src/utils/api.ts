@@ -5,6 +5,7 @@ import { Errors } from '~/src/types/generic';
 export const API_SEARCH = 'search';
 export const API_LEDGER = 'ledger';
 export const API_PAYMENT = 'payments';
+export const API_REPORT = 'reports';
 
 export const logger = (stack?: any, from?: string, response?: Response) => {
   // eslint-disable-next-line no-console

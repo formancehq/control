@@ -40,6 +40,7 @@ export default {
         accounts: 'Accounts',
         transactions: 'Transactions',
         ledgers: 'Ledgers',
+        reports: 'Reports',
         payments: 'Payments',
       },
     },
@@ -225,6 +226,135 @@ export default {
         },
         metadata: {
           title: 'Metadata',
+        },
+      },
+      reports: {
+        create: 'Generate a report',
+        title: 'Report',
+        downloadButton: 'Download',
+        automateApiButton: 'Automate via API',
+        forms: {
+          document: {
+            sections: {
+              type: {
+                title: 'Report type',
+                choices: {
+                  errors: {
+                    required: 'Report type is required',
+                  },
+                  ledgerAccountStatement: {
+                    label: 'Ledger account statement',
+                    description:
+                      'Extract transactions for an account over a time frame',
+                  },
+                  customized: {
+                    label: 'Customized',
+                    description:
+                      'Filter and aggregate on ledger accounts & transactions ',
+                  },
+                },
+              },
+              parameters: {
+                title: 'Parameters',
+                filters: {
+                  account: {
+                    label: 'Account',
+                    placeholder: 'Find accounts...',
+                    errors: {
+                      required: 'Account resource is required',
+                    },
+                  },
+                  startDate: {
+                    label: 'Starting date',
+                    placeholder: 'Pick date',
+                    errors: {
+                      required: 'Starting date is required',
+                    },
+                  },
+                  endDate: {
+                    label: 'Ending date',
+                    placeholder: 'Pick date',
+                  },
+                },
+              },
+              header: {
+                title: 'Header block',
+                select: {
+                  placeholder: 'None',
+                },
+                create: 'Add new header',
+              },
+              download: {
+                title: 'Download options',
+                choices: {
+                  pdf: {
+                    label: 'PDF',
+                    description:
+                      'Great for end users, e.g. marketplace merchants',
+                    errors: {
+                      required: 'Report extension is required',
+                    },
+                  },
+                  csv: {
+                    label: 'CSV',
+                    description: 'Great for data portability and imports',
+                    errors: {
+                      required: 'Report extension is required',
+                    },
+                  },
+                  xls: {
+                    label: 'XSLSX',
+                    description: 'Great for humans and auditors',
+                    errors: {
+                      required: 'Report extension is required',
+                    },
+                  },
+                },
+              },
+            },
+            feedback: {
+              success: 'Success!',
+              error: 'Error! Oops something wrong happened. Please try again.',
+            },
+          },
+          header: {
+            modal: {
+              help: '👋 Having trouble ? Checkout our guidelines 👈',
+              title: 'Create header',
+              logo: {
+                label: 'Logo',
+                error: {
+                  format: 'Upload only supports .jpg or .png',
+                },
+              },
+              name: {
+                label: 'Label header',
+                error: {
+                  required: 'Name is required',
+                },
+              },
+              rightBlock: {
+                label: 'Right block',
+                error: {
+                  lengthGreaterThan: 'Too many characters',
+                },
+              },
+              leftBlock: {
+                label: 'Left block',
+                error: {
+                  lengthGreaterThan: 'Too many characters',
+                },
+              },
+            },
+          },
+        },
+        table: {
+          columnLabel: {
+            name: 'Name',
+            status: 'Status',
+            extension: 'Extension',
+            createdAt: 'Created at',
+          },
         },
       },
     },
