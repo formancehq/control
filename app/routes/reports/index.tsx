@@ -21,11 +21,13 @@ export const meta: MetaFunction = () => ({
   description: 'Show a list',
 });
 
-export const loader: LoaderFunction = async (): Promise<Report[] | null> => {
-  const reports = await new ApiClient().getResource<Report[]>(
-    API_REPORT,
-    'data'
-  );
+export const loader: LoaderFunction = async ({
+  request,
+}): Promise<Report[] | null> => {
+  const url = new URL(request.url);
+  const reports = await new ApiClient('http://localhost:3200').getResource<
+    Report[]
+  >(`${API_REPORT}/${url.search}`, 'data');
   if (reports) {
     return reports;
   }

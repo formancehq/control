@@ -92,7 +92,6 @@ export class ApiClient implements IApiClient {
     let res: Response | undefined = undefined;
     const uri = this.decorateUrl(params);
     try {
-      const startTime = new Date().getTime();
       if (body) {
         res = await fetch(uri, {
           method: 'POST',
@@ -105,9 +104,7 @@ export class ApiClient implements IApiClient {
       if (res && res.status === 204) {
         return {} as any;
       }
-
       const json = await res.json();
-
       data = path ? get(json, path) : json;
     } catch (e: any) {
       // TODO backend need to fix the search 503 api error !!!!!!!!

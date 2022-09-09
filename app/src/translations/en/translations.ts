@@ -230,7 +230,7 @@ export default {
       },
       reports: {
         create: 'Generate a report',
-        title: 'Report',
+        title: 'Reports',
         downloadButton: 'Download',
         automateApiButton: 'Automate via API',
         forms: {
