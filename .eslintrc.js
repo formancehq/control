@@ -1,86 +1,85 @@
 /* eslint-env node */
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   extends: [
-    'plugin:react/recommended',
-    'prettier',
-    'plugin:prettier/recommended',
-    'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:import/typescript',
+    "plugin:react/recommended",
+    "prettier",
+    "plugin:prettier/recommended",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/typescript",
   ],
-  plugins: ['import'],
+  plugins: ["import"],
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module',
+    sourceType: "module",
     ecmaFeatures: {
       jsx: true,
     },
   },
   rules: {
-    'no-console': 'warn',
-    'newline-before-return': 'error',
-    'linebreak-style': 'off',
-    'arrow-body-style': 'error',
-
-    'import/first': 'error',
-    'import/newline-after-import': ['error', { count: 1 }],
-    'import/order': [
-      'error',
+    "no-console": "warn",
+    "newline-before-return": "error",
+    "linebreak-style": "off",
+    "arrow-body-style": "error",
+    "import/first": "error",
+    "import/newline-after-import": ["error", { count: 1 }],
+    "import/order": [
+      "error",
       {
-        'newlines-between': 'always',
+        "newlines-between": "always",
         pathGroups: [
           {
-            pattern: 'react',
-            group: 'builtin',
-            position: 'before',
+            pattern: "react",
+            group: "builtin",
+            position: "before",
           },
           {
-            pattern: '@numaryhq/storybook',
-            group: 'sibling',
-            position: 'after',
+            pattern: "@numaryhq/storybook",
+            group: "sibling",
+            position: "after",
           },
           {
-            pattern: '../**',
-            group: 'internal',
-            position: 'before',
+            pattern: "../**",
+            group: "internal",
+            position: "before",
           },
           {
-            pattern: '^~/src/',
-            group: 'internal',
-            position: 'after',
+            pattern: "^~/src/",
+            group: "internal",
+            position: "after",
           },
         ],
-        pathGroupsExcludedImportTypes: ['react'],
+        pathGroupsExcludedImportTypes: ["react"],
         alphabetize: {
           order:
-            'asc' /* sort in ascending order. Options: ['ignore', 'asc', 'desc'] */,
+            "asc" /* sort in ascending order. Options: ['ignore', 'asc', 'desc'] */,
           caseInsensitive: true /* ignore case. Options: [true, false] */,
         },
       },
     ],
 
-    'prettier/prettier': [
-      'error',
+    "prettier/prettier": [
+      "error",
       {
-        endOfLine: 'auto',
+        endOfLine: "auto",
         singleQuote: true,
-        arrowParens: 'always',
-        trailingComma: 'es5',
+        arrowParens: "always",
+        trailingComma: "es5",
         printWidth: 80,
       },
     ],
-    'react/prop-types': 'off',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['warn'],
-    '@typescript-eslint/no-explicit-any': 'off',
+    "react/prop-types": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["warn"],
+    "@typescript-eslint/no-explicit-any": "off",
   },
   settings: {
     react: {
-      version: 'detect',
+      version: "detect",
     },
-    'import/resolver': {
+    "import/resolver": {
       typescript: true,
       node: true,
     },

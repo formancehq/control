@@ -15,3 +15,4 @@ Dockerfile
 Dockerfile.local
 tsconfig.json
 /public
+/.github
