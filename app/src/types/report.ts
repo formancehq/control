@@ -2,6 +2,7 @@ export enum Kinds {
   LEDGER_ACCOUNT = 'ledger_account_statement',
   CUSTOMIZED = 'customized',
 }
+
 export type Kind = Kinds.LEDGER_ACCOUNT | Kinds.CUSTOMIZED;
 
 export enum Extensions {
@@ -9,6 +10,7 @@ export enum Extensions {
   XLS = 'xls',
   CSV = 'csv',
 }
+
 export type Extension = Extensions.PDF | Extensions.XLS | Extensions.CSV;
 
 export enum Statuses {
@@ -16,6 +18,7 @@ export enum Statuses {
   PENDING = 'pending',
   ERROR = 'error',
 }
+
 export type Status = Statuses.SUCCEEDED | Statuses.PENDING | Statuses.ERROR;
 
 export type GenerateReport = {
@@ -33,6 +36,7 @@ type Resource = {
   idOrganization: string;
 };
 export type Report = {
+  ledger: string;
   name: string;
   status: Status;
   extension: Extension;

@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from 'react';
 
 import { Download } from '@mui/icons-material';
-import { Box, Palette } from '@mui/material';
+import { Box } from '@mui/material';
+import { ColorVariants } from '@numaryhq/storybook/dist/cjs/types/types';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,14 +16,14 @@ const ReportList: FunctionComponent<ReportListProps> = ({ reports }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const getStatusColor = (palette: Palette, status: Status): string => {
+  const getStatusColor = (status: Status): ColorVariants => {
     const colorsMap = {
-      [Statuses.SUCCEEDED]: palette.success.main,
-      [Statuses.ERROR]: palette.error.main,
-      [Statuses.PENDING]: palette.primary.main,
+      [Statuses.SUCCEEDED]: 'green',
+      [Statuses.ERROR]: 'red',
+      [Statuses.PENDING]: 'blue',
     };
 
-    return colorsMap[status];
+    return colorsMap[status] as ColorVariants;
   };
 
   const renderRowActions = (report: Report) => (
@@ -37,12 +38,17 @@ const ReportList: FunctionComponent<ReportListProps> = ({ reports }) => {
 
   return (
     <Table
+      withPagination={false}
       items={reports}
       action
       columns={[
         {
           key: 'name',
           label: t('pages.reports.table.columnLabel.name'),
+        },
+        {
+          key: 'ledger',
+          label: t('common.table.ledger.columnLabel'),
         },
         {
           key: 'extension',
@@ -62,17 +68,17 @@ const ReportList: FunctionComponent<ReportListProps> = ({ reports }) => {
           key={index}
           keys={[
             'name',
+            <Chip
+              key={index}
+              label={report.ledger}
+              variant="square"
+              color="brown"
+            />,
             <Chip variant="square" key={report._id} label={report.extension} />,
             <Date key={report._id} timestamp={report.createdAt} />,
             <Chip
-              variant="outlined"
-              sx={{
-                border: 'solid 2px',
-                borderColor: ({ palette }) =>
-                  getStatusColor(palette, report.status),
-                color: ({ palette }) => getStatusColor(palette, report.status),
-                fontWeight: 500,
-              }}
+              variant="square"
+              color={getStatusColor(report.status)}
               key={report._id}
               label={report.status} // todo handle trans
             />,

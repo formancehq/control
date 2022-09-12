@@ -49,7 +49,7 @@ const AccountList: FunctionComponent<AccountListProps> = ({ accounts }) => {
         },
         {
           key: 'ledger',
-          label: t('pages.accounts.table.columnLabel.ledger'),
+          label: t('common.table.ledger.columnLabel'),
         },
       ]}
       renderItem={(account: Account, index) => (

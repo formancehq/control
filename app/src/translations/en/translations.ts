@@ -180,7 +180,6 @@ export default {
         table: {
           columnLabel: {
             address: 'Address',
-            ledger: 'Ledger',
           },
         },
         filters: {},
@@ -196,7 +195,6 @@ export default {
             value: 'Value',
             source: 'Source',
             destination: 'Destination',
-            ledger: 'Ledger',
             date: 'Date',
             actions: 'Actions',
           },
@@ -403,6 +401,9 @@ export default {
           columnLabel: {
             value: 'Value',
           },
+        },
+        ledger: {
+          columnLabel: 'Ledger',
         },
         pagination: {
           showing: 'Showing',

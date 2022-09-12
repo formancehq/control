@@ -109,10 +109,9 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
             key: 'destination',
             label: t('pages.transactions.table.columnLabel.destination'),
           },
-
           {
             key: 'ledger',
-            label: t('pages.transactions.table.columnLabel.ledger'),
+            label: t('common.table.ledger.columnLabel'),
           },
           {
             key: 'date',
