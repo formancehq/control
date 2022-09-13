@@ -4,18 +4,31 @@ import { Download } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { ColorVariants } from '@numaryhq/storybook/dist/cjs/types/types';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
 import { Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
 
 import { ReportListProps } from '~/src/components/Wrappers/Lists/ReportList/types';
 import Table from '~/src/components/Wrappers/Table';
+import { useService } from '~/src/hooks/useService';
 import { Report, Status, Statuses } from '~/src/types/report';
+import { API_REPORT } from '~/src/utils/api';
+import fileDownloader from '~/src/utils/fileDownloader';
 
 const ReportList: FunctionComponent<ReportListProps> = ({ reports }) => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
+  const { api } = useService();
 
+  const handleDownload = async (report: Report): Promise<void> => {
+    // todo remove hardcoded url for prod
+    api.baseUrl = 'http://localhost:3200';
+    const url = await api.getResource<string>(
+      `${API_REPORT}/${report._id}/download`,
+      'data.downloadUrl'
+    );
+    if (url) {
+      fileDownloader(url, report.name, report.extension);
+    }
+  };
   const getStatusColor = (status: Status): ColorVariants => {
     const colorsMap = {
       [Statuses.SUCCEEDED]: 'green',
@@ -30,7 +43,7 @@ const ReportList: FunctionComponent<ReportListProps> = ({ reports }) => {
     <Box key={report._id} component="span">
       <LoadingButton
         id={`download-${report._id}`}
-        onClick={() => console.log('download')}
+        onClick={() => handleDownload(report)}
         endIcon={<Download />}
       />
     </Box>

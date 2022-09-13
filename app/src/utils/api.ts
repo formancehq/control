@@ -106,6 +106,20 @@ export class ApiClient implements IApiClient {
       }
       const json = await res.json();
       data = path ? get(json, path) : json;
+
+      if (
+        typeof process !== 'undefined' &&
+        process.env.NODE_ENV === 'development'
+      ) {
+        console.info({
+          url: res?.url,
+          body: body || {},
+          method: body ? 'POST' : 'GET',
+          status: res?.status,
+          statusText: res?.statusText,
+          json,
+        });
+      }
     } catch (e: any) {
       // TODO backend need to fix the search 503 api error !!!!!!!!
       // remove this mock once backend search is fixed

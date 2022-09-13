@@ -25,6 +25,7 @@ export const loader: LoaderFunction = async ({
   request,
 }): Promise<Report[] | null> => {
   const url = new URL(request.url);
+  // todo remove url hardocoded for prod
   const reports = await new ApiClient('http://localhost:3200').getResource<
     Report[]
   >(`${API_REPORT}/${url.search}`, 'data');
