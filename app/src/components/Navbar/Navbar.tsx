@@ -1,14 +1,13 @@
-import * as React from 'react';
+import React from 'react';
 import { FunctionComponent } from 'react';
 
-import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
-import { isArray } from 'lodash';
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Search from './../Search';
 
-import { theme } from '@numaryhq/storybook';
+import { Navbar as FormanceNavbar } from '@numaryhq/storybook';
 
 import LinkWrapper from '../Wrappers/LinkWrapper';
 
@@ -23,82 +22,24 @@ const Navbar: FunctionComponent = () => {
   const location = useLocation();
   const { t } = useTranslation();
 
-  return (
-    <Box
-      sx={{
-        '& .MuiPaper-root': {
-          borderRadius: '0 !important',
-          boxShadow: 'none',
-        },
-      }}
-    >
-      <AppBar
-        position="static"
-        sx={{
-          margin: 0,
-          border: 'none !important',
-        }}
-      >
-        <Toolbar
-          sx={{
-            alignItems: 'center',
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Box>
-            {/* TODO replace by logo*/}
-            <Typography
-              variant="h6"
-              noWrap
-              sx={{ cursor: 'pointer' }}
-              component="div"
-              onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
-            >
-              FORMANCE
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-            {routerConfig.map(({ label, path, id }) => {
-              const selected = isArray(path)
-                ? path[0] === location.pathname
-                : path === location.pathname;
+  const formattedRouterconfig = routerConfig.map((route) => ({
+    ...route,
+    label: t(route.label),
+  }));
 
-              return (
-                <LinkWrapper
-                  key={id}
-                  prefetch="intent"
-                  to={isArray(path) ? (path[0] as string) : (path as string)}
-                  color={selected ? theme.palette.neutral[900] : 'inherit'}
-                >
-                  <Button
-                    sx={{
-                      gap: '8px',
-                      padding: '8px 16px',
-                      margin: '0px 4px 0px 4px',
-                      height: '40px',
-                      minWidth: '54px',
-                      textTransform: 'none',
-                      backgroundColor: ({ palette }) =>
-                        selected ? palette.neutral[0] : palette.neutral[900],
-                      color: ({ palette }) =>
-                        selected ? palette.neutral[900] : 'inherit',
-                      '&:hover': {
-                        backgroundColor: ({ palette }) =>
-                          selected ? palette.neutral[0] : palette.neutral[800],
-                      },
-                    }}
-                  >
-                    {t(label)}
-                  </Button>
-                </LinkWrapper>
-              );
-            })}
-          </Box>
-          <Search />
-        </Toolbar>
-      </AppBar>
-    </Box>
+  return (
+    <FormanceNavbar
+      onLogoClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
+      routes={formattedRouterconfig}
+      location={location}
+      linkWrapper={
+        <LinkWrapper to={''} prefetch={'none'} color={''}>
+          <Box />
+        </LinkWrapper>
+      }
+    >
+      <Search />
+    </FormanceNavbar>
   );
 };
 
