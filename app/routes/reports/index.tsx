@@ -1,12 +1,17 @@
 import * as React from 'react';
+import { useState } from 'react';
 
+import { yupResolver } from '@hookform/resolvers/yup';
 import type { MetaFunction } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { Page } from '@numaryhq/storybook';
+import { Modal, Page, TextField } from '@numaryhq/storybook';
 
 import { LedgerList } from '~/routes/ledgers/list';
+import { ReportFormInput, reportSchema } from '~/routes/reports/service';
 import { reports as reportsConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ReportList from '~/src/components/Wrappers/Lists/ReportList';
@@ -48,21 +53,60 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export default function Index() {
   const reports = useLoaderData<Report[]>();
+  const [open, setOpen] = useState<boolean>(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const { t } = useTranslation();
+  const { control } = useForm<ReportFormInput>({
+    resolver: yupResolver(reportSchema),
+    mode: 'onChange',
+  });
 
   return (
-    <Page id={reportsConfig.id}>
-      <TableFiltersContext.Provider
-        value={{
-          filters: [{ field: 'ledgers', name: Filters.LEDGERS }],
-        }}
-      >
-        <Form method="get">
-          <FiltersBar>
-            <LedgerList />
-          </FiltersBar>
-          <ReportList reports={reports as unknown as Report[]} />
-        </Form>
-      </TableFiltersContext.Provider>
+    <Page
+      actionEvent="generate-report"
+      id={reportsConfig.id}
+      actionId="generate-report"
+      actionLabel={t('pages.reports.generate.button')}
+      onClick={handleOpen}
+    >
+      <>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          title={t('common.dialog.createTitle')}
+          actions={{
+            cancel: {
+              onClick: handleClose,
+              label: t('common.dialog.cancelButton'),
+            },
+            save: {
+              onClick: () => null,
+              label: t('common.dialog.saveButton'),
+            },
+          }}
+        >
+          <form>
+            <Controller
+              name="json"
+              control={control}
+              render={({ field }) => <TextField {...field} />}
+            />
+          </form>
+        </Modal>
+        <TableFiltersContext.Provider
+          value={{
+            filters: [{ field: 'ledgers', name: Filters.LEDGERS }],
+          }}
+        >
+          <Form method="get">
+            <FiltersBar>
+              <LedgerList />
+            </FiltersBar>
+            <ReportList reports={reports as unknown as Report[]} />
+          </Form>
+        </TableFiltersContext.Provider>
+      </>
     </Page>
   );
 }
