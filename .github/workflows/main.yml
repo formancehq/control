@@ -11,7 +11,7 @@ name: Main
 jobs:
   Pr:
     if: github.event_name == 'pull_request'
-    uses: numary/gh-workflows/.github/workflows/pr-style.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/pr-style.yml@main
 
   Lint:
     name: 'Lint'
@@ -27,7 +27,7 @@ jobs:
 
   # Todo: Add Test
   #  Test:
-  #    uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
+  #    uses: formancehq/gh-workflows/.github/workflows/golang-test.yml@main
 
   Docker:
     name: 'Build Docker'
@@ -53,7 +53,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/control:latest,ghcr.io/numary/control:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/control:latest,ghcr.io/formancehq/control:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -64,7 +64,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/control:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/control:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -75,7 +75,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/control:${{ github.sha }}
+          tags: ghcr.io/formancehq/control:${{ github.sha }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=develop

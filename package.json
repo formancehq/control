@@ -5,6 +5,7 @@
   "scripts": {
     "build": "yarn cache clean && rm -rf build && rm -rf public/build && remix build",
     "dev": "remix dev",
+    "start": "remix-serve build",
     "prepare": "husky install",
     "postinstall": "remix setup node",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",

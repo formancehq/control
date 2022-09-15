@@ -1,9 +1,19 @@
-FROM node:16-alpine
+FROM node:16 as deps
 WORKDIR /app
-
 COPY ./package.json ./
 RUN yarn install
-COPY ./ .
+
+FROM node:16 as build
+WORKDIR /app
+COPY --from=deps /app/node_modules /app/node_modules
+COPY . .
 RUN yarn run build
+
+FROM node:16-slim
+WORKDIR /app
 ENV NODE_ENV=production
-CMD ["yarn", "run", "remix-serve", "build"]
+COPY --from=deps /app/node_modules /app/node_modules
+COPY --from=build /app/build /app/build
+COPY --from=build /app/public /app/public
+ADD . .
+CMD ["yarn", "run", "start"]
