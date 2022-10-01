@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 import { AccountBalance, NorthEast } from '@mui/icons-material';
 import { Box, CircularProgress, Link } from '@mui/material';
-import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import type { LoaderFunction, MetaFunction } from '@remix-run/node';
 import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import {
-  useTransition as useAnimationTransition,
   animated,
+  useTransition as useAnimationTransition,
 } from 'react-spring';
 
 import {
@@ -31,7 +31,7 @@ import { Cursor } from '~/src/types/generic';
 import { Account, LedgerInfo } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
-import { ApiClient, API_LEDGER, API_SEARCH, IApiClient } from '~/src/utils/api';
+import { API_LEDGER, API_SEARCH, ApiClient, IApiClient } from '~/src/utils/api';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -67,7 +67,8 @@ const getData = async (ledgersList: string[], api: IApiClient) => {
 };
 
 export const loader: LoaderFunction = async () => {
-  const payments = await new ApiClient().postResource<Cursor<Payment>>(
+  const api = new ApiClient();
+  const payments = api.postResource<Cursor<Payment>>(
     API_SEARCH,
     {
       target: SearchTargets.PAYMENT,
@@ -76,7 +77,7 @@ export const loader: LoaderFunction = async () => {
     'cursor'
   );
 
-  const accounts = await new ApiClient().postResource<Cursor<Account>>(
+  const accounts = api.postResource<Cursor<Account>>(
     API_SEARCH,
     {
       target: SearchTargets.ACCOUNT,
@@ -85,7 +86,7 @@ export const loader: LoaderFunction = async () => {
     'cursor'
   );
 
-  const ledgersList = await new ApiClient().getResource<LedgerInfo>(
+  const ledgersList = api.getResource<LedgerInfo>(
     `${API_LEDGER}/_info`,
     'data.config.storage.ledgers'
   );
@@ -96,6 +97,9 @@ export const loader: LoaderFunction = async () => {
 export default function Index() {
   const { t } = useTranslation();
   const [stats, setStats] = useState<Ledger[]>([]);
+  const { currentUser } = useService();
+
+  console.log(currentUser);
   const data = useLoaderData<LoaderReturnValue>();
   const { api } = useService();
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
@@ -106,7 +110,7 @@ export default function Index() {
   const [searchParams] = useSearchParams();
   const urlParamsLedgers = searchParams.getAll('ledgers');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, load, stopLoading] = useOpen(true);
+  const [loading, _load, stopLoading] = useOpen(true);
 
   const loadingTransition = useAnimationTransition(ledgers.length, {
     from: { opacity: 0 },

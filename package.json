@@ -25,6 +25,7 @@
     "@numaryhq/storybook": "^0.6.49",
     "@remix-run/react": "latest",
     "@remix-run/serve": "latest",
+    "dayjs": "^1.11.5",
     "graphviz-react": "^1.2.1",
     "i18next": "^21.8.16",
     "lodash": "^4.17.21",

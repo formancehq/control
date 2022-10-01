@@ -10,7 +10,6 @@ import {
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
-import { json } from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -26,6 +25,7 @@ import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
 import { camelCase, get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { json, redirect } from 'remix';
 
 import styles from './root.css';
 import { useOpen } from './src/hooks/useOpen';
@@ -37,6 +37,14 @@ import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
 import { ApiClient, errorsMap, logger } from '~/src/utils/api';
+import {
+  COOKIE_NAME,
+  decrypt,
+  getCurrentUser,
+  getJwtPayload,
+  getOpenIdConfig,
+  getSession,
+} from '~/src/utils/auth.server';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -45,13 +53,43 @@ interface DocumentProps {
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 
-export const loader: LoaderFunction = async () =>
-  json({
-    ENV: {
-      API_URL_FRONT: process.env.API_URL_FRONT,
-      API_URL_BACK: process.env.API_URL_BACK, // just in case of need
-    },
-  });
+export const loader: LoaderFunction = async ({ request }) => {
+  const session = await getSession(request.headers.get('Cookie'));
+  const cookie = session.get(COOKIE_NAME);
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
+  const openIdConfig = await getOpenIdConfig();
+  if (!cookie) {
+    if (openIdConfig) {
+      if (!code) {
+        // redirect to form
+        return redirect(
+          `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}/authenticate/handler&response_type=code&scope=openid email offline_access`
+        );
+      }
+    }
+  } else {
+    const decryptedCookie = decrypt(cookie);
+    const currentUser = await getCurrentUser(
+      openIdConfig,
+      decryptedCookie.access_token
+    );
+
+    return json({
+      auth: {
+        currentUser: {
+          ...currentUser,
+          scp: getJwtPayload(decryptedCookie).scp,
+        },
+        jwt: decryptedCookie.access_token,
+      },
+      env: {
+        API_URL_FRONT: process.env.API_URL_FRONT,
+        API_URL_BACK: process.env.API_URL_BACK, // just in case of need
+      },
+    });
+  }
+};
 
 const Document = withEmotionCache(
   ({ children, title }: DocumentProps, emotionCache) => {
@@ -163,7 +201,7 @@ const renderError = (
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { ENV } = useLoaderData();
+  const { env, auth } = useLoaderData();
   const [loading, _load, stopLoading] = useOpen(true);
 
   React.useEffect(() => {
@@ -187,7 +225,8 @@ export default function App() {
       ) : (
         <ServiceContext.Provider
           value={{
-            api: new ApiClient(ENV.API_URL_FRONT),
+            api: new ApiClient(env.API_URL_FRONT),
+            currentUser: auth.currentUser,
           }}
         >
           <Layout>
