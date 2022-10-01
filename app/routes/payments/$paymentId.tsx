@@ -58,7 +58,6 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.paymentId, 'Expected params.paymentId');
-
   const getPayment = await new ApiClient().getResource<PaymentDetail>(
     `${API_PAYMENT}/payments/${params.paymentId}`,
     'data'

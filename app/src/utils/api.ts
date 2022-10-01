@@ -2,9 +2,10 @@ import { get } from 'lodash';
 
 import { Errors } from '~/src/types/generic';
 
-export const API_SEARCH = 'search';
-export const API_LEDGER = 'ledger';
-export const API_PAYMENT = 'payments';
+export const API_SEARCH = '/search';
+export const API_LEDGER = '/ledger';
+export const API_PAYMENT = '/payments';
+export const API_AUTH = '/auth';
 
 export const logger = (stack?: any, from?: string, response?: Response) => {
   // eslint-disable-next-line no-console
@@ -30,6 +31,8 @@ export const errorsMap = {
   503: Errors.SERVICE_DOWN,
 };
 
+export type Headers = { Authorization?: string; 'Content-Type': string };
+
 export interface IApiClient {
   baseUrl: string;
   decorateUrl: (uri: string) => string;
@@ -44,9 +47,13 @@ export interface IApiClient {
 
 export class ApiClient implements IApiClient {
   public baseUrl: string;
+  protected headers: Headers;
 
   constructor(url?: string) {
-    this.baseUrl = url || 'http://localhost';
+    this.baseUrl = url || 'http://localhost/';
+    this.headers = {
+      'Content-Type': 'application/json',
+    };
 
     if (typeof process !== 'undefined') {
       if (!url) {
@@ -64,42 +71,44 @@ export class ApiClient implements IApiClient {
   }
 
   public decorateUrl(uri: string): string {
-    return `${this.baseUrl}/${uri}`;
+    return `${this.baseUrl}${uri}`;
   }
 
   public async postResource<T>(
-    params: string,
-    body: any,
+    params?: string,
+    body?: any,
     path?: string
   ): Promise<T | undefined> {
     return this.handleRequest(params, body, path);
   }
 
   public async getResource<T>(
-    params: string,
+    params?: string,
     path?: string
   ): Promise<T | undefined> {
     return this.handleRequest(params, undefined, path);
   }
 
   private async handleRequest<T>(
-    params: string,
+    params?: string,
     body?: any,
     path?: string
   ): Promise<T | undefined> {
     let data: T | undefined = undefined;
     let res: Response | undefined = undefined;
-    const uri = this.decorateUrl(params);
+    const uri = params ? this.decorateUrl(params) : this.baseUrl;
+    const authResult = await fetch('http://localhost:3000/auth/jwt'); // TODO replace hardcoded localhost
+    const jwt = await authResult.json();
+    this.headers = { ...this.headers, Authorization: `Bearer ${jwt}` };
     try {
-      const startTime = new Date().getTime();
       if (body) {
         res = await fetch(uri, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          headers: this.headers,
+          body: body instanceof FormData ? body : JSON.stringify(body),
         });
       } else {
-        res = await fetch(this.decorateUrl(params));
+        res = await fetch(uri, { headers: this.headers });
       }
       if (res && res.status === 204) {
         return {} as any;
@@ -111,9 +120,13 @@ export class ApiClient implements IApiClient {
     } catch (e: any) {
       // TODO backend need to fix the search 503 api error !!!!!!!!
       // remove this mock once backend search is fixed
-      if (params === 'search' && res?.status === 503) {
+      if (params === API_SEARCH && res?.status === 503) {
         return {} as any;
       }
+      if (res?.status === 401 || res?.status === 400 || res?.status === 403) {
+        await fetch('http://localhost:3000/auth/refresh'); // TODO replace hardcoded localhost
+      }
+
       this.throwError(e, undefined, res);
     }
 
