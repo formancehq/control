@@ -1,14 +1,17 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
-import { createCookieSessionStorage } from '@remix-run/node';
-import dayjs from 'dayjs';
+import { createCookieSessionStorage, Session } from "@remix-run/node";
+import { TypedResponse } from "@remix-run/server-runtime";
+import dayjs from "dayjs";
+import { json, redirect } from "remix";
 
-import { ObjectOf } from '~/src/types/generic';
-import { API_AUTH } from '~/src/utils/api';
+import { ObjectOf } from "~/src/types/generic";
+import { API_AUTH } from "~/src/utils/api.server";
 
-export const COOKIE_NAME = 'auth_session';
-export const AUTH_CALLBACK_ROUTE = '/auth/login';
+export const COOKIE_NAME = "auth_session";
+export const AUTH_CALLBACK_ROUTE = "/auth/login";
 
+export type SessionWrapper = { commitSession: string; callbackResult: any };
 export type CurrentUser = {
   sub: string;
   scp: string[];
@@ -36,33 +39,33 @@ export type JwtPayload = {
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: COOKIE_NAME, // use any name you want here
-    sameSite: 'none', // this helps with CSRF
-    path: '/', // remember to add this so the cookie will work in all routes
+    sameSite: "none", // this helps with CSRF
+    path: "/", // remember to add this so the cookie will work in all routes
     httpOnly: true, // for security reasons, make this cookie http only
-    secrets: [process.env.CLIENT_SECRET || 'secret'], // replace this with an actual secret
+    secrets: [process.env.CLIENT_SECRET || "secret"], // replace this with an actual secret
     secure: true, // enable this in prod only
   },
 });
 
 export const encrypt = (payload: Authentication) => {
-  const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
+  const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, "salt", 32);
   const iv = process.env.ENCRYPTION_IV!;
 
-  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-  let encrypted = cipher.update(JSON.stringify(payload), 'utf8', 'base64');
-  encrypted += cipher.final('base64');
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  let encrypted = cipher.update(JSON.stringify(payload), "utf8", "base64");
+  encrypted += cipher.final("base64");
 
   return encrypted;
 };
 
 export const decrypt = (cookie: string): Authentication => {
   if (cookie) {
-    const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
+    const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, "salt", 32);
     const iv = process.env.ENCRYPTION_IV!;
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-    const decrypted = decipher.update(cookie, 'base64', 'utf8');
+    const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+    const decrypted = decipher.update(cookie, "base64", "utf8");
 
-    return JSON.parse(decrypted + decipher.final('utf8'));
+    return JSON.parse(decrypted + decipher.final("utf8"));
   }
 
   return {} as any;
@@ -78,7 +81,7 @@ export const getOpenIdConfig = async (): Promise<ObjectOf<any>> => {
 
 export const getJwtPayload = (decryptedCookie: Authentication): JwtPayload =>
   JSON.parse(
-    Buffer.from(decryptedCookie.access_token.split('.')[1], 'base64').toString()
+    Buffer.from(decryptedCookie.access_token.split(".")[1], "base64").toString()
   );
 
 export const authenticate = async (
@@ -95,11 +98,19 @@ export const authenticate = async (
 
 export const refreshToken = async (
   openIdConfig: ObjectOf<any>,
-  url: URL,
   cookie: ObjectOf<any>
 ): Promise<Response> =>
   await fetch(
-    `${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&refresh_token=${cookie.refresh_token}`
+    `${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&refresh_token=${cookie.refresh_token}`
+  );
+
+export const endSession = async (
+  openIdConfig: ObjectOf<any>,
+  // url: URL,
+  cookie: ObjectOf<any>
+): Promise<Response> =>
+  redirect(
+    `${openIdConfig.end_session_endpoint}?id_token_hint=${cookie.id_token}&post_logout_redirect_uri=http://localhost/auth/destroy`
   );
 
 export const getCurrentUser = async (
@@ -108,7 +119,7 @@ export const getCurrentUser = async (
 ): Promise<Response> =>
   await fetch(`${openIdConfig.userinfo_endpoint}`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
   });
@@ -116,4 +127,24 @@ export const getCurrentUser = async (
 export const jwtExpired = (payload: JwtPayload): boolean =>
   dayjs().isAfter(payload.exp * 1000);
 
-export const { getSession, commitSession, destroySession } = sessionStorage;
+export const handleResponse = async (
+  data: SessionWrapper
+): Promise<TypedResponse<any>> =>
+  json(data.callbackResult, {
+    headers: {
+      "Set-Cookie": data.commitSession,
+    },
+  });
+
+export const withSession = async (
+  request: Request,
+  callback: (session: Session) => any
+): Promise<SessionWrapper> => {
+  const session = await getSession(request.headers.get("Cookie"));
+  const c = await callback(session);
+  const commitSession = await sessionStorage.commitSession(session);
+
+  return { commitSession, callbackResult: c };
+};
+
+export const { getSession, destroySession, commitSession } = sessionStorage;

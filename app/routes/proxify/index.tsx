@@ -1,10 +1,10 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { json } from '@remix-run/node';
-import { TypedResponse } from '@remix-run/server-runtime';
-import { ActionFunction } from 'remix';
+import { json } from "@remix-run/node";
+import { ActionFunction } from "remix";
 
-import { ApiClient } from '~/src/utils/api';
+import { createApiClient } from "~/src/utils/api.server";
+import { commitSession, getSession } from "~/src/utils/auth.server";
 
 interface ProxyRequest {
   method: string;
@@ -14,17 +14,23 @@ interface ProxyRequest {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  const body = (await (
-    json(request.body) as TypedResponse<ProxyRequest>
-  ).json()) as ProxyRequest;
-  const apiClient = new ApiClient(process.env.API_URL_BACK as string, request);
+  const session = await getSession(request.headers.get("Cookie"));
+  const body = await request.json();
+  const apiClient = await createApiClient(request, "http://localhost:5001/api");
   let ret;
+
   switch (request.method) {
-    case 'POST':
+    case "POST":
       ret = await apiClient.postResource(body.params, body.body, body.path);
-    case 'GET':
+      break;
+    case "GET":
       ret = await apiClient.getResource(body.params, body.body);
+      break;
   }
 
-  return json(ret, 200);
+  return json(ret, {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
 };
