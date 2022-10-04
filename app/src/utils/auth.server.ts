@@ -1,13 +1,13 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
-import { createCookieSessionStorage } from '@remix-run/node';
-import dayjs from 'dayjs';
+import { createCookieSessionStorage } from "@remix-run/node";
+import dayjs from "dayjs";
 
-import { ObjectOf } from '~/src/types/generic';
-import { API_AUTH } from '~/src/utils/api';
+import { ObjectOf } from "~/src/types/generic";
+import { API_AUTH } from "~/src/utils/api";
 
-export const COOKIE_NAME = 'auth_session';
-export const AUTH_CALLBACK_ROUTE = '/auth/login';
+export const COOKIE_NAME = "auth_session";
+export const AUTH_CALLBACK_ROUTE = "/auth/login";
 
 export type CurrentUser = {
   sub: string;
@@ -36,33 +36,33 @@ export type JwtPayload = {
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: COOKIE_NAME, // use any name you want here
-    sameSite: 'lax', // this helps with CSRF
-    path: '/', // remember to add this so the cookie will work in all routes
+    sameSite: "none", // this helps with CSRF
+    path: "/", // remember to add this so the cookie will work in all routes
     httpOnly: true, // for security reasons, make this cookie http only
-    secrets: [process.env.CLIENT_SECRET || 'secret'], // replace this with an actual secret
-    secure: process.env.NODE_ENV === 'production', // enable this in prod only
+    secrets: [process.env.CLIENT_SECRET || "secret"], // replace this with an actual secret
+    secure: true, // enable this in prod only
   },
 });
 
 export const encrypt = (payload: Authentication) => {
-  const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
+  const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, "salt", 32);
   const iv = process.env.ENCRYPTION_IV!;
 
-  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-  let encrypted = cipher.update(JSON.stringify(payload), 'utf8', 'base64');
-  encrypted += cipher.final('base64');
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  let encrypted = cipher.update(JSON.stringify(payload), "utf8", "base64");
+  encrypted += cipher.final("base64");
 
   return encrypted;
 };
 
 export const decrypt = (cookie: string): Authentication => {
   if (cookie) {
-    const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
+    const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, "salt", 32);
     const iv = process.env.ENCRYPTION_IV!;
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-    const decrypted = decipher.update(cookie, 'base64', 'utf8');
+    const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+    const decrypted = decipher.update(cookie, "base64", "utf8");
 
-    return JSON.parse(decrypted + decipher.final('utf8'));
+    return JSON.parse(decrypted + decipher.final("utf8"));
   }
 
   return {} as any;
@@ -78,7 +78,7 @@ export const getOpenIdConfig = async (): Promise<ObjectOf<any>> => {
 
 export const getJwtPayload = (decryptedCookie: Authentication): JwtPayload =>
   JSON.parse(
-    Buffer.from(decryptedCookie.access_token.split('.')[1], 'base64').toString()
+    Buffer.from(decryptedCookie.access_token.split(".")[1], "base64").toString()
   );
 
 export const authenticate = async (
@@ -87,7 +87,7 @@ export const authenticate = async (
   url: URL
 ): Promise<Authentication> => {
   const auth = await fetch(
-    `${process.env.API_URL_BACK}/${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}`
+    `${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}`
   );
 
   return await auth.json();
@@ -99,16 +99,16 @@ export const refreshToken = async (
   cookie: ObjectOf<any>
 ): Promise<Response> =>
   await fetch(
-    `${process.env.API_URL_BACK}/${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&refresh_token=${cookie.refresh_token}`
+    `${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&refresh_token=${cookie.refresh_token}`
   );
 
 export const getCurrentUser = async (
   openIdConfig: ObjectOf<any>,
   jwt: string
 ): Promise<Response> =>
-  await fetch(`${process.env.API_URL_BACK}/${openIdConfig.userinfo_endpoint}`, {
+  await fetch(`${openIdConfig.userinfo_endpoint}`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
   });

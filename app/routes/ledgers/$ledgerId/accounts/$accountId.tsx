@@ -1,21 +1,21 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { Box, Grid, Typography, useTheme } from '@mui/material';
-import type { MetaFunction } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
-import { LoaderFunction } from '@remix-run/server-runtime';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
-import invariant from 'tiny-invariant';
+import { Box, Grid, Typography, useTheme } from "@mui/material";
+import type { MetaFunction } from "@remix-run/node";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/server-runtime";
+import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+import invariant from "tiny-invariant";
 
-import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
+import { Page, Row, SectionWrapper } from "@numaryhq/storybook";
 
-import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
-import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
-import Metadata from '~/src/components/Wrappers/Metadata';
-import Table from '~/src/components/Wrappers/Table';
-import { Cursor } from '~/src/types/generic';
+import { getLedgerAccountDetailsRoute } from "~/src/components/Navbar/routes";
+import ComponentErrorBoundary from "~/src/components/Wrappers/ComponentErrorBoundary";
+import TransactionList from "~/src/components/Wrappers/Lists/TransactionList";
+import Metadata from "~/src/components/Wrappers/Metadata";
+import Table from "~/src/components/Wrappers/Table";
+import { Cursor } from "~/src/types/generic";
 import {
   Account,
   AccountHybrid,
@@ -23,9 +23,9 @@ import {
   LedgerResources,
   Transaction,
   Volume,
-} from '~/src/types/ledger';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
+} from "~/src/types/ledger";
+import { SearchPolicies, SearchTargets } from "~/src/types/search";
+import { API_LEDGER, API_SEARCH, ApiClient } from "~/src/utils/api";
 
 const normalizeBalance = (account: Account): AccountHybrid => ({
   balances: account.balances
@@ -45,8 +45,8 @@ const normalizeBalance = (account: Account): AccountHybrid => ({
 });
 
 export const meta: MetaFunction = () => ({
-  title: 'Account',
-  description: 'Show an account',
+  title: "Account",
+  description: "Show an account",
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -62,16 +62,17 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export const loader: LoaderFunction = async ({
   params,
+  request,
 }): Promise<{
   account: AccountHybrid;
   transactions: Cursor<Transaction> | undefined;
 } | null> => {
-  invariant(params.ledgerId, 'Expected params.ledgerId');
-  invariant(params.accountId, 'Expected params.accountId');
-  const api = new ApiClient();
+  invariant(params.ledgerId, "Expected params.ledgerId");
+  invariant(params.accountId, "Expected params.accountId");
+  const api = new ApiClient(undefined, request);
   const account = await api.getResource<Account>(
     `${API_LEDGER}/${params.ledgerId}/${LedgerResources.ACCOUNTS}/${params.accountId}`,
-    'data'
+    "data"
   );
   const transactions = await api.postResource<Cursor<Transaction>>(
     API_SEARCH,
@@ -81,7 +82,7 @@ export const loader: LoaderFunction = async ({
       terms: [`destination=${params.accountId}`, `source=${params.accountId}`],
       target: SearchTargets.TRANSACTION,
     },
-    'cursor'
+    "cursor"
   );
 
   if (account)
@@ -125,22 +126,22 @@ export default function Index() {
           {/* Balances Section */}
           <Grid container spacing="26px">
             <Grid item xs={6}>
-              <SectionWrapper title={t('pages.account.balances.title')}>
+              <SectionWrapper title={t("pages.account.balances.title")}>
                 {account.balances && (
                   <Table
                     withPagination={false}
                     items={account.balances}
                     columns={[
                       {
-                        key: 'balance.asset',
+                        key: "balance.asset",
                         label: t(
-                          'pages.account.table.columnLabel.balance.asset'
+                          "pages.account.table.columnLabel.balance.asset"
                         ),
                       },
                       {
-                        key: 'balance.value',
+                        key: "balance.value",
                         label: t(
-                          'pages.account.table.columnLabel.balance.value'
+                          "pages.account.table.columnLabel.balance.value"
                         ),
                         width: 20,
                       },
@@ -149,7 +150,7 @@ export default function Index() {
                       <Row
                         key={index}
                         keys={[
-                          'asset',
+                          "asset",
                           () =>
                             renderValue(balance.value, palette.default.normal),
                         ]}
@@ -162,27 +163,27 @@ export default function Index() {
             </Grid>
 
             <Grid item xs={6}>
-              <SectionWrapper title={t('pages.account.volumes.title')}>
+              <SectionWrapper title={t("pages.account.volumes.title")}>
                 {account.volumes && (
                   <Table
                     withPagination={false}
                     items={account.volumes}
                     columns={[
                       {
-                        key: 'volume.asset',
+                        key: "volume.asset",
                         label: t(
-                          'pages.account.table.columnLabel.volume.asset'
+                          "pages.account.table.columnLabel.volume.asset"
                         ),
                       },
                       {
-                        key: 'volume.received',
+                        key: "volume.received",
                         label: t(
-                          'pages.account.table.columnLabel.volume.received'
+                          "pages.account.table.columnLabel.volume.received"
                         ),
                       },
                       {
-                        key: 'volume.sent',
-                        label: t('pages.account.table.columnLabel.volume.sent'),
+                        key: "volume.sent",
+                        label: t("pages.account.table.columnLabel.volume.sent"),
                         width: 20,
                       },
                     ]}
@@ -190,7 +191,7 @@ export default function Index() {
                       <Row
                         key={index}
                         keys={[
-                          'asset',
+                          "asset",
                           () =>
                             renderValue(volume.received, palette.blue.darker),
                           () => renderValue(volume.sent, palette.red.darker),
@@ -205,7 +206,7 @@ export default function Index() {
           </Grid>
         </Box>
         {/* Transactions Section */}
-        <SectionWrapper title={t('pages.account.transactions.title')}>
+        <SectionWrapper title={t("pages.account.transactions.title")}>
           <>
             {loaderData.transactions && (
               <TransactionList
@@ -223,7 +224,7 @@ export default function Index() {
           <Metadata
             sync={sync}
             metadata={account.metadata}
-            title={t('pages.account.metadata.title')}
+            title={t("pages.account.metadata.title")}
             resource={LedgerResources.ACCOUNTS}
             id={id}
           />

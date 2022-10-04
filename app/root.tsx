@@ -1,15 +1,15 @@
-import * as React from 'react';
-import { ReactElement } from 'react';
+import * as React from "react";
+import { ReactElement, useState } from "react";
 
-import { withEmotionCache } from '@emotion/react';
-import { Home } from '@mui/icons-material';
+import { withEmotionCache } from "@emotion/react";
+import { Home } from "@mui/icons-material";
 import {
   Backdrop,
   Box,
   CircularProgress,
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Links,
   LiveReload,
@@ -20,74 +20,91 @@ import {
   ScrollRestoration,
   useCatch,
   useLoaderData,
-} from '@remix-run/react';
-import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
-import { camelCase, get } from 'lodash';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { json, redirect } from 'remix';
+} from "@remix-run/react";
+import { LinksFunction, LoaderFunction } from "@remix-run/server-runtime";
+import { camelCase, get } from "lodash";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { json, redirect } from "remix";
 
-import styles from './root.css';
-import { useOpen } from './src/hooks/useOpen';
+import styles from "./root.css";
+import { useOpen } from "./src/hooks/useOpen";
 
-import { LoadingButton, theme } from '@numaryhq/storybook';
+import { LoadingButton, theme } from "@numaryhq/storybook";
 
-import Layout from '~/src/components/Layout';
-import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
-import ClientStyleContext from '~/src/contexts/clientStyleContext';
-import { ServiceContext } from '~/src/contexts/service';
-import { ApiClient, errorsMap, logger } from '~/src/utils/api';
+import Layout from "~/src/components/Layout";
+import { getRoute, OVERVIEW_ROUTE } from "~/src/components/Navbar/routes";
+import ClientStyleContext from "~/src/contexts/clientStyleContext";
+import { ServiceContext } from "~/src/contexts/service";
+import { ApiClient, errorsMap, logger } from "~/src/utils/api";
 import {
+  AUTH_CALLBACK_ROUTE,
+  commitSession,
   COOKIE_NAME,
   decrypt,
   getCurrentUser,
-  getJwtPayload,
   getOpenIdConfig,
   getSession,
-} from '~/src/utils/auth.server';
+} from "~/src/utils/auth.server";
 
 interface DocumentProps {
   children: React.ReactNode;
   title?: string;
 }
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getSession(request.headers.get('Cookie'));
+  const session = await getSession(request.headers.get("Cookie"));
   const cookie = session.get(COOKIE_NAME);
   const url = new URL(request.url);
-  const code = url.searchParams.get('code');
+  const code = url.searchParams.get("code");
   const openIdConfig = await getOpenIdConfig();
   if (!cookie) {
     if (openIdConfig) {
       if (!code) {
         // redirect to form
+        console.log("REDIRECT LOGIN FORM");
+
         return redirect(
-          `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}/authenticate/handler&response_type=code&scope=openid email offline_access`
+          `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&response_type=code&scope=openid email offline_access`,
+          {
+            headers: {
+              "Set-Cookie": await commitSession(session),
+            },
+          }
         );
       }
     }
   } else {
+    console.log("ROOT");
     const decryptedCookie = decrypt(cookie);
+
     const currentUser = await getCurrentUser(
       openIdConfig,
       decryptedCookie.access_token
     );
-
-    return json({
-      auth: {
-        currentUser: {
-          ...currentUser,
-          scp: getJwtPayload(decryptedCookie).scp,
+    return json(
+      {
+        auth: {
+          currentUser: {
+            ...currentUser,
+            // scp: getJwtPayload(decryptedCookie).scp,
+          },
+          cookie,
+          jwt: decryptedCookie.access_token,
         },
-        jwt: decryptedCookie.access_token,
+        env: {
+          API_URL_FRONT: process.env.API_URL_FRONT,
+          API_URL_BACK: process.env.API_URL_BACK, // just in case of need
+        },
       },
-      env: {
-        API_URL_FRONT: process.env.API_URL_FRONT,
-        API_URL_BACK: process.env.API_URL_BACK, // just in case of need
-      },
-    });
+      {
+        headers: {
+          "Set-Cookie": await commitSession(session),
+        },
+      }
+    );
   }
 };
 
@@ -115,7 +132,7 @@ const Document = withEmotionCache(
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           <meta name="theme-color" content={theme.palette.primary.main} />
-          <title>{title || 'Formance'}</title>
+          <title>{title || "Formance"}</title>
           <Meta />
           <link
             rel="stylesheet"
@@ -162,28 +179,28 @@ const renderError = (
       display="flex"
       justifyContent="space-evenly"
       sx={{
-        width: '100%',
-        height: '100%',
+        width: "100%",
+        height: "100%",
         background: ({ palette }) => palette.neutral[0],
       }}
     >
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          alignSelf: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          alignSelf: "center",
           background: ({ palette }) => palette.neutral[0],
         }}
       >
         <Typography variant="large3x" mb={3}>
-          {t('common.boundaries.title')}
+          {t("common.boundaries.title")}
         </Typography>
         <Typography variant="h2" mt={3}>
-          {message || t('common.boundaries.errorState.error.title')}
+          {message || t("common.boundaries.errorState.error.title")}
         </Typography>
         <Typography variant="body2" mt={3}>
-          {description || t('common.boundaries.errorState.error.description')}
+          {description || t("common.boundaries.errorState.error.description")}
         </Typography>
         <LoadingButton
           id="go-back-home"
@@ -201,9 +218,9 @@ const renderError = (
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { env, auth } = useLoaderData();
+  const { env, auth, cookie } = useLoaderData();
+  const [sCookie, setCookie] = useState<any>(cookie);
   const [loading, _load, stopLoading] = useOpen(true);
-
   React.useEffect(() => {
     stopLoading();
   });
@@ -213,10 +230,10 @@ export default function App() {
       {loading ? (
         <Box
           sx={{
-            display: 'flex',
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: "flex",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
             background: theme.palette.neutral[0],
           }}
         >
@@ -225,7 +242,9 @@ export default function App() {
       ) : (
         <ServiceContext.Provider
           value={{
-            api: new ApiClient(env.API_URL_FRONT),
+            api: new ApiClient(env.API_URL_FRONT, sCookie, (c: any) =>
+              setCookie(c)
+            ),
             currentUser: auth.currentUser,
           }}
         >
@@ -242,7 +261,7 @@ export default function App() {
 export function ErrorBoundary({ error }: { error: Error }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  logger(error, 'app/root', undefined);
+  logger(error, "app/root", undefined);
 
   return (
     <Document title="Error!">
