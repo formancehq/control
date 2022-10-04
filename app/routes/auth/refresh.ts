@@ -1,5 +1,5 @@
-import { LoaderFunction, TypedResponse } from "@remix-run/server-runtime";
-import { json } from "@remix-run/node";
+import { json } from '@remix-run/node';
+import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
 
 import {
   COOKIE_NAME,
@@ -8,13 +8,13 @@ import {
   getOpenIdConfig,
   getSession,
   refreshToken,
-} from "~/src/utils/auth.server";
+} from '~/src/utils/auth.server';
 
 export const loader: LoaderFunction = async ({
   request,
 }): Promise<TypedResponse | undefined> => {
-  const cookie = request.headers.get("Authorization");
-  const session = await getSession(request.headers.get("Cookie"));
+  const cookie = request.headers.get('Authorization');
+  const session = await getSession(request.headers.get('Cookie'));
   const url = new URL(request.url);
   const openIdConfig = await getOpenIdConfig();
   if (openIdConfig && cookie) {
@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async ({
       } else {
         const encryptedCookie = encrypt(jsonResult);
         session.set(COOKIE_NAME, encryptedCookie);
-        console.log("REFRESH SUCCESS");
+        console.log('REFRESH SUCCESS');
 
         return json(
           { cookie: encryptedCookie },

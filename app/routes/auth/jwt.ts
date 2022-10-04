@@ -1,5 +1,5 @@
-import { LoaderFunction, TypedResponse } from "@remix-run/server-runtime";
-import { json } from "@remix-run/node";
+import { json } from '@remix-run/node';
+import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
 
 import {
   COOKIE_NAME,
@@ -7,15 +7,15 @@ import {
   getJwtPayload,
   getSession,
   jwtExpired,
-} from "~/src/utils/auth.server";
+} from '~/src/utils/auth.server';
 
 export const loader: LoaderFunction = async ({
   request,
 }): Promise<TypedResponse> => {
-  const cookie = request.headers.get("Authorization");
-  const session = await getSession(request.headers.get("Cookie"));
+  const cookie = request.headers.get('Authorization');
+  const session = await getSession(request.headers.get('Cookie'));
 
-  console.log("GET JWT COOKIE", session.get(COOKIE_NAME));
+  console.log('GET JWT COOKIE', session.get(COOKIE_NAME));
 
   if (cookie) {
     const decryptedCookie = decrypt(cookie);
@@ -27,6 +27,7 @@ export const loader: LoaderFunction = async ({
       });
     }
   }
+
   return json(
     {},
     {

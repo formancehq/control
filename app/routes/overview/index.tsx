@@ -1,16 +1,16 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 
-import { AccountBalance, NorthEast } from "@mui/icons-material";
-import { Box, CircularProgress, Link } from "@mui/material";
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { useLoaderData, useSearchParams } from "@remix-run/react";
-import { get } from "lodash";
-import { useTranslation } from "react-i18next";
+import { AccountBalance, NorthEast } from '@mui/icons-material';
+import { Box, CircularProgress, Link } from '@mui/material';
+import type { LoaderFunction, MetaFunction } from '@remix-run/node';
+import { useLoaderData, useSearchParams } from '@remix-run/react';
+import { get } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import {
   animated,
   useTransition as useAnimationTransition,
-} from "react-spring";
+} from 'react-spring';
 
 import {
   LoadingButton,
@@ -19,23 +19,29 @@ import {
   StatsCard,
   theme,
   TitleWithBar,
-} from "@numaryhq/storybook";
+} from '@numaryhq/storybook';
 
-import { LedgerList } from "../ledgers/list";
+import { LedgerList } from '../ledgers/list';
 
-import { overview } from "~/src/components/Navbar/routes";
-import FiltersBar from "~/src/components/Wrappers/Table/Filters/FiltersBar";
-import { useOpen } from "~/src/hooks/useOpen";
-import { useService } from "~/src/hooks/useService";
-import { Cursor } from "~/src/types/generic";
-import { Account, LedgerInfo } from "~/src/types/ledger";
-import { Payment } from "~/src/types/payment";
-import { SearchTargets } from "~/src/types/search";
-import { API_LEDGER, API_SEARCH, ApiClient, IApiClient } from "~/src/utils/api";
+import { overview } from '~/src/components/Navbar/routes';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import { useOpen } from '~/src/hooks/useOpen';
+import { useService } from '~/src/hooks/useService';
+import { Cursor } from '~/src/types/generic';
+import { Account, LedgerInfo } from '~/src/types/ledger';
+import { Payment } from '~/src/types/payment';
+import { SearchTargets } from '~/src/types/search';
+import {
+  API_LEDGER,
+  API_SEARCH,
+  ApiClient,
+  IApiClient,
+  ReactApiClient,
+} from '~/src/utils/api';
 
 export const meta: MetaFunction = () => ({
-  title: "Overview",
-  description: "Show a dashboard with tasks and status",
+  title: 'Overview',
+  description: 'Show a dashboard with tasks and status',
 });
 
 type Ledger = { slug: string; stats: number; color: string };
@@ -46,14 +52,14 @@ type LoaderReturnValue = {
   ledgers: string[] | [];
 };
 
-const colors = ["brown", "red", "yellow", "default", "violet", "green", "blue"];
+const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 
 const getData = async (ledgersList: string[], api: IApiClient) => {
   const ledgers = ledgersList.map(async (ledger: string) => {
     // Todo remove any
     const stats = await api.getResource<any>(
       `${API_LEDGER}/${ledger}/stats`,
-      "data"
+      'data'
     );
 
     return {
@@ -67,14 +73,14 @@ const getData = async (ledgersList: string[], api: IApiClient) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const api = new ApiClient(undefined, request);
+  const api = new ApiClient(process.env.API_URL_BACK as string, request);
   const payments = api.postResource<Cursor<Payment>>(
     API_SEARCH,
     {
       target: SearchTargets.PAYMENT,
       size: 1,
     },
-    "cursor"
+    'cursor'
   );
 
   const accounts = api.postResource<Cursor<Account>>(
@@ -83,12 +89,12 @@ export const loader: LoaderFunction = async ({ request }) => {
       target: SearchTargets.ACCOUNT,
       size: 1,
     },
-    "cursor"
+    'cursor'
   );
 
   const ledgersList = api.getResource<LedgerInfo>(
     `${API_LEDGER}/_info`,
-    "data.config.storage.ledgers"
+    'data.config.storage.ledgers'
   );
 
   return { accounts, payments, ledgers: ledgersList };
@@ -100,14 +106,15 @@ export default function Index() {
   const { currentUser } = useService();
 
   const data = useLoaderData<LoaderReturnValue>();
-  const { api } = useService();
+  //const { api } = useService();
+  const api = new ReactApiClient();
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
-  const accounts = get(data, "accounts.total.value", 0) as number;
-  const payments = get(data, "payments.total.value", 0) as number;
-  const ledgers = get(data, "ledgers", []);
+  const accounts = get(data, 'accounts.total.value', 0) as number;
+  const payments = get(data, 'payments.total.value', 0) as number;
+  const ledgers = get(data, 'ledgers', []);
   const shouldDisplaySetup = payments === 0 || accounts === 0;
   const [searchParams] = useSearchParams();
-  const urlParamsLedgers = searchParams.getAll("ledgers");
+  const urlParamsLedgers = searchParams.getAll('ledgers');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, _load, stopLoading] = useOpen(true);
 
@@ -197,15 +204,15 @@ export default function Index() {
               <Box mt={5}>
                 <Box
                   sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    "& .MuiBox-root": {
-                      marginBottom: "0px",
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    '& .MuiBox-root': {
+                      marginBottom: '0px',
                     },
                   }}
                 >
                   <TitleWithBar
-                    title={t("pages.overview.status")}
+                    title={t('pages.overview.status')}
                     titleColor={theme.palette.neutral[0]}
                   />
                   {ledgers.length > 1 && (
@@ -226,11 +233,11 @@ export default function Index() {
                   {loading && (
                     <Box
                       sx={{
-                        display: "flex",
-                        width: "100%",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        height: "276px",
+                        display: 'flex',
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '276px',
                       }}
                     >
                       <CircularProgress size={30} color="secondary" />
@@ -254,15 +261,15 @@ export default function Index() {
                                 key={index}
                                 icon={<AccountBalance />}
                                 variant={ledger.color as any}
-                                title1={t("pages.overview.stats.transactions")}
-                                title2={t("pages.overview.stats.accounts")}
+                                title1={t('pages.overview.stats.transactions')}
+                                title2={t('pages.overview.stats.accounts')}
                                 chipValue={ledger.slug}
                                 value1={`${get(
                                   ledger,
-                                  "stats.transactions",
-                                  "0"
+                                  'stats.transactions',
+                                  '0'
                                 )}`}
-                                value2={`${get(ledger, "stats.accounts", "0")}`}
+                                value2={`${get(ledger, 'stats.accounts', '0')}`}
                               />
                             </Box>
                           </animated.div>
@@ -273,8 +280,8 @@ export default function Index() {
                           <StatsCard
                             icon={<AccountBalance />}
                             variant="violet"
-                            title1={t("pages.overview.stats.transactions")}
-                            title2={t("pages.overview.stats.accounts")}
+                            title1={t('pages.overview.stats.transactions')}
+                            title2={t('pages.overview.stats.accounts')}
                             chipValue="get-started"
                             value1="0"
                             value2="0"
@@ -292,7 +299,7 @@ export default function Index() {
 
       {/* TASKS */}
       <Page
-        title={<TitleWithBar title={t("pages.overview.tasks.title")} />}
+        title={<TitleWithBar title={t('pages.overview.tasks.title')} />}
         id="tasks"
       >
         <Box
@@ -304,8 +311,8 @@ export default function Index() {
           gap="26px"
         >
           <OnBoarding
-            title={t("pages.overview.tasks.tuto.title")}
-            description={t("pages.overview.tasks.tuto.description")}
+            title={t('pages.overview.tasks.tuto.title')}
+            description={t('pages.overview.tasks.tuto.description')}
             width="400px"
           >
             <Link
@@ -317,15 +324,15 @@ export default function Index() {
               <LoadingButton
                 id="task-tuto-button"
                 variant="dark"
-                content={t("pages.overview.tasks.tuto.buttonText")}
-                sx={{ mt: "12px" }}
+                content={t('pages.overview.tasks.tuto.buttonText')}
+                sx={{ mt: '12px' }}
                 startIcon={<NorthEast />}
               />
             </Link>
           </OnBoarding>
           <OnBoarding
-            title={t("pages.overview.tasks.useCaseLib.title")}
-            description={t("pages.overview.tasks.useCaseLib.description")}
+            title={t('pages.overview.tasks.useCaseLib.title')}
+            description={t('pages.overview.tasks.useCaseLib.description')}
             width="400px"
           >
             <Link
@@ -337,8 +344,8 @@ export default function Index() {
               <LoadingButton
                 id="task-use-case-libButton"
                 variant="dark"
-                content={t("pages.overview.tasks.useCaseLib.buttonText")}
-                sx={{ mt: "12px" }}
+                content={t('pages.overview.tasks.useCaseLib.buttonText')}
+                sx={{ mt: '12px' }}
                 startIcon={<NorthEast />}
               />
             </Link>
@@ -350,7 +357,7 @@ export default function Index() {
       {shouldDisplaySetup && (
         <Page
           title={
-            <TitleWithBar title={t("pages.overview.setUp.sectionTitle")} />
+            <TitleWithBar title={t('pages.overview.setUp.sectionTitle')} />
           }
           id="setup"
         >
@@ -364,8 +371,8 @@ export default function Index() {
           >
             {payments === 0 && (
               <OnBoarding
-                title={t("pages.overview.setUp.connexion.title")}
-                description={t("pages.overview.setUp.connexion.description")}
+                title={t('pages.overview.setUp.connexion.title')}
+                description={t('pages.overview.setUp.connexion.description')}
                 width="400px"
               >
                 <Link
@@ -377,8 +384,8 @@ export default function Index() {
                 >
                   <LoadingButton
                     variant="dark"
-                    content={t("pages.overview.setUp.connexion.buttonText")}
-                    sx={{ mt: "12px" }}
+                    content={t('pages.overview.setUp.connexion.buttonText')}
+                    sx={{ mt: '12px' }}
                     startIcon={<NorthEast />}
                   />
                 </Link>
@@ -386,8 +393,8 @@ export default function Index() {
             )}
             {accounts === 0 && (
               <OnBoarding
-                title={t("pages.overview.setUp.ledger.title")}
-                description={t("pages.overview.setUp.ledger.description")}
+                title={t('pages.overview.setUp.ledger.title')}
+                description={t('pages.overview.setUp.ledger.description')}
                 width="400px"
               >
                 <Link
@@ -400,8 +407,8 @@ export default function Index() {
                     variant="dark"
                     id="set-up-ledger"
                     href="https://docs.formance.com/oss/ledger/reference/api"
-                    content={t("pages.overview.setUp.ledger.buttonText")}
-                    sx={{ mt: "12px" }}
+                    content={t('pages.overview.setUp.ledger.buttonText')}
+                    sx={{ mt: '12px' }}
                     startIcon={<NorthEast />}
                   />
                 </Link>
