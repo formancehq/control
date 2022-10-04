@@ -1,6 +1,6 @@
-import { createContext } from 'react';
+import { createContext } from "react";
 
-import { IApiClient } from '~/src/utils/api';
+import { IApiClient } from "~/src/utils/api";
 
 export type ServiceContext = {
   api: IApiClient;
