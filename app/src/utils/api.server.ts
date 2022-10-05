@@ -1,7 +1,7 @@
-import { Session } from "@remix-run/node";
-import { get } from "lodash";
+import { Session } from '@remix-run/node';
+import { get } from 'lodash';
 
-import { Errors } from "~/src/types/generic";
+import { Errors } from '~/src/types/generic';
 import {
   Authentication,
   COOKIE_NAME,
@@ -10,14 +10,14 @@ import {
   getOpenIdConfig,
   getSession,
   refreshToken,
-} from "~/src/utils/auth.server";
+} from '~/src/utils/auth.server';
 
-export const API_SEARCH = "/search";
-export const API_LEDGER = "/ledger";
-export const API_PAYMENT = "/payments";
-export const API_AUTH = "/auth";
+export const API_SEARCH = '/search';
+export const API_LEDGER = '/ledger';
+export const API_PAYMENT = '/payments';
+export const API_AUTH = '/auth';
 
-console.log("je passe plein de fois");
+console.log('je passe plein de fois');
 declare global {
   let __api: IApiClient | undefined;
 }
@@ -26,14 +26,14 @@ let apiServer: IApiClient;
 export const logger = (stack?: any, from?: string, response?: Response) => {
   // eslint-disable-next-line no-console
   console.error({
-    from: from || "utils/api",
+    from: from || 'utils/api',
     response: {
       status: response?.status,
       message: response?.statusText,
       url: response?.url,
     },
     stack,
-    page: typeof window !== "undefined" ? window.location : "",
+    page: typeof window !== 'undefined' ? window.location : '',
   });
 };
 
@@ -47,7 +47,7 @@ export const errorsMap = {
   503: Errors.SERVICE_DOWN,
 };
 
-export type Headers = { Authorization?: string; "Content-Type": string };
+export type Headers = { Authorization?: string; 'Content-Type': string };
 
 export interface IApiClient {
   decorateUrl: (uri: string) => string;
@@ -64,8 +64,8 @@ export const createApiClient = async (
   request: Request,
   url?: string
 ): Promise<IApiClient> => {
-  const session = await getSession(request.headers.get("Cookie"));
-  if (process.env.NODE_ENV === "production") {
+  const session = await getSession(request.headers.get('Cookie'));
+  if (process.env.NODE_ENV === 'production') {
     apiServer = new ApiClient(session, url);
   } else {
     if (!global.__api) {
@@ -85,21 +85,21 @@ export class ApiClient implements IApiClient {
   constructor(session: Session, url?: string) {
     this.baseUrl = url;
     this.headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
 
-    if (typeof process !== "undefined") {
+    if (typeof process !== 'undefined') {
       if (!url) {
         if (process.env.API_URL_BACK) {
           this.baseUrl = process.env.API_URL_BACK;
-        } else throw new Error("API_URL_BACK is not defined");
+        } else throw new Error('API_URL_BACK is not defined');
       }
     }
     this.session = session;
   }
 
   throwError(stack?: any, from?: string, response?: Response): Error {
-    const e = get(errorsMap, response?.status || 422, errorsMap["422"]);
+    const e = get(errorsMap, response?.status || 422, errorsMap['422']);
     logger(stack, from, response);
     throw new Error(e);
   }
@@ -134,7 +134,7 @@ export class ApiClient implements IApiClient {
 
     const tryRequest = async () =>
       await fetch(uri, {
-        method: body ? "POST" : "GET",
+        method: body ? 'POST' : 'GET',
         headers: this.headers,
         body: body
           ? body instanceof FormData
@@ -153,8 +153,8 @@ export class ApiClient implements IApiClient {
       if (httpResponse && httpResponse.status === 204) {
         return {} as any;
       }
-      console.log("httpResponse", httpResponse);
-      let jsonResult = await httpResponse.json();
+      console.log('httpResponse', httpResponse);
+      const jsonResult = await httpResponse.json();
       data = path ? get(jsonResult, path) : jsonResult;
     } catch (e: any) {
       // logger(e);
@@ -164,25 +164,26 @@ export class ApiClient implements IApiClient {
         httpResponse!.status === 403 ||
         httpResponse!.status === 400
       ) {
-        console.log("before refresh", auth);
+        console.log('before refresh', auth);
         const refreshResponse = await refreshToken(openIdConfig, auth);
-        console.log("refreshResponse", refreshResponse);
+        console.log('refreshResponse', refreshResponse);
         if (
           refreshResponse!.status === 401 ||
           refreshResponse!.status === 403 ||
           refreshResponse!.status === 400
         ) {
           console.log("can't refresh !");
+
           return undefined;
         } else {
           auth = await refreshResponse.json();
           this.session.set(COOKIE_NAME, encrypt(auth));
-          console.log("REFRESH success", auth.refresh_token);
+          console.log('REFRESH success', auth.refresh_token);
         }
       }
 
       httpResponse = await tryRequest();
-      console.log("retry after refresh succeed", httpResponse);
+      console.log('retry after refresh succeed', httpResponse);
       const jsonResult = await httpResponse.json();
       data = path ? get(jsonResult, path) : jsonResult;
     }
