@@ -1,6 +1,6 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
-import { Filters } from "~/src/components/Wrappers/Table/Filters/filters";
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 
 export type TableFiltersContext = {
   filters: { field: string; name: Filters.TERMS | Filters.LEDGERS }[];

@@ -1,3 +1,3 @@
-import PaymentList from "./PaymentList";
+import PaymentList from './PaymentList';
 
 export default PaymentList;

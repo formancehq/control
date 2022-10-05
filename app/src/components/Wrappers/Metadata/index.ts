@@ -1,3 +1,3 @@
-import Metadata from "./Metadata";
+import Metadata from './Metadata';
 
 export default Metadata;

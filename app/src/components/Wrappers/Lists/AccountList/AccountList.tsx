@@ -1,21 +1,21 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { ArrowRight } from "@mui/icons-material";
-import { Box } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { ArrowRight } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Chip,
   LoadingButton,
   Row,
   SourceDestination,
-} from "@numaryhq/storybook";
+} from '@numaryhq/storybook';
 
-import { getLedgerAccountDetailsRoute } from "~/src/components/Navbar/routes";
-import { AccountListProps } from "~/src/components/Wrappers/Lists/AccountList/types";
-import Table from "~/src/components/Wrappers/Table";
-import { Account } from "~/src/types/ledger";
+import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
+import { AccountListProps } from '~/src/components/Wrappers/Lists/AccountList/types';
+import Table from '~/src/components/Wrappers/Table';
+import { Account } from '~/src/types/ledger';
 
 const AccountList: FunctionComponent<AccountListProps> = ({ accounts }) => {
   const navigate = useNavigate();
@@ -44,12 +44,12 @@ const AccountList: FunctionComponent<AccountListProps> = ({ accounts }) => {
       action
       columns={[
         {
-          key: "address",
-          label: t("pages.accounts.table.columnLabel.address"),
+          key: 'address',
+          label: t('pages.accounts.table.columnLabel.address'),
         },
         {
-          key: "ledger",
-          label: t("pages.accounts.table.columnLabel.ledger"),
+          key: 'ledger',
+          label: t('pages.accounts.table.columnLabel.ledger'),
         },
       ]}
       renderItem={(account: Account, index) => (

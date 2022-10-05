@@ -3,7 +3,7 @@ export type ObjectOf<T> = {
 };
 
 export enum TableConfig {
-  ACTIONS = "actions",
+  ACTIONS = 'actions',
 }
 
 export type Cursor<T> = {
@@ -16,9 +16,9 @@ export type Cursor<T> = {
 };
 
 export enum Errors {
-  NOT_FOUND = "not_found",
-  UNAUTHORIZED = "unauthorized",
-  FORBIDDEN = "forbidden",
-  SERVICE_DOWN = "service_down",
-  ERROR = "error",
+  NOT_FOUND = 'not_found',
+  UNAUTHORIZED = 'unauthorized',
+  FORBIDDEN = 'forbidden',
+  SERVICE_DOWN = 'service_down',
+  ERROR = 'error',
 }

@@ -15,8 +15,7 @@ touch .env
 
 ```
 // works with [Formance Local Stack](https://github.com/numary/stack)
-API_URL_BACK=http://localhost/api
-API_URL_FRONT=http://localhost/api
+API_URL=http://localhost/api
 CLIENT_ID=control
 CLIENT_SECRET=mysupersecret
 # randomBytes(32)

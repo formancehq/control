@@ -1,6 +1,6 @@
-import { useContext } from "react";
+import { useContext } from 'react';
 
-import { TableFiltersContext } from "../contexts/tableFilters";
+import { TableFiltersContext } from '../contexts/tableFilters';
 
 export function useTableFilters(): TableFiltersContext {
   return useContext(TableFiltersContext);

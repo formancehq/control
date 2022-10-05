@@ -1,13 +1,13 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
-import { Checkbox as MuiCheckbox, ListItemButton } from "@mui/material";
-import { useSearchParams } from "@remix-run/react";
-import { URLSearchParamsInit } from "react-router-dom";
+import { Checkbox as MuiCheckbox, ListItemButton } from '@mui/material';
+import { useSearchParams } from '@remix-run/react';
+import { URLSearchParamsInit } from 'react-router-dom';
 
-import { CheckboxProps } from "./types";
+import { CheckboxProps } from './types';
 
-import { Filters } from "~/src/components/Wrappers/Table/Filters/filters";
-import { buildQuery } from "~/src/utils/search";
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import { buildQuery } from '~/src/utils/search';
 
 const Checkbox: FunctionComponent<CheckboxProps> = ({
   name,

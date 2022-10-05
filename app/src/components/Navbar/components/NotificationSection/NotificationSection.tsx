@@ -1,8 +1,8 @@
-import * as React from "react";
-import { FunctionComponent } from "react";
+import * as React from 'react';
+import { FunctionComponent } from 'react';
 
-import { NotificationsOutlined } from "@mui/icons-material";
-import { Box, Tooltip } from "@mui/material";
+import { NotificationsOutlined } from '@mui/icons-material';
+import { Box, Tooltip } from '@mui/material';
 
 export const NotificationSection: FunctionComponent = () => (
   <Box mr={2} display="flex">
@@ -10,7 +10,7 @@ export const NotificationSection: FunctionComponent = () => (
       <NotificationsOutlined
         color="secondary"
         sx={{
-          fontSize: "28px",
+          fontSize: '28px',
         }}
       />
     </Tooltip>

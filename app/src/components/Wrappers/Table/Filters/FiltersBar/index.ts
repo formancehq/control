@@ -1,3 +1,3 @@
-import FiltersBar from "./FiltersBar";
+import FiltersBar from './FiltersBar';
 
 export default FiltersBar;

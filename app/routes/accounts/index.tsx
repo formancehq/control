@@ -1,27 +1,28 @@
-import * as React from "react";
+import * as React from 'react';
 
-import type { MetaFunction } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
-import { LoaderFunction } from "@remix-run/server-runtime";
+import type { MetaFunction } from '@remix-run/node';
+import { Form, useLoaderData } from '@remix-run/react';
+import { LoaderFunction } from '@remix-run/server-runtime';
 
-import { Page } from "@numaryhq/storybook";
+import { Page } from '@numaryhq/storybook';
 
-import { LedgerList } from "~/routes/ledgers/list";
-import { accounts as accountsConfig } from "~/src/components/Navbar/routes";
-import ComponentErrorBoundary from "~/src/components/Wrappers/ComponentErrorBoundary";
-import AccountList from "~/src/components/Wrappers/Lists/AccountList/AccountList";
-import { Filters } from "~/src/components/Wrappers/Table/Filters/filters";
-import FiltersBar from "~/src/components/Wrappers/Table/Filters/FiltersBar";
-import { TableFiltersContext } from "~/src/contexts/tableFilters";
-import { Cursor } from "~/src/types/generic";
-import { Account } from "~/src/types/ledger";
-import { SearchPolicies, SearchTargets } from "~/src/types/search";
-import { API_SEARCH, createApiClient } from "~/src/utils/api.server";
-import { buildQuery } from "~/src/utils/search";
+import { LedgerList } from '~/routes/ledgers/list';
+import { accounts as accountsConfig } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { Cursor } from '~/src/types/generic';
+import { Account } from '~/src/types/ledger';
+import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { API_SEARCH } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { buildQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
-  title: "Accounts",
-  description: "Show a list",
+  title: 'Accounts',
+  description: 'Show a list',
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -35,7 +36,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       target: SearchTargets.ACCOUNT,
       policy: SearchPolicies.OR,
     },
-    "cursor"
+    'cursor'
   );
 
   if (accounts) {
@@ -62,7 +63,7 @@ export default function Index() {
     <Page id={accountsConfig.id}>
       <TableFiltersContext.Provider
         value={{
-          filters: [{ field: "ledgers", name: Filters.LEDGERS }],
+          filters: [{ field: 'ledgers', name: Filters.LEDGERS }],
         }}
       >
         <Form method="get">

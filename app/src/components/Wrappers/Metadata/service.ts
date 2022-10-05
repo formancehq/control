@@ -1,10 +1,11 @@
-import * as yup from "yup";
+import * as yup from 'yup';
 
-import i18n from "../../../translations";
+import i18n from '../../../translations';
 
-import { ObjectOf } from "~/src/types/generic";
-import { LedgerResources, LedgerSubResources } from "~/src/types/ledger";
-import { API_LEDGER, IApiClient } from "~/src/utils/api.server";
+import { ObjectOf } from '~/src/types/generic';
+import { LedgerResources, LedgerSubResources } from '~/src/types/ledger';
+import { API_LEDGER } from '~/src/utils/api';
+import { IApiClient } from '~/src/utils/api.server';
 
 export const prettyJson = (json: JSON | ObjectOf<any>): string =>
   JSON.stringify(json, undefined, 4);
@@ -30,8 +31,8 @@ export const schema = yup
     json: yup
       .mixed()
       .test(
-        "json",
-        i18n.t("common.forms.metadata.json.errors.valid"),
+        'json',
+        i18n.t('common.forms.metadata.json.errors.valid'),
         (value) => {
           try {
             JSON.parse(value);
@@ -43,4 +44,4 @@ export const schema = yup
         }
       ),
   })
-  .required(i18n.t("common.forms.metadata.json.errors.valid"));
+  .required(i18n.t('common.forms.metadata.json.errors.valid'));

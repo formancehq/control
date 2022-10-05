@@ -1,18 +1,18 @@
-import * as React from "react";
-import { FunctionComponent } from "react";
+import * as React from 'react';
+import { FunctionComponent } from 'react';
 
-import { Box } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
-import { SelectProps } from "./types";
+import { SelectProps } from './types';
 
-import { AutocompleteOption, AutocompleteSelect } from "@numaryhq/storybook";
+import { AutocompleteOption, AutocompleteSelect } from '@numaryhq/storybook';
 
 import {
   buildOptions,
   Filters,
   renderOption,
-} from "~/src/components/Wrappers/Table/Filters/filters";
+} from '~/src/components/Wrappers/Table/Filters/filters';
 
 const Select: FunctionComponent<SelectProps> = ({
   id,
@@ -21,7 +21,7 @@ const Select: FunctionComponent<SelectProps> = ({
   placeholder,
   width = 250,
   name,
-  variant = "light",
+  variant = 'light',
   type = Filters.TERMS,
 }) => {
   const { t } = useTranslation();
@@ -36,7 +36,7 @@ const Select: FunctionComponent<SelectProps> = ({
         renderTags={() => null}
         clearIcon={false}
         variant={variant}
-        noOptionsText={t("common.noResults")}
+        noOptionsText={t('common.noResults')}
         multiple
         disableCloseOnSelect
         getOptionLabel={(option: AutocompleteOption) => option.label}
