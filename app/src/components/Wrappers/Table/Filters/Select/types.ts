@@ -1,4 +1,4 @@
-import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import { Filters } from "~/src/components/Wrappers/Table/Filters/filters";
 
 export type SelectProps = {
   id: string;
@@ -7,6 +7,6 @@ export type SelectProps = {
   placeholder: string;
   width?: number;
   name: string;
-  variant?: 'light' | 'dark';
+  variant?: "light" | "dark";
   type?: Filters.TERMS | Filters.LEDGERS;
 };

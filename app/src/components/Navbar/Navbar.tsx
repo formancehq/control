@@ -1,20 +1,20 @@
 import React, { FunctionComponent } from 'react';
 
-import { Box } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import Search from './../Search';
+import Search from "./../Search";
 
-import { Navbar as FormanceNavbar } from '@numaryhq/storybook';
+import { Navbar as FormanceNavbar } from "@numaryhq/storybook";
 
-import LinkWrapper from '../Wrappers/LinkWrapper';
+import LinkWrapper from "../Wrappers/LinkWrapper";
 
 import {
   getRoute,
   OVERVIEW_ROUTE,
   routerConfig,
-} from '~/src/components/Navbar/routes';
+} from "~/src/components/Navbar/routes";
 
 const Navbar: FunctionComponent = () => {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Navbar: FunctionComponent = () => {
       routes={formattedRouterconfig}
       location={location}
       linkWrapper={
-        <LinkWrapper to={''} prefetch={'none'} color={''}>
+        <LinkWrapper to={""} prefetch={"none"} color={""}>
           <Box />
         </LinkWrapper>
       }

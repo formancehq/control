@@ -1,16 +1,16 @@
-import { IApiClient } from '~/src/utils/api.server';
+import { IApiClient } from "~/src/utils/api.server";
 
 export class ReactApiClient implements IApiClient {
   decorateUrl(uri: string): string {
-    return '';
+    return "";
   }
 
   getResource<T>(
     params: string,
     path: string | undefined
   ): Promise<T | undefined> {
-    return fetch('/proxify', {
-      method: 'POST',
+    return fetch("/proxify", {
+      method: "POST",
       body: JSON.stringify({
         params,
         path,
@@ -23,8 +23,8 @@ export class ReactApiClient implements IApiClient {
     body: any,
     path: string | undefined
   ): Promise<T | undefined> {
-    return fetch('/proxify', {
-      method: 'POST',
+    return fetch("/proxify", {
+      method: "POST",
       body: JSON.stringify({
         params,
         path,
@@ -38,6 +38,6 @@ export class ReactApiClient implements IApiClient {
     from: string | undefined,
     response: Response | undefined
   ): Error {
-    throw new Error('not implemented');
+    throw new Error("not implemented");
   }
 }

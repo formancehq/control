@@ -1,12 +1,12 @@
-import { ObjectOf } from './generic';
+import { ObjectOf } from "./generic";
 
 export enum LedgerResources {
-  ACCOUNTS = 'accounts',
-  TRANSACTIONS = 'transactions',
+  ACCOUNTS = "accounts",
+  TRANSACTIONS = "transactions",
 }
 
 export enum LedgerSubResources {
-  METADATA = 'metadata',
+  METADATA = "metadata",
 }
 
 export type Account = {
@@ -65,7 +65,7 @@ export type PostingHybrid = {
   metadata: ObjectOf<any>;
 };
 
-export type TransactionHybrid = Omit<Transaction, 'postings' | 'metadata'> &
+export type TransactionHybrid = Omit<Transaction, "postings" | "metadata"> &
   Posting & {
     postingId: number;
     metadata: ObjectOf<any>;

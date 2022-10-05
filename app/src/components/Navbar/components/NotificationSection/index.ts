@@ -1,3 +1,3 @@
-import NotificationSection from './NotificationSection';
+import NotificationSection from "./NotificationSection";
 
 export default NotificationSection;
