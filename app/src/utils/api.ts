@@ -12,7 +12,10 @@ export interface ApiClient {
   getResource: <T>(params: string, path?: string) => Promise<T | undefined>;
 }
 
-export type SessionWrapper = { sessionHandler: string; callbackResult: any };
+export type SessionWrapper = {
+  sessionHandler: Promise<string>;
+  callbackResult: any;
+};
 export type CurrentUser = {
   sub: string;
   scp: string[];

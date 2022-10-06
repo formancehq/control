@@ -96,14 +96,14 @@ export const loader: LoaderFunction = async ({ request }) => {
               },
             };
           }
+
+          return {
+            currentUser: {},
+          };
         })
       );
     }
   }
-
-  return {
-    currentUser: {},
-  };
 };
 
 const Document = withEmotionCache(

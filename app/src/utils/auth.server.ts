@@ -7,7 +7,6 @@ import { ObjectOf } from '~/src/types/generic';
 import {
   API_AUTH,
   Authentication,
-  CurrentUser,
   JwtPayload,
   logger,
   returnHandler,
@@ -22,11 +21,11 @@ const FROM = 'utils/auth.server';
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: COOKIE_NAME, // use any name you want here
-    sameSite: 'none', // this helps with CSRF
+    sameSite: 'lax', // this helps with CSRF
     path: '/', // remember to add this so the cookie will work in all routes
     httpOnly: true, // for security reasons, make this cookie http only
     secrets: [process.env.CLIENT_SECRET || 'secret'], // replace this with an actual secret
-    secure: true, // enable this in prod only
+    secure: process.env.NODE_ENV === 'production',
   },
 });
 
@@ -111,27 +110,12 @@ export const refreshToken = async (
   return await returnHandler<Authentication>(refresh, FROM);
 };
 
-export const getCurrentUser = async (
-  openIdConfig: ObjectOf<any>,
-  jwt: string
-): Promise<undefined | CurrentUser> => {
-  const uri = openIdConfig.userinfo_endpoint;
-  const currentUser = await fetch(uri, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-
-  return await returnHandler<CurrentUser>(currentUser, FROM);
-};
-
 export const handleResponse = async (
   data: SessionWrapper
 ): Promise<TypedResponse<any>> =>
   json(data.callbackResult, {
     headers: {
-      'Set-Cookie': data.sessionHandler,
+      'Set-Cookie': await data.sessionHandler,
     },
   });
 
@@ -140,14 +124,17 @@ export const withSession = async (
   callback: (session: Session) => any
 ): Promise<SessionWrapper> => {
   const session = await getSession(request.headers.get('Cookie'));
-  const commitSession = await sessionStorage.commitSession(session);
+  const commitSession = sessionStorage.commitSession(session);
   try {
     const c = await callback(session);
 
-    return { sessionHandler: commitSession, callbackResult: c };
+    return {
+      sessionHandler: commitSession,
+      callbackResult: c,
+    };
   } catch (e) {
     if (e instanceof RefreshingTokenError) {
-      const destroySession = await sessionStorage.destroySession(session);
+      const destroySession = sessionStorage.destroySession(session);
 
       return { sessionHandler: destroySession, callbackResult: {} };
     }

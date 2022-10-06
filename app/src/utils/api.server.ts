@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment*/
 import { Session } from '@remix-run/node';
 import { get, isUndefined } from 'lodash';
 
 import { Errors } from '~/src/types/generic';
-import { ApiClient, Authentication } from '~/src/utils/api';
+import { ApiClient, Authentication, logger } from '~/src/utils/api';
 import {
   COOKIE_NAME,
   decrypt,
@@ -14,9 +15,12 @@ import {
   UnauthenticatedError,
 } from '~/src/utils/auth.server';
 
-declare global {
-  // eslint-disable-next-line no-var
-  var pendingRefresh: Map<string, Promise<any>>;
+// @ts-ignore
+if (!global.callCount) {
+  // @ts-ignore
+  global.pendingRefresh = new Map();
+  // @ts-ignore
+  global.callCount = 0;
 }
 
 export const errorsMap = {
@@ -39,10 +43,6 @@ export const createApiClient = async (
 
   return new DefaultApiClient(session, url);
 };
-
-if (!global.pendingRefresh) {
-  global.pendingRefresh = new Map();
-}
 
 export class DefaultApiClient implements ApiClient {
   public baseUrl: string | undefined;
@@ -92,8 +92,11 @@ export class DefaultApiClient implements ApiClient {
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
     let auth = decrypt(this.session.get(COOKIE_NAME)) as Authentication;
 
-    const tryRequest = async (): Promise<Response> =>
-      await fetch(uri, {
+    const tryRequest = async (): Promise<Response> => {
+      // @ts-ignore
+      global.callCount++;
+
+      return await fetch(uri, {
         method: body ? 'POST' : 'GET',
         headers: this.headers,
         body: body
@@ -102,6 +105,7 @@ export class DefaultApiClient implements ApiClient {
             : JSON.stringify(body)
           : undefined,
       });
+    };
 
     this.headers = {
       ...this.headers,
@@ -110,29 +114,42 @@ export class DefaultApiClient implements ApiClient {
 
     let httpResponse: Response;
     httpResponse = await tryRequest();
-
     switch (httpResponse.status) {
+      case 200: {
+        const jsonResult = await httpResponse.json();
+        data = path ? get(jsonResult, path) : jsonResult;
+        break;
+      }
       case 204:
         return {} as any;
       case 401: {
         const oldRefreshToken = auth.refresh_token;
+        // @ts-ignore
         let pendingPromise = global.pendingRefresh.get(auth.access_token);
         if (!pendingPromise) {
           const openIdConfig = await getOpenIdConfig();
           if (openIdConfig) {
             pendingPromise = refreshToken(openIdConfig, auth);
+            // @ts-ignore
             global.pendingRefresh.set(auth.refresh_token, pendingPromise);
           }
         } else {
           // Do not remove console.info - debug purpose
-          console.info('Pending promise retrieved');
+          // @ts-ignore
+          console.info('Pending promise retrieved', global.pendingRefresh);
         }
         const refreshResponse = await pendingPromise;
+        // @ts-ignore
         global.pendingRefresh.delete(oldRefreshToken);
         if (!refreshResponse) {
           throw new RefreshingTokenError();
         } else {
           auth = refreshResponse;
+          console.info('Refresh', {
+            success: true,
+            new: auth.refresh_token,
+            old: oldRefreshToken,
+          });
           this.session.set(COOKIE_NAME, encrypt(auth));
         }
 
@@ -141,8 +158,10 @@ export class DefaultApiClient implements ApiClient {
           case 204:
             return {} as any;
           case 401:
+            logger(httpResponse);
             throw new UnauthenticatedError();
           case 400:
+            logger(httpResponse);
             throw new UnauthenticatedError();
           default: {
             const jsonResult = await httpResponse.json();
@@ -152,11 +171,9 @@ export class DefaultApiClient implements ApiClient {
         }
         break;
       }
-      default: {
-        const jsonResult = await httpResponse.json();
-        data = path ? get(jsonResult, path) : jsonResult;
+      default:
+        data = {} as any;
         break;
-      }
     }
 
     return data;
