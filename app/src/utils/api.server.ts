@@ -12,6 +12,7 @@ import {
   getSession,
   RefreshingTokenError,
   refreshToken,
+  sessionStorage,
   UnauthenticatedError,
 } from '~/src/utils/auth.server';
 
@@ -95,6 +96,10 @@ export class DefaultApiClient implements ApiClient {
     const tryRequest = async (): Promise<Response> => {
       // @ts-ignore
       global.callCount++;
+      this.headers = {
+        ...this.headers,
+        Authorization: `Bearer ${auth.access_token}`,
+      };
 
       return await fetch(uri, {
         method: body ? 'POST' : 'GET',
@@ -105,11 +110,6 @@ export class DefaultApiClient implements ApiClient {
             : JSON.stringify(body)
           : undefined,
       });
-    };
-
-    this.headers = {
-      ...this.headers,
-      Authorization: `Bearer ${auth.access_token}`,
     };
 
     let httpResponse: Response;
@@ -125,7 +125,7 @@ export class DefaultApiClient implements ApiClient {
       case 401: {
         const oldRefreshToken = auth.refresh_token;
         // @ts-ignore
-        let pendingPromise = global.pendingRefresh.get(auth.access_token);
+        let pendingPromise = global.pendingRefresh.get(auth.refresh_token);
         if (!pendingPromise) {
           const openIdConfig = await getOpenIdConfig();
           if (openIdConfig) {
@@ -149,6 +149,7 @@ export class DefaultApiClient implements ApiClient {
             success: true,
             new: auth.refresh_token,
             old: oldRefreshToken,
+            jwt: auth.access_token,
           });
           this.session.set(COOKIE_NAME, encrypt(auth));
         }
@@ -175,6 +176,8 @@ export class DefaultApiClient implements ApiClient {
         data = {} as any;
         break;
     }
+
+    await sessionStorage.commitSession(this.session);
 
     return data;
   }

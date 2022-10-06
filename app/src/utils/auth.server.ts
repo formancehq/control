@@ -124,6 +124,10 @@ export const withSession = async (
   callback: (session: Session) => any
 ): Promise<SessionWrapper> => {
   const session = await getSession(request.headers.get('Cookie'));
+  console.log(
+    'Session seems not up to date, despite refresh',
+    decrypt(session.get(COOKIE_NAME))
+  );
   const commitSession = sessionStorage.commitSession(session);
   try {
     const c = await callback(session);
@@ -133,11 +137,12 @@ export const withSession = async (
       callbackResult: c,
     };
   } catch (e) {
-    if (e instanceof RefreshingTokenError) {
-      const destroySession = sessionStorage.destroySession(session);
-
-      return { sessionHandler: destroySession, callbackResult: {} };
-    }
+    // TODO uncomment when ready
+    // if (e instanceof RefreshingTokenError) {
+    //   const destroySession = sessionStorage.destroySession(session);
+    //
+    //   return { sessionHandler: destroySession, callbackResult: {} };
+    // }
 
     return { sessionHandler: commitSession, callbackResult: {} };
   }

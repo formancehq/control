@@ -28,10 +28,9 @@ import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import { Cursor } from '~/src/types/generic';
-import { Account, LedgerInfo } from '~/src/types/ledger';
+import { Account } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
-import { SearchTargets } from '~/src/types/search';
-import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
+import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 
@@ -71,33 +70,33 @@ const getData = async (ledgersList: string[], api: ApiClient) => {
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData() {
     const api = await createApiClient(request);
-    const payments = await api.postResource<Cursor<Payment>>(
-      API_SEARCH,
-      {
-        target: SearchTargets.PAYMENT,
-        size: 1,
-      },
-      'cursor'
-    );
-
-    const accounts = api.postResource<Cursor<Account>>(
-      API_SEARCH,
-      {
-        target: SearchTargets.ACCOUNT,
-        size: 1,
-      },
-      'cursor'
-    );
-
-    const ledgersList = await api.getResource<LedgerInfo>(
-      `${API_LEDGER}/_info`,
-      'data.config.storage.ledgers'
-    );
+    // const payments = await api.postResource<Cursor<Payment>>(
+    //   API_SEARCH,
+    //   {
+    //     target: SearchTargets.PAYMENT,
+    //     size: 1,
+    //   },
+    //   'cursor'
+    // );
+    //
+    // const accounts = api.postResource<Cursor<Account>>(
+    //   API_SEARCH,
+    //   {
+    //     target: SearchTargets.ACCOUNT,
+    //     size: 1,
+    //   },
+    //   'cursor'
+    // );
+    //
+    // const ledgersList = await api.getResource<LedgerInfo>(
+    //   `${API_LEDGER}/_info`,
+    //   'data.config.storage.ledgers'
+    // );
 
     return {
-      accounts,
-      payments,
-      ledgers: ledgersList,
+      accounts: [],
+      payments: [],
+      ledgers: [],
     };
   }
 
@@ -128,10 +127,10 @@ export default function Index() {
 
   useEffect(() => {
     (async () => {
-      const results = await getData(ledgers, api);
-      if (results) {
-        setStats(results);
-      }
+      // const results = await getData(ledgers, api);
+      // if (results) {
+      setStats([]);
+      // }
       stopLoading();
     })();
   }, []);
