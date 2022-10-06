@@ -36,6 +36,7 @@ import {
 } from '~/src/types/ledger';
 import { API_LEDGER } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(
@@ -62,31 +63,29 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-export const loader: LoaderFunction = async ({
-  params,
-  request,
-}): Promise<{
-  postings: PostingHybrid[];
-  metadata: ObjectOf<any>;
-} | null> => {
-  invariant(params.ledgerId, 'Expected params.ledgerId');
-  invariant(params.transactionId, 'Expected params.transactionId');
+export const loader: LoaderFunction = async ({ params, request }) => {
+  async function handleData() {
+    invariant(params.ledgerId, 'Expected params.ledgerId');
+    invariant(params.transactionId, 'Expected params.transactionId');
 
-  const transaction = await (
-    await createApiClient(request)
-  ).getResource<Transaction>(
-    `${API_LEDGER}/${params.ledgerId}/${LedgerResources.TRANSACTIONS}/${params.transactionId}`,
-    'data'
-  );
+    const transaction = await (
+      await createApiClient(request)
+    ).getResource<Transaction>(
+      `${API_LEDGER}/${params.ledgerId}/${LedgerResources.TRANSACTIONS}/${params.transactionId}`,
+      'data'
+    );
 
-  if (transaction) {
-    return {
-      postings: normalizePostings(transaction),
-      metadata: transaction.metadata,
-    };
+    if (transaction) {
+      return {
+        postings: normalizePostings(transaction),
+        metadata: transaction.metadata,
+      };
+    }
+
+    return null;
   }
 
-  return null;
+  return handleResponse(await withSession(request, handleData));
 };
 
 export default function Index() {

@@ -1,29 +1,33 @@
 import * as React from 'react';
 
-import { ActionFunction, json } from '@remix-run/node';
+import { ActionFunction } from '@remix-run/node';
 
 import { createApiClient } from '~/src/utils/api.server';
-import { commitSession, getSession } from '~/src/utils/auth.server';
+import {
+  getSession,
+  handleResponse,
+  withSession,
+} from '~/src/utils/auth.server';
 
 export const action: ActionFunction = async ({ request }) => {
-  const session = await getSession(request.headers.get('Cookie'));
-  const body = await request.json();
+  async function handleData() {
+    const session = await getSession(request.headers.get('Cookie'));
+    const body = await request.json();
 
-  const apiClient = await createApiClient(request, process.env.API_URL);
-  let ret;
+    const apiClient = await createApiClient(request, process.env.API_URL);
+    let ret;
 
-  switch (request.method) {
-    case 'POST':
-      ret = await apiClient.postResource(body.params, body.body, body.path);
-      break;
-    case 'GET':
-      ret = await apiClient.getResource(body.params, body.body);
-      break;
+    switch (request.method) {
+      case 'POST':
+        ret = await apiClient.postResource(body.params, body.body, body.path);
+        break;
+      case 'GET':
+        ret = await apiClient.getResource(body.params, body.body);
+        break;
+    }
+
+    return ret;
   }
 
-  return json(ret, {
-    headers: {
-      'Set-Cookie': await commitSession(session),
-    },
-  });
+  return handleResponse(await withSession(request, handleData));
 };

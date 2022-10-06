@@ -11,23 +11,26 @@ import Select from '~/src/components/Wrappers/Table/Filters/Select';
 import { LedgerInfo } from '~/src/types/ledger';
 import { API_LEDGER } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 export const meta: MetaFunction = () => ({
   title: 'Ledgers',
   description: 'Get a list',
 });
 
-export const loader: LoaderFunction = async ({
-  request,
-}): Promise<string[] | null> => {
-  const ledgers = await (
-    await createApiClient(request)
-  ).getResource<LedgerInfo>(`${API_LEDGER}/_info`, 'data');
-  if (ledgers) {
-    return ledgers?.config.storage.ledgers;
+export const loader: LoaderFunction = async ({ request }) => {
+  async function handleData() {
+    const ledgers = await (
+      await createApiClient(request)
+    ).getResource<LedgerInfo>(`${API_LEDGER}/_info`, 'data');
+    if (ledgers) {
+      return ledgers?.config.storage.ledgers;
+    }
+
+    return null;
   }
 
-  return null;
+  return handleResponse(await withSession(request, handleData));
 };
 
 export const LedgerList: FunctionComponent<{ variant?: 'light' | 'dark' }> = ({

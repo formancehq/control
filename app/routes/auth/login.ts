@@ -29,9 +29,6 @@ export const loader: LoaderFunction = async ({
       });
     }
     if (authentication && authentication.access_token) {
-      logger(undefined, 'routes/auth/login', {
-        message: 'Authentication succeed',
-      });
       const encryptedCookie = encrypt(authentication);
       session.set(COOKIE_NAME, encryptedCookie);
 

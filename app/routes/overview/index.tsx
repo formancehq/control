@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { AccountBalance, NorthEast } from '@mui/icons-material';
-import { Box, CircularProgress, Link } from '@mui/material';
+import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
+import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
 import type { LoaderFunction, MetaFunction } from '@remix-run/node';
 import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { get } from 'lodash';
@@ -31,8 +31,8 @@ import { Cursor } from '~/src/types/generic';
 import { Account, LedgerInfo } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
-import { API_LEDGER, API_SEARCH } from '~/src/utils/api';
-import { createApiClient, IApiClient } from '~/src/utils/api.server';
+import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 export const meta: MetaFunction = () => ({
@@ -50,7 +50,7 @@ type LoaderReturnValue = {
 
 const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 
-const getData = async (ledgersList: string[], api: IApiClient) => {
+const getData = async (ledgersList: string[], api: ApiClient) => {
   const ledgers = [] as any;
   for (const ledger of ledgersList) {
     // Todo remove any
@@ -65,7 +65,7 @@ const getData = async (ledgersList: string[], api: IApiClient) => {
     });
   }
 
-  return [];
+  return ledgers;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -108,7 +108,6 @@ export default function Index() {
   const { t } = useTranslation();
   const [stats, setStats] = useState<Ledger[]>([]);
   const { currentUser } = useService();
-  console.log(currentUser);
   const data = useLoaderData<LoaderReturnValue>();
   const { api } = useService();
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
@@ -153,55 +152,41 @@ export default function Index() {
           <Page id={overview.id}>
             <>
               {/* TODO uncomment when current user is ready*/}
-              {/*<Box*/}
-              {/*  display="flex"*/}
-              {/*  alignItems="center"*/}
-              {/*  justifyContent="space-between"*/}
-              {/*>*/}
-              {/*  <Box display="flex">*/}
-              {/*    <Avatar*/}
-              {/*      sx={{*/}
-              {/*        backgroundColor: ({ palette }) => palette.neutral[800],*/}
-              {/*        width: 72,*/}
-              {/*        height: 72,*/}
-              {/*      }}*/}
-              {/*    >*/}
-              {/*      <Person fontSize="large" />*/}
-              {/*    </Avatar>*/}
-              {/*    <Box display="flex-column" p={2} alignItems="center">*/}
-              {/*      <Typography*/}
-              {/*        variant="headline"*/}
-              {/*        sx={{ color: ({ palette }) => palette.neutral[0] }}*/}
-              {/*      >*/}
-              {/*        {`${t('pages.overview.hello')} 👋`}*/}
-              {/*      </Typography>*/}
-              {/*      <Typography*/}
-              {/*        variant="body1"*/}
-              {/*        sx={{ color: ({ palette }) => palette.neutral[400] }}*/}
-              {/*      >*/}
-              {/*        {t('pages.overview.subtitle')}*/}
-              {/*      </Typography>*/}
-              {/*    </Box>*/}
-              {/*  </Box>*/}
-              {/*  <Box>*/}
-              {/*    <LoadingButton*/}
-              {/*      startIcon={<GitHub />}*/}
-              {/*      content={t('pages.overview.githubContent')}*/}
-              {/*      sx={{ marginRight: 2 }}*/}
-              {/*      onClick={() =>*/}
-              {/*        window.open('https://github.com/numary/ledger')*/}
-              {/*      }*/}
-              {/*    />*/}
-              {/*    <LoadingButton*/}
-              {/*      startIcon={<ReadMore />}*/}
-              {/*      variant="primary"*/}
-              {/*      content={t('pages.overview.docsContent')}*/}
-              {/*      onClick={() =>*/}
-              {/*        window.open('https://docs.formance.com/oss/ledger')*/}
-              {/*      }*/}
-              {/*    />*/}
-              {/*  </Box>*/}
-              {/*</Box>*/}
+              {currentUser && currentUser.email && (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box display="flex">
+                    <Avatar
+                      sx={{
+                        backgroundColor: ({ palette }) => palette.neutral[800],
+                        width: 72,
+                        height: 72,
+                      }}
+                    >
+                      <Person fontSize="large" />
+                    </Avatar>
+                    <Box display="flex-column" p={2} alignItems="center">
+                      <Typography
+                        variant="headline"
+                        sx={{ color: ({ palette }) => palette.neutral[0] }}
+                      >
+                        {`${t('pages.overview.hello')} ${
+                          currentUser.email.split('@')[0]
+                        } 👋`}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: ({ palette }) => palette.neutral[400] }}
+                      >
+                        {t('pages.overview.subtitle')}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              )}
 
               {/*  STATUS */}
               <Box mt={5}>

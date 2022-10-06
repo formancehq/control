@@ -1,19 +1,21 @@
-import { Session } from "@remix-run/node";
-import { get } from "lodash";
+import { Session } from '@remix-run/node';
+import { get, isUndefined } from 'lodash';
 
-import { Errors } from "~/src/types/generic";
-import { logger } from "~/src/utils/api";
+import { Errors } from '~/src/types/generic';
+import { ApiClient, Authentication } from '~/src/utils/api';
 import {
-  Authentication,
   COOKIE_NAME,
   decrypt,
   encrypt,
   getOpenIdConfig,
   getSession,
+  RefreshingTokenError,
   refreshToken,
-} from "~/src/utils/auth.server";
+  UnauthenticatedError,
+} from '~/src/utils/auth.server';
 
 declare global {
+  // eslint-disable-next-line no-var
   var pendingRefresh: Map<string, Promise<any>>;
 }
 
@@ -27,33 +29,22 @@ export const errorsMap = {
   503: Errors.SERVICE_DOWN,
 };
 
-export type Headers = { Authorization?: string; "Content-Type": string };
-
-export interface IApiClient {
-  decorateUrl: (uri: string) => string;
-  postResource: <T>(
-    params: string,
-    body: any,
-    path?: string
-  ) => Promise<T | undefined>;
-  getResource: <T>(params: string, path?: string) => Promise<T | undefined>;
-  throwError: (stack?: any, from?: string, response?: Response) => Error;
-}
+export type Headers = { Authorization?: string; 'Content-Type': string };
 
 export const createApiClient = async (
   request: Request,
   url?: string
-): Promise<IApiClient> => {
-  const session = await getSession(request.headers.get("Cookie"));
+): Promise<ApiClient> => {
+  const session = await getSession(request.headers.get('Cookie'));
 
-  return new ApiClient(session, url);
+  return new DefaultApiClient(session, url);
 };
 
 if (!global.pendingRefresh) {
   global.pendingRefresh = new Map();
 }
 
-export class ApiClient implements IApiClient {
+export class DefaultApiClient implements ApiClient {
   public baseUrl: string | undefined;
   public session: Session;
   protected headers: Headers;
@@ -61,28 +52,16 @@ export class ApiClient implements IApiClient {
   constructor(session: Session, url?: string) {
     this.baseUrl = url;
     this.headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
-
-    if (typeof process !== "undefined") {
-      if (!url) {
+    if (typeof process !== 'undefined') {
+      if (isUndefined(url)) {
         if (process.env.API_URL) {
           this.baseUrl = process.env.API_URL;
-        } else throw new Error("API_URL is not defined");
+        } else throw new Error('API_URL is not defined');
       }
     }
     this.session = session;
-  }
-
-  throwError(
-    stack?: any,
-    from?: string,
-    response?: Response,
-    request?: any
-  ): Error {
-    const e = get(errorsMap, response?.status || 422, errorsMap["422"]);
-    logger(stack, from, response, request);
-    throw new Error(e);
   }
 
   public decorateUrl(uri: string): string {
@@ -112,11 +91,10 @@ export class ApiClient implements IApiClient {
     let data: T | undefined = undefined;
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
     let auth = decrypt(this.session.get(COOKIE_NAME)) as Authentication;
-    logger(undefined, undefined, undefined, { path, params, body });
 
     const tryRequest = async (): Promise<Response> =>
       await fetch(uri, {
-        method: body ? "POST" : "GET",
+        method: body ? 'POST' : 'GET',
         headers: this.headers,
         body: body
           ? body instanceof FormData
@@ -129,47 +107,56 @@ export class ApiClient implements IApiClient {
       ...this.headers,
       Authorization: `Bearer ${auth.access_token}`,
     };
+
     let httpResponse: Response;
     httpResponse = await tryRequest();
+
     switch (httpResponse.status) {
       case 204:
         return {} as any;
-      case 401:
+      case 401: {
         const oldRefreshToken = auth.refresh_token;
         let pendingPromise = global.pendingRefresh.get(auth.access_token);
         if (!pendingPromise) {
           const openIdConfig = await getOpenIdConfig();
-          pendingPromise = refreshToken(openIdConfig, auth);
-          global.pendingRefresh.set(auth.refresh_token, pendingPromise);
+          if (openIdConfig) {
+            pendingPromise = refreshToken(openIdConfig, auth);
+            global.pendingRefresh.set(auth.refresh_token, pendingPromise);
+          }
         } else {
           // Do not remove console.info - debug purpose
-          console.info("Pending promise retrieved");
+          console.info('Pending promise retrieved');
         }
         const refreshResponse = await pendingPromise;
         global.pendingRefresh.delete(oldRefreshToken);
-        if (refreshResponse.status != 200) {
-          this.session.unset(COOKIE_NAME);
-          throw new Error("Error while refreshing token");
+        if (!refreshResponse) {
+          throw new RefreshingTokenError();
+        } else {
+          auth = refreshResponse;
+          this.session.set(COOKIE_NAME, encrypt(auth));
         }
-        auth = await refreshResponse.json();
-        this.session.set(COOKIE_NAME, encrypt(auth));
 
         httpResponse = await tryRequest();
         switch (httpResponse.status) {
           case 204:
             return {} as any;
           case 401:
-            throw new Error("not authenticated");
-          default:
+            throw new UnauthenticatedError();
+          case 400:
+            throw new UnauthenticatedError();
+          default: {
             const jsonResult = await httpResponse.json();
             data = path ? get(jsonResult, path) : jsonResult;
             break;
+          }
         }
         break;
-      default:
+      }
+      default: {
         const jsonResult = await httpResponse.json();
         data = path ? get(jsonResult, path) : jsonResult;
         break;
+      }
     }
 
     return data;

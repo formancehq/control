@@ -35,15 +35,16 @@ import Layout from '~/src/components/Layout';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
+import { LedgerInfo } from '~/src/types/ledger';
 import { logger } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
-import { errorsMap } from '~/src/utils/api.server';
+import { createApiClient, errorsMap } from '~/src/utils/api.server';
 import {
   AUTH_CALLBACK_ROUTE,
   commitSession,
   COOKIE_NAME,
   decrypt,
-  getCurrentUser,
+  getJwtPayload,
   getOpenIdConfig,
   getSession,
   handleResponse,
@@ -63,12 +64,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   const openIdConfig = await getOpenIdConfig();
-  if (!cookie) {
-    if (openIdConfig) {
+  if (openIdConfig) {
+    if (!cookie) {
       if (!code) {
         // redirect to form
-        console.log('REDIRECT LOGIN FORM');
-
         return redirect(
           `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&response_type=code&scope=openid email offline_access`,
           {
@@ -78,28 +77,33 @@ export const loader: LoaderFunction = async ({ request }) => {
           }
         );
       }
-    }
-  } else {
-    return handleResponse(
-      await withSession(request, async () => {
-        const decryptedCookie = decrypt(cookie);
-        const currentUser = await getCurrentUser(
-          openIdConfig,
-          decryptedCookie.access_token
-        );
+    } else {
+      return handleResponse(
+        await withSession(request, async () => {
+          const decryptedCookie = decrypt(cookie);
+          const api = await createApiClient(request, '');
+          const currentUser = await api.getResource<LedgerInfo>(
+            openIdConfig.userinfo_endpoint
+          );
+          if (decryptedCookie && currentUser) {
+            const payload = getJwtPayload(decryptedCookie);
 
-        return {
-          auth: {
-            currentUser: {
-              ...currentUser,
-              // scp: getJwtPayload(decryptedCookie).scp,
-            },
-            jwt: decryptedCookie.access_token,
-          },
-        };
-      })
-    );
+            return {
+              currentUser: {
+                ...currentUser,
+                scp: payload ? payload.scp : [],
+                jwt: decryptedCookie.access_token,
+              },
+            };
+          }
+        })
+      );
+    }
   }
+
+  return {
+    currentUser: {},
+  };
 };
 
 const Document = withEmotionCache(
@@ -211,7 +215,7 @@ const renderError = (
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { auth } = useLoaderData();
+  const { currentUser } = useLoaderData();
   const [loading, _load, stopLoading] = useOpen(true);
   React.useEffect(() => {
     stopLoading();
@@ -235,7 +239,7 @@ export default function App() {
         <ServiceContext.Provider
           value={{
             api: new ReactApiClient(),
-            currentUser: auth.currentUser,
+            currentUser,
           }}
         >
           <Layout>

@@ -1,10 +1,6 @@
-import { IApiClient } from '~/src/utils/api.server';
+import { ApiClient } from '~/src/utils/api';
 
-export class ReactApiClient implements IApiClient {
-  decorateUrl(uri: string): string {
-    return '';
-  }
-
+export class ReactApiClient implements ApiClient {
   getResource<T>(
     params: string,
     path: string | undefined
@@ -31,13 +27,5 @@ export class ReactApiClient implements IApiClient {
         body,
       }),
     }).then((response) => response.json());
-  }
-
-  throwError(
-    stack: any,
-    from: string | undefined,
-    response: Response | undefined
-  ): Error {
-    throw new Error('not implemented');
   }
 }

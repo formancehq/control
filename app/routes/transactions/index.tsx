@@ -20,6 +20,7 @@ import { Transaction } from '~/src/types/ledger';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { buildQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
@@ -28,23 +29,27 @@ export const meta: MetaFunction = () => ({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const url = new URL(request.url);
-  const transactions = await (
-    await createApiClient(request)
-  ).postResource<Cursor<Transaction>>(
-    API_SEARCH,
-    {
-      ...buildQuery(url.searchParams),
-      target: SearchTargets.TRANSACTION,
-      policy: SearchPolicies.OR,
-    },
-    'cursor'
-  );
-  if (transactions) {
-    return transactions;
+  async function handleData() {
+    const url = new URL(request.url);
+    const transactions = await (
+      await createApiClient(request)
+    ).postResource<Cursor<Transaction>>(
+      API_SEARCH,
+      {
+        ...buildQuery(url.searchParams),
+        target: SearchTargets.TRANSACTION,
+        policy: SearchPolicies.OR,
+      },
+      'cursor'
+    );
+    if (transactions) {
+      return transactions;
+    }
+
+    return null;
   }
 
-  return null;
+  return handleResponse(await withSession(request, handleData));
 };
 
 export function ErrorBoundary({ error }: { error: Error }) {

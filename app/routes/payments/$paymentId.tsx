@@ -30,6 +30,7 @@ import Table from '~/src/components/Wrappers/Table';
 import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { copyTokenToClipboard } from '~/src/utils/clipboard';
 
 // TODO remove this when Reconciliation is done
@@ -58,17 +59,21 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-  invariant(params.paymentId, 'Expected params.paymentId');
-  const getPayment = await (
-    await createApiClient(request)
-  ).getResource<PaymentDetail>(
-    `${API_PAYMENT}/payments/${params.paymentId}`,
-    'data'
-  );
+  async function handleData() {
+    invariant(params.paymentId, 'Expected params.paymentId');
+    const getPayment = await (
+      await createApiClient(request)
+    ).getResource<PaymentDetail>(
+      `${API_PAYMENT}/payments/${params.paymentId}`,
+      'data'
+    );
 
-  return {
-    details: getPayment,
-  };
+    return {
+      details: getPayment,
+    };
+  }
+
+  return handleResponse(await withSession(request, handleData));
 };
 
 const boxWithCopyToClipboard = (

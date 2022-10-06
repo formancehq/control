@@ -4,36 +4,19 @@ import { createCookieSessionStorage, json, Session } from '@remix-run/node';
 import { TypedResponse } from '@remix-run/server-runtime';
 
 import { ObjectOf } from '~/src/types/generic';
-import { API_AUTH, logger } from '~/src/utils/api';
+import {
+  API_AUTH,
+  Authentication,
+  CurrentUser,
+  JwtPayload,
+  logger,
+  returnHandler,
+  SessionWrapper,
+} from '~/src/utils/api';
 
 export const COOKIE_NAME = 'auth_session';
 export const AUTH_CALLBACK_ROUTE = '/auth/login';
-
-export type SessionWrapper = { commitSession: string; callbackResult: any };
-export type CurrentUser = {
-  sub: string;
-  scp: string[];
-  email: string;
-  email_verified: boolean;
-};
-export type Authentication = {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  token_type: string;
-  id_token: string;
-  error?: string;
-  error_description?: string;
-};
-export type JwtPayload = {
-  sub: string;
-  aud: string[];
-  jti: string;
-  exp: number;
-  iat: number;
-  nbf: number;
-  scp?: string[]; // TODO make it required once permissions from backend are set
-};
+const FROM = 'utils/auth.server';
 
 // export the whole sessionStorage object
 export const sessionStorage = createCookieSessionStorage({
@@ -47,92 +30,91 @@ export const sessionStorage = createCookieSessionStorage({
   },
 });
 
-export const encrypt = (payload: Authentication) => {
-  const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
-  const iv = process.env.ENCRYPTION_IV!;
-
-  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-  let encrypted = cipher.update(JSON.stringify(payload), 'utf8', 'base64');
-  encrypted += cipher.final('base64');
-
-  return encrypted;
-};
-
-export const decrypt = (cookie: string): Authentication => {
-  if (cookie) {
+export const encrypt = (payload: Authentication): string | undefined => {
+  try {
     const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
     const iv = process.env.ENCRYPTION_IV!;
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-    const decrypted = decipher.update(cookie, 'base64', 'utf8');
 
-    return JSON.parse(decrypted + decipher.final('utf8'));
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    let encrypted = cipher.update(JSON.stringify(payload), 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+
+    return encrypted;
+  } catch (e) {
+    logger(e, FROM);
+
+    return undefined;
   }
-
-  return {} as any;
 };
 
-export const getOpenIdConfig = async (): Promise<ObjectOf<any>> => {
+export const decrypt = (cookie: string): Authentication | undefined => {
+  try {
+    if (cookie) {
+      const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
+      const iv = process.env.ENCRYPTION_IV!;
+      const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+      const decrypted = decipher.update(cookie, 'base64', 'utf8');
+
+      return JSON.parse(decrypted + decipher.final('utf8'));
+    }
+
+    return {} as any;
+  } catch (e) {
+    logger(e, FROM);
+
+    return undefined;
+  }
+};
+
+export const getOpenIdConfig = async (): Promise<undefined | ObjectOf<any>> => {
   const uri = `${process.env.API_URL}${API_AUTH}/.well-known/openid-configuration`;
   const openIdConfig = await fetch(uri);
-  logger(
-    undefined,
-    'utils/auth.server',
-    { status: openIdConfig?.status },
-    {
-      path: uri,
-      method: 'GET',
-    }
-  );
 
-  return await openIdConfig.json();
+  return await returnHandler<ObjectOf<any>>(openIdConfig, FROM);
 };
 
-export const getJwtPayload = (decryptedCookie: Authentication): JwtPayload =>
-  JSON.parse(
-    Buffer.from(decryptedCookie.access_token.split('.')[1], 'base64').toString()
-  );
+export const getJwtPayload = (
+  decryptedCookie: Authentication
+): JwtPayload | undefined => {
+  try {
+    JSON.parse(
+      Buffer.from(
+        decryptedCookie.access_token.split('.')[1],
+        'base64'
+      ).toString()
+    );
+  } catch (e) {
+    logger(e, 'utils/auth.server');
+
+    return undefined;
+  }
+};
 
 export const authenticate = async (
   openIdConfig: ObjectOf<any>,
   code: string,
   url: URL
-): Promise<Authentication> => {
+): Promise<undefined | Authentication> => {
   const uri = `${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}`;
   const auth = await fetch(uri);
 
-  logger(
-    undefined,
-    'utils/auth.server',
-    { status: auth?.status },
-    { path: uri, method: 'GET' }
-  );
-
-  return await auth.json();
+  return await returnHandler<Authentication>(auth, FROM);
 };
 
 export const refreshToken = async (
   openIdConfig: ObjectOf<any>,
   cookie: ObjectOf<any>
-): Promise<Response> => {
+): Promise<Authentication | undefined> => {
   const uri = `${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&refresh_token=${cookie.refresh_token}`;
   const refresh = await fetch(uri);
 
-  logger(
-    undefined,
-    'utils/auth.server',
-    { status: refresh?.status },
-    {
-      path: uri,
-      method: 'GET',
-    }
-  );
-
-  return refresh;
+  return await returnHandler<Authentication>(refresh, FROM);
 };
+
 export const getCurrentUser = async (
   openIdConfig: ObjectOf<any>,
   jwt: string
-): Promise<Response> => {
+): Promise<undefined | CurrentUser> => {
   const uri = openIdConfig.userinfo_endpoint;
   const currentUser = await fetch(uri, {
     headers: {
@@ -140,17 +122,8 @@ export const getCurrentUser = async (
       Authorization: `Bearer ${jwt}`,
     },
   });
-  logger(
-    undefined,
-    'utils/auth.server',
-    { status: currentUser?.status },
-    {
-      path: uri,
-      method: 'GET',
-    }
-  );
 
-  return currentUser;
+  return await returnHandler<CurrentUser>(currentUser, FROM);
 };
 
 export const handleResponse = async (
@@ -158,7 +131,7 @@ export const handleResponse = async (
 ): Promise<TypedResponse<any>> =>
   json(data.callbackResult, {
     headers: {
-      'Set-Cookie': data.commitSession,
+      'Set-Cookie': data.sessionHandler,
     },
   });
 
@@ -167,10 +140,32 @@ export const withSession = async (
   callback: (session: Session) => any
 ): Promise<SessionWrapper> => {
   const session = await getSession(request.headers.get('Cookie'));
-  const c = await callback(session);
   const commitSession = await sessionStorage.commitSession(session);
+  try {
+    const c = await callback(session);
 
-  return { commitSession, callbackResult: c };
+    return { sessionHandler: commitSession, callbackResult: c };
+  } catch (e) {
+    if (e instanceof RefreshingTokenError) {
+      const destroySession = await sessionStorage.destroySession(session);
+
+      return { sessionHandler: destroySession, callbackResult: {} };
+    }
+
+    return { sessionHandler: commitSession, callbackResult: {} };
+  }
 };
 
 export const { getSession, destroySession, commitSession } = sessionStorage;
+
+export class UnauthenticatedError extends Error {
+  constructor() {
+    super('Unauthenticated');
+  }
+}
+
+export class RefreshingTokenError extends Error {
+  constructor() {
+    super('Error while refreshing access token');
+  }
+}

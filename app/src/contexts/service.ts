@@ -1,9 +1,9 @@
 import { createContext } from 'react';
 
-import { IApiClient } from '~/src/utils/api';
+import { ApiClient, CurrentUser } from '~/src/utils/api';
 
 export type ServiceContext = {
-  api: IApiClient;
-  currentUser: any;
+  api: ApiClient;
+  currentUser: CurrentUser;
 };
 export const ServiceContext = createContext({} as ServiceContext);

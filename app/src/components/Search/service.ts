@@ -14,7 +14,7 @@ import {
   TransactionsSuggestions,
 } from '~/src/types/search';
 import { API_SEARCH } from '~/src/utils/api';
-import { IApiClient } from '~/src/utils/api.server';
+import { ApiClient } from '~/src/utils/api.server';
 
 export const getSuggestions = async (
   target: SearchTargets,
