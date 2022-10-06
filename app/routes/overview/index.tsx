@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
 import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
-import type { LoaderFunction, MetaFunction } from '@remix-run/node';
+import type {LoaderFunction, MetaFunction, Session} from '@remix-run/node';
 import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { get } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -28,11 +28,12 @@ import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import { Cursor } from '~/src/types/generic';
-import { Account } from '~/src/types/ledger';
+import {Account, LedgerInfo} from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+import {SearchTargets} from "~/src/types/search";
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -68,35 +69,35 @@ const getData = async (ledgersList: string[], api: ApiClient) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  async function handleData() {
-    const api = await createApiClient(request);
-    // const payments = await api.postResource<Cursor<Payment>>(
-    //   API_SEARCH,
-    //   {
-    //     target: SearchTargets.PAYMENT,
-    //     size: 1,
-    //   },
-    //   'cursor'
-    // );
-    //
-    // const accounts = api.postResource<Cursor<Account>>(
-    //   API_SEARCH,
-    //   {
-    //     target: SearchTargets.ACCOUNT,
-    //     size: 1,
-    //   },
-    //   'cursor'
-    // );
-    //
-    // const ledgersList = await api.getResource<LedgerInfo>(
-    //   `${API_LEDGER}/_info`,
-    //   'data.config.storage.ledgers'
-    // );
+  async function handleData(session: Session) {
+    const api = await createApiClient(session);
+    const payments = await api.postResource<Cursor<Payment>>(
+      "/search",
+      {
+        target: SearchTargets.PAYMENT,
+        size: 1,
+      },
+      'cursor'
+    );
+
+    const accounts = await api.postResource<Cursor<Account>>(
+      "/search",
+      {
+        target: SearchTargets.ACCOUNT,
+        size: 1,
+      },
+      'cursor'
+    );
+
+    const ledgersList = await api.getResource<LedgerInfo>(
+      `/ledger/_info`,
+      'data.config.storage.ledgers'
+    );
 
     return {
-      accounts: [],
-      payments: [],
-      ledgers: [],
+      accounts: accounts,
+      payments: payments,
+      ledgers: ledgersList,
     };
   }
 

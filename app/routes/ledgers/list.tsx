@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect } from 'react';
 
-import type { MetaFunction } from '@remix-run/node';
+import type {MetaFunction, Session} from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
@@ -19,9 +19,9 @@ export const meta: MetaFunction = () => ({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  async function handleData() {
+  async function handleData(session: Session) {
     const ledgers = await (
-      await createApiClient(request)
+      await createApiClient(session)
     ).getResource<LedgerInfo>(`${API_LEDGER}/_info`, 'data');
     if (ledgers) {
       return ledgers?.config.storage.ledgers;

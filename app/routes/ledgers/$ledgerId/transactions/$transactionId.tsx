@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Box, Typography } from '@mui/material';
-import { MetaFunction } from '@remix-run/node';
+import {MetaFunction, Session} from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { omit } from 'lodash';
@@ -64,12 +64,12 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-  async function handleData() {
+  async function handleData(session: Session) {
     invariant(params.ledgerId, 'Expected params.ledgerId');
     invariant(params.transactionId, 'Expected params.transactionId');
 
     const transaction = await (
-      await createApiClient(request)
+      await createApiClient(session)
     ).getResource<Transaction>(
       `${API_LEDGER}/${params.ledgerId}/${LedgerResources.TRANSACTIONS}/${params.transactionId}`,
       'data'

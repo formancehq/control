@@ -1,54 +1,51 @@
 import * as React from 'react';
-import { ReactElement } from 'react';
+import {ReactElement} from 'react';
 
-import { withEmotionCache } from '@emotion/react';
-import { Home } from '@mui/icons-material';
+import {withEmotionCache} from '@emotion/react';
+import {Home} from '@mui/icons-material';
 import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  Typography,
-  unstable_useEnhancedEffect as useEnhancedEffect,
+    Backdrop,
+    Box,
+    CircularProgress,
+    Typography,
+    unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
 import {
-  Links,
-  Meta,
-  NavigateFunction,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  useCatch,
-  useLoaderData,
+    Links,
+    Meta,
+    NavigateFunction,
+    Outlet,
+    Scripts,
+    ScrollRestoration,
+    useCatch,
+    useLoaderData,
 } from '@remix-run/react';
-import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
-import { camelCase, get } from 'lodash';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { redirect } from 'remix';
+import {LinksFunction, LoaderFunction} from '@remix-run/server-runtime';
+import {camelCase, get} from 'lodash';
+import {useTranslation} from 'react-i18next';
+import {useNavigate} from 'react-router-dom';
+import {redirect} from 'remix';
 
 import styles from './root.css';
-import { useOpen } from './src/hooks/useOpen';
+import {useOpen} from './src/hooks/useOpen';
 
-import { LoadingButton, theme } from '@numaryhq/storybook';
+import {LoadingButton, theme} from '@numaryhq/storybook';
 
 import Layout from '~/src/components/Layout';
-import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import {getRoute, OVERVIEW_ROUTE} from '~/src/components/Navbar/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
-import { ServiceContext } from '~/src/contexts/service';
-import { LedgerInfo } from '~/src/types/ledger';
-import { logger } from '~/src/utils/api';
-import { ReactApiClient } from '~/src/utils/api.client';
-import { createApiClient, errorsMap } from '~/src/utils/api.server';
+import {ServiceContext} from '~/src/contexts/service';
+import {LedgerInfo} from '~/src/types/ledger';
+import {logger} from '~/src/utils/api';
+import {ReactApiClient} from '~/src/utils/api.client';
+import {createApiClient, errorsMap} from '~/src/utils/api.server';
 import {
-  AUTH_CALLBACK_ROUTE,
-  commitSession,
-  COOKIE_NAME,
-  decrypt,
-  getJwtPayload,
-  getOpenIdConfig,
-  getSession,
-  handleResponse,
-  withSession,
+    AUTH_CALLBACK_ROUTE,
+    COOKIE_NAME,
+    decrypt,
+    getJwtPayload,
+    getOpenIdConfig,
+    getSession, SessionHolder,
 } from '~/src/utils/auth.server';
 
 interface DocumentProps {
@@ -62,48 +59,29 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get('Cookie'));
   const cookie = session.get(COOKIE_NAME);
   const url = new URL(request.url);
-  const code = url.searchParams.get('code');
   const openIdConfig = await getOpenIdConfig();
-  if (openIdConfig) {
-    if (!cookie) {
-      if (!code) {
-        // redirect to form
-        return redirect(
+
+  if (!cookie) {
+      // redirect to form
+      return redirect(
           `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&response_type=code&scope=openid email offline_access`,
-          {
-            headers: {
-              'Set-Cookie': await commitSession(session),
-            },
-          }
-        );
-      }
-    } else {
-      return handleResponse(
-        await withSession(request, async () => {
-          const decryptedCookie = decrypt(cookie);
-          const api = await createApiClient(request, '');
-          const currentUser = await api.getResource<LedgerInfo>(
-            openIdConfig.userinfo_endpoint
-          );
-          if (decryptedCookie && currentUser) {
-            const payload = getJwtPayload(decryptedCookie);
-
-            return {
-              currentUser: {
-                ...currentUser,
-                scp: payload ? payload.scp : [],
-                jwt: decryptedCookie.access_token,
-              },
-            };
-          }
-
-          return {
-            currentUser: {},
-          };
-        })
       );
+    } else {
+      const sessionHolder = decrypt<SessionHolder>(cookie);
+      const api = await createApiClient(session, '');
+      const currentUser = await api.getResource<LedgerInfo>( // TODO: LedgerInfo on Userinfo ?
+          openIdConfig.userinfo_endpoint
+      );
+      const payload = getJwtPayload(sessionHolder.authentication);
+
+      return {
+          currentUser: {
+              ...currentUser,
+              scp: payload ? payload.scp : [],
+              jwt: sessionHolder.authentication.access_token,
+          },
+      };
     }
-  }
 };
 
 const Document = withEmotionCache(

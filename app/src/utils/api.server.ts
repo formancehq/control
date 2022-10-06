@@ -9,19 +9,23 @@ import {
   decrypt,
   encrypt,
   getOpenIdConfig,
-  getSession,
+  getSession, parseSessionHolder,
   RefreshingTokenError,
-  refreshToken,
+  refreshToken, SessionHolder,
   sessionStorage,
   UnauthenticatedError,
 } from '~/src/utils/auth.server';
 
+export interface PendingRefresh {
+  date: Date;
+  promise: Promise<Authentication>;
+}
+
 // @ts-ignore
-if (!global.callCount) {
+if (!global.pendingRefresh) {
+  console.info('Init pending refresh map')
   // @ts-ignore
-  global.pendingRefresh = new Map();
-  // @ts-ignore
-  global.callCount = 0;
+  global.pendingRefresh = new Map<string, PendingRefresh>();
 }
 
 export const errorsMap = {
@@ -37,11 +41,9 @@ export const errorsMap = {
 export type Headers = { Authorization?: string; 'Content-Type': string };
 
 export const createApiClient = async (
-  request: Request,
+  session: Session,
   url?: string
 ): Promise<ApiClient> => {
-  const session = await getSession(request.headers.get('Cookie'));
-
   return new DefaultApiClient(session, url);
 };
 
@@ -88,97 +90,55 @@ export class DefaultApiClient implements ApiClient {
     params?: string,
     body?: any,
     path?: string
-  ): Promise<T | undefined> {
-    let data: T | undefined = undefined;
+  ): Promise<T> {
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
-    let auth = decrypt(this.session.get(COOKIE_NAME)) as Authentication;
+    let sessionHolder: SessionHolder = parseSessionHolder(this.session);
+    // @ts-ignore
+    const allPendingRefresh: Map<string, PendingRefresh> = global.pendingRefresh;
 
-    const tryRequest = async (): Promise<Response> => {
-      // @ts-ignore
-      global.callCount++;
-      this.headers = {
-        ...this.headers,
-        Authorization: `Bearer ${auth.access_token}`,
-      };
+    // TODO: Override expiration to 10 seconds
+    if(sessionHolder.date.getTime()/1000 + /*sessionHolder.authentication.expires_in*/ 20 - 10 < new Date().getTime()/1000) {
+      const oldRefreshToken = sessionHolder.authentication.refresh_token;
+      let pendingRefresh = allPendingRefresh.get(sessionHolder.authentication.refresh_token);
 
-      return await fetch(uri, {
-        method: body ? 'POST' : 'GET',
-        headers: this.headers,
-        body: body
-          ? body instanceof FormData
-            ? body
-            : JSON.stringify(body)
-          : undefined,
-      });
-    };
-
-    let httpResponse: Response;
-    httpResponse = await tryRequest();
-    switch (httpResponse.status) {
-      case 200: {
-        const jsonResult = await httpResponse.json();
-        data = path ? get(jsonResult, path) : jsonResult;
-        break;
+      let pendingPromise: Promise<Authentication>
+      if (!pendingRefresh) {
+        allPendingRefresh.set(sessionHolder.authentication.refresh_token, {
+          date: new Date(),
+          promise: new Promise<Authentication>(async (resolve, reject) => {
+            refreshToken(await getOpenIdConfig(), sessionHolder.authentication.refresh_token)
+                .then(resolve)
+                .catch(reject)
+                .finally(() => {
+                  console.info('Delete entry for token ' + oldRefreshToken)
+                  allPendingRefresh.delete(oldRefreshToken);
+                })
+          }),
+        });
+        pendingPromise = allPendingRefresh.get(sessionHolder.authentication.refresh_token)!.promise;
+      } else {
+        // In case of parallel requests
+        pendingPromise = pendingRefresh.promise
       }
-      case 204:
-        return {} as any;
-      case 401: {
-        const oldRefreshToken = auth.refresh_token;
-        // @ts-ignore
-        let pendingPromise = global.pendingRefresh.get(auth.refresh_token);
-        if (!pendingPromise) {
-          const openIdConfig = await getOpenIdConfig();
-          if (openIdConfig) {
-            pendingPromise = refreshToken(openIdConfig, auth);
-            // @ts-ignore
-            global.pendingRefresh.set(auth.refresh_token, pendingPromise);
-          }
-        } else {
-          // Do not remove console.info - debug purpose
-          // @ts-ignore
-          console.info('Pending promise retrieved', global.pendingRefresh);
-        }
-        const refreshResponse = await pendingPromise;
-        // @ts-ignore
-        global.pendingRefresh.delete(oldRefreshToken);
-        if (!refreshResponse) {
-          throw new RefreshingTokenError();
-        } else {
-          auth = refreshResponse;
-          console.info('Refresh', {
-            success: true,
-            new: auth.refresh_token,
-            old: oldRefreshToken,
-            jwt: auth.access_token,
-          });
-          this.session.set(COOKIE_NAME, encrypt(auth));
-        }
-
-        httpResponse = await tryRequest();
-        switch (httpResponse.status) {
-          case 204:
-            return {} as any;
-          case 401:
-            logger(httpResponse);
-            throw new UnauthenticatedError();
-          case 400:
-            logger(httpResponse);
-            throw new UnauthenticatedError();
-          default: {
-            const jsonResult = await httpResponse.json();
-            data = path ? get(jsonResult, path) : jsonResult;
-            break;
-          }
-        }
-        break;
-      }
-      default:
-        data = {} as any;
-        break;
+      this.session.set(COOKIE_NAME, encrypt({
+        date: new Date(),
+        authentication: await pendingPromise
+      } as SessionHolder))
     }
 
-    await sessionStorage.commitSession(this.session);
-
-    return data;
+    return fetch(uri, {
+      method: body ? 'POST' : 'GET',
+      headers: {
+        ...this.headers,
+        Authorization: `Bearer ${sessionHolder.authentication.access_token}`,
+      },
+      body: body
+          ? body instanceof FormData
+              ? body
+              : JSON.stringify(body)
+          : undefined,
+    })
+        .then(response => response.json())
+        .then(response => path ? get(response, path) : response);
   }
 }

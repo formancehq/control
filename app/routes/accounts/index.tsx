@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type { MetaFunction } from '@remix-run/node';
+import type {MetaFunction, Session} from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 
@@ -27,10 +27,10 @@ export const meta: MetaFunction = () => ({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  async function handleData() {
+  async function handleData(session: Session) {
     const url = new URL(request.url);
     const accounts = await (
-      await createApiClient(request)
+      await createApiClient(session)
     ).postResource<Cursor<Account>>(
       API_SEARCH,
       {

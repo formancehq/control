@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Box, Grid, Typography, useTheme } from '@mui/material';
-import type { MetaFunction } from '@remix-run/node';
+import type {MetaFunction, Session} from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
@@ -63,11 +63,11 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-  async function handleData() {
+  async function handleData(session: Session) {
     invariant(params.ledgerId, 'Expected params.ledgerId');
     invariant(params.accountId, 'Expected params.accountId');
     const api = await createApiClient(
-      request,
+      session,
       process.env.API_URL_BACK as string
     );
     const account = await api.getResource<Account>(

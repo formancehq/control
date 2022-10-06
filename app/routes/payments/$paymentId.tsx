@@ -4,7 +4,7 @@ import * as React from 'react';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import StopIcon from '@mui/icons-material/Stop';
 import { Box, Divider, Grid, Tooltip, Typography } from '@mui/material';
-import type { MetaFunction } from '@remix-run/node';
+import type {MetaFunction, Session} from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
@@ -59,10 +59,10 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-  async function handleData() {
+  async function handleData(session: Session) {
     invariant(params.paymentId, 'Expected params.paymentId');
     const getPayment = await (
-      await createApiClient(request)
+      await createApiClient(session)
     ).getResource<PaymentDetail>(
       `${API_PAYMENT}/payments/${params.paymentId}`,
       'data'

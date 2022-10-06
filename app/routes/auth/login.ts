@@ -3,12 +3,12 @@ import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
 
 import { logger } from '~/src/utils/api';
 import {
-  authenticate,
+  exchangeToken,
   commitSession,
   COOKIE_NAME,
   encrypt,
   getOpenIdConfig,
-  getSession,
+  getSession, SessionHolder,
 } from '~/src/utils/auth.server';
 
 export const loader: LoaderFunction = async ({
@@ -18,26 +18,21 @@ export const loader: LoaderFunction = async ({
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   const openIdConfig = await getOpenIdConfig();
-  if (code && openIdConfig) {
+  // TODO: Extract state parameter and redirect to the good url
+  if (code) {
     // get through authentication callback
-    const authentication = await authenticate(openIdConfig, code, url);
-    // handle cookie (encrypt)
-    if (authentication && authentication.error) {
-      logger(undefined, 'routes/auth/login', {
-        error: authentication.error,
-        description: authentication.error_description,
-      });
-    }
-    if (authentication && authentication.access_token) {
-      const encryptedCookie = encrypt(authentication);
-      session.set(COOKIE_NAME, encryptedCookie);
+    const authentication = await exchangeToken(openIdConfig, code, url);
+    const encryptedCookie = encrypt({
+      authentication,
+      date: new Date(),
+    } as SessionHolder);
+    session.set(COOKIE_NAME, encryptedCookie);
 
-      return redirect('/', {
-        headers: {
-          'Set-Cookie': await commitSession(session),
-        },
-      });
-    }
+    return redirect('/', {
+      headers: {
+        'Set-Cookie': await commitSession(session),
+      },
+    });
   }
 
   return json(
