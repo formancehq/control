@@ -201,6 +201,20 @@ export default function App() {
     stopLoading();
   });
 
+  // @ts-ignore
+  if(!global.timer) {
+    console.info('Global time not defined, installing it')
+    const refreshToken = (): Promise<any> => {
+      console.info('Trigger refresh authentication')
+      return fetch('/auth/refresh')
+          .then(response => response.json())
+          .then(({interval}: {interval: number}) => setTimeout(refreshToken, interval))
+          .catch(reason => console.info('Error refreshing token: ', reason)) // TODO: Force logout
+    }
+    // @ts-ignore
+    global.timer = refreshToken()
+  }
+
   return (
     <Document>
       {loading ? (
