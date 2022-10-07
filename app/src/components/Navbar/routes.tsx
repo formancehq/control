@@ -1,3 +1,7 @@
+import React from 'react';
+
+import { AccountBalance, CreditCard, Home } from '@mui/icons-material';
+
 export const ROOT_ROUTE = '/';
 export const OVERVIEW_ROUTE = '/overview';
 export const ACCOUNT_ROUTE = '/ledgers/:slug/accounts/:id';
@@ -30,30 +34,35 @@ export type RouterConfig = {
   id: any;
   label: string;
   path: string | string[];
+  icon?: React.ReactNode;
 };
 
 export const overview: RouterConfig = {
   id: 'overview',
   label: 'navbar.title.overview',
   path: [getRoute(OVERVIEW_ROUTE), ROOT_ROUTE],
+  icon: <Home />,
 };
 
 export const payments: RouterConfig = {
   id: 'payments',
   label: 'navbar.title.payments',
   path: getRoute(PAYMENTS_ROUTE),
+  icon: <CreditCard />,
 };
 
 export const accounts: RouterConfig = {
   id: 'accounts',
   label: 'navbar.title.accounts',
   path: getRoute(ACCOUNTS_ROUTE),
+  icon: <AccountBalance />,
 };
 
 export const transactions: RouterConfig = {
   id: 'transactions',
   label: 'navbar.title.transactions',
   path: getRoute(TRANSACTIONS_ROUTE),
+  icon: <AccountBalance />,
 };
 
 export const routerConfig: RouterConfig[] = [
