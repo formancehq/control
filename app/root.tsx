@@ -45,8 +45,10 @@ import {
   decrypt,
   getJwtPayload,
   getOpenIdConfig,
-  getSession, handleResponse,
-  SessionHolder, withSession,
+  getSession,
+  handleResponse,
+  SessionHolder,
+  withSession,
 } from '~/src/utils/auth.server';
 
 interface DocumentProps {
@@ -69,21 +71,24 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
   }
 
-  return handleResponse(await withSession(request, async session => {
-    const api = await createApiClient(session, '');
-    const currentUser = await api.getResource<LedgerInfo>( // TODO: LedgerInfo on Userinfo ?
+  return handleResponse(
+    await withSession(request, async (session) => {
+      const api = await createApiClient(session, '');
+      const currentUser = await api.getResource<LedgerInfo>( // TODO: LedgerInfo on Userinfo ?
         openIdConfig.userinfo_endpoint
-    );
-    const sessionHolder = decrypt<SessionHolder>(cookie);
-    const payload = getJwtPayload(sessionHolder.authentication);
-    return {
-      currentUser: {
-        ...currentUser,
-        scp: payload ? payload.scp : [],
-        jwt: sessionHolder.authentication.access_token,
-      },
-    };
-  }))
+      );
+      const sessionHolder = decrypt<SessionHolder>(cookie);
+      const payload = getJwtPayload(sessionHolder.authentication);
+
+      return {
+        currentUser: {
+          ...currentUser,
+          scp: payload ? payload.scp : [],
+          jwt: sessionHolder.authentication.access_token,
+        },
+      };
+    })
+  );
 };
 
 const Document = withEmotionCache(
@@ -202,17 +207,20 @@ export default function App() {
   });
 
   // @ts-ignore
-  if(!global.timer) {
-    console.info('Global time not defined, installing it')
+  if (!global.timer) {
+    console.info('Global time not defined, installing it');
     const refreshToken = (): Promise<any> => {
-      console.info('Trigger refresh authentication')
+      console.info('Trigger refresh authentication');
+
       return fetch('/auth/refresh')
-          .then(response => response.json())
-          .then(({interval}: {interval: number}) => setTimeout(refreshToken, interval))
-          .catch(reason => console.info('Error refreshing token: ', reason)) // TODO: Force logout
-    }
+        .then((response) => response.json())
+        .then(({ interval }: { interval: number }) =>
+          setTimeout(refreshToken, interval)
+        )
+        .catch((reason) => console.info('Error refreshing token: ', reason)); // TODO: Force logout
+    };
     // @ts-ignore
-    global.timer = refreshToken()
+    global.timer = refreshToken();
   }
 
   return (

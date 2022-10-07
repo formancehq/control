@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment*/
-import {Session} from '@remix-run/node';
-import {get, isUndefined} from 'lodash';
+import { Session } from '@remix-run/node';
+import { get, isUndefined } from 'lodash';
 
-import {Errors} from '~/src/types/generic';
-import {ApiClient} from '~/src/utils/api';
-import {parseSessionHolder, SessionHolder,} from '~/src/utils/auth.server';
+import { Errors } from '~/src/types/generic';
+import { ApiClient } from '~/src/utils/api';
+import { parseSessionHolder, SessionHolder } from '~/src/utils/auth.server';
 
 export const errorsMap = {
   404: Errors.NOT_FOUND,
@@ -70,21 +70,19 @@ export class DefaultApiClient implements ApiClient {
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
     const sessionHolder: SessionHolder = parseSessionHolder(this.session);
 
-    return (
-      fetch(uri, {
-        method: body ? 'POST' : 'GET',
-        headers: {
-          ...this.headers,
-          Authorization: `Bearer ${sessionHolder.authentication.access_token}`,
-        },
-        body: body
-          ? body instanceof FormData
-            ? body
-            : JSON.stringify(body)
-          : undefined,
-      })
-        .then((response) => response.json())
-        .then((response) => (path ? get(response, path) : response))
-    );
+    return fetch(uri, {
+      method: body ? 'POST' : 'GET',
+      headers: {
+        ...this.headers,
+        Authorization: `Bearer ${sessionHolder.authentication.access_token}`,
+      },
+      body: body
+        ? body instanceof FormData
+          ? body
+          : JSON.stringify(body)
+        : undefined,
+    })
+      .then((response) => response.json())
+      .then((response) => (path ? get(response, path) : response));
   }
 }
