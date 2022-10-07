@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { ActionFunction, Session } from '@remix-run/node';
+import {ActionFunction, json, Session} from '@remix-run/node';
 
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -19,10 +19,20 @@ export const action: ActionFunction = async ({ request }) => {
       case 'GET':
         ret = await apiClient.getResource(body.params, body.body);
         break;
+      default:
+        throw new Error('Method not handled');
     }
 
     return ret;
   }
 
-  return handleResponse(await withSession(request, handleData));
+  const result = await withSession(request, handleData)
+
+  throw json(result.callbackResult, {
+    headers: result.cookieValue
+        ? {
+          'Set-Cookie': result.cookieValue,
+        }
+        : {},
+  });
 };

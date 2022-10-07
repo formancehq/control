@@ -45,8 +45,8 @@ import {
   decrypt,
   getJwtPayload,
   getOpenIdConfig,
-  getSession,
-  SessionHolder,
+  getSession, handleResponse,
+  SessionHolder, withSession,
 } from '~/src/utils/auth.server';
 
 interface DocumentProps {
@@ -69,20 +69,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
   }
 
-  const sessionHolder = decrypt<SessionHolder>(cookie);
-  const api = await createApiClient(session, '');
-  const currentUser = await api.getResource<LedgerInfo>( // TODO: LedgerInfo on Userinfo ?
-    openIdConfig.userinfo_endpoint
-  );
-  const payload = getJwtPayload(sessionHolder.authentication);
-
-  return {
-    currentUser: {
-      ...currentUser,
-      scp: payload ? payload.scp : [],
-      jwt: sessionHolder.authentication.access_token,
-    },
-  };
+  return handleResponse(await withSession(request, async session => {
+    const api = await createApiClient(session, '');
+    const currentUser = await api.getResource<LedgerInfo>( // TODO: LedgerInfo on Userinfo ?
+        openIdConfig.userinfo_endpoint
+    );
+    const sessionHolder = decrypt<SessionHolder>(cookie);
+    const payload = getJwtPayload(sessionHolder.authentication);
+    return {
+      currentUser: {
+        ...currentUser,
+        scp: payload ? payload.scp : [],
+        jwt: sessionHolder.authentication.access_token,
+      },
+    };
+  }))
 };
 
 const Document = withEmotionCache(

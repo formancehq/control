@@ -122,44 +122,30 @@ export class DefaultApiClient implements ApiClient {
         if (!pendingRefresh) {
           allPendingRefresh.set(sessionHolder.authentication.refresh_token, {
             date: new Date(),
-            promise: new Promise<Authentication>(async (resolve, reject) => {
-              console.info(
-                'Refresh token',
-                sessionHolder.authentication.refresh_token
-              );
-              refreshToken(
-                await getOpenIdConfig(),
-                sessionHolder.authentication.refresh_token
-              )
+            promise: new Promise<Authentication>((resolve, reject) => {
+              console.info('Refresh token', sessionHolder.authentication.refresh_token, uri);
+              getOpenIdConfig()
+                .then(config => refreshToken(config, sessionHolder.authentication.refresh_token))
                 .then((authentication) => {
-                  this.session.set(
-                    COOKIE_NAME,
-                    encrypt({
-                      date: new Date(),
-                      authentication,
-                    } as SessionHolder)
-                  );
-                  console.info(
-                    'Update session with new refresh',
-                    authentication.refresh_token
-                  );
+                  sessionHolder.date = new Date();
+                  sessionHolder.authentication = authentication;
+                  this.session.set(COOKIE_NAME, encrypt(sessionHolder));
+                  console.info('Update session with new refresh', authentication.refresh_token);
                   resolve(authentication);
                 })
-                .catch(reject)
-                .finally(() => {
-                  setTimeout(() => {
-                    runWithMutex(() => {
-                      allPendingRefresh.delete(oldRefreshToken);
-                    });
-                  }, 60000); // Parallel requests
+                .catch(reject);
+            }).finally(() => {
+              setTimeout(() => {
+                runWithMutex(() => {
+                  console.info('Delete ', oldRefreshToken, ' from cache');
+                  allPendingRefresh.delete(oldRefreshToken);
                 });
+              }, 60000); // Parallel requests
             }),
           });
-          pendingPromise = allPendingRefresh.get(
-            sessionHolder.authentication.refresh_token
-          )!.promise;
+          pendingPromise = allPendingRefresh.get(oldRefreshToken)!.promise;
         } else {
-          console.info('Reuse pending refresh token');
+          console.info('Reuse pending refresh token', oldRefreshToken, uri);
           // In case of parallel requests
           pendingPromise = pendingRefresh.promise;
         }

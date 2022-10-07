@@ -94,12 +94,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       'data.config.storage.ledgers'
     );
 
-    console.info({
-      accounts: accounts,
-      payments: payments,
-      ledgers: ledgersList,
-    });
-
     return {
       accounts: accounts,
       payments: payments,
@@ -107,7 +101,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     };
   }
 
-  return handleResponse(await withSession(request, handleData));
+  return await handleResponse(await withSession(request, handleData));
 };
 
 export default function Index() {
