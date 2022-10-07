@@ -1,5 +1,4 @@
-import React from 'react';
-import { FunctionComponent } from 'react';
+import React, { FunctionComponent } from 'react';
 
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +29,7 @@ const Navbar: FunctionComponent = () => {
   return (
     <FormanceNavbar
       onLogoClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
+      logo={<img src="/images/logo.svg" alt="logo" />}
       routes={formattedRouterconfig}
       location={location}
       linkWrapper={
