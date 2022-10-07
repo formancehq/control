@@ -25,6 +25,7 @@
     "@numaryhq/storybook": "^0.6.55",
     "@remix-run/react": "latest",
     "@remix-run/serve": "latest",
+    "async-mutex": "^0.4.0",
     "axios": "^0.27.2",
     "dayjs": "^1.11.5",
     "graphviz-react": "^1.2.1",

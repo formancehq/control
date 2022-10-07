@@ -1,5 +1,5 @@
-import { ObjectOf } from '~/src/types/generic';
-import { LedgerResources } from '~/src/types/ledger';
+import { ObjectOf } from "~/src/types/generic";
+import { LedgerResources } from "~/src/types/ledger";
 
 export type MetadataProps = {
   metadata: ObjectOf<any>;

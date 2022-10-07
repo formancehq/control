@@ -1,3 +1,3 @@
-import PostingsGraph from './PostingsGraph';
+import PostingsGraph from "./PostingsGraph";
 
 export default PostingsGraph;

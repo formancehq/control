@@ -1,8 +1,8 @@
-import { NavigateFunction } from '@remix-run/react';
+import { NavigateFunction } from "@remix-run/react";
 
-import i18n from './../../translations';
+import i18n from "./../../translations";
 
-import { BreadcrumbsLink } from '@numaryhq/storybook';
+import { BreadcrumbsLink } from "@numaryhq/storybook";
 
 import {
   ACCOUNTS_ROUTE,
@@ -11,8 +11,8 @@ import {
   getRoute,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
-} from '~/src/components/Navbar/routes';
-import { ObjectOf } from '~/src/types/generic';
+} from "~/src/components/Navbar/routes";
+import { ObjectOf } from "~/src/types/generic";
 
 export type State = {
   provider: string;
@@ -25,11 +25,11 @@ const buildPaymentBreadcrumbs = (
   urlSearchParams: URLSearchParams
 ): BreadcrumbsLink[] => {
   const bread = {
-    label: i18n.t('common.breadcrumbs.targets.payments'),
+    label: i18n.t("common.breadcrumbs.targets.payments"),
     onClick: () => navigate(getRoute(PAYMENTS_ROUTE)),
   };
-  const provider = urlSearchParams.get('provider');
-  const reference = urlSearchParams.get('reference');
+  const provider = urlSearchParams.get("provider");
+  const reference = urlSearchParams.get("reference");
 
   if (provider && reference) {
     return [
@@ -77,15 +77,15 @@ export const breadcrumbsFactory = (
   navigate: NavigateFunction,
   urlSearchParams: URLSearchParams
 ): BreadcrumbsLink[] | undefined => {
-  const accountsRoute = match('/ledgers/:ledgerId/accounts/:accountId');
+  const accountsRoute = match("/ledgers/:ledgerId/accounts/:accountId");
   const transactionsRoute = match(
-    '/ledgers/:ledgerId/transactions/:transactionId'
+    "/ledgers/:ledgerId/transactions/:transactionId"
   );
-  const paymentsRoute = match('/payments/:paymentId');
+  const paymentsRoute = match("/payments/:paymentId");
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
-      'accounts',
+      "accounts",
       params.accountId,
       params.ledgerId,
       {
@@ -101,7 +101,7 @@ export const breadcrumbsFactory = (
 
   if (transactionsRoute) {
     return buildLedgerBreadcrumbs(
-      'transactions',
+      "transactions",
       params.transactionId,
       params.ledgerId,
       {

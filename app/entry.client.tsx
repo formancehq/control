@@ -1,19 +1,19 @@
-import * as React from 'react';
-import { useState } from 'react';
+import * as React from "react";
+import { useState } from "react";
 
-import { CacheProvider } from '@emotion/react';
-import { GlobalStyles } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
-import { RemixBrowser } from '@remix-run/react';
-import { hydrateRoot } from 'react-dom/client';
-import { I18nextProvider } from 'react-i18next';
+import { CacheProvider } from "@emotion/react";
+import { GlobalStyles } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { RemixBrowser } from "@remix-run/react";
+import { hydrateRoot } from "react-dom/client";
+import { I18nextProvider } from "react-i18next";
 
-import i18n from './src/translations';
+import i18n from "./src/translations";
 
-import { theme } from '@numaryhq/storybook';
+import { theme } from "@numaryhq/storybook";
 
-import ClientStyleContext from '~/src/contexts/clientStyleContext';
-import createEmotionCache from '~/src/utils/createEmotionCache';
+import ClientStyleContext from "~/src/contexts/clientStyleContext";
+import createEmotionCache from "~/src/utils/createEmotionCache";
 
 interface ClientCacheProviderProps {
   children: React.ReactNode;
@@ -43,7 +43,7 @@ hydrateRoot(
         <GlobalStyles
           styles={{
             body: {
-              backgroundColor: '#f5f5f5',
+              backgroundColor: "#f5f5f5",
               margin: 0,
               padding: 0,
             },

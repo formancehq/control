@@ -1,22 +1,23 @@
-import { json, redirect } from '@remix-run/node';
-import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
+import { json, redirect } from "@remix-run/node";
+import { LoaderFunction, TypedResponse } from "@remix-run/server-runtime";
 
-import { logger } from '~/src/utils/api';
+import { logger } from "~/src/utils/api";
 import {
   exchangeToken,
   commitSession,
   COOKIE_NAME,
   encrypt,
   getOpenIdConfig,
-  getSession, SessionHolder,
-} from '~/src/utils/auth.server';
+  getSession,
+  SessionHolder,
+} from "~/src/utils/auth.server";
 
 export const loader: LoaderFunction = async ({
   request,
 }): Promise<TypedResponse> => {
-  const session = await getSession(request.headers.get('Cookie'));
+  const session = await getSession(request.headers.get("Cookie"));
   const url = new URL(request.url);
-  const code = url.searchParams.get('code');
+  const code = url.searchParams.get("code");
   const openIdConfig = await getOpenIdConfig();
   // TODO: Extract state parameter and redirect to the good url
   if (code) {
@@ -28,9 +29,9 @@ export const loader: LoaderFunction = async ({
     } as SessionHolder);
     session.set(COOKIE_NAME, encryptedCookie);
 
-    return redirect('/', {
+    return redirect("/", {
       headers: {
-        'Set-Cookie': await commitSession(session),
+        "Set-Cookie": await commitSession(session),
       },
     });
   }

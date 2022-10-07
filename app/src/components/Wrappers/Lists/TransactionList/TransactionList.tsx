@@ -1,12 +1,12 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent } from "react";
 
-import { ArrowRight } from '@mui/icons-material';
-import { Box } from '@mui/material';
-import { flatten, get, head, omit } from 'lodash';
-import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowRight } from "@mui/icons-material";
+import { Box } from "@mui/material";
+import { flatten, get, head, omit } from "lodash";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { TransactionListProps } from './types';
+import { TransactionListProps } from "./types";
 
 import {
   Amount,
@@ -16,28 +16,28 @@ import {
   Row,
   SourceDestination,
   Txid,
-} from '@numaryhq/storybook';
+} from "@numaryhq/storybook";
 
 import {
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
   getRoute,
   TRANSACTIONS_ROUTE,
-} from '~/src/components/Navbar/routes';
-import Table from '~/src/components/Wrappers/Table';
-import { Cursor } from '~/src/types/generic';
-import { Transaction, TransactionHybrid } from '~/src/types/ledger';
-import { SearchTargets } from '~/src/types/search';
+} from "~/src/components/Navbar/routes";
+import Table from "~/src/components/Wrappers/Table";
+import { Cursor } from "~/src/types/generic";
+import { Transaction, TransactionHybrid } from "~/src/types/ledger";
+import { SearchTargets } from "~/src/types/search";
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
     ...cursor,
     data: flatten(
-      get(cursor, 'data', []).map((transaction: Transaction) =>
-        get(transaction, 'postings', []).map((posting, index) => ({
+      get(cursor, "data", []).map((transaction: Transaction) =>
+        get(transaction, "postings", []).map((posting, index) => ({
           ...posting,
           postingId: index,
-          ...omit(transaction, 'postings'),
+          ...omit(transaction, "postings"),
         }))
       )
     ),
@@ -94,29 +94,29 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
         action
         columns={[
           {
-            key: 'txid',
-            label: t('pages.transactions.table.columnLabel.txid'),
+            key: "txid",
+            label: t("pages.transactions.table.columnLabel.txid"),
           },
           {
-            key: 'value',
-            label: t('pages.transactions.table.columnLabel.value'),
+            key: "value",
+            label: t("pages.transactions.table.columnLabel.value"),
           },
           {
-            key: 'source',
-            label: t('pages.transactions.table.columnLabel.source'),
+            key: "source",
+            label: t("pages.transactions.table.columnLabel.source"),
           },
           {
-            key: 'destination',
-            label: t('pages.transactions.table.columnLabel.destination'),
+            key: "destination",
+            label: t("pages.transactions.table.columnLabel.destination"),
           },
 
           {
-            key: 'ledger',
-            label: t('pages.transactions.table.columnLabel.ledger'),
+            key: "ledger",
+            label: t("pages.transactions.table.columnLabel.ledger"),
           },
           {
-            key: 'date',
-            label: t('pages.transactions.table.columnLabel.date'),
+            key: "date",
+            label: t("pages.transactions.table.columnLabel.date"),
           },
         ]}
         renderItem={(
@@ -191,7 +191,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           <LoadingButton
             id="show-more"
             variant="stroke"
-            content={t('common.showMore')}
+            content={t("common.showMore")}
             onClick={handleShowMore}
           />
         </Box>

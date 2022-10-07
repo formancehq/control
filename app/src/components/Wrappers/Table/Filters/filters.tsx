@@ -1,18 +1,18 @@
-import * as React from 'react';
+import * as React from "react";
 
-import Checkbox from './Checkbox';
+import Checkbox from "./Checkbox";
 
-import { AutocompleteOption } from '@numaryhq/storybook';
+import { AutocompleteOption } from "@numaryhq/storybook";
 
 export enum Filters {
-  TERMS = 'terms',
-  LEDGERS = 'ledgers',
+  TERMS = "terms",
+  LEDGERS = "ledgers",
 }
 
 // TODO improve
 export const getFieldValue = (field: string): string => {
-  const isTerms = field.split('=').length > 1;
-  const formatted = field.replace(/=/g, ': ');
+  const isTerms = field.split("=").length > 1;
+  const formatted = field.replace(/=/g, ": ");
 
   return isTerms ? formatted : `ledger: ${field}`;
 };
@@ -22,7 +22,7 @@ export const buildOptions = (
   field?: string
 ): AutocompleteOption[] =>
   arr.map((item) => ({
-    id: `${field ? `${field}=` : ''}${item}`,
+    id: `${field ? `${field}=` : ""}${item}`,
     label: item,
   }));
 

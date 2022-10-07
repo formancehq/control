@@ -1,10 +1,10 @@
-import { isEmpty } from 'lodash';
+import { isEmpty } from "lodash";
 
-import i18n from './../../translations';
+import i18n from "./../../translations";
 
-import { Cursor } from '~/src/types/generic';
-import { Account, Transaction } from '~/src/types/ledger';
-import { Payment } from '~/src/types/payment';
+import { Cursor } from "~/src/types/generic";
+import { Account, Transaction } from "~/src/types/ledger";
+import { Payment } from "~/src/types/payment";
 import {
   AccountSuggestions,
   PaymentSuggestions,
@@ -12,9 +12,9 @@ import {
   SearchTargets,
   Suggestion,
   TransactionsSuggestions,
-} from '~/src/types/search';
-import { API_SEARCH } from '~/src/utils/api';
-import { ApiClient } from '~/src/utils/api.server';
+} from "~/src/types/search";
+import { API_SEARCH } from "~/src/utils/api";
+import { ApiClient } from "~/src/utils/api.server";
 
 export const getSuggestions = async (
   target: SearchTargets,
@@ -30,7 +30,7 @@ export const getSuggestions = async (
       terms: [value],
       size: 3,
     },
-    'cursor'
+    "cursor"
   );
 
   if (isEmpty(results)) {
@@ -52,7 +52,7 @@ const normalizeAccounts = (
   accounts: Account[],
   total: number
 ): Suggestion<{ ledger: string }> => ({
-  ...normalize(accounts, total, 'common.search.targets.account'),
+  ...normalize(accounts, total, "common.search.targets.account"),
   items: accounts.map((account) => ({
     id: account.address,
     label: account.address,
@@ -64,7 +64,7 @@ const normalizePayments = (
   payments: Payment[],
   total: number
 ): PaymentSuggestions => ({
-  ...normalize(payments, total, 'common.search.targets.payment'),
+  ...normalize(payments, total, "common.search.targets.payment"),
   items: payments.map((payment: Payment) => ({
     id: payment.id,
     label: payment.reference,
@@ -79,7 +79,7 @@ const normalizeTransactions = (
   transactions: Transaction[],
   total: number
 ): TransactionsSuggestions => ({
-  ...normalize(transactions, total, 'common.search.targets.transaction'),
+  ...normalize(transactions, total, "common.search.targets.transaction"),
   items: transactions.map((transaction) => ({
     id: `${transaction.txid}`,
     label: `${transaction.txid}`,
@@ -101,6 +101,6 @@ export function suggestionsFactory(
     case SearchTargets.PAYMENT:
       return normalizePayments(suggestions as Payment[], total);
     default:
-      return normalize(suggestions as any, total, '');
+      return normalize(suggestions as any, total, "");
   }
 }

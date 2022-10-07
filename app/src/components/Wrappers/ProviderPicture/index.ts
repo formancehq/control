@@ -1,3 +1,3 @@
-import ProviderPicture from './ProviderPicture';
+import ProviderPicture from "./ProviderPicture";
 
 export default ProviderPicture;

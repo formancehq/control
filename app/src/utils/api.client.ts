@@ -1,12 +1,12 @@
-import { ApiClient } from '~/src/utils/api';
+import { ApiClient } from "~/src/utils/api";
 
 export class ReactApiClient implements ApiClient {
   getResource<T>(
     params: string,
     path: string | undefined
   ): Promise<T | undefined> {
-    return fetch('/proxify', {
-      method: 'POST',
+    return fetch("/proxify", {
+      method: "POST",
       body: JSON.stringify({
         params,
         path,
@@ -19,8 +19,8 @@ export class ReactApiClient implements ApiClient {
     body: any,
     path: string | undefined
   ): Promise<T | undefined> {
-    return fetch('/proxify', {
-      method: 'POST',
+    return fetch("/proxify", {
+      method: "POST",
       body: JSON.stringify({
         params,
         path,

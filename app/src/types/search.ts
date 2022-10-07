@@ -1,17 +1,17 @@
-import { Account, Asset, Transaction } from '~/src/types/ledger';
-import { Payment, PaymentType } from '~/src/types/payment';
+import { Account, Asset, Transaction } from "~/src/types/ledger";
+import { Payment, PaymentType } from "~/src/types/payment";
 
 export enum SearchTargets {
-  ACCOUNT = 'ACCOUNT',
-  TRANSACTION = 'TRANSACTION',
-  PAYMENT = 'PAYMENT',
-  ASSET = 'ASSET',
-  LEDGER = 'LEDGER', // not a real target for search api, but should be use as it is to avoid complexity
+  ACCOUNT = "ACCOUNT",
+  TRANSACTION = "TRANSACTION",
+  PAYMENT = "PAYMENT",
+  ASSET = "ASSET",
+  LEDGER = "LEDGER", // not a real target for search api, but should be use as it is to avoid complexity
 }
 
 export enum SearchPolicies {
-  OR = 'OR',
-  AND = 'AND',
+  OR = "OR",
+  AND = "AND",
 }
 
 export type SearchTarget =

@@ -1,6 +1,6 @@
-import { createContext } from 'react';
+import { createContext } from "react";
 
-import { ApiClient, CurrentUser } from '~/src/utils/api';
+import { ApiClient, CurrentUser } from "~/src/utils/api";
 
 export type ServiceContext = {
   api: ApiClient;

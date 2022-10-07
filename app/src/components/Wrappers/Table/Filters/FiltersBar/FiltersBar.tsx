@@ -1,6 +1,6 @@
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, { FunctionComponent, ReactElement } from "react";
 
-import { Box } from '@mui/material';
+import { Box } from "@mui/material";
 
 const FiltersBar: FunctionComponent<{ children: ReactElement }> = ({
   children,
