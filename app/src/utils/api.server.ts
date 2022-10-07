@@ -105,18 +105,18 @@ export class DefaultApiClient implements ApiClient {
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
     let sessionHolder: SessionHolder = parseSessionHolder(this.session);
     // @ts-ignore
-    const allPendingRefresh: Map<string, PendingRefresh> =
-      global.pendingRefresh;
+    const allPendingRefresh: Map<string, PendingRefresh> = global.pendingRefresh;
 
     let pendingPromise: Promise<Authentication> | undefined;
     await runWithMutex(() => {
       // TODO: Override expiration to 10 seconds
       if (
         sessionHolder.date.getTime() / 1000 +
-          /*sessionHolder.authentication.expires_in*/ 20 -
+          /*sessionHolder.authentication.expires_in*/ 15 -
           10 <
         new Date().getTime() / 1000
       ) {
+        console.info('Detect expired token')
         const oldRefreshToken = sessionHolder.authentication.refresh_token;
         let pendingRefresh = allPendingRefresh.get(
           sessionHolder.authentication.refresh_token
@@ -162,6 +162,7 @@ export class DefaultApiClient implements ApiClient {
             sessionHolder.authentication.refresh_token
           )!.promise;
         } else {
+          console.info('Reuse pending refresh token')
           // In case of parallel requests
           pendingPromise = pendingRefresh.promise;
         }

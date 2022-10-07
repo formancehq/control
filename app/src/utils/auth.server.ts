@@ -167,10 +167,13 @@ export const triggerAuthenticationFlow = (
 export const handleResponse = async (
   data: SessionWrapper
 ): Promise<TypedResponse<any>> => {
+  if(data.cookieValue) {
+    console.info('New cookie value received, write it');
+  }
   return json(data.callbackResult, {
-    headers: {
+    headers: data.cookieValue ? {
       "Set-Cookie": data.cookieValue,
-    },
+    } : {},
   });
 };
 
@@ -181,9 +184,15 @@ export const withSession = async (
   const session = await getSession(request.headers.get("Cookie"));
   const c = await callback(session);
   const commitSession = await sessionStorage.commitSession(session);
+  const commitSessionCookieValue = commitSession.split(";")[0]
+
+  if(request.headers.get("Cookie") != commitSessionCookieValue) {
+    console.info('original cookie: ', request.headers.get("Cookie"))
+    console.info('Committed session: ', commitSessionCookieValue)
+  }
 
   return {
-    cookieValue: commitSession,
+    cookieValue: request.headers.get("Cookie") != commitSessionCookieValue ? commitSession : undefined,
     callbackResult: c,
   };
 };

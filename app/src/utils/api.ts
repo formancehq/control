@@ -13,7 +13,7 @@ export interface ApiClient {
 }
 
 export type SessionWrapper = {
-  cookieValue: string;
+  cookieValue?: string;
   callbackResult: any;
 };
 export type CurrentUser = {
