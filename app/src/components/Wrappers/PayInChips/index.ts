@@ -1,3 +1,3 @@
-import PayInChips from "./PayInChips";
+import PayInChips from './PayInChips';
 
 export default PayInChips;

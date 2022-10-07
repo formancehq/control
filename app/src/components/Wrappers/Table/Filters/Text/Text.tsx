@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { Box } from "@mui/material";
-import { useSearchParams } from "@remix-run/react";
-import { isEmpty } from "lodash";
-import { URLSearchParamsInit } from "react-router-dom";
+import { Box } from '@mui/material';
+import { useSearchParams } from '@remix-run/react';
+import { isEmpty } from 'lodash';
+import { URLSearchParamsInit } from 'react-router-dom';
 
-import { TextField } from "@numaryhq/storybook";
+import { TextField } from '@numaryhq/storybook';
 
-import { Filters } from "~/src/components/Wrappers/Table/Filters/filters";
-import { TextProps } from "~/src/components/Wrappers/Table/Filters/Text/types";
-import { buildQuery } from "~/src/utils/search";
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import { TextProps } from '~/src/components/Wrappers/Table/Filters/Text/types';
+import { buildQuery } from '~/src/utils/search';
 
 const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,7 +17,7 @@ const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
   return (
     <Box
       sx={{
-        "& .MuiFormControl-root": {
+        '& .MuiFormControl-root': {
           m: 0,
           p: 0,
         },

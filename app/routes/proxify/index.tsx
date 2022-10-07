@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { ActionFunction, Session } from "@remix-run/node";
+import { ActionFunction, Session } from '@remix-run/node';
 
-import { createApiClient } from "~/src/utils/api.server";
-import { handleResponse, withSession } from "~/src/utils/auth.server";
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 export const action: ActionFunction = async ({ request }) => {
   async function handleData(session: Session) {
@@ -13,10 +13,10 @@ export const action: ActionFunction = async ({ request }) => {
     let ret;
 
     switch (request.method) {
-      case "POST":
+      case 'POST':
         ret = await apiClient.postResource(body.params, body.body, body.path);
         break;
-      case "GET":
+      case 'GET':
         ret = await apiClient.getResource(body.params, body.body);
         break;
     }

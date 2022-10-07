@@ -1,18 +1,18 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { Box } from "@mui/material";
-import Graphviz from "graphviz-react";
+import { Box } from '@mui/material';
+import Graphviz from 'graphviz-react';
 
-import { PostingsGraphProps } from "./types";
+import { PostingsGraphProps } from './types';
 
-import { Posting } from "~/src/types/ledger";
+import { Posting } from '~/src/types/ledger';
 
 const PostingsGraph: FunctionComponent<PostingsGraphProps> = ({ postings }) => {
-  let dot = "";
+  let dot = '';
 
   postings.map((posting: Posting) => {
-    const splitSource: string[] = posting.source.split(":");
-    const splitDest: string[] = posting.destination.split(":");
+    const splitSource: string[] = posting.source.split(':');
+    const splitDest: string[] = posting.destination.split(':');
     let source: string = posting.source;
     let destination: string = posting.destination;
 
@@ -31,8 +31,8 @@ const PostingsGraph: FunctionComponent<PostingsGraphProps> = ({ postings }) => {
   return (
     <Box
       sx={{
-        textAlign: "center",
-        borderRadius: "4px",
+        textAlign: 'center',
+        borderRadius: '4px',
       }}
     >
       <Graphviz

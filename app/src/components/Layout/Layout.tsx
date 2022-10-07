@@ -1,19 +1,19 @@
-import * as React from "react";
-import { FunctionComponent } from "react";
+import * as React from 'react';
+import { FunctionComponent } from 'react';
 
-import { CircularProgress } from "@mui/material";
-import { useSearchParams, useTransition, useNavigate } from "@remix-run/react";
-import { useMatch, useParams } from "react-router-dom";
+import { CircularProgress } from '@mui/material';
+import { useSearchParams, useTransition, useNavigate } from '@remix-run/react';
+import { useMatch, useParams } from 'react-router-dom';
 import {
   useTransition as useAnimationTransition,
   animated,
-} from "react-spring";
+} from 'react-spring';
 
-import { Breadcrumbs, theme } from "@numaryhq/storybook";
+import { Breadcrumbs, theme } from '@numaryhq/storybook';
 
-import { breadcrumbsFactory } from "~/src/components/Layout/service";
-import { LayoutProps } from "~/src/components/Layout/types";
-import Navbar from "~/src/components/Navbar";
+import { breadcrumbsFactory } from '~/src/components/Layout/service';
+import { LayoutProps } from '~/src/components/Layout/types';
+import Navbar from '~/src/components/Navbar';
 
 const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   const params = useParams();
@@ -36,14 +36,14 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
       {links && <Breadcrumbs links={links} />}
 
       {loadingTransition((props, transitionState) =>
-        transitionState === "loading" ? (
+        transitionState === 'loading' ? (
           <animated.div
             style={{
               ...props,
-              display: "flex",
-              height: "100%",
-              justifyContent: "center",
-              alignItems: "center",
+              display: 'flex',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
               background: theme.palette.neutral[0],
             }}
           >

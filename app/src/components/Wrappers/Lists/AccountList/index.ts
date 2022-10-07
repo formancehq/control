@@ -1,3 +1,3 @@
-import AccountList from "./AccountList";
+import AccountList from './AccountList';
 
 export default AccountList;

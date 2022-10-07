@@ -1,8 +1,8 @@
-import { ReactElement } from "react";
+import { ReactElement } from 'react';
 
 export type LinkWrapperProps = {
   to: string;
-  prefetch: "none" | "intent" | "render";
+  prefetch: 'none' | 'intent' | 'render';
   children: ReactElement;
   color: string;
 };

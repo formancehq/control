@@ -1,15 +1,15 @@
-import * as React from "react";
-import { FunctionComponent, useEffect, useState } from "react";
+import * as React from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
 import {
   AccountBalance,
   CreditCard,
   SearchOutlined,
-} from "@mui/icons-material";
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
-import { get, isEmpty } from "lodash";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+} from '@mui/icons-material';
+import { Box, CircularProgress, Grid, Typography } from '@mui/material';
+import { get, isEmpty } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Amount,
@@ -18,7 +18,7 @@ import {
   LoadingButton,
   Search as SbSearch,
   Txid,
-} from "@numaryhq/storybook";
+} from '@numaryhq/storybook';
 
 import {
   ACCOUNTS_ROUTE,
@@ -28,15 +28,15 @@ import {
   PAYMENT_ROUTE,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
-} from "~/src/components/Navbar/routes";
+} from '~/src/components/Navbar/routes';
 import {
   getSuggestions,
   suggestionsFactory,
-} from "~/src/components/Search/service";
-import PayInChips from "~/src/components/Wrappers/PayInChips";
-import ProviderPicture from "~/src/components/Wrappers/ProviderPicture";
-import { useOpen } from "~/src/hooks/useOpen";
-import { useService } from "~/src/hooks/useService";
+} from '~/src/components/Search/service';
+import PayInChips from '~/src/components/Wrappers/PayInChips';
+import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import { useOpen } from '~/src/hooks/useOpen';
+import { useService } from '~/src/hooks/useService';
 import {
   AccountSuggestions,
   PaymentSuggestions,
@@ -45,7 +45,7 @@ import {
   SearchTargets,
   SuggestionItem,
   TransactionsSuggestions,
-} from "~/src/types/search";
+} from '~/src/types/search';
 
 // TODo improve
 const Search: FunctionComponent = () => {
@@ -118,12 +118,12 @@ const Search: FunctionComponent = () => {
                 accounts: suggestionsFactory(
                   accounts.data as SearchResource,
                   SearchTargets.ACCOUNT,
-                  get(accounts, "total.value")
+                  get(accounts, 'total.value')
                 ) as AccountSuggestions,
                 transactions: suggestionsFactory(
                   transactions.data as SearchResource,
                   SearchTargets.TRANSACTION,
-                  get(transactions, "total.value")
+                  get(transactions, 'total.value')
                 ) as TransactionsSuggestions,
               } as {
                 accounts: AccountSuggestions;
@@ -139,7 +139,7 @@ const Search: FunctionComponent = () => {
                 suggestionsFactory(
                   results.data as SearchResource,
                   target,
-                  get(results, "total.value")
+                  get(results, 'total.value')
                 )
               );
             stopLoading();
@@ -172,11 +172,11 @@ const Search: FunctionComponent = () => {
     switch (target) {
       case SearchTargets.ACCOUNT:
         return navigate(
-          getLedgerAccountDetailsRoute(item.id, get(item, "ledger"))
+          getLedgerAccountDetailsRoute(item.id, get(item, 'ledger'))
         );
       case SearchTargets.TRANSACTION:
         return navigate(
-          getLedgerTransactionDetailsRoute(item.id, get(item, "ledger"))
+          getLedgerTransactionDetailsRoute(item.id, get(item, 'ledger'))
         );
       case SearchTargets.PAYMENT:
         return navigate(getRoute(PAYMENT_ROUTE, item.id));
@@ -190,18 +190,18 @@ const Search: FunctionComponent = () => {
     const noResults =
       get(
         suggestions,
-        "transactions.items",
-        get(suggestions, "accounts.items", get(suggestions, "items", []))
+        'transactions.items',
+        get(suggestions, 'accounts.items', get(suggestions, 'items', []))
       ).length === 0;
 
     return (
       <Box
         sx={{
-          overflowY: "auto",
-          display: "flex",
+          overflowY: 'auto',
+          display: 'flex',
           width: 800,
           mt: 2,
-          borderRadius: "4px",
+          borderRadius: '4px',
         }}
       >
         {/* Left block */}
@@ -209,8 +209,8 @@ const Search: FunctionComponent = () => {
           p={2}
           sx={{
             width: 60,
-            display: "flex",
-            flexDirection: "column",
+            display: 'flex',
+            flexDirection: 'column',
             backgroundColor: ({ palette }) => palette.neutral[50],
             borderRight: ({ palette }) => `1px solid ${palette.neutral[200]}`,
           }}
@@ -218,14 +218,14 @@ const Search: FunctionComponent = () => {
           {/* Target nav goes here*/}
           <LoadingButton
             id="ledgers"
-            variant={target === SearchTargets.LEDGER ? "dark" : "stroke"}
+            variant={target === SearchTargets.LEDGER ? 'dark' : 'stroke'}
             startIcon={<AccountBalance />}
             sx={{ width: 50, marginTop: 2 }}
             onClick={() => handleTargetChange(SearchTargets.LEDGER)}
           />
           <LoadingButton
             id="payments"
-            variant={target === SearchTargets.PAYMENT ? "dark" : "stroke"}
+            variant={target === SearchTargets.PAYMENT ? 'dark' : 'stroke'}
             startIcon={<CreditCard />}
             sx={{ width: 50, marginTop: 2 }}
             onClick={() => handleTargetChange(SearchTargets.PAYMENT)}
@@ -239,11 +239,11 @@ const Search: FunctionComponent = () => {
             width: 800,
             height: 400,
             p: 2,
-            overflowY: "auto",
+            overflowY: 'auto',
           }}
         >
           <Typography variant="bold">
-            {t("common.search.title", {
+            {t('common.search.title', {
               value,
               target: `${t(
                 `common.search.targets.${target.toLowerCase()}`
@@ -253,7 +253,7 @@ const Search: FunctionComponent = () => {
           {noResults && !loading && (
             <Box mt={4}>
               <EmptyState
-                description={t("common.noResults")}
+                description={t('common.noResults')}
                 title=""
                 sx={{ border: 0 }}
               />
@@ -271,12 +271,12 @@ const Search: FunctionComponent = () => {
               {target === SearchTargets.LEDGER && (
                 <>
                   {renderSuggestion(
-                    get(suggestions, "accounts"),
+                    get(suggestions, 'accounts'),
                     SearchTargets.ACCOUNT,
                     value
                   )}
                   {renderSuggestion(
-                    get(suggestions, "transactions"),
+                    get(suggestions, 'transactions'),
                     SearchTargets.TRANSACTION,
                     value
                   )}
@@ -302,10 +302,10 @@ const Search: FunctionComponent = () => {
           onClick={() => handleOnClick(item, target)}
           p={1}
           sx={{
-            cursor: "pointer",
-            ":hover": {
+            cursor: 'pointer',
+            ':hover': {
               background: ({ palette }) => palette.neutral[50],
-              borderRadius: "4px",
+              borderRadius: '4px',
             },
           }}
         >
@@ -315,7 +315,7 @@ const Search: FunctionComponent = () => {
             ) : (
               <Chip
                 label={data.targetLabel}
-                color={target === SearchTargets.ACCOUNT ? "default" : "blue"}
+                color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
                 variant="square"
               />
             )}
@@ -337,9 +337,9 @@ const Search: FunctionComponent = () => {
                 variant="square"
                 icon={<AccountBalance fontSize="small" />}
                 sx={{
-                  "& .MuiChipIcon": ({ palette }) => palette.neutral[300],
-                  display: "flex",
-                  float: "right",
+                  '& .MuiChipIcon': ({ palette }) => palette.neutral[300],
+                  display: 'flex',
+                  float: 'right',
                 }}
               />
             )}
@@ -359,7 +359,7 @@ const Search: FunctionComponent = () => {
         <Box display="flex" justifyContent="center" mt={2} mb={4}>
           <LoadingButton
             variant="stroke"
-            content={`${t("common.search.viewAll", {
+            content={`${t('common.search.viewAll', {
               target: target.toLowerCase(),
             })}s`}
             onClick={() => handleViewAll(target, value)}
@@ -380,7 +380,7 @@ const Search: FunctionComponent = () => {
       />
       <SbSearch
         open={open}
-        placeholder={t("common.search.placeholder")}
+        placeholder={t('common.search.placeholder')}
         name="terms"
         required={true}
         onKeyDown={handleOnKeyDown}
