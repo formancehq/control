@@ -28,7 +28,7 @@ import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import { Cursor } from '~/src/types/generic';
-import { Account, LedgerInfo } from '~/src/types/ledger';
+import { Account, LedgerInfo, LedgerStats } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
@@ -53,8 +53,7 @@ const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 const getData = async (ledgersList: string[], api: ApiClient) => {
   const ledgers = [] as any;
   for (const ledger of ledgersList) {
-    // Todo remove any
-    const stats = await api.getResource<any>(
+    const stats = await api.getResource<LedgerStats>(
       `${API_LEDGER}/${ledger}/stats`,
       'data'
     );
@@ -130,7 +129,7 @@ export default function Index() {
     (async () => {
       const results = await getData(ledgers, api);
       if (results) {
-        setStats([]);
+        setStats(results);
       }
       stopLoading();
     })();
@@ -152,7 +151,7 @@ export default function Index() {
           <Page id={overview.id}>
             <>
               {/* TODO uncomment when current user is ready*/}
-              {currentUser && currentUser.email && (
+              {currentUser && currentUser.pseudo && (
                 <Box
                   display="flex"
                   alignItems="center"
@@ -174,7 +173,7 @@ export default function Index() {
                         sx={{ color: ({ palette }) => palette.neutral[0] }}
                       >
                         {`${t('pages.overview.hello')} ${
-                          currentUser.email.split('@')[0]
+                          currentUser.pseudo
                         } 👋`}
                       </Typography>
                       <Typography

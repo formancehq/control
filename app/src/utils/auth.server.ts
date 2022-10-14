@@ -62,6 +62,7 @@ export interface OpenIdConfiguration {
   authorization_endpoint: string;
   userinfo_endpoint: string;
   token_endpoint: string;
+  end_session_endpoint: string;
 }
 
 export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
@@ -125,6 +126,29 @@ export const refreshToken = async (
         } when refreshing token, body ${await response.text()}`
       );
     }
+
+    return await response.json();
+  });
+};
+
+export const endSession = async (
+  openIdConfig: OpenIdConfiguration,
+  idTokenHint: string
+): Promise<any> => {
+  console.log(
+    `${openIdConfig.end_session_endpoint}?id_token_hint=${idTokenHint}&post_logout_redirect_uri=http://localhost:3000`
+  );
+  const uri = `${openIdConfig.end_session_endpoint}?id_token_hint=${idTokenHint}&post_logout_redirect_uri=http://localhost:3000`;
+
+  return fetch(uri).then(async (response) => {
+    console.log(response);
+    // if (response.status != 200) {
+    //   throw new Error(
+    //     `Unexpected status code ${
+    //       response.status
+    //     } when ending session, body ${await response.text()}`
+    //   );
+    // }
 
     return await response.json();
   });

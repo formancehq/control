@@ -21,6 +21,9 @@ export type CurrentUser = {
   scp: string[];
   email: string;
   email_verified: boolean;
+  avatarLetter: string | undefined;
+  pseudo: string | undefined;
+  jwt: string;
 };
 export type Authentication = {
   access_token: string;
