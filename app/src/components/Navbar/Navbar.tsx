@@ -45,10 +45,8 @@ const Navbar: FunctionComponent = () => {
 
   const handleLogout = async () => {
     handleCloseUserMenu();
-    await fetch(`${metas.origin}/auth/destroy`);
-    window.location.replace(
-      `${metas.openIdConfig.end_session_endpoint}?id_token_hint=${currentUser.jwt}&post_logout_redirect_uri=${metas.origin}/auth/logout`
-    );
+
+    return window.location.replace(`${metas.origin}/auth/redirect-logout`);
   };
 
   const formattedRouterConfig = routerConfig.map((route) => ({

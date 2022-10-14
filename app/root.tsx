@@ -224,6 +224,7 @@ export default function App() {
     console.info("Global time not defined, installing it");
     const refreshToken = (): Promise<any> => {
       console.info("Trigger refresh authentication");
+
       return fetch(`${metas.origin}/auth/refresh`)
         .then((response) => response.json())
         .then(({ interval }: { interval: number }) =>
@@ -232,7 +233,7 @@ export default function App() {
         .catch(async (reason) => {
           if (reason?.status === 400) {
             console.info("End session");
-            await fetch(`${metas.origin}/auth/destroy`);
+            await fetch(`${metas.origin}/auth/redirect-logout`);
           } else {
             // retry one last time
             console.info("Retry refresh");
@@ -241,7 +242,7 @@ export default function App() {
               return refresh.json();
             } else {
               console.info("End session after retry");
-              await fetch(`${metas.origin}/auth/destroy`);
+              await fetch(`${metas.origin}/auth/redirect-logout`);
             }
           }
           console.info("Error refreshing token: ", reason);
