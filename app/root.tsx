@@ -10,6 +10,7 @@ import {
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
+import { redirect } from '@remix-run/node';
 import {
   Links,
   Meta,
@@ -24,7 +25,6 @@ import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
 import { camelCase, get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { redirect } from 'remix';
 
 import styles from './root.css';
 import { useOpen } from './src/hooks/useOpen';
@@ -35,8 +35,7 @@ import Layout from '~/src/components/Layout';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
-import { LedgerInfo } from '~/src/types/ledger';
-import { logger } from '~/src/utils/api';
+import { Authentication, CurrentUser, logger } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
 import { createApiClient, errorsMap } from '~/src/utils/api.server';
 import {
@@ -47,7 +46,7 @@ import {
   getOpenIdConfig,
   getSession,
   handleResponse,
-  SessionHolder,
+  State,
   withSession,
 } from '~/src/utils/auth.server';
 
@@ -62,29 +61,31 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get('Cookie'));
   const cookie = session.get(COOKIE_NAME);
   const url = new URL(request.url);
+  const stateObject: State = { redirectTo: `${url.pathname}${url.search}` };
+  const buff = new Buffer(JSON.stringify(stateObject));
+  const stateAsBase64 = buff.toString('base64');
   const openIdConfig = await getOpenIdConfig();
 
   if (!cookie) {
-    // redirect to form
     return redirect(
-      `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&response_type=code&scope=openid email offline_access`
+      `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&state=${stateAsBase64}&response_type=code&scope=openid email offline_access`
     );
   }
 
   return handleResponse(
     await withSession(request, async (session) => {
       const api = await createApiClient(session, '');
-      const currentUser = await api.getResource<LedgerInfo>( // TODO: LedgerInfo on Userinfo ?
+      const currentUser = await api.getResource<CurrentUser>(
         openIdConfig.userinfo_endpoint
       );
-      const sessionHolder = decrypt<SessionHolder>(cookie);
-      const payload = getJwtPayload(sessionHolder.authentication);
+      const sessionHolder = decrypt<Authentication>(cookie);
+      const payload = getJwtPayload(sessionHolder);
 
       return {
         currentUser: {
           ...currentUser,
           scp: payload ? payload.scp : [],
-          jwt: sessionHolder.authentication.access_token,
+          jwt: sessionHolder.access_token,
         },
       };
     })
@@ -206,19 +207,38 @@ export default function App() {
     stopLoading();
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   if (!global.timer) {
     console.info('Global time not defined, installing it');
     const refreshToken = (): Promise<any> => {
       console.info('Trigger refresh authentication');
 
-      return fetch('/auth/refresh')
+      return fetch('auth/refresh')
         .then((response) => response.json())
         .then(({ interval }: { interval: number }) =>
           setTimeout(refreshToken, interval)
         )
-        .catch((reason) => console.info('Error refreshing token: ', reason)); // TODO: Force logout
+        .catch(async (reason) => {
+          // TODO
+          if (reason?.status === 400) {
+            console.info('End session');
+            await fetch('auth/destroy');
+          } else {
+            // retry one last time
+            console.info('Retry refresh');
+            const refresh = await fetch('auth/refresh');
+            if (refresh?.status === 200) {
+              return refresh.json();
+            } else {
+              console.info('End session after retry');
+              await fetch('auth/destroy');
+            }
+          }
+          console.info('Error refreshing token: ', reason);
+        });
     };
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     global.timer = refreshToken();
   }

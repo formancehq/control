@@ -2,39 +2,24 @@ import crypto from 'crypto';
 
 import { createCookieSessionStorage, json, Session } from '@remix-run/node';
 import { TypedResponse } from '@remix-run/server-runtime';
-import { redirect } from 'remix';
 
 import { ObjectOf } from '~/src/types/generic';
 import {
   API_AUTH,
   Authentication,
   JwtPayload,
-  logger,
-  returnHandler,
   SessionWrapper,
 } from '~/src/utils/api';
 
 export const COOKIE_NAME = 'auth_session';
 export const AUTH_CALLBACK_ROUTE = '/auth/login';
-const FROM = 'utils/auth.server';
 
-export interface SessionHolder {
-  authentication: Authentication;
-  date: Date;
+export interface State {
+  redirectTo: string;
 }
 
-export const parseSessionHolder = (session: Session): SessionHolder => {
-  const cookieValue = decrypt<
-    SessionHolder & {
-      date: string;
-    }
-  >(session.get(COOKIE_NAME));
-
-  return {
-    authentication: cookieValue.authentication,
-    date: new Date(cookieValue.date),
-  };
-};
+export const parseSessionHolder = (session: Session): Authentication =>
+  decrypt<Authentication>(session.get(COOKIE_NAME));
 
 // export the whole sessionStorage object
 export const sessionStorage = createCookieSessionStorage({
@@ -42,13 +27,13 @@ export const sessionStorage = createCookieSessionStorage({
     name: COOKIE_NAME, // use any name you want here
     sameSite: 'lax', // this helps with CSRF
     path: '/', // remember to add this so the cookie will work in all routes
-    // httpOnly: true, // for security reasons, make this cookie http only
+    httpOnly: true, // for security reasons, make this cookie http only
     secrets: [process.env.CLIENT_SECRET || 'secret'], // replace this with an actual secret
     secure: process.env.NODE_ENV === 'production',
   },
 });
 
-export const encrypt = (payload: any): string => {
+export const encrypt = (payload: Authentication): string => {
   const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
   const iv = process.env.ENCRYPTION_IV!;
 
@@ -60,13 +45,17 @@ export const encrypt = (payload: any): string => {
 };
 
 export const decrypt = <T>(cookie: string): T => {
-  const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
-  const iv = process.env.ENCRYPTION_IV!;
-  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-  const decrypted = decipher.update(cookie, 'base64', 'utf8');
-  const final = decrypted + decipher.final('utf8');
+  if (cookie) {
+    const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
+    const iv = process.env.ENCRYPTION_IV!;
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const decrypted = decipher.update(cookie, 'base64', 'utf8');
+    const final = decrypted + decipher.final('utf8');
 
-  return JSON.parse(final);
+    return JSON.parse(final);
+  }
+
+  return { refresh_token: undefined } as T;
 };
 
 export interface OpenIdConfiguration {
@@ -81,15 +70,13 @@ export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
   return fetch(uri)
     .catch((e) => {
       throw new Error(
-        'Unable to fetch OIDC discovery on ' + uri + ': ' + e.toString()
+        `Unable to fetch OIDC discovery on ${uri}: ${e.toString()}`
       );
     })
     .then((response) => {
       if (response.status != 200) {
         throw new Error(
-          'Unexpected status code ' +
-            response.status +
-            ' when fetching openid config'
+          `Unexpected status code ${response.status} when fetching openid config`
         );
       }
 
@@ -114,10 +101,9 @@ export const exchangeToken = async (
   return await fetch(uri).then((response) => {
     if (response.status != 200) {
       throw new Error(
-        'Unexpected status code ' +
-          response.status +
-          ' when refreshing token, body: ' +
-          response.text()
+        `Unexpected status code ${
+          response.status
+        } when refreshing token, body ${response.text()}`
       );
     }
 
@@ -134,41 +120,14 @@ export const refreshToken = async (
   return fetch(uri).then(async (response) => {
     if (response.status != 200) {
       throw new Error(
-        'Unexpected status code ' +
-          response.status +
-          ' when refreshing token, body: ' +
-          (await response.text())
+        `Unexpected status code ${
+          response.status
+        } when refreshing token, body ${await response.text()}`
       );
     }
 
     return await response.json();
   });
-};
-
-export interface State {
-  redirectTo: string;
-}
-
-export const triggerAuthenticationFlow = (
-  url: URL,
-  openIdConfiguration: OpenIdConfiguration,
-  redirectTo: string
-) => {
-  const stateObject: State = { redirectTo };
-  const buff = new Buffer(JSON.stringify(stateObject));
-  const stateAsBase64 = buff.toString('base64');
-
-  const redirectUrl = new URL(openIdConfiguration.authorization_endpoint);
-  redirectUrl.searchParams.set('client_id', process.env.CLIENT_ID as string); // Env vars should not be used anywhere in the application, centralize at least inside a config object
-  redirectUrl.searchParams.set(
-    'redirect_uri',
-    `${url.origin}${AUTH_CALLBACK_ROUTE}`
-  );
-  redirectUrl.searchParams.set('response_type', 'code');
-  redirectUrl.searchParams.set('scope', 'openid email offline_access');
-  redirectUrl.searchParams.set('state', stateAsBase64);
-
-  redirect(redirectUrl.toString());
 };
 
 export const handleResponse = async (
@@ -197,7 +156,7 @@ export const withSession = async (
   const commitSessionCookieValue = commitSession.split(';')[0];
 
   if (request.headers.get('Cookie') != commitSessionCookieValue) {
-    console.info('original cookie: ', request.headers.get('Cookie'));
+    console.info('Original cookie: ', request.headers.get('Cookie'));
     console.info('Committed session: ', commitSessionCookieValue);
   }
 
@@ -211,15 +170,3 @@ export const withSession = async (
 };
 
 export const { getSession, destroySession, commitSession } = sessionStorage;
-
-export class UnauthenticatedError extends Error {
-  constructor() {
-    super('Unauthenticated');
-  }
-}
-
-export class RefreshingTokenError extends Error {
-  constructor() {
-    super('Error while refreshing access token');
-  }
-}
