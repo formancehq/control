@@ -17,3 +17,10 @@ COPY --from=build /app/build /app/build
 COPY --from=build /app/public /app/public
 ADD . .
 CMD ["yarn", "run", "start"]
+
+FROM node:16-slim as app
+WORKDIR /app
+ENV NODE_ENV=production
+COPY ./package.json /app/package.json
+ADD . .
+CMD ["yarn", "run", "start"]
