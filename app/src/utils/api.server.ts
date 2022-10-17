@@ -83,6 +83,7 @@ export class DefaultApiClient implements ApiClient {
         : undefined,
     })
       .then((response) => response.json())
+      .catch(() => undefined)
       .then((response) => (path ? get(response, path) : response));
   }
 }
