@@ -1,9 +1,9 @@
-import { Errors } from "~/src/types/generic";
+import { Errors } from '~/src/types/generic';
 
-export const API_SEARCH = "/search";
-export const API_LEDGER = "/ledger";
-export const API_PAYMENT = "/payments";
-export const API_AUTH = "/auth";
+export const API_SEARCH = '/search';
+export const API_LEDGER = '/ledger';
+export const API_PAYMENT = '/payments';
+export const API_AUTH = '/auth';
 
 export const errorsMap = {
   404: Errors.NOT_FOUND,
@@ -64,17 +64,17 @@ export const logger = (
 ) => {
   // eslint-disable-next-line no-console
   console.error({
-    from: from || "utils/api",
+    from: from || 'utils/api',
     request,
     response,
     stack,
-    page: typeof window !== "undefined" ? window.location : "",
+    page: typeof window !== 'undefined' ? window.location : '',
   });
 };
 
 export const returnHandler = async <T>(
   response?: Response,
-  from = "utils/api"
+  from = 'utils/api'
 ): Promise<undefined | T> => {
   if (response && response?.status === 200) {
     return (await response.json()) as T;
