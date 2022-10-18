@@ -1,7 +1,19 @@
-export const API_SEARCH = '/search';
-export const API_LEDGER = '/ledger';
-export const API_PAYMENT = '/payments';
-export const API_AUTH = '/auth';
+import { Errors } from "~/src/types/generic";
+
+export const API_SEARCH = "/search";
+export const API_LEDGER = "/ledger";
+export const API_PAYMENT = "/payments";
+export const API_AUTH = "/auth";
+
+export const errorsMap = {
+  404: Errors.NOT_FOUND,
+  401: Errors.UNAUTHORIZED,
+  403: Errors.FORBIDDEN,
+  422: Errors.ERROR,
+  500: Errors.SERVICE_DOWN,
+  502: Errors.SERVICE_DOWN,
+  503: Errors.SERVICE_DOWN,
+};
 
 export interface ApiClient {
   postResource: <T>(
@@ -52,17 +64,17 @@ export const logger = (
 ) => {
   // eslint-disable-next-line no-console
   console.error({
-    from: from || 'utils/api',
+    from: from || "utils/api",
     request,
     response,
     stack,
-    page: typeof window !== 'undefined' ? window.location : '',
+    page: typeof window !== "undefined" ? window.location : "",
   });
 };
 
 export const returnHandler = async <T>(
   response?: Response,
-  from = 'utils/api'
+  from = "utils/api"
 ): Promise<undefined | T> => {
   if (response && response?.status === 200) {
     return (await response.json()) as T;

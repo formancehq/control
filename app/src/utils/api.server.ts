@@ -1,22 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment*/
-import { Session } from '@remix-run/node';
-import { get, isUndefined } from 'lodash';
+import { Session } from "@remix-run/node";
+import { get, isUndefined } from "lodash";
+import { ApiClient, Authentication } from "~/src/utils/api";
+import { parseSessionHolder } from "~/src/utils/auth.server";
 
-import { Errors } from '~/src/types/generic';
-import { ApiClient, Authentication } from '~/src/utils/api';
-import { parseSessionHolder } from '~/src/utils/auth.server';
-
-export const errorsMap = {
-  404: Errors.NOT_FOUND,
-  401: Errors.UNAUTHORIZED,
-  403: Errors.FORBIDDEN,
-  422: Errors.ERROR,
-  500: Errors.SERVICE_DOWN,
-  502: Errors.SERVICE_DOWN,
-  503: Errors.SERVICE_DOWN,
-};
-
-export type Headers = { Authorization?: string; 'Content-Type': string };
+export type Headers = { Authorization?: string; "Content-Type": string };
 
 export const createApiClient = async (
   session: Session,
@@ -31,13 +19,13 @@ export class DefaultApiClient implements ApiClient {
   constructor(session: Session, url?: string) {
     this.baseUrl = url;
     this.headers = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
-    if (typeof process !== 'undefined') {
+    if (typeof process !== "undefined") {
       if (isUndefined(url)) {
         if (process.env.API_URL) {
           this.baseUrl = process.env.API_URL;
-        } else throw new Error('API_URL is not defined');
+        } else throw new Error("API_URL is not defined");
       }
     }
     this.session = session;
@@ -71,7 +59,7 @@ export class DefaultApiClient implements ApiClient {
     const sessionHolder: Authentication = parseSessionHolder(this.session);
 
     return fetch(uri, {
-      method: body ? 'POST' : 'GET',
+      method: body ? "POST" : "GET",
       headers: {
         ...this.headers,
         Authorization: `Bearer ${sessionHolder.access_token}`,
