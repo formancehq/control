@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
 
 import { withEmotionCache } from '@emotion/react';
 import { Home } from '@mui/icons-material';
@@ -10,10 +10,9 @@ import {
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
-import { json } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import {
   Links,
-  LiveReload,
   Meta,
   NavigateFunction,
   Outlet,
@@ -36,7 +35,27 @@ import Layout from '~/src/components/Layout';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
-import { ApiClient, errorsMap, logger } from '~/src/utils/api';
+import {
+  Authentication,
+  CurrentUser,
+  errorsMap,
+  logger,
+} from '~/src/utils/api';
+import { ReactApiClient } from '~/src/utils/api.client';
+import { createApiClient } from '~/src/utils/api.server';
+import {
+  AUTH_CALLBACK_ROUTE,
+  COOKIE_NAME,
+  decrypt,
+  encrypt,
+  getJwtPayload,
+  getOpenIdConfig,
+  getSession,
+  handleResponse,
+  refreshToken,
+  State,
+  withSession,
+} from '~/src/utils/auth.server';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -45,13 +64,60 @@ interface DocumentProps {
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 
-export const loader: LoaderFunction = async () =>
-  json({
-    ENV: {
-      API_URL_FRONT: process.env.API_URL_FRONT,
-      API_URL_BACK: process.env.API_URL_BACK, // just in case of need
-    },
-  });
+export const loader: LoaderFunction = async ({ request }) => {
+  const session = await getSession(request.headers.get('Cookie'));
+  const cookie = session.get(COOKIE_NAME);
+  const url = new URL(request.url);
+  const stateObject: State = { redirectTo: `${url.pathname}${url.search}` };
+  const buff = new Buffer(JSON.stringify(stateObject));
+  const stateAsBase64 = buff.toString('base64');
+  const openIdConfig = await getOpenIdConfig();
+
+  if (!cookie) {
+    // TODO add method on auth.server with URL params to be more elegant
+    return redirect(
+      `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&state=${stateAsBase64}&response_type=code&scope=openid email offline_access`
+    );
+  }
+
+  return handleResponse(
+    await withSession(request, async (session) => {
+      let currentUser = undefined;
+      const sessionHolder = decrypt<Authentication>(cookie);
+      const refresh = await refreshToken(
+        openIdConfig,
+        sessionHolder.refresh_token
+      );
+      if (refresh.access_token) {
+        session.set(COOKIE_NAME, encrypt(refresh));
+        const api = await createApiClient(session, '');
+        currentUser = await api.getResource<CurrentUser>(
+          openIdConfig.userinfo_endpoint
+        );
+        const payload = getJwtPayload(sessionHolder);
+        const pseudo =
+          currentUser && currentUser.email
+            ? currentUser.email.split('@')[0]
+            : undefined;
+        currentUser = {
+          ...currentUser,
+          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
+          pseudo,
+          scp: payload ? payload.scp : [],
+          jwt: sessionHolder.access_token,
+        };
+      }
+
+      return {
+        metas: {
+          origin: url.origin,
+          openIdConfig,
+        },
+        currentUser,
+      };
+    })
+  );
+};
 
 const Document = withEmotionCache(
   ({ children, title }: DocumentProps, emotionCache) => {
@@ -101,7 +167,6 @@ const Document = withEmotionCache(
           {children}
           <ScrollRestoration />
           <Scripts />
-          <LiveReload />
         </body>
       </html>
     );
@@ -163,12 +228,49 @@ const renderError = (
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { ENV } = useLoaderData();
+  const { currentUser, metas } = useLoaderData();
+  const navigate = useNavigate();
   const [loading, _load, stopLoading] = useOpen(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     stopLoading();
-  });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (!global.timer) {
+      console.info('Global time not defined, installing it');
+      const refreshToken = (): Promise<any> => {
+        console.info('Trigger refresh authentication');
+
+        return fetch(`${metas.origin}/auth/refresh`)
+          .then((response) => response.json())
+          .then(({ interval }: { interval: number }) =>
+            setTimeout(refreshToken, interval)
+          )
+          .catch(async (reason) => {
+            if (reason?.status === 400) {
+              console.info('End session');
+              navigate('auth/redirect-logout');
+            } else {
+              // retry one last time
+              console.info('Retry refresh');
+              const refresh = await fetch(`${metas.origin}/auth/refresh`);
+              switch (refresh?.status) {
+                case 200:
+                  return refresh.json();
+                case 500:
+                  return await fetch(`${metas.origin}/auth/logout`);
+                default:
+                  return navigate('/auth/redirect-logout');
+              }
+            }
+            console.info('Error refreshing token: ', reason);
+          });
+      };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      global.timer = refreshToken();
+    }
+  }, []);
 
   return (
     <Document>
@@ -187,7 +289,9 @@ export default function App() {
       ) : (
         <ServiceContext.Provider
           value={{
-            api: new ApiClient(ENV.API_URL_FRONT),
+            api: new ReactApiClient(),
+            currentUser,
+            metas,
           }}
         >
           <Layout>

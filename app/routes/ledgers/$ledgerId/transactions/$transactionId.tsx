@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Box, Typography } from '@mui/material';
-import { MetaFunction } from '@remix-run/node';
+import { MetaFunction, Session } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { omit } from 'lodash';
@@ -34,7 +34,9 @@ import {
   PostingHybrid,
   Transaction,
 } from '~/src/types/ledger';
-import { API_LEDGER, ApiClient } from '~/src/utils/api';
+import { API_LEDGER } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 const normalizePostings = (data: Transaction): PostingHybrid[] =>
   data.postings.map(
@@ -61,28 +63,29 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-export const loader: LoaderFunction = async ({
-  params,
-}): Promise<{
-  postings: PostingHybrid[];
-  metadata: ObjectOf<any>;
-} | null> => {
-  invariant(params.ledgerId, 'Expected params.ledgerId');
-  invariant(params.transactionId, 'Expected params.transactionId');
+export const loader: LoaderFunction = async ({ params, request }) => {
+  async function handleData(session: Session) {
+    invariant(params.ledgerId, 'Expected params.ledgerId');
+    invariant(params.transactionId, 'Expected params.transactionId');
 
-  const transaction = await new ApiClient().getResource<Transaction>(
-    `${API_LEDGER}/${params.ledgerId}/${LedgerResources.TRANSACTIONS}/${params.transactionId}`,
-    'data'
-  );
+    const transaction = await (
+      await createApiClient(session)
+    ).getResource<Transaction>(
+      `${API_LEDGER}/${params.ledgerId}/${LedgerResources.TRANSACTIONS}/${params.transactionId}`,
+      'data'
+    );
 
-  if (transaction) {
-    return {
-      postings: normalizePostings(transaction),
-      metadata: transaction.metadata,
-    };
+    if (transaction) {
+      return {
+        postings: normalizePostings(transaction),
+        metadata: transaction.metadata,
+      };
+    }
+
+    return null;
   }
 
-  return null;
+  return handleResponse(await withSession(request, handleData));
 };
 
 export default function Index() {

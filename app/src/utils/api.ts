@@ -1,24 +1,9 @@
-import { get } from 'lodash';
-
 import { Errors } from '~/src/types/generic';
 
-export const API_SEARCH = 'search';
-export const API_LEDGER = 'ledger';
-export const API_PAYMENT = 'payments';
-
-export const logger = (stack?: any, from?: string, response?: Response) => {
-  // eslint-disable-next-line no-console
-  console.error({
-    from: from || 'utils/api',
-    response: {
-      status: response?.status,
-      message: response?.statusText,
-      url: response?.url,
-    },
-    stack,
-    page: typeof window !== 'undefined' ? window.location : '',
-  });
-};
+export const API_SEARCH = '/search';
+export const API_LEDGER = '/ledger';
+export const API_PAYMENT = '/payments';
+export const API_AUTH = '/auth';
 
 export const errorsMap = {
   404: Errors.NOT_FOUND,
@@ -30,99 +15,79 @@ export const errorsMap = {
   503: Errors.SERVICE_DOWN,
 };
 
-export interface IApiClient {
-  baseUrl: string;
-  decorateUrl: (uri: string) => string;
+export interface ApiClient {
   postResource: <T>(
     params: string,
     body: any,
     path?: string
   ) => Promise<T | undefined>;
   getResource: <T>(params: string, path?: string) => Promise<T | undefined>;
-  throwError: (stack?: any, from?: string, response?: Response) => Error;
 }
 
-export class ApiClient implements IApiClient {
-  public baseUrl: string;
+export type SessionWrapper = {
+  cookieValue?: string;
+  callbackResult: any;
+};
+export type CurrentUser = {
+  sub: string;
+  scp: string[];
+  email: string;
+  email_verified: boolean;
+  avatarLetter: string | undefined;
+  pseudo: string | undefined;
+  jwt: string;
+};
+export type Authentication = {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  token_type: string;
+  id_token: string;
+  error?: string;
+  error_description?: string;
+};
+export type JwtPayload = {
+  sub: string;
+  aud: string[];
+  jti: string;
+  exp: number;
+  iat: number;
+  nbf: number;
+  scp?: string[]; // TODO make it required once permissions from backend are set
+};
 
-  constructor(url?: string) {
-    this.baseUrl = url || 'http://localhost';
+export const logger = (
+  stack?: any,
+  from?: string,
+  response?: any,
+  request?: any
+) => {
+  // eslint-disable-next-line no-console
+  console.error({
+    from: from || 'utils/api',
+    request,
+    response,
+    stack,
+    page: typeof window !== 'undefined' ? window.location : '',
+  });
+};
 
-    if (typeof process !== 'undefined') {
-      if (!url) {
-        if (process.env.API_URL_BACK) {
-          this.baseUrl = process.env.API_URL_BACK;
-        } else throw new Error('API_URL_BACK is not defined');
+export const returnHandler = async <T>(
+  response?: Response,
+  from = 'utils/api'
+): Promise<undefined | T> => {
+  if (response && response?.status === 200) {
+    return (await response.json()) as T;
+  } else {
+    logger(
+      undefined,
+      from,
+      { status: response?.status },
+      {
+        url: response?.url,
       }
-    }
+    );
+
+    return undefined;
   }
-
-  throwError(stack?: any, from?: string, response?: Response): Error {
-    const e = get(errorsMap, response?.status || 422, errorsMap['422']);
-    logger(stack, from, response);
-    throw new Error(e);
-  }
-
-  public decorateUrl(uri: string): string {
-    return `${this.baseUrl}/${uri}`;
-  }
-
-  public async postResource<T>(
-    params: string,
-    body: any,
-    path?: string
-  ): Promise<T | undefined> {
-    return this.handleRequest(params, body, path);
-  }
-
-  public async getResource<T>(
-    params: string,
-    path?: string
-  ): Promise<T | undefined> {
-    return this.handleRequest(params, undefined, path);
-  }
-
-  private async handleRequest<T>(
-    params: string,
-    body?: any,
-    path?: string
-  ): Promise<T | undefined> {
-    let data: T | undefined = undefined;
-    let res: Response | undefined = undefined;
-    const uri = this.decorateUrl(params);
-    try {
-      const startTime = new Date().getTime();
-      if (body) {
-        res = await fetch(uri, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-      } else {
-        res = await fetch(this.decorateUrl(params));
-      }
-      if (res && res.status === 204) {
-        return {} as any;
-      }
-
-      const json = await res.json();
-
-      data = path ? get(json, path) : json;
-    } catch (e: any) {
-      // TODO backend need to fix the search 503 api error !!!!!!!!
-      // remove this mock once backend search is fixed
-      if (params === 'search' && res?.status === 503) {
-        return {} as any;
-      }
-      this.throwError(e, undefined, res);
-    }
-
-    if (!data && res && res.status !== 204) {
-      this.throwError(undefined, undefined, res);
-    }
-
-    if (data) {
-      return data;
-    }
-  }
-}
+};

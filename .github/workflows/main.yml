@@ -36,6 +36,12 @@ jobs:
       - Lint
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn run build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -52,6 +58,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
+          target: app
           push: true
           tags: ghcr.io/formancehq/control:latest,ghcr.io/formancehq/control:${{ github.event.release.tag_name }}
           build-args: |
@@ -63,6 +70,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
+          target: app
           push: true
           tags: ghcr.io/formancehq/control:${{ github.event.release.tag_name }}
           build-args: |
@@ -74,6 +82,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
+          target: app
           push: true
           tags: ghcr.io/formancehq/control:${{ github.sha }}
           build-args: |

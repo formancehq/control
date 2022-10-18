@@ -87,3 +87,8 @@ export type LedgerInfo = {
     };
   };
 };
+
+export type LedgerStats = {
+  transactions: number;
+  accounts: number;
+};

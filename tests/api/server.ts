@@ -11,8 +11,11 @@ export default (async () => {
   app.use(bodyParser.json());
 
   // Ledger api mock
-  app.get('/ledger/_info', (req: any, res: any) => {
-    res.send({ data: mock.ledgers });
+  app.get('/api/ledger/_info', (req: any, res: any) => {
+    res.send(401);
+  });
+  app.get('/api/ledger/:id/stats', (req: any, res: any) => {
+    res.send(401);
   });
   app.get('/ledger/:ledger/accounts/:account', (req: any, res: any) => {
     res.send({ data: mock.account });

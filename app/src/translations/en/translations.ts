@@ -1,6 +1,7 @@
 export default {
   translation: {
     topbar: {
+      logout: 'Logout',
       search: {
         title: 'Search anything',
         suggestions: {

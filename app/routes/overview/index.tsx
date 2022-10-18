@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
-import { AccountBalance, NorthEast } from '@mui/icons-material';
-import { Box, CircularProgress, Link } from '@mui/material';
-import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
+import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
+import type { LoaderFunction, MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import {
-  useTransition as useAnimationTransition,
   animated,
+  useTransition as useAnimationTransition,
 } from 'react-spring';
 
 import {
@@ -28,10 +28,12 @@ import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import { Cursor } from '~/src/types/generic';
-import { Account, LedgerInfo } from '~/src/types/ledger';
+import { Account, LedgerInfo, LedgerStats } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
-import { ApiClient, API_LEDGER, API_SEARCH, IApiClient } from '~/src/utils/api';
+import { API_LEDGER, ApiClient } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -48,54 +50,63 @@ type LoaderReturnValue = {
 
 const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 
-const getData = async (ledgersList: string[], api: IApiClient) => {
-  const ledgers = ledgersList.map(async (ledger: string) => {
-    // Todo remove any
-    const stats = await api.getResource<any>(
+const getData = async (ledgersList: string[], api: ApiClient) => {
+  const ledgers = [] as any;
+  for (const ledger of ledgersList) {
+    const stats = await api.getResource<LedgerStats>(
       `${API_LEDGER}/${ledger}/stats`,
       'data'
     );
-
-    return {
+    ledgers.push({
       slug: ledger,
       stats,
       color: colors[Math.floor(Math.random() * colors.length)],
-    };
-  });
+    });
+  }
 
-  return Promise.all(ledgers).then((values) => values);
+  return ledgers;
 };
 
-export const loader: LoaderFunction = async () => {
-  const payments = await new ApiClient().postResource<Cursor<Payment>>(
-    API_SEARCH,
-    {
-      target: SearchTargets.PAYMENT,
-      size: 1,
-    },
-    'cursor'
-  );
+export const loader: LoaderFunction = async ({ request }) => {
+  async function handleData(session: Session) {
+    const api = await createApiClient(session);
+    const payments = await api.postResource<Cursor<Payment>>(
+      '/search',
+      {
+        target: SearchTargets.PAYMENT,
+        size: 1,
+      },
+      'cursor'
+    );
 
-  const accounts = await new ApiClient().postResource<Cursor<Account>>(
-    API_SEARCH,
-    {
-      target: SearchTargets.ACCOUNT,
-      size: 1,
-    },
-    'cursor'
-  );
+    const accounts = await api.postResource<Cursor<Account>>(
+      '/search',
+      {
+        target: SearchTargets.ACCOUNT,
+        size: 1,
+      },
+      'cursor'
+    );
 
-  const ledgersList = await new ApiClient().getResource<LedgerInfo>(
-    `${API_LEDGER}/_info`,
-    'data.config.storage.ledgers'
-  );
+    const ledgersList = await api.getResource<LedgerInfo>(
+      `/ledger/_info`,
+      'data.config.storage.ledgers'
+    );
 
-  return { accounts, payments, ledgers: ledgersList };
+    return {
+      accounts: accounts,
+      payments: payments,
+      ledgers: ledgersList,
+    };
+  }
+
+  return await handleResponse(await withSession(request, handleData));
 };
 
 export default function Index() {
   const { t } = useTranslation();
   const [stats, setStats] = useState<Ledger[]>([]);
+  const { currentUser } = useService();
   const data = useLoaderData<LoaderReturnValue>();
   const { api } = useService();
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
@@ -106,7 +117,7 @@ export default function Index() {
   const [searchParams] = useSearchParams();
   const urlParamsLedgers = searchParams.getAll('ledgers');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, load, stopLoading] = useOpen(true);
+  const [loading, _load, stopLoading] = useOpen(true);
 
   const loadingTransition = useAnimationTransition(ledgers.length, {
     from: { opacity: 0 },
@@ -140,55 +151,41 @@ export default function Index() {
           <Page id={overview.id}>
             <>
               {/* TODO uncomment when current user is ready*/}
-              {/*<Box*/}
-              {/*  display="flex"*/}
-              {/*  alignItems="center"*/}
-              {/*  justifyContent="space-between"*/}
-              {/*>*/}
-              {/*  <Box display="flex">*/}
-              {/*    <Avatar*/}
-              {/*      sx={{*/}
-              {/*        backgroundColor: ({ palette }) => palette.neutral[800],*/}
-              {/*        width: 72,*/}
-              {/*        height: 72,*/}
-              {/*      }}*/}
-              {/*    >*/}
-              {/*      <Person fontSize="large" />*/}
-              {/*    </Avatar>*/}
-              {/*    <Box display="flex-column" p={2} alignItems="center">*/}
-              {/*      <Typography*/}
-              {/*        variant="headline"*/}
-              {/*        sx={{ color: ({ palette }) => palette.neutral[0] }}*/}
-              {/*      >*/}
-              {/*        {`${t('pages.overview.hello')} 👋`}*/}
-              {/*      </Typography>*/}
-              {/*      <Typography*/}
-              {/*        variant="body1"*/}
-              {/*        sx={{ color: ({ palette }) => palette.neutral[400] }}*/}
-              {/*      >*/}
-              {/*        {t('pages.overview.subtitle')}*/}
-              {/*      </Typography>*/}
-              {/*    </Box>*/}
-              {/*  </Box>*/}
-              {/*  <Box>*/}
-              {/*    <LoadingButton*/}
-              {/*      startIcon={<GitHub />}*/}
-              {/*      content={t('pages.overview.githubContent')}*/}
-              {/*      sx={{ marginRight: 2 }}*/}
-              {/*      onClick={() =>*/}
-              {/*        window.open('https://github.com/numary/ledger')*/}
-              {/*      }*/}
-              {/*    />*/}
-              {/*    <LoadingButton*/}
-              {/*      startIcon={<ReadMore />}*/}
-              {/*      variant="primary"*/}
-              {/*      content={t('pages.overview.docsContent')}*/}
-              {/*      onClick={() =>*/}
-              {/*        window.open('https://docs.formance.com/oss/ledger')*/}
-              {/*      }*/}
-              {/*    />*/}
-              {/*  </Box>*/}
-              {/*</Box>*/}
+              {currentUser && currentUser.pseudo && (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box display="flex">
+                    <Avatar
+                      sx={{
+                        backgroundColor: ({ palette }) => palette.neutral[800],
+                        width: 72,
+                        height: 72,
+                      }}
+                    >
+                      <Person fontSize="large" />
+                    </Avatar>
+                    <Box display="flex-column" p={2} alignItems="center">
+                      <Typography
+                        variant="headline"
+                        sx={{ color: ({ palette }) => palette.neutral[0] }}
+                      >
+                        {`${t('pages.overview.hello')} ${
+                          currentUser.pseudo
+                        } 👋`}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: ({ palette }) => palette.neutral[400] }}
+                      >
+                        {t('pages.overview.subtitle')}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              )}
 
               {/*  STATUS */}
               <Box mt={5}>

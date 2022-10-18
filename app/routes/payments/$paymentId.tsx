@@ -4,7 +4,7 @@ import * as React from 'react';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import StopIcon from '@mui/icons-material/Stop';
 import { Box, Divider, Grid, Tooltip, Typography } from '@mui/material';
-import type { MetaFunction } from '@remix-run/node';
+import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +28,9 @@ import PayInChips from '~/src/components/Wrappers/PayInChips';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
-import { API_PAYMENT, ApiClient } from '~/src/utils/api';
+import { API_PAYMENT } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { copyTokenToClipboard } from '~/src/utils/clipboard';
 
 // TODO remove this when Reconciliation is done
@@ -56,17 +58,22 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
-  invariant(params.paymentId, 'Expected params.paymentId');
+export const loader: LoaderFunction = async ({ params, request }) => {
+  async function handleData(session: Session) {
+    invariant(params.paymentId, 'Expected params.paymentId');
+    const getPayment = await (
+      await createApiClient(session)
+    ).getResource<PaymentDetail>(
+      `${API_PAYMENT}/payments/${params.paymentId}`,
+      'data'
+    );
 
-  const getPayment = await new ApiClient().getResource<PaymentDetail>(
-    `${API_PAYMENT}/payments/${params.paymentId}`,
-    'data'
-  );
+    return {
+      details: getPayment,
+    };
+  }
 
-  return {
-    details: getPayment,
-  };
+  return handleResponse(await withSession(request, handleData));
 };
 
 const boxWithCopyToClipboard = (

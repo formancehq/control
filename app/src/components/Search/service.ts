@@ -13,7 +13,8 @@ import {
   Suggestion,
   TransactionsSuggestions,
 } from '~/src/types/search';
-import { API_SEARCH, IApiClient } from '~/src/utils/api';
+import { API_SEARCH } from '~/src/utils/api';
+import { ApiClient } from '~/src/utils/api.server';
 
 export const getSuggestions = async (
   target: SearchTargets,

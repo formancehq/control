@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type { MetaFunction } from '@remix-run/node';
+import type { MetaFunction, Session } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 
@@ -16,7 +16,9 @@ import { TableFiltersContext } from '~/src/contexts/tableFilters';
 import { Cursor } from '~/src/types/generic';
 import { Account } from '~/src/types/ledger';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import { API_SEARCH, ApiClient } from '~/src/utils/api';
+import { API_SEARCH } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { buildQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
@@ -25,21 +27,28 @@ export const meta: MetaFunction = () => ({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const url = new URL(request.url);
-  const accounts = await new ApiClient().postResource<Cursor<Account>>(
-    API_SEARCH,
-    {
-      ...buildQuery(url.searchParams),
-      target: SearchTargets.ACCOUNT,
-      policy: SearchPolicies.OR,
-    },
-    'cursor'
-  );
-  if (accounts) {
-    return accounts;
+  async function handleData(session: Session) {
+    const url = new URL(request.url);
+    const accounts = await (
+      await createApiClient(session)
+    ).postResource<Cursor<Account>>(
+      API_SEARCH,
+      {
+        ...buildQuery(url.searchParams),
+        target: SearchTargets.ACCOUNT,
+        policy: SearchPolicies.OR,
+      },
+      'cursor'
+    );
+
+    if (accounts) {
+      return accounts;
+    }
+
+    return null;
   }
 
-  return null;
+  return handleResponse(await withSession(request, handleData));
 };
 
 export function ErrorBoundary({ error }: { error: Error }) {

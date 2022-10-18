@@ -4,7 +4,8 @@ import i18n from '../../../translations';
 
 import { ObjectOf } from '~/src/types/generic';
 import { LedgerResources, LedgerSubResources } from '~/src/types/ledger';
-import { API_LEDGER, IApiClient } from '~/src/utils/api';
+import { API_LEDGER } from '~/src/utils/api';
+import { ApiClient } from '~/src/utils/api.server';
 
 export const prettyJson = (json: JSON | ObjectOf<any>): string =>
   JSON.stringify(json, undefined, 4);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Box, Grid, Typography, useTheme } from '@mui/material';
-import type { MetaFunction } from '@remix-run/node';
+import type { MetaFunction, Session } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,9 @@ import {
   Volume,
 } from '~/src/types/ledger';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
+import { API_LEDGER, API_SEARCH } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 const normalizeBalance = (account: Account): AccountHybrid => ({
   balances: account.balances
@@ -60,37 +62,42 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-export const loader: LoaderFunction = async ({
-  params,
-}): Promise<{
-  account: AccountHybrid;
-  transactions: Cursor<Transaction> | undefined;
-} | null> => {
-  invariant(params.ledgerId, 'Expected params.ledgerId');
-  invariant(params.accountId, 'Expected params.accountId');
-  const api = new ApiClient();
-  const account = await api.getResource<Account>(
-    `${API_LEDGER}/${params.ledgerId}/${LedgerResources.ACCOUNTS}/${params.accountId}`,
-    'data'
-  );
-  const transactions = await api.postResource<Cursor<Transaction>>(
-    API_SEARCH,
-    {
-      size: 5,
-      policy: SearchPolicies.OR,
-      terms: [`destination=${params.accountId}`, `source=${params.accountId}`],
-      target: SearchTargets.TRANSACTION,
-    },
-    'cursor'
-  );
+export const loader: LoaderFunction = async ({ params, request }) => {
+  async function handleData(session: Session) {
+    invariant(params.ledgerId, 'Expected params.ledgerId');
+    invariant(params.accountId, 'Expected params.accountId');
+    const api = await createApiClient(
+      session,
+      process.env.API_URL_BACK as string
+    );
+    const account = await api.getResource<Account>(
+      `${API_LEDGER}/${params.ledgerId}/${LedgerResources.ACCOUNTS}/${params.accountId}`,
+      'data'
+    );
+    const transactions = await api.postResource<Cursor<Transaction>>(
+      API_SEARCH,
+      {
+        size: 5,
+        policy: SearchPolicies.OR,
+        terms: [
+          `destination=${params.accountId}`,
+          `source=${params.accountId}`,
+        ],
+        target: SearchTargets.TRANSACTION,
+      },
+      'cursor'
+    );
 
-  if (account)
-    return {
-      account: normalizeBalance(account),
-      transactions,
-    };
+    if (account)
+      return {
+        account: normalizeBalance(account),
+        transactions,
+      };
 
-  return null;
+    return null;
+  }
+
+  return handleResponse(await withSession(request, handleData));
 };
 
 export default function Index() {
