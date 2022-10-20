@@ -71,23 +71,3 @@ export const logger = (
     page: typeof window !== 'undefined' ? window.location : '',
   });
 };
-
-export const returnHandler = async <T>(
-  response?: Response,
-  from = 'utils/api'
-): Promise<undefined | T> => {
-  if (response && response?.status === 200) {
-    return (await response.json()) as T;
-  } else {
-    logger(
-      undefined,
-      from,
-      { status: response?.status },
-      {
-        url: response?.url,
-      }
-    );
-
-    return undefined;
-  }
-};

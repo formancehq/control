@@ -1,9 +1,7 @@
-import * as React from 'react';
-
 import { ActionFunction, json, Session } from '@remix-run/node';
 
 import { createApiClient } from '~/src/utils/api.server';
-import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { withSession } from '~/src/utils/auth.server';
 
 export const action: ActionFunction = async ({ request }) => {
   async function handleData(session: Session) {
