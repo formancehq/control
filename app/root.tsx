@@ -105,7 +105,6 @@ export const loader: LoaderFunction = async ({ request }) => {
           avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
           pseudo,
           scp: payload ? payload.scp : [],
-          jwt: sessionHolder.access_token,
         };
       }
 

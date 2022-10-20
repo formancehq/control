@@ -28,6 +28,7 @@ export type SessionWrapper = {
   cookieValue?: string;
   callbackResult: any;
 };
+
 export type CurrentUser = {
   sub: string;
   scp: string[];
@@ -35,8 +36,8 @@ export type CurrentUser = {
   email_verified: boolean;
   avatarLetter: string | undefined;
   pseudo: string | undefined;
-  jwt: string;
 };
+
 export type Authentication = {
   access_token: string;
   refresh_token: string;
