@@ -3,7 +3,7 @@
 ## Stack
 
 - [Remix Docs](https://remix.run/docs)
-- [Formance Local Stack](https://github.com/numary/stack)
+- [Formance Local Stack](https://github.com/formancehq/stack)
 
 ## Development
 
@@ -14,7 +14,7 @@ touch .env
 ```
 
 ```
-// works with [Formance Local Stack](https://github.com/numary/stack)
+// works with [Formance Local Stack](https://github.com/formancehq/stack)
 API_URL=http://localhost/api
 CLIENT_ID=control
 CLIENT_SECRET=mysupersecret
