@@ -3,8 +3,16 @@ import * as React from 'react';
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 import { ThemeProvider } from '@mui/material/styles';
+import { trace } from '@opentelemetry/api';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { Resource } from '@opentelemetry/resources';
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/server-runtime';
+import { RemixInstrumentation } from 'opentelemetry-instrumentation-remix';
 import { renderToString } from 'react-dom/server';
 
 import createEmotionCache from './src/utils/createEmotionCache';
@@ -19,6 +27,32 @@ export default async function handleRequest(
 ) {
   const cache = createEmotionCache();
   const { extractCriticalToChunks } = createEmotionServer(cache);
+
+  // otel
+  const collectorOptions = {
+    url: process.env.OPENTEL_COLLECTOR,
+    concurrencyLimit: 10, // an optional limit on pending requests
+  };
+  const exporter = new OTLPTraceExporter(collectorOptions);
+  const provider = new NodeTracerProvider({
+    resource: new Resource({
+      [SemanticResourceAttributes.SERVICE_NAME]: 'control',
+    }),
+  });
+  provider.addSpanProcessor(
+    new BatchSpanProcessor(exporter, {
+      maxQueueSize: 100,
+      maxExportBatchSize: 10,
+      scheduledDelayMillis: 500,
+      exportTimeoutMillis: 30000,
+    })
+  );
+  provider.register();
+  registerInstrumentations({
+    instrumentations: [new RemixInstrumentation()],
+    tracerProvider: provider,
+  });
+  trace.getTracer('control');
 
   const MuiRemixServer = () => (
     <CacheProvider value={cache}>

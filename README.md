@@ -22,6 +22,7 @@ CLIENT_SECRET=mysupersecret
 ENCRYPTION_KEY=a18a6e9cbb589a5311aaa4c5adbd47d788bb9840ae355a234c0344687c595be4
 # randomBytes(16)
 ENCRYPTION_IV=5677f20d0ea3048a68b3781ee34089a9
+OPENTEL_COLLECTOR=http://localhost:4318/v1/traces
 REDIRECT_URI=http://localhost:3000
 ```
 
@@ -30,6 +31,8 @@ yarn dev
 ```
 
 This starts your app in development mode, rebuilding assets on file changes.
+
+If you need to run open-tel use `docker compose up`
 
 ## Deployment
 
