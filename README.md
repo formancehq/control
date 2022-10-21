@@ -22,7 +22,8 @@ ENCRYPTION_KEY=mysuperencryptionkey
 # randomBytes(8)
 ENCRYPTION_IV=6f0c77c78a624022
 REDIRECT_URI=http://localhost:3000
-OPENTEL_COLLECTOR=http://localhost:4318/v1/traces
+OTEL_TRACES=false
+OTEL_TRACES_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 ```
 
 ```sh
@@ -31,7 +32,7 @@ yarn dev
 
 This starts your app in development mode, rebuilding assets on file changes.
 
-If you need to run open-tel use `docker compose up`
+If you need to run open-tel use `docker compose up` and change OTEL_TRACES to true.
 
 ## Deployment
 
