@@ -1,6 +1,10 @@
 version: '3.8'
-volumes:
-  postgres:
 services:
-  otlp-exporter:
+  otel-collector:
     image: otel/opentelemetry-collector
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP http receiver
