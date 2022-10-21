@@ -13,6 +13,7 @@ import {
 
 export const COOKIE_NAME = 'auth_session';
 export const AUTH_CALLBACK_ROUTE = '/auth/login';
+export const REDIRECT_URI = process.env.REDIRECT_URI;
 
 export interface State {
   redirectTo: string;
@@ -94,10 +95,9 @@ export const getJwtPayload = (
 
 export const exchangeToken = async (
   openIdConfig: ObjectOf<any>,
-  code: string,
-  url: URL
+  code: string
 ): Promise<Authentication> => {
-  const uri = `${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}`;
+  const uri = `${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}`;
 
   return await fetch(uri).then((response) => {
     if (response.status != 200) {

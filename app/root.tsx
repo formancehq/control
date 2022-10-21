@@ -52,6 +52,7 @@ import {
   getOpenIdConfig,
   getSession,
   handleResponse,
+  REDIRECT_URI,
   refreshToken,
   State,
   withSession,
@@ -76,7 +77,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!cookie) {
     // TODO add method on auth.server with URL params to be more elegant
     return redirect(
-      `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${url.origin}${AUTH_CALLBACK_ROUTE}&state=${stateAsBase64}&response_type=code&scope=openid email offline_access`
+      `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}&state=${stateAsBase64}&response_type=code&scope=openid email offline_access`
     );
   }
 
@@ -104,13 +105,12 @@ export const loader: LoaderFunction = async ({ request }) => {
           avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
           pseudo,
           scp: payload ? payload.scp : [],
-          jwt: sessionHolder.access_token,
         };
       }
 
       return {
         metas: {
-          origin: url.origin,
+          origin: REDIRECT_URI,
           openIdConfig,
         },
         currentUser,

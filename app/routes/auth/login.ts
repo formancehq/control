@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async ({
   const openIdConfig = await getOpenIdConfig();
   if (code) {
     // get through authentication callback
-    const authentication = await exchangeToken(openIdConfig, code, url);
+    const authentication = await exchangeToken(openIdConfig, code);
     const encryptedCookie = encrypt(authentication);
     session.set(COOKIE_NAME, encryptedCookie);
 
