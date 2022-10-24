@@ -248,7 +248,7 @@ export default {
               actionEvent: 'open-create-webhooks-modal',
             },
           },
-          oauthClients: {
+          oAuthClients: {
             title: 'Oauth Clients',
             pageButton: {
               actionLabel: 'Add an Oauth Client',
@@ -257,7 +257,6 @@ export default {
             },
           },
         },
-      },
       },
       oAuthClient: {
         title: 'OAuth Client',

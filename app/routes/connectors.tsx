@@ -7,7 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Page, TabButton } from '@numaryhq/storybook';
 
-import { connectors as connectorsConfig } from '~/src/components/Navbar/routes';
+import {
+  connectors as connectorsConfig,
+  CONNECTORS_ROUTE,
+  OAUTH_CLIENTS_ROUTE,
+} from '~/src/components/Navbar/routes';
 
 export const meta: MetaFunction = () => ({
   title: 'Connectors',
@@ -19,17 +23,17 @@ export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
   // TODO make factory when we add webhooks
-  const isPathNameOauthApps = location.pathname.includes('oauth-apps');
+  const isPathNameOauthApps = location.pathname.includes('oauth-clients');
 
   const currentSubRouteElement = isPathNameOauthApps
     ? {
         actionLabel: t(
-          'pages.connectors.tabs.oauthClients.pageButton.actionLabel'
+          'pages.connectors.tabs.oAuthClients.pageButton.actionLabel'
         ),
         onClick: () => 'TODO',
-        actionId: t('pages.connectors.tabs.oauthClients.pageButton.actionId'),
+        actionId: t('pages.connectors.tabs.oAuthClients.pageButton.actionId'),
         actionEvent: t(
-          'pages.connectors.tabs.oauthClients.pageButton.actionEvent'
+          'pages.connectors.tabs.oAuthClients.pageButton.actionEvent'
         ),
       }
     : {
@@ -53,15 +57,15 @@ export default function Index() {
             active={!isPathNameOauthApps}
             label={t('pages.connectors.tabs.apps.title')}
             map={{}}
-            onClick={() => navigate('/connectors')}
+            onClick={() => navigate(CONNECTORS_ROUTE)}
             type="connectors"
           />
           <TabButton
             active={isPathNameOauthApps}
-            label={t('pages.connectors.tabs.oauthClients.title')}
+            label={t('pages.connectors.tabs.oAuthClients.title')}
             map={{}}
-            onClick={() => navigate('oauth-apps')}
-            type="oauthapps"
+            onClick={() => navigate(OAUTH_CLIENTS_ROUTE)}
+            type="oAuthClients"
           />
         </Box>
         <Outlet />

@@ -125,12 +125,17 @@ export default function Index() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}
+      >
         <Modal
           button={{
             id: 'create',
             variant: 'dark',
             endIcon: <Add />,
+            content: t(
+              'pages.connectors.tabs.oAuthClients.pageButton.actionLabel'
+            ),
           }}
           modal={{
             PaperProps: { sx: { minWidth: '500px' } },
