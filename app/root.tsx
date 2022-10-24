@@ -142,35 +142,35 @@ const Document = withEmotionCache(
 
     return (
       <html lang="en">
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <meta name="theme-color" content={theme.palette.primary.main} />
-          <title>{title || 'Formance'}</title>
-          <Meta />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Inter:300,400,500,700&display=swap"
-          />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700&display=swap"
-          />
-          <Links />
-          <meta
-            name="emotion-insertion-point"
-            content="emotion-insertion-point"
-          />
-        </head>
-        <body>
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-        </body>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="theme-color" content={theme.palette.primary.main} />
+        <title>{title || 'Formance'}</title>
+        <Meta />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Inter:300,400,500,700&display=swap"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700&display=swap"
+        />
+        <Links />
+        <meta
+          name="emotion-insertion-point"
+          content="emotion-insertion-point"
+        />
+      </head>
+      <body>
+      {children}
+      <ScrollRestoration />
+      <Scripts />
+      </body>
       </html>
     );
   }
