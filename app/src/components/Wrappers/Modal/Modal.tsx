@@ -38,18 +38,18 @@ const Modal: FunctionComponent<ModalProps> = ({ children, modal, button }) => {
   };
   const actions = modal.actions
     ? {
-        ...modal.actions,
-        save: {
-          ...modal.actions.save,
-          onClick: handleSave,
-          label: modal.actions.save?.label || t('common.dialog.saveButton'),
-        },
-        cancel: {
-          ...modal.actions.cancel,
-          onClick: handleClose,
-          label: modal.actions.cancel?.label || t('common.dialog.cancelButton'),
-        },
-      }
+      ...modal.actions,
+      save: {
+        ...modal.actions.save,
+        onClick: handleSave,
+        label: modal.actions.save?.label || t('common.dialog.saveButton'),
+      },
+      cancel: {
+        ...modal.actions.cancel,
+        onClick: handleClose,
+        label: modal.actions.cancel?.label || t('common.dialog.cancelButton'),
+      },
+    }
     : undefined;
 
   return (
