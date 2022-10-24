@@ -9,6 +9,7 @@ import {
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
   getRoute,
+  OAUTH_CLIENTS_ROUTE,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
 } from '~/src/components/Navbar/routes';
@@ -44,6 +45,23 @@ const buildPaymentBreadcrumbs = (
   } else {
     return [bread, { label: id }];
   }
+};
+
+const buildOAuthClientBreadcrumbs = (
+  navigate: NavigateFunction,
+  id: string
+): BreadcrumbsLink[] => {
+  const bread = {
+    label: i18n.t('common.breadcrumbs.targets.oAuthClients'),
+    onClick: () => navigate(getRoute(OAUTH_CLIENTS_ROUTE)),
+  };
+
+  return [
+    bread,
+    {
+      label: id,
+    },
+  ];
 };
 
 const buildLedgerBreadcrumbs = (
@@ -82,6 +100,7 @@ export const breadcrumbsFactory = (
     '/ledgers/:ledgerId/transactions/:transactionId'
   );
   const paymentsRoute = match('/payments/:paymentId');
+  const oAuthClientsRoute = match('/oauth-clients/:oAuthClientId');
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
@@ -117,6 +136,9 @@ export const breadcrumbsFactory = (
 
   if (paymentsRoute) {
     return buildPaymentBreadcrumbs(navigate, params.paymentId, urlSearchParams);
+  }
+  if (oAuthClientsRoute) {
+    return buildOAuthClientBreadcrumbs(navigate, params.oAuthClientId);
   }
 
   return undefined;

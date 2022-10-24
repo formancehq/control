@@ -11,11 +11,13 @@ export type ModalProps = {
   modal: Omit<SbModalProps, 'actions' | 'open'> & {
     actions?: {
       cancel?: {
-        label: string;
-        onClick: () => void;
+        label?: string;
+        onClick?: () => Promise<any>;
       };
-      save?: ModalActionsProps & {
+      save?: Omit<ModalActionsProps, 'label' | 'onClick'> & {
         disabled?: boolean;
+        label?: string;
+        onClick?: () => Promise<any>;
       };
     };
   };

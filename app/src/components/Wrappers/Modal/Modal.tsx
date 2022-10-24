@@ -1,26 +1,42 @@
 import React, { FunctionComponent, useState } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { ModalProps } from './types';
 
 import { LoadingButton, Modal as SbModal } from '@numaryhq/storybook';
 
 const Modal: FunctionComponent<ModalProps> = ({ children, modal, button }) => {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
   const handleOpen = () => {
     button.onClick && button.onClick();
     setOpen(true);
   };
-  const handleClose = () => setOpen(false);
+  const handleClose = async () => {
+    modal.actions &&
+      modal.actions.cancel &&
+      (await modal.actions.cancel.onClick());
+    setOpen(false);
+  };
 
-  const handleSave = () => {
-    modal.actions && modal.actions.save && modal.actions.save.onClick();
-    handleClose();
+  const handleSave = async () => {
+    modal.actions && modal.actions.save && (await modal.actions.save.onClick());
+    await handleClose();
   };
   const actions = modal.actions
     ? {
         ...modal.actions,
-        save: { ...modal.actions.save, onClick: handleSave },
-        cancel: { ...modal.actions.cancel, onClick: handleClose },
+        save: {
+          ...modal.actions.save,
+          onClick: handleSave,
+          label: modal.actions.save?.label || t('common.dialog.saveButton'),
+        },
+        cancel: {
+          ...modal.actions.cancel,
+          onClick: handleClose,
+          label: modal.actions.cancel?.label || t('common.dialog.cancelButton'),
+        },
       }
     : undefined;
 
