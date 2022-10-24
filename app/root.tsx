@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
+  useTheme,
 } from '@mui/material';
 import { redirect } from '@remix-run/node';
 import {
@@ -42,15 +43,18 @@ import {
   logger,
 } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
+import { createApiClient } from '~/src/utils/api.server';
 import {
   AUTH_CALLBACK_ROUTE,
   COOKIE_NAME,
   decrypt,
+  encrypt,
   getJwtPayload,
   getOpenIdConfig,
   getSession,
   handleResponse,
   REDIRECT_URI,
+  refreshToken,
   State,
   withSession,
 } from '~/src/utils/auth.server';
@@ -79,86 +83,44 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   return handleResponse(
-    await withSession(request, async () => {
+    await withSession(request, async (session) => {
+      let currentUser = undefined;
       const sessionHolder = decrypt<Authentication>(cookie);
-      const payload = getJwtPayload(sessionHolder);
+
+      const refresh = await refreshToken(
+        openIdConfig,
+        sessionHolder.refresh_token
+      );
+      if (refresh.access_token) {
+        session.set(COOKIE_NAME, encrypt(refresh));
+        const api = await createApiClient(session, '');
+        currentUser = await api.getResource<CurrentUser>(
+          openIdConfig.userinfo_endpoint
+        );
+        console.log(currentUser);
+        const payload = getJwtPayload(sessionHolder);
+        const pseudo =
+          currentUser && currentUser.email
+            ? currentUser.email.split('@')[0]
+            : undefined;
+        currentUser = {
+          ...currentUser,
+          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
+          pseudo,
+          scp: payload ? payload.scp : [],
+        };
+      }
 
       return {
         metas: {
           origin: REDIRECT_URI,
           openIdConfig,
         },
-        currentUser: {
-          scp: payload ? payload.scp : [],
-        },
+        currentUser,
       };
     })
   );
 };
-
-const renderError = (
-  navigate: NavigateFunction,
-  t: any,
-  message?: string,
-  description?: string
-): ReactElement => (
-  <Backdrop
-    sx={{
-      zIndex: (theme) => theme.zIndex.drawer + 1,
-    }}
-    open={true}
-  >
-    <Box
-      display="flex"
-      justifyContent="space-evenly"
-      sx={{
-        width: '100%',
-        height: '100%',
-        background: ({ palette }) => palette.neutral[0],
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          alignSelf: 'center',
-          background: ({ palette }) => palette.neutral[0],
-        }}
-      >
-        <Typography variant="large3x" mb={3}>
-          {t('common.boundaries.title')}
-        </Typography>
-        <Typography variant="h2" mt={3}>
-          {message || t('common.boundaries.errorState.error.title')}
-        </Typography>
-        <Typography variant="body2" mt={3}>
-          {description || t('common.boundaries.errorState.error.description')}
-        </Typography>
-        <Box sx={{ display: 'flex' }}>
-          <LoadingButton
-            id="go-back-home"
-            content="Go back home"
-            variant="primary"
-            startIcon={<Home />}
-            onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
-            sx={{ mt: 5, mr: 1 }}
-          />
-          <LoadingButton
-            id="logout"
-            content={t('topbar.logout')}
-            variant="stroke"
-            startIcon={<Logout />}
-            onClick={() => {
-              window.location.href = `${window.origin}/auth/redirect-logout`;
-            }}
-            sx={{ mt: 5 }}
-          />
-        </Box>
-      </Box>
-    </Box>
-  </Backdrop>
-);
 
 const Document = withEmotionCache(
   ({ children, title }: DocumentProps, emotionCache) => {
@@ -214,12 +176,77 @@ const Document = withEmotionCache(
   }
 );
 
+const renderError = (
+  navigate: NavigateFunction,
+  t: any,
+  message?: string,
+  description?: string
+): ReactElement => (
+  <Backdrop
+    sx={{
+      zIndex: (theme) => theme.zIndex.drawer + 1,
+    }}
+    open={true}
+  >
+    <Box
+      display="flex"
+      justifyContent="space-evenly"
+      sx={{
+        width: '100%',
+        height: '100%',
+        background: ({ palette }) => palette.neutral[0],
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          alignSelf: 'center',
+          background: ({ palette }) => palette.neutral[0],
+        }}
+      >
+        <Typography variant="large3x" mb={3}>
+          {t('common.boundaries.title')}
+        </Typography>
+        <Typography variant="h2" mt={3}>
+          {message || t('common.boundaries.errorState.error.title')}
+        </Typography>
+        <Typography variant="body2" mt={3}>
+          {description || t('common.boundaries.errorState.error.description')}
+        </Typography>
+        <Box sx={{ display: 'flex' }}>
+          <LoadingButton
+            id="go-back-home"
+            content="Go back home"
+            variant="primary"
+            startIcon={<Home />}
+            onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
+            sx={{ mt: 5, mr: 1 }}
+          />
+          <LoadingButton
+            id="logout"
+            content={t('topbar.logout')}
+            variant="stroke"
+            startIcon={<Logout />}
+            onClick={() => {
+              navigate('auth/redirect-logout');
+            }}
+            sx={{ mt: 5 }}
+          />
+        </Box>
+      </Box>
+    </Box>
+  </Backdrop>
+);
+
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { metas, currentUser } = useLoaderData();
-  const [user, setUser] = useState<CurrentUser>(currentUser);
+  const { currentUser, metas } = useLoaderData();
+  const navigate = useNavigate();
   const { t } = useTranslation();
+  const { typography } = useTheme();
   const [loading, _load, stopLoading] = useOpen(true);
   const [feedback, setFeedback] = useState({
     active: false,
@@ -256,11 +283,23 @@ export default function App() {
             setTimeout(refreshToken, interval)
           )
           .catch(async (reason) => {
-            console.info('Error while refreshing token: ', reason);
             if (reason?.status === 400) {
               console.info('End session');
-              window.location.href = `${origin}/auth/redirect-logout`;
+              navigate('auth/redirect-logout');
+            } else {
+              // retry one last time
+              console.info('Retry refresh');
+              const refresh = await fetch(`${metas.origin}/auth/refresh`);
+              switch (refresh?.status) {
+                case 200:
+                  return refresh.json();
+                case 500:
+                  return await fetch(`${metas.origin}/auth/logout`);
+                default:
+                  return navigate('/auth/redirect-logout');
+              }
             }
+            console.info('Error refreshing token: ', reason);
           });
       };
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -287,8 +326,7 @@ export default function App() {
         <ServiceContext.Provider
           value={{
             api: new ReactApiClient(),
-            currentUser: user,
-            setCurrentUser: (user: CurrentUser) => setUser(user),
+            currentUser,
             metas,
             snackbar: displayFeedback,
           }}
