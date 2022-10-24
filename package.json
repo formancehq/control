@@ -22,7 +22,7 @@
     "@mui/icons-material": "^5.8.4",
     "@mui/lab": "^5.0.0-alpha.92",
     "@mui/material": "latest",
-    "@numaryhq/storybook": "^0.6.55",
+    "@numaryhq/storybook": "^0.6.57",
     "@opentelemetry/api": "^1.2.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.33.0",
     "@opentelemetry/resources": "^1.7.0",
