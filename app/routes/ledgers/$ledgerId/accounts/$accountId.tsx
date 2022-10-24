@@ -66,10 +66,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   async function handleData(session: Session) {
     invariant(params.ledgerId, 'Expected params.ledgerId');
     invariant(params.accountId, 'Expected params.accountId');
-    const api = await createApiClient(
-      session,
-      process.env.API_URL_BACK as string
-    );
+    const api = await createApiClient(session);
     const account = await api.getResource<Account>(
       `${API_LEDGER}/${params.ledgerId}/${LedgerResources.ACCOUNTS}/${params.accountId}`,
       'data'

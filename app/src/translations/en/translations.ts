@@ -258,45 +258,60 @@ export default {
           },
         },
       },
-      oauthClient: {
+      },
+      oAuthClient: {
         title: 'OAuth Client',
         sections: {
           details: {
             title: 'Details',
+            name: 'Name',
+            description: 'Description',
+            public: 'Public',
+            trusted: 'Trusted',
           },
           secrets: {
             title: 'Secrets',
+            create: 'Create new secret',
+            clear:
+              'For security purpose, full clear secret display is only ephemeral. Keep it safe somewhere',
             table: {
               columnLabel: {
-                name: 'Name',
-                public: 'Public',
+                lastDigits: 'Last digits',
+                clear: '',
               },
             },
           },
         },
         forms: {
-          oauthClient: {
-            create: {
-              name: {
-                label: 'Name',
-                errors: {
-                  valid: 'Name is required',
-                },
-              },
-              description: {
-                label: 'Description',
+          createSecret: {
+            name: {
+              label: 'Name',
+            },
+          },
+          deleteSecret: {
+            name: {
+              label: 'Name',
+            },
+          },
+        },
+      },
+      oAuthClients: {
+        table: {
+          columnLabel: {
+            name: 'Name',
+            public: 'Public',
+          },
+        },
+        form: {
+          create: {
+            name: {
+              label: 'Name',
+              errors: {
+                required: 'App name is required',
               },
             },
-            delete: {},
-            createSecret: {
-              name: {
-                label: 'Name',
-              },
-            },
-            deleteSecret: {
-              name: {
-                label: 'Name',
-              },
+            description: {
+              placeholder: 'Write a quick description',
             },
           },
         },
@@ -365,6 +380,7 @@ export default {
           ledgers: 'Ledgers',
           accounts: 'Accounts',
           transactions: 'Transactions',
+          oAuthClients: 'OAuth Apps',
         },
       },
       search: {

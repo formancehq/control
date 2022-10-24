@@ -84,7 +84,6 @@ const Metadata: FunctionComponent<MetadataProps> = ({
           title: t('common.dialog.updateTitle'),
           actions: {
             cancel: {
-              onClick: noop,
               label: t('common.dialog.cancelButton'),
             },
             save: {

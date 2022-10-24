@@ -4,8 +4,7 @@ import i18n from '../../../translations';
 
 import { ObjectOf } from '~/src/types/generic';
 import { LedgerResources, LedgerSubResources } from '~/src/types/ledger';
-import { API_LEDGER } from '~/src/utils/api';
-import { ApiClient } from '~/src/utils/api.server';
+import { API_LEDGER, ApiClient } from '~/src/utils/api';
 
 export const prettyJson = (json: JSON | ObjectOf<any>): string =>
   JSON.stringify(json, undefined, 4);
@@ -15,7 +14,7 @@ export const submit = async (
   id: string,
   resource: LedgerResources.TRANSACTIONS | LedgerResources.ACCOUNTS,
   ledger: string,
-  api: IApiClient
+  api: ApiClient
 ): Promise<boolean | undefined> =>
   await api.postResource<boolean>(
     `${API_LEDGER}/${ledger}/${resource}/${id}/${LedgerSubResources.METADATA}`,
