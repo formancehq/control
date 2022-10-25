@@ -1,14 +1,15 @@
 import * as React from 'react';
+import { useState } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Add, ArrowRight } from '@mui/icons-material';
-import { Box } from '@mui/material';
+import { Add, ArrowRight, Delete, Done } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
@@ -82,7 +83,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   const { t } = useTranslation();
-  const oauthClients = useLoaderData();
+  const data = useLoaderData();
   const navigate = useNavigate();
   const { api } = useService();
   const {
@@ -95,6 +96,7 @@ export default function Index() {
     resolver: yupResolver(schema),
     mode: 'onTouched',
   });
+  const [oAuthClients, setOAuthClients] = useState<OAuthClient[]>(data);
 
   const onSave = async () => {
     const validated = await trigger('name');
@@ -113,13 +115,48 @@ export default function Index() {
     }
   };
 
+  const onDelete = async (id: string) => {
+    const result = await api.deleteResource<unknown>(
+      `${API_AUTH}/clients/${id}`
+    );
+    if (result) {
+      setOAuthClients(oAuthClients.filter((client) => client.id !== id));
+    }
+  };
+
   const renderRowActions = (oauthClient: OAuthClient) => (
-    <Box component="span" key={oauthClient.id}>
+    <Box component="span" key={oauthClient.id} display="inline-flex">
       <LoadingButton
         id={`show-${oauthClient.id}`}
         onClick={() => navigate(getRoute(OAUTH_CLIENT_ROUTE, oauthClient.id))}
         endIcon={<ArrowRight />}
       />
+      <Modal
+        button={{
+          id: `delete-${oauthClient.id}`,
+          startIcon: <Delete />,
+        }}
+        modal={{
+          id: `delete-${oauthClient.id}-modal`,
+          PaperProps: { sx: { minWidth: '500px' } },
+          title: t('common.dialog.deleteTitle'),
+          actions: {
+            save: {
+              variant: 'error',
+              label: t('common.dialog.confirmButton'),
+              onClick: () => onDelete(oauthClient.id),
+            },
+          },
+        }}
+      >
+        <Typography>
+          <Trans
+            i18nKey="common.dialog.messages.confirmDelete"
+            values={{ item: oauthClient.name }}
+            components={{ bold: <strong /> }}
+          />
+        </Typography>
+      </Modal>
     </Box>
   );
 
@@ -138,6 +175,7 @@ export default function Index() {
             ),
           }}
           modal={{
+            id: 'create-oauth-client-modal',
             PaperProps: { sx: { minWidth: '500px' } },
             title: t('common.dialog.createTitle'),
             actions: {
@@ -186,8 +224,8 @@ export default function Index() {
       </Box>
       <Table
         id="oauth-clients-list"
-        items={oauthClients}
-        action={true}
+        items={oAuthClients}
+        action
         withPagination={false}
         columns={[
           {
@@ -202,7 +240,7 @@ export default function Index() {
         renderItem={(oAuthClient: OAuthClient, index: number) => (
           <Row
             key={index}
-            keys={['name', 'public']}
+            keys={['name', oAuthClient.public ? <Done /> : null]}
             item={oAuthClient}
             renderActions={() => renderRowActions(oAuthClient)}
           />

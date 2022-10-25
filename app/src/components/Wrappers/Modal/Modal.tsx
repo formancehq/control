@@ -14,14 +14,26 @@ const Modal: FunctionComponent<ModalProps> = ({ children, modal, button }) => {
     setOpen(true);
   };
   const handleClose = async () => {
-    modal.actions &&
+    if (
+      modal &&
+      modal.actions &&
       modal.actions.cancel &&
-      (await modal.actions.cancel.onClick());
+      modal.actions.cancel.onClick
+    ) {
+      await modal.actions.cancel.onClick();
+    }
     setOpen(false);
   };
 
   const handleSave = async () => {
-    modal.actions && modal.actions.save && (await modal.actions.save.onClick());
+    if (
+      modal &&
+      modal.actions &&
+      modal.actions.save &&
+      modal.actions.save.onClick
+    ) {
+      await modal.actions.save.onClick();
+    }
     await handleClose();
   };
   const actions = modal.actions
