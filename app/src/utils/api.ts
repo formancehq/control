@@ -15,6 +15,13 @@ export const errorsMap = {
   503: Errors.SERVICE_DOWN,
 };
 
+export enum Methods {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+}
+
 export interface ApiClient {
   postResource: <T>(
     params: string,
@@ -22,6 +29,7 @@ export interface ApiClient {
     path?: string
   ) => Promise<T | undefined>;
   getResource: <T>(params: string, path?: string) => Promise<T | undefined>;
+  deleteResource: <T>(params: string, path?: string) => Promise<T | undefined>;
 }
 
 export type SessionWrapper = {

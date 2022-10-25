@@ -396,8 +396,14 @@ export default {
       dialog: {
         createTitle: 'Create',
         updateTitle: 'Update',
+        deleteTitle: 'Delete confirmation ✋',
         cancelButton: 'Cancel',
         saveButton: 'Save',
+        confirmButton: 'Confirm',
+        messages: {
+          confirmDelete:
+            '⚠️ Are you sure you want to delete <bold>{{item}}</bold> ? This action is no reversible.',
+        },
       },
       forms: {
         metadata: {
