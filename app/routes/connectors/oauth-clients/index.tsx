@@ -132,7 +132,7 @@ export default function Index() {
           button={{
             id: 'create',
             variant: 'dark',
-            endIcon: <Add />,
+            startIcon: <Add />,
             content: t(
               'pages.connectors.tabs.oAuthClients.pageButton.actionLabel'
             ),
