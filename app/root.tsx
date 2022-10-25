@@ -95,6 +95,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         currentUser = await api.getResource<CurrentUser>(
           openIdConfig.userinfo_endpoint
         );
+        console.log(currentUser);
         const payload = getJwtPayload(sessionHolder);
         const pseudo =
           currentUser && currentUser.email
