@@ -7,7 +7,7 @@ import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { get, omit } from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useLocation, useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 
@@ -21,6 +21,7 @@ import {
 } from '@numaryhq/storybook';
 
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
 import { OAuthClient, OAuthSecret } from '~/src/types/oauthClient';
@@ -74,13 +75,43 @@ export default function Index() {
     oAuthClient.Secrets.map((secret) => ({ ...secret, clear: undefined }))
   );
 
+  const onDelete = async (idSecret: string) => {
+    const result = await api.deleteResource<unknown>(
+      `${API_AUTH}/clients/${id}/secrets/${idSecret}`
+    );
+    if (result) {
+      setSecrets(secrets.filter((secret) => secret.id !== idSecret));
+    }
+  };
+
   const renderRowActions = (secret: OAuthSecret) => (
     <Box component="span" key={secret.id}>
-      <LoadingButton
-        id={`delete-${secret.id}`}
-        onClick={() => null}
-        endIcon={<Delete />}
-      />
+      <Modal
+        button={{
+          id: `delete-${secret.id}`,
+          startIcon: <Delete />,
+        }}
+        modal={{
+          id: `delete-${secret.id}-modal`,
+          PaperProps: { sx: { minWidth: '500px' } },
+          title: t('common.dialog.deleteTitle'),
+          actions: {
+            save: {
+              variant: 'error',
+              label: t('common.dialog.confirmButton'),
+              onClick: () => onDelete(secret.id),
+            },
+          },
+        }}
+      >
+        <Typography>
+          <Trans
+            i18nKey="common.dialog.messages.confirmDelete"
+            values={{ item: secret.lastDigits }}
+            components={{ bold: <strong /> }}
+          />
+        </Typography>
+      </Modal>
     </Box>
   );
   const handleCreateSecret = async () => {
