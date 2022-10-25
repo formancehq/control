@@ -5,7 +5,7 @@ import type { MetaFunction } from '@remix-run/node';
 import { Outlet, useLocation, useNavigate } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, TabButton } from '@numaryhq/storybook';
+import { Page, Tabs } from '@numaryhq/storybook';
 
 import {
   connectors as connectorsConfig,
@@ -25,49 +25,25 @@ export default function Index() {
   // TODO make factory when we add webhooks
   const isPathNameOauthApps = location.pathname.includes('oauth-clients');
 
-  const currentSubRouteElement = isPathNameOauthApps
-    ? {
-        actionLabel: t(
-          'pages.connectors.tabs.oAuthClients.pageButton.actionLabel'
-        ),
-        onClick: () => 'TODO',
-        actionId: t('pages.connectors.tabs.oAuthClients.pageButton.actionId'),
-        actionEvent: t(
-          'pages.connectors.tabs.oAuthClients.pageButton.actionEvent'
-        ),
-      }
-    : {
-        actionLabel: t('pages.connectors.tabs.apps.pageButton.actionLabel'),
-        onClick: () => 'TODO',
-        actionId: t('pages.connectors.tabs.apps.pageButton.actionId'),
-        actionEvent: t('pages.connectors.tabs.apps.pageButton.actionEvent'),
-      };
+  const config = [
+    {
+      active: !isPathNameOauthApps,
+      label: t('pages.connectors.tabs.apps.title'),
+      onClick: () => navigate(CONNECTORS_ROUTE),
+      type: 'connectors',
+    },
+    {
+      active: isPathNameOauthApps,
+      label: t('pages.connectors.tabs.oAuthClients.title'),
+      onClick: () => navigate(OAUTH_CLIENTS_ROUTE),
+      type: 'oAuthClients',
+    },
+  ];
 
   return (
-    <Page
-      id={connectorsConfig.id}
-      actionLabel={currentSubRouteElement.actionLabel}
-      actionId={currentSubRouteElement.actionId}
-      onClick={currentSubRouteElement.onClick}
-      actionEvent={currentSubRouteElement.actionEvent}
-    >
+    <Page id={connectorsConfig.id}>
       <Box>
-        <Box sx={{ display: 'flex', width: '30%' }}>
-          <TabButton
-            active={!isPathNameOauthApps}
-            label={t('pages.connectors.tabs.apps.title')}
-            map={{}}
-            onClick={() => navigate(CONNECTORS_ROUTE)}
-            type="connectors"
-          />
-          <TabButton
-            active={isPathNameOauthApps}
-            label={t('pages.connectors.tabs.oAuthClients.title')}
-            map={{}}
-            onClick={() => navigate(OAUTH_CLIENTS_ROUTE)}
-            type="oAuthClients"
-          />
-        </Box>
+        <Tabs config={config} />
         <Outlet />
       </Box>
     </Page>
