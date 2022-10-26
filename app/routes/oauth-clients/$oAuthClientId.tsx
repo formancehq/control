@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { Add, Close, Delete, Done } from '@mui/icons-material';
+import { Add, Delete } from '@mui/icons-material';
 import { Alert, Box, Grid, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { get, omit } from 'lodash';
+import { get, pick } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
@@ -145,36 +145,42 @@ export default function Index() {
         >
           <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
             <>
-              {Object.keys(
-                omit(oAuthClient, [
-                  'secrets',
-                  'metadata',
-                  'scopes',
-                  'redirectUris',
-                  'Secrets',
-                  'postLogoutRedirectUris',
-                  'id',
-                ])
-              ).map((key: string, index: number) => {
-                const item = get(oAuthClient, key);
+              <Grid container sx={{ marginBottom: 1 }}>
+                <Grid item xs={2}>
+                  <Typography variant="bold">
+                    {t('pages.oAuthClients.table.columnLabel.public')}
+                  </Typography>
+                </Grid>
+                <Grid item xs={10}>
+                  <Chip
+                    label={t(
+                      `pages.oAuthClients.table.rows.${
+                        oAuthClient.public ? 'public' : 'private'
+                      }`
+                    )}
+                    variant="square"
+                    color={oAuthClient.public ? 'green' : 'red'}
+                  />
+                </Grid>
+              </Grid>
+              {Object.keys(pick(oAuthClient, ['name', 'description'])).map(
+                (key: string, index: number) => {
+                  const item = get(oAuthClient, key);
 
-                return (
-                  <Grid container key={index}>
-                    <Grid item xs={2}>
-                      <Typography variant="bold">
-                        {t(`pages.oAuthClient.sections.details.${key}`)}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={10}>
-                      {typeof item === 'boolean' ? (
-                        <>{item ? <Done /> : <Close />}</>
-                      ) : (
+                  return (
+                    <Grid container key={index} sx={{ marginBottom: 1 }}>
+                      <Grid item xs={2}>
+                        <Typography variant="bold">
+                          {t(`pages.oAuthClient.sections.details.${key}`)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={10}>
                         <Typography>{item}</Typography>
-                      )}
+                      </Grid>
                     </Grid>
-                  </Grid>
-                );
-              })}
+                  );
+                }
+              )}
             </>
           </SectionWrapper>
           <SectionWrapper title={t('pages.oAuthClient.sections.secrets.title')}>

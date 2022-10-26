@@ -99,6 +99,7 @@ export class DefaultApiClient implements ApiClient {
           headers: this.headers,
           method,
         });
+        throw new Error('Error');
       }); // allow error to be catch on higher level (root) // TODO improve handler
   }
 }

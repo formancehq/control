@@ -299,7 +299,12 @@ export default {
         table: {
           columnLabel: {
             name: 'Name',
-            public: 'Public',
+            public: 'Type',
+            description: 'Description',
+          },
+          rows: {
+            public: 'public',
+            private: 'private',
           },
         },
         form: {
@@ -312,6 +317,12 @@ export default {
             },
             description: {
               placeholder: 'Write a quick description',
+            },
+            redirectUri: {
+              label: 'Redirect URI',
+            },
+            postLogoutRedirectUri: {
+              label: 'Redirect post logout URI',
             },
           },
         },
