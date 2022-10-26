@@ -18,9 +18,10 @@ import { LoadingButton, Row, TextArea, TextField } from '@numaryhq/storybook';
 import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Navbar/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
+import { SnackbarSetter } from '~/src/contexts/service';
 import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
-import { OAuthClient, OAuthSecret } from '~/src/types/oauthClient';
+import { OAuthClient } from '~/src/types/oauthClient';
 import { API_AUTH, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -29,6 +30,10 @@ export const meta: MetaFunction = () => ({
   title: 'OAuth clients',
   description: 'List',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.log('bouda', error);
+}
 
 export type CreateOAuthClient = {
   name: string;
@@ -43,26 +48,26 @@ export const schema = yup.object({
 
 export const submit = async (
   values: CreateOAuthClient,
-  api: ApiClient
-): Promise<boolean | undefined | { secret: string; clientId: string }> => {
-  const client = await api.postResource<OAuthClient>(
-    `${API_AUTH}/clients`,
-    values,
-    'data'
-  );
-
-  if (client && client.id) {
-    const secret = await api.postResource<OAuthSecret>(
-      `${API_AUTH}/clients/${client.id}/secrets`,
-      {},
+  api: ApiClient,
+  snackbar: SnackbarSetter,
+  t: any
+): Promise<undefined | string> => {
+  try {
+    const client = await api.postResource<OAuthClient>(
+      `${API_AUTH}/clients`,
+      values,
       'data'
     );
-    if (secret && secret.clear) {
-      return { secret: secret.clear, clientId: client.id };
+    if (client && client.id) {
+      return client.id;
     }
+  } catch {
+    snackbar(
+      t('common.feedback.create', {
+        item: `${t('pages.oAuthClient.title')} ${values.name}`,
+      })
+    );
   }
-
-  return false;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -85,7 +90,7 @@ export default function Index() {
   const { t } = useTranslation();
   const data = useLoaderData();
   const navigate = useNavigate();
-  const { api } = useService();
+  const { api, snackbar } = useService();
   const {
     getValues,
     formState: { errors },
@@ -101,26 +106,29 @@ export default function Index() {
   const onSave = async () => {
     const validated = await trigger('name');
     if (validated) {
-      const result = await submit(getValues(), api);
-      if (
-        result &&
-        typeof result === 'object' &&
-        result.secret &&
-        result.clientId
-      ) {
-        navigate(getRoute(OAUTH_CLIENT_ROUTE, result.clientId), {
-          state: { secret: result.secret },
-        });
+      const clientId = await submit(getValues(), api, snackbar, t);
+      if (clientId) {
+        navigate(getRoute(OAUTH_CLIENT_ROUTE, clientId));
       }
     }
   };
 
   const onDelete = async (id: string) => {
-    const result = await api.deleteResource<unknown>(
-      `${API_AUTH}/clients/${id}`
-    );
-    if (result) {
-      setOAuthClients(oAuthClients.filter((client) => client.id !== id));
+    try {
+      const result = await api.deleteResource<unknown>(
+        `${API_AUTH}/clients/${id}`
+      );
+      if (result) {
+        setOAuthClients(oAuthClients.filter((client) => client.id !== id));
+      }
+    } catch {
+      snackbar(
+        t('common.feedback.delete', {
+          item: `${t(
+            'pages.oAuthClient.sections.secrets.deleteFeedback'
+          )} ${id}`,
+        })
+      );
     }
   };
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 import { withEmotionCache } from '@emotion/react';
 import { Home, Logout } from '@mui/icons-material';
@@ -7,8 +7,10 @@ import {
   Backdrop,
   Box,
   CircularProgress,
+  Snackbar,
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
+  useTheme,
 } from '@mui/material';
 import { redirect } from '@remix-run/node';
 import {
@@ -241,7 +243,28 @@ const renderError = (
 export default function App() {
   const { currentUser, metas } = useLoaderData();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { typography } = useTheme();
   const [loading, _load, stopLoading] = useOpen(true);
+  const [feedback, setFeedback] = useState({
+    active: false,
+    message: t('common.feedback.error'),
+  });
+
+  const displayFeedback = (message = 'common.feedback.error') => {
+    setFeedback({ active: true, message: t(message) });
+  };
+
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setFeedback({ ...feedback, active: false });
+  };
 
   useEffect(() => {
     stopLoading();
@@ -303,10 +326,24 @@ export default function App() {
             api: new ReactApiClient(),
             currentUser,
             metas,
+            snackbar: displayFeedback,
           }}
         >
           <Layout>
             <Outlet />
+            {/* TODO add snackbar to storybook */}
+            <Snackbar
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              sx={{
+                '.MuiSnackbarContent-message': {
+                  ...typography.body1,
+                },
+              }}
+              open={feedback.active}
+              onClose={handleClose}
+              autoHideDuration={6000}
+              message={feedback.message}
+            />
           </Layout>
         </ServiceContext.Provider>
       )}

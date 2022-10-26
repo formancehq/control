@@ -271,6 +271,7 @@ export default {
           secrets: {
             title: 'Secrets',
             create: 'Create new secret',
+            deleteFeedback: 'Secret',
             clear:
               'For security purpose, full clear secret display is only ephemeral. Keep it safe somewhere',
             table: {
@@ -320,6 +321,12 @@ export default {
       showMore: 'Show more',
       filters: {
         ledgers: 'Ledgers',
+      },
+      feedback: {
+        error: 'Something wrong happened 😕',
+        delete: '{{item}} could not be deleted 😣',
+        create: '{{item}} could not be created 😣',
+        update: '{{item}} could not be updated 😣',
       },
       boundaries: {
         errorState: {

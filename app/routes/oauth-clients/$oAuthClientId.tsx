@@ -8,7 +8,7 @@ import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { get, omit } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 
 import {
@@ -65,9 +65,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export default function Index() {
   const oAuthClient = useLoaderData<OAuthClient>() as OAuthClient;
   const { t } = useTranslation();
-  const { api } = useService();
-  const location = useLocation();
-  const createdSecret = get(location, 'state.secret');
+  const { api, snackbar } = useService();
   const { oAuthClientId: id } = useParams<{
     oAuthClientId: string;
   }>();
@@ -76,11 +74,19 @@ export default function Index() {
   );
 
   const onDelete = async (idSecret: string) => {
-    const result = await api.deleteResource<unknown>(
-      `${API_AUTH}/clients/${id}/secrets/${idSecret}`
-    );
-    if (result) {
-      setSecrets(secrets.filter((secret) => secret.id !== idSecret));
+    try {
+      const result = await api.deleteResource<unknown>(
+        `${API_AUTH}/clients/${id}/secrets/${idSecret}`
+      );
+      if (result) {
+        setSecrets(secrets.filter((secret) => secret.id !== idSecret));
+      }
+    } catch {
+      snackbar(
+        t('common.feedback.delete', {
+          item: `${t('pages.oAuthClient.title')} ${id}`,
+        })
+      );
     }
   };
 
@@ -121,7 +127,7 @@ export default function Index() {
       'data'
     );
     if (secret) {
-      const secretList = [...secrets, secret];
+      const secretList = [...secrets, secret] as OAuthSecret[];
       setSecrets(secretList);
     }
   };
@@ -129,23 +135,6 @@ export default function Index() {
   return (
     <Page id="oAuthClient" title={t('pages.oAuthClient.title')}>
       <Box mt="26px">
-        {createdSecret && secrets.length === 1 && (
-          <Alert
-            severity="info"
-            sx={{
-              marginBottom: 3,
-            }}
-          >
-            {t('pages.oAuthClient.sections.secrets.clear')}
-            <Chip
-              sx={{ marginLeft: 1 }}
-              onClick={() => copyTokenToClipboard(createdSecret)}
-              label={createdSecret}
-              color="blue"
-              variant="square"
-            />
-          </Alert>
-        )}
         <Box
           sx={{
             display: 'flex',
