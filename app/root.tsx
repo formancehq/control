@@ -7,7 +7,6 @@ import {
   Backdrop,
   Box,
   CircularProgress,
-  Snackbar,
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
   useTheme,
@@ -31,7 +30,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './root.css';
 import { useOpen } from './src/hooks/useOpen';
 
-import { LoadingButton, theme } from '@numaryhq/storybook';
+import { LoadingButton, Snackbar, theme } from '@numaryhq/storybook';
 
 import Layout from '~/src/components/Layout';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
@@ -338,17 +337,9 @@ export default function App() {
         >
           <Layout>
             <Outlet />
-            {/* TODO add snackbar to storybook */}
             <Snackbar
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              sx={{
-                '.MuiSnackbarContent-message': {
-                  ...typography.body1,
-                },
-              }}
               open={feedback.active}
               onClose={handleClose}
-              autoHideDuration={6000}
               message={feedback.message}
             />
           </Layout>

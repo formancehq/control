@@ -267,6 +267,8 @@ export default {
             description: 'Description',
             public: 'Public',
             trusted: 'Trusted',
+            redirectUris: 'Redirect uris',
+            postLogoutRedirectUris: 'Post logout redirect uris',
           },
           secrets: {
             title: 'Secrets',
