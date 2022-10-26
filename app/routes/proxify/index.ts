@@ -7,11 +7,10 @@ import { withSession } from '~/src/utils/auth.server';
 export const action: ActionFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const body = await request.json();
-
     const apiClient = await createApiClient(session, process.env.API_URL);
     let ret;
 
-    switch (request.method) {
+    switch (body.method) {
       case Methods.POST:
         ret = await apiClient.postResource(body.params, body.body, body.path);
         break;

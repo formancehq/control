@@ -79,7 +79,6 @@ export const logger = (stack?: any, from?: string, more?: any) => {
   };
   // eslint-disable-next-line no-console
   console.error(error);
-  throw new Error('Error');
 };
 
 export const toJson = async <T>(response: Response): Promise<undefined | T> => {
@@ -90,5 +89,7 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
     return {} as T;
   }
 
-  throw new Error(`Status ${response?.status} when fetching ${response?.url}`);
+  throw new Error(
+    `Server responded with status ${response?.status} on ${response?.url} with message ${response?.statusText}`
+  );
 };
