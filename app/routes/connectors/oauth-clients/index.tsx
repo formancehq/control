@@ -41,7 +41,9 @@ export type CreateOAuthClient = {
   name: string;
   description?: string;
   redirectUri?: string;
+  redirectUriSecond?: string;
   postLogoutRedirectUri?: string;
+  postLogoutRedirectUriSecond?: string;
 };
 
 export const schema = yup.object({
@@ -50,7 +52,9 @@ export const schema = yup.object({
     .required(i18n.t('pages.oAuthClients.form.create.name.errors.required')),
   description: yup.string(),
   redirectUri: yup.string(),
+  redirectUriSecond: yup.string(),
   postLogoutRedirectUri: yup.string(),
+  postLogoutRedirectUriSecond: yup.string(),
 });
 
 export const submit = async (
@@ -117,8 +121,11 @@ export default function Index() {
       const values = {
         description: formValues.description,
         name: formValues.name,
-        redirectUris: [formValues.redirectUri],
-        postLogoutRedirectUris: [formValues.postLogoutRedirectUri],
+        redirectUris: [formValues.redirectUri, formValues.redirectUriSecond],
+        postLogoutRedirectUris: [
+          formValues.postLogoutRedirectUri,
+          formValues.postLogoutRedirectUriSecond,
+        ],
       };
       const clientId = await submit(values, api, snackbar, t);
       if (clientId) {
@@ -240,7 +247,31 @@ export default function Index() {
               )}
             />
             <Controller
+              name="redirectUriSecond"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label={t('pages.oAuthClients.form.create.redirectUri.label')}
+                />
+              )}
+            />
+            <Controller
               name="postLogoutRedirectUri"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label={t(
+                    'pages.oAuthClients.form.create.postLogoutRedirectUri.label'
+                  )}
+                />
+              )}
+            />
+            <Controller
+              name="postLogoutRedirectUriSecond"
               control={control}
               render={({ field }) => (
                 <TextField

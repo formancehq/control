@@ -2,7 +2,8 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { Add, Delete } from '@mui/icons-material';
-import { Alert, Box, Grid, Typography } from '@mui/material';
+import { Alert, Box, Grid, Tooltip, Typography, useTheme } from '@mui/material';
+import { ColorVariants } from '@numaryhq/storybook/dist/cjs/types/types';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
@@ -11,14 +12,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 
-import {
-  Chip,
-  LoadingButton,
-  Page,
-  Row,
-  SectionWrapper,
-  theme,
-} from '@numaryhq/storybook';
+import { Chip, Page, Row, SectionWrapper, theme } from '@numaryhq/storybook';
 
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import Modal from '~/src/components/Wrappers/Modal';
@@ -72,6 +66,37 @@ export default function Index() {
   const [secrets, setSecrets] = useState<OAuthSecret[]>(
     oAuthClient.Secrets.map((secret) => ({ ...secret, clear: undefined }))
   );
+  const { typography } = useTheme();
+  const [copiedMessage, setCopiedMessage] = useState<string>('');
+
+  const renderUris = (key: string, color?: ColorVariants) => {
+    const uris = get(oAuthClient, key, []) || [];
+
+    return (
+      <>
+        {uris.length > 0 && (
+          <Grid container sx={{ mb: 1, mt: 2 }}>
+            <Grid item xs={2}>
+              <Typography variant="bold">
+                {t(`pages.oAuthClient.sections.details.${key}`)}
+              </Typography>
+            </Grid>
+            <Grid item xs={10}>
+              {uris.map((uri: string, index: number) => (
+                <Chip
+                  key={index}
+                  label={uri}
+                  color={color}
+                  variant="square"
+                  sx={{ marginRight: 1 }}
+                />
+              ))}
+            </Grid>
+          </Grid>
+        )}
+      </>
+    );
+  };
 
   const onDelete = async (idSecret: string) => {
     try {
@@ -166,34 +191,36 @@ export default function Index() {
               {Object.keys(pick(oAuthClient, ['name', 'description'])).map(
                 (key: string, index: number) => {
                   const item = get(oAuthClient, key);
-
-                  return (
-                    <Grid container key={index} sx={{ marginBottom: 1 }}>
-                      <Grid item xs={2}>
-                        <Typography variant="bold">
-                          {t(`pages.oAuthClient.sections.details.${key}`)}
-                        </Typography>
+                  if (item)
+                    return (
+                      <Grid container key={index} sx={{ marginBottom: 1 }}>
+                        <Grid item xs={2}>
+                          <Typography variant="bold">
+                            {t(`pages.oAuthClient.sections.details.${key}`)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={10}>
+                          <Typography>{item}</Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={10}>
-                        <Typography>{item}</Typography>
-                      </Grid>
-                    </Grid>
-                  );
+                    );
                 }
               )}
+              {renderUris('redirectUris')}
+              {renderUris('postLogoutRedirectUris', 'brown')}
             </>
           </SectionWrapper>
-          <SectionWrapper title={t('pages.oAuthClient.sections.secrets.title')}>
-            <Box>
-              <Box display="flex" justifyContent="end" mb={2}>
-                <LoadingButton
-                  id={`create-secret-${id}`}
-                  onClick={handleCreateSecret}
-                  startIcon={<Add />}
-                  variant="dark"
-                  content={t('pages.oAuthClient.sections.secrets.create')}
-                />
-              </Box>
+          <SectionWrapper
+            title={t('pages.oAuthClient.sections.secrets.title')}
+            button={{
+              id: `create-secret-${id}`,
+              onClick: handleCreateSecret,
+              startIcon: <Add />,
+              variant: 'dark',
+              content: t('pages.oAuthClient.sections.secrets.create'),
+            }}
+          >
+            <Box mt={2}>
               <Table
                 id="oauth-client-secrets-list"
                 items={secrets}
@@ -228,20 +255,31 @@ export default function Index() {
                             sx={{
                               backgroundColor: 'transparent',
                               border: '0 !important',
+                              '.MuiAlert-message': {
+                                ...typography.body1,
+                              },
                             }}
                           >
                             <Box component="span" sx={{ display: 'block' }}>
                               {t('pages.oAuthClient.sections.secrets.clear')}
                             </Box>
-                            <Chip
-                              onClick={() =>
-                                copyTokenToClipboard(secret.clear || '')
-                              }
-                              sx={{ marginLeft: 1 }}
-                              label={secret.clear}
-                              color="blue"
-                              variant="square"
-                            />
+                            <Tooltip
+                              title={copiedMessage}
+                              onClose={() => setCopiedMessage('')}
+                            >
+                              <Chip
+                                onClick={async () => {
+                                  await copyTokenToClipboard(
+                                    secret.clear || ''
+                                  );
+                                  setCopiedMessage(t('common.tooltip.copied'));
+                                }}
+                                sx={{ marginLeft: 1 }}
+                                label={secret.clear}
+                                color="blue"
+                                variant="square"
+                              />
+                            </Tooltip>
                           </Alert>
                         )}
                       </>,
