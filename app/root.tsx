@@ -85,6 +85,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     await withSession(request, async (session) => {
       let currentUser = undefined;
       const sessionHolder = decrypt<Authentication>(cookie);
+      console.log("sessionHolder", sessionHolder);
       const refresh = await refreshToken(
         openIdConfig,
         sessionHolder.refresh_token
