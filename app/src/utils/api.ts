@@ -27,9 +27,15 @@ export interface ApiClient {
     params: string,
     body: any,
     path?: string
-  ) => Promise<T | undefined>;
-  getResource: <T>(params: string, path?: string) => Promise<T | undefined>;
-  deleteResource: <T>(params: string, path?: string) => Promise<T | undefined>;
+  ) => Promise<T | undefined | void>;
+  getResource: <T>(
+    params: string,
+    path?: string
+  ) => Promise<T | undefined | void>;
+  deleteResource: <T>(
+    params: string,
+    path?: string
+  ) => Promise<T | undefined | void>;
 }
 
 export type SessionWrapper = {
@@ -65,18 +71,24 @@ export type JwtPayload = {
   scp?: string[]; // TODO make it required once permissions from backend are set
 };
 
-export const logger = (
-  stack?: any,
-  from?: string,
-  response?: any,
-  request?: any
-) => {
-  // eslint-disable-next-line no-console
-  console.error({
+export const logger = (stack?: any, from?: string, more?: any) => {
+  const error = {
     from: from || 'utils/api',
-    request,
-    response,
     stack,
-    page: typeof window !== 'undefined' ? window.location : '',
-  });
+    more,
+  };
+  // eslint-disable-next-line no-console
+  console.error(error);
+  throw new Error('Error');
+};
+
+export const toJson = async <T>(response: Response): Promise<undefined | T> => {
+  if (response?.status === 200 || response?.status === 201) {
+    return (await response.json()) as T;
+  }
+  if (response?.status === 204) {
+    return {} as T;
+  }
+
+  throw new Error(`Status ${response?.status} when fetching ${response?.url}`);
 };
