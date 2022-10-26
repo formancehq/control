@@ -42,7 +42,7 @@ export default function Index() {
 
   return (
     <Page id={connectorsConfig.id}>
-      <Box>
+      <Box display="flex">
         <Tabs config={config} />
         <Outlet />
       </Box>
