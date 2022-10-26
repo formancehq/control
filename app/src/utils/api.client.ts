@@ -1,3 +1,5 @@
+import { get } from 'lodash';
+
 import { ApiClient, logger, Methods, toJson } from '~/src/utils/api';
 
 export class ReactApiClient implements ApiClient {
@@ -5,15 +7,7 @@ export class ReactApiClient implements ApiClient {
     params: string,
     path?: string | undefined
   ): Promise<T | undefined | void> {
-    return fetch('/proxify', {
-      method: Methods.POST,
-      body: JSON.stringify({
-        params,
-        path,
-      }),
-    })
-      .then(async (response) => await toJson<T>(response))
-      .catch((e: any) => logger(e, 'api.client', { params, path }));
+    return this.handleRequest<T>(Methods.GET, params, undefined, path);
   }
 
   postResource<T>(
@@ -21,30 +15,39 @@ export class ReactApiClient implements ApiClient {
     body: any,
     path: string | undefined
   ): Promise<T | undefined | void> {
-    return fetch('/proxify', {
-      method: Methods.POST,
-      body: JSON.stringify({
-        params,
-        path,
-        body,
-      }),
-    })
-      .then(async (response) => await toJson<T>(response))
-      .catch((e: any) => logger(e, 'api.client', { params, body }));
+    return this.handleRequest<T>(Methods.POST, params, body, path);
   }
 
   deleteResource<T>(
     params: string,
     path: string | undefined
   ): Promise<T | undefined | void> {
+    return this.handleRequest<T>(Methods.DELETE, params, undefined, path);
+  }
+
+  handleRequest<T>(
+    method: Methods,
+    params?: string,
+    body?: any,
+    path?: string
+  ): Promise<T | undefined | void> {
     return fetch('/proxify', {
-      method: Methods.DELETE,
+      method: Methods.POST,
       body: JSON.stringify({
         params,
         path,
+        method,
+        body,
       }),
     })
-      .then(async (response) => await toJson<T>(response))
-      .catch((e: any) => logger(e, 'api.client', { params }));
+      .then(async (response) => {
+        const json = await toJson<T>(response);
+
+        return path ? get(json, path, json) : json;
+      })
+      .catch((e: any) => {
+        logger(e, 'api.client', { params, path, body, method });
+        throw new Error('Error');
+      });
   }
 }

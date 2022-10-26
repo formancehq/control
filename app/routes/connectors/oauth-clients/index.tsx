@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Add, ArrowRight, Delete, Done } from '@mui/icons-material';
+import { Add, ArrowRight, Delete } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
@@ -13,7 +13,13 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
-import { LoadingButton, Row, TextArea, TextField } from '@numaryhq/storybook';
+import {
+  Chip,
+  LoadingButton,
+  Row,
+  TextArea,
+  TextField,
+} from '@numaryhq/storybook';
 
 import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Navbar/routes';
 import Modal from '~/src/components/Wrappers/Modal';
@@ -31,19 +37,20 @@ export const meta: MetaFunction = () => ({
   description: 'List',
 });
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.log('bouda', error);
-}
-
 export type CreateOAuthClient = {
   name: string;
   description?: string;
+  redirectUri?: string;
+  postLogoutRedirectUri?: string;
 };
 
 export const schema = yup.object({
   name: yup
     .string()
     .required(i18n.t('pages.oAuthClients.form.create.name.errors.required')),
+  description: yup.string(),
+  redirectUri: yup.string(),
+  postLogoutRedirectUri: yup.string(),
 });
 
 export const submit = async (
@@ -106,7 +113,14 @@ export default function Index() {
   const onSave = async () => {
     const validated = await trigger('name');
     if (validated) {
-      const clientId = await submit(getValues(), api, snackbar, t);
+      const formValues = getValues();
+      const values = {
+        description: formValues.description,
+        name: formValues.name,
+        redirectUris: [formValues.redirectUri],
+        postLogoutRedirectUris: [formValues.postLogoutRedirectUri],
+      };
+      const clientId = await submit(values, api, snackbar, t);
       if (clientId) {
         navigate(getRoute(OAUTH_CLIENT_ROUTE, clientId));
       }
@@ -206,6 +220,7 @@ export default function Index() {
               render={({ field }) => (
                 <TextField
                   {...field}
+                  fullWidth
                   required
                   error={!!errors.name}
                   errorMessage={errors.name?.message}
@@ -214,19 +229,45 @@ export default function Index() {
               )}
             />
             <Controller
-              name="description"
+              name="redirectUri"
               control={control}
               render={({ field }) => (
-                <TextArea
+                <TextField
                   {...field}
-                  aria-label="text-area"
-                  minRows={10}
-                  placeholder={t(
-                    'pages.oAuthClients.form.create.description.placeholder'
+                  fullWidth
+                  label={t('pages.oAuthClients.form.create.redirectUri.label')}
+                />
+              )}
+            />
+            <Controller
+              name="postLogoutRedirectUri"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label={t(
+                    'pages.oAuthClients.form.create.postLogoutRedirectUri.label'
                   )}
                 />
               )}
             />
+            <Box mt={2}>
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <TextArea
+                    {...field}
+                    aria-label="text-area"
+                    minRows={10}
+                    placeholder={t(
+                      'pages.oAuthClients.form.create.description.placeholder'
+                    )}
+                  />
+                )}
+              />
+            </Box>
           </form>
         </Modal>
       </Box>
@@ -239,16 +280,34 @@ export default function Index() {
           {
             key: 'name',
             label: t('pages.oAuthClients.table.columnLabel.name'),
+            width: 20,
           },
           {
             key: 'public',
             label: t('pages.oAuthClients.table.columnLabel.public'),
           },
+          {
+            key: 'description',
+            label: t('pages.oAuthClients.table.columnLabel.description'),
+          },
         ]}
         renderItem={(oAuthClient: OAuthClient, index: number) => (
           <Row
             key={index}
-            keys={['name', oAuthClient.public ? <Done /> : null]}
+            keys={[
+              'name',
+              <Chip
+                key={index}
+                label={t(
+                  `pages.oAuthClients.table.rows.${
+                    oAuthClient.public ? 'public' : 'private'
+                  }`
+                )}
+                variant="square"
+                color={oAuthClient.public ? 'green' : 'red'}
+              />,
+              'description',
+            ]}
             item={oAuthClient}
             renderActions={() => renderRowActions(oAuthClient)}
           />
