@@ -2,7 +2,13 @@
 import { Session } from '@remix-run/node';
 import { get, isUndefined } from 'lodash';
 
-import { ApiClient, Authentication, Methods } from '~/src/utils/api';
+import {
+  ApiClient,
+  Authentication,
+  logger,
+  Methods,
+  toJson,
+} from '~/src/utils/api';
 import { parseSessionHolder } from '~/src/utils/auth.server';
 
 export type Headers = { Authorization?: string; 'Content-Type': string };
@@ -40,21 +46,21 @@ export class DefaultApiClient implements ApiClient {
     params?: string,
     body?: any,
     path?: string
-  ): Promise<T | undefined> {
+  ): Promise<T | undefined | void> {
     return this.handleRequest(Methods.POST, params, body, path);
   }
 
   public async getResource<T>(
     params?: string,
     path?: string
-  ): Promise<T | undefined> {
+  ): Promise<T | undefined | void> {
     return this.handleRequest(Methods.GET, params, undefined, path);
   }
 
   public async deleteResource<T>(
     params: string,
     path?: string
-  ): Promise<T | undefined> {
+  ): Promise<T | undefined | void> {
     return this.handleRequest(Methods.DELETE, params, path);
   }
 
@@ -63,34 +69,36 @@ export class DefaultApiClient implements ApiClient {
     params?: string,
     body?: any,
     path?: string
-  ): Promise<T> {
+  ): Promise<T | undefined | void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
     const sessionHolder: Authentication = parseSessionHolder(this.session);
+    this.headers = {
+      ...this.headers,
+      Authorization: `Bearer ${sessionHolder.access_token}`,
+    };
 
     return fetch(uri, {
       method,
-      headers: {
-        ...this.headers,
-        Authorization: `Bearer ${sessionHolder.access_token}`,
-      },
+      headers: this.headers,
       body: body
         ? body instanceof FormData
           ? body
           : JSON.stringify(body)
         : undefined,
     })
-      .then((response) => {
-        if (response?.status === 200) {
-          return response.json();
-        }
-        if (response?.status === 204) {
-          return {};
-        }
+      .then(async (response) => {
+        const json = await toJson<T>(response);
+
+        return path ? get(json, path) : json;
       })
       .catch((e: any) => {
-        console.info(e);
-      }) // allow error to be catch on higher level (root) // TODO improve handler
-      .then((response) => (path ? get(response, path) : response));
+        logger(e, 'api.server', {
+          params,
+          body,
+          headers: this.headers,
+          method,
+        });
+      }); // allow error to be catch on higher level (root) // TODO improve handler
   }
 }

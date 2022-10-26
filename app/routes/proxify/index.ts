@@ -24,13 +24,11 @@ export const action: ActionFunction = async ({ request }) => {
       default:
         throw new Error('Method not handled');
     }
-    console.log('reeeet', ret);
 
     return ret;
   }
 
   const result = await withSession(request, handleData);
-
   throw json(result.callbackResult, {
     headers: result.cookieValue
       ? {
