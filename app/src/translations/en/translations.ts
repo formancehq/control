@@ -231,6 +231,13 @@ export default {
       },
       connectors: {
         title: 'Connectors',
+        table: {
+          columnLabel: {
+            name: 'Name',
+            type: 'Type',
+            status: 'Status',
+          },
+        },
         tabs: {
           apps: {
             title: 'Apps',
@@ -331,6 +338,9 @@ export default {
       },
     },
     common: {
+      formErrorsMessage: {
+        requiredInputs: '{{inputName}} is required',
+      },
       showMore: 'Show more',
       filters: {
         ledgers: 'Ledgers',
