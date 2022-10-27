@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 
-import { ArrowDropDown } from '@mui/icons-material';
+import { ArrowDropDown, Person } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -77,7 +77,7 @@ const Navbar: FunctionComponent = () => {
         }}
       >
         <Search />
-        {currentUser && currentUser.avatarLetter && (
+        {currentUser && (
           <>
             <IconButton sx={{ p: 0 }}>
               <Avatar
@@ -88,7 +88,11 @@ const Navbar: FunctionComponent = () => {
                   bgcolor: theme.palette.green.bright,
                 }}
               >
-                {currentUser.avatarLetter}
+                {currentUser.avatarLetter ? (
+                  currentUser.avatarLetter
+                ) : (
+                  <Person />
+                )}
               </Avatar>
             </IconButton>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
