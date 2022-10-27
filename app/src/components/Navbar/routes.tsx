@@ -9,10 +9,11 @@ export const TRANSACTION_ROUTE = '/ledgers/:slug/transactions/:id';
 export const PAYMENTS_ROUTE = '/payments';
 export const PAYMENT_ROUTE = '/payments/:id';
 export const OAUTH_CLIENTS_ROUTE = '/connectors/oauth-clients';
+export const APPS_ROUTE = '/connectors/apps';
 export const OAUTH_CLIENT_ROUTE = '/oauth-clients/:id';
 export const ACCOUNTS_ROUTE = '/accounts';
 export const TRANSACTIONS_ROUTE = '/transactions';
-export const CONNECTORS_ROUTE = '/connectors';
+export const CONNECTORS_ROUTE = APPS_ROUTE;
 
 export const getRoute = (uri: string, id?: number | string): string =>
   id !== undefined ? uri.replace(/:\w+/, id.toString(10)) : uri;
@@ -71,7 +72,11 @@ export const transactions: RouterConfig = {
 export const connectors: RouterConfig = {
   id: 'connectors',
   label: 'navbar.title.connectors',
-  path: getRoute(CONNECTORS_ROUTE),
+  path: [
+    getRoute(CONNECTORS_ROUTE),
+    getRoute(APPS_ROUTE),
+    getRoute(OAUTH_CLIENTS_ROUTE),
+  ],
   icon: <Share />,
 };
 

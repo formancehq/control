@@ -9,6 +9,7 @@ import { Page, Tabs } from '@numaryhq/storybook';
 
 import { CreateForm } from '~/routes/connectors/oauth-clients/CreateForm';
 import {
+  APPS_ROUTE,
   connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
 } from '~/src/components/Navbar/routes';
@@ -29,7 +30,7 @@ export default function Index() {
     {
       active: handleActive('apps'),
       label: t('pages.connectors.tabs.apps.title'),
-      onClick: () => navigate('/connectors/apps'),
+      onClick: () => navigate(APPS_ROUTE),
       type: 'connectors',
       action: <></>,
     },
