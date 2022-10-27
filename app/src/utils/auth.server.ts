@@ -64,6 +64,7 @@ export interface OpenIdConfiguration {
   userinfo_endpoint: string;
   token_endpoint: string;
   end_session_endpoint: string;
+  introspection_endpoint: string;
 }
 
 export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
@@ -124,6 +125,33 @@ export const refreshToken = async (
         `Unexpected status code ${
           response.status
         } when refreshing token, body ${await response.text()}`
+      );
+    }
+
+    return await response.json();
+  });
+};
+
+export const introspect = async (
+  openIdConfig: OpenIdConfiguration,
+  accessToken: string
+): Promise<{ active: boolean }> => {
+  const auth = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
+  const buff = new Buffer(auth);
+  const basic = buff.toString('base64');
+  const data = new FormData();
+  data.append('token', accessToken);
+
+  return fetch(openIdConfig.introspection_endpoint, {
+    headers: { Authorization: `Basic ${basic}` },
+    method: 'POST',
+    body: data,
+  }).then(async (response) => {
+    if (response.status != 200) {
+      throw new Error(
+        `Unexpected status code ${
+          response.status
+        } when introspect token, body ${await response.text()}`
       );
     }
 
