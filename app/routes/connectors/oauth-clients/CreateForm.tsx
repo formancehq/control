@@ -22,9 +22,7 @@ export type CreateOAuthClient = {
   name: string;
   description?: string;
   redirectUri?: string;
-  redirectUriSecond?: string;
   postLogoutRedirectUri?: string;
-  postLogoutRedirectUriSecond?: string;
 };
 
 export const schema = yup.object({
@@ -33,9 +31,7 @@ export const schema = yup.object({
     .required(i18n.t('pages.oAuthClients.form.create.name.errors.required')),
   description: yup.string(),
   redirectUri: yup.string(),
-  redirectUriSecond: yup.string(),
   postLogoutRedirectUri: yup.string(),
-  postLogoutRedirectUriSecond: yup.string(),
 });
 
 export const CreateForm: FunctionComponent = () => {
@@ -44,13 +40,19 @@ export const CreateForm: FunctionComponent = () => {
   const { api, snackbar } = useService();
   const {
     getValues,
-    formState: { errors },
+    formState: { errors, isDirty },
     control,
     trigger,
     reset,
   } = useForm<CreateOAuthClient>({
     resolver: yupResolver(schema),
-    mode: 'onTouched',
+    mode: 'onChange',
+    defaultValues: {
+      name: '',
+      description: '',
+      redirectUri: '',
+      postLogoutRedirectUri: '',
+    },
   });
 
   const onSave = async () => {
@@ -60,11 +62,8 @@ export const CreateForm: FunctionComponent = () => {
       const values = {
         description: formValues.description,
         name: formValues.name,
-        redirectUris: [formValues.redirectUri, formValues.redirectUriSecond],
-        postLogoutRedirectUris: [
-          formValues.postLogoutRedirectUri,
-          formValues.postLogoutRedirectUriSecond,
-        ],
+        redirectUris: [formValues.redirectUri],
+        postLogoutRedirectUris: [formValues.postLogoutRedirectUri],
       };
       try {
         const client = await api.postResource<OAuthClient>(
@@ -92,9 +91,6 @@ export const CreateForm: FunctionComponent = () => {
         variant: 'dark',
         startIcon: <Add />,
         content: t('pages.connectors.tabs.oAuthClients.pageButton.actionLabel'),
-        onClick: async () => {
-          await trigger('name');
-        },
       }}
       modal={{
         id: 'create-oauth-client-modal',
@@ -108,7 +104,7 @@ export const CreateForm: FunctionComponent = () => {
           },
           save: {
             onClick: onSave,
-            disabled: !!errors.name,
+            disabled: !!errors.name || !isDirty,
           },
         },
       }}
@@ -117,9 +113,10 @@ export const CreateForm: FunctionComponent = () => {
         <Controller
           name="name"
           control={control}
-          render={({ field }) => (
+          render={({ field: { ref, ...rest } }) => (
             <TextField
-              {...field}
+              {...rest}
+              inputRef={ref}
               fullWidth
               required
               error={!!errors.name}
@@ -131,20 +128,10 @@ export const CreateForm: FunctionComponent = () => {
         <Controller
           name="redirectUri"
           control={control}
-          render={({ field }) => (
+          render={({ field: { ref, ...rest } }) => (
             <TextField
-              {...field}
-              fullWidth
-              label={t('pages.oAuthClients.form.create.redirectUri.label')}
-            />
-          )}
-        />
-        <Controller
-          name="redirectUriSecond"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
+              {...rest}
+              inputRef={ref}
               fullWidth
               label={t('pages.oAuthClients.form.create.redirectUri.label')}
             />
@@ -153,22 +140,10 @@ export const CreateForm: FunctionComponent = () => {
         <Controller
           name="postLogoutRedirectUri"
           control={control}
-          render={({ field }) => (
+          render={({ field: { ref, ...rest } }) => (
             <TextField
-              {...field}
-              fullWidth
-              label={t(
-                'pages.oAuthClients.form.create.postLogoutRedirectUri.label'
-              )}
-            />
-          )}
-        />
-        <Controller
-          name="postLogoutRedirectUriSecond"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
+              {...rest}
+              inputRef={ref}
               fullWidth
               label={t(
                 'pages.oAuthClients.form.create.postLogoutRedirectUri.label'
@@ -183,7 +158,6 @@ export const CreateForm: FunctionComponent = () => {
             render={({ field }) => (
               <TextArea
                 {...field}
-                aria-label="text-area"
                 minRows={10}
                 placeholder={t(
                   'pages.oAuthClients.form.create.description.placeholder'
