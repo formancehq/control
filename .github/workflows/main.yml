@@ -88,3 +88,18 @@ jobs:
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=develop
+
+  Assets:
+    name: "Push Assets to S3"
+    runs-on: ubuntu-latest
+    if: github.event.action == 'released'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::288350113309:role/github-access
+          aws-region: us-east-1
+      - name: Copy files to the bucket with the AWS CLI
+        run: |
+          aws s3 sync . s3://production-us-east-1-assets/control/
