@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next';
 
 import { Page, Tabs } from '@numaryhq/storybook';
 
+import { CreateForm } from '~/routes/connectors/oauth-clients/CreateForm';
 import {
   connectors as connectorsConfig,
-  CONNECTORS_ROUTE,
   OAUTH_CLIENTS_ROUTE,
 } from '~/src/components/Navbar/routes';
 
@@ -22,28 +22,32 @@ export default function Index() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  // TODO make factory when we add webhooks
-  const isPathNameOauthApps = location.pathname.includes('oauth-clients');
+
+  const handleActive = (path: string) => location.pathname.includes(path);
 
   const config = [
     {
-      active: !isPathNameOauthApps,
+      active: handleActive('apps'),
       label: t('pages.connectors.tabs.apps.title'),
-      onClick: () => navigate(CONNECTORS_ROUTE),
+      onClick: () => navigate('/connectors/apps'),
       type: 'connectors',
+      action: <></>,
     },
     {
-      active: isPathNameOauthApps,
+      active: handleActive('oauth-clients'),
       label: t('pages.connectors.tabs.oAuthClients.title'),
       onClick: () => navigate(OAUTH_CLIENTS_ROUTE),
       type: 'oAuthClients',
+      action: <CreateForm />,
     },
   ];
 
+  const activeConfig = config.find((item) => item.active);
+
   return (
     <Page id={connectorsConfig.id}>
-      <Box display="flex">
-        <Tabs config={config} />
+      <Box>
+        <Tabs config={config} action={activeConfig && activeConfig.action} />
         <Outlet />
       </Box>
     </Page>

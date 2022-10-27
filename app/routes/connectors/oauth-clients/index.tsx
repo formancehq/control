@@ -1,40 +1,31 @@
-import * as React from 'react';
-import { useState } from 'react';
+import * as React from "react";
+import { useState } from "react";
+import { ArrowRight, Delete } from "@mui/icons-material";
+import { Box, Typography } from "@mui/material";
+import type { MetaFunction } from "@remix-run/node";
+import { Session } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/server-runtime";
+import { Trans, useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
 
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Add, ArrowRight, Delete } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
-import type { MetaFunction } from '@remix-run/node';
-import { Session } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
-import { LoaderFunction } from '@remix-run/server-runtime';
-import { Controller, useForm } from 'react-hook-form';
-import { Trans, useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import * as yup from 'yup';
+import { Chip, LoadingButton, Row } from "@numaryhq/storybook";
 
-import {
-  Chip,
-  LoadingButton,
-  Row,
-  TextArea,
-  TextField,
-} from '@numaryhq/storybook';
-
-import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Navbar/routes';
-import Modal from '~/src/components/Wrappers/Modal';
-import Table from '~/src/components/Wrappers/Table';
-import { SnackbarSetter } from '~/src/contexts/service';
-import { useService } from '~/src/hooks/useService';
-import i18n from '~/src/translations';
-import { OAuthClient } from '~/src/types/oauthClient';
-import { API_AUTH, ApiClient } from '~/src/utils/api';
-import { createApiClient } from '~/src/utils/api.server';
-import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { getRoute, OAUTH_CLIENT_ROUTE } from "~/src/components/Navbar/routes";
+import Modal from "~/src/components/Wrappers/Modal";
+import Table from "~/src/components/Wrappers/Table";
+import { SnackbarSetter } from "~/src/contexts/service";
+import { useService } from "~/src/hooks/useService";
+import i18n from "~/src/translations";
+import { OAuthClient } from "~/src/types/oauthClient";
+import { API_AUTH, ApiClient } from "~/src/utils/api";
+import { createApiClient } from "~/src/utils/api.server";
+import { handleResponse, withSession } from "~/src/utils/auth.server";
 
 export const meta: MetaFunction = () => ({
-  title: 'OAuth clients',
-  description: 'List',
+  title: "OAuth clients",
+  description: "List",
 });
 
 export type CreateOAuthClient = {
@@ -49,7 +40,7 @@ export type CreateOAuthClient = {
 export const schema = yup.object({
   name: yup
     .string()
-    .required(i18n.t('pages.oAuthClients.form.create.name.errors.required')),
+    .required(i18n.t("pages.oAuthClients.form.create.name.errors.required")),
   description: yup.string(),
   redirectUri: yup.string(),
   redirectUriSecond: yup.string(),
@@ -67,15 +58,15 @@ export const submit = async (
     const client = await api.postResource<OAuthClient>(
       `${API_AUTH}/clients`,
       values,
-      'data'
+      "data"
     );
     if (client && client.id) {
       return client.id;
     }
   } catch {
     snackbar(
-      t('common.feedback.create', {
-        item: `${t('pages.oAuthClient.title')} ${values.name}`,
+      t("common.feedback.create", {
+        item: `${t("pages.oAuthClient.title")} ${values.name}`,
       })
     );
   }
@@ -85,7 +76,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const oauthClients = await (
       await createApiClient(session)
-    ).getResource<OAuthClient[]>(`${API_AUTH}/clients`, 'data');
+    ).getResource<OAuthClient[]>(`${API_AUTH}/clients`, "data");
 
     if (oauthClients) {
       return oauthClients;
@@ -102,37 +93,7 @@ export default function Index() {
   const data = useLoaderData();
   const navigate = useNavigate();
   const { api, snackbar } = useService();
-  const {
-    getValues,
-    formState: { errors },
-    control,
-    trigger,
-    reset,
-  } = useForm<CreateOAuthClient>({
-    resolver: yupResolver(schema),
-    mode: 'onTouched',
-  });
   const [oAuthClients, setOAuthClients] = useState<OAuthClient[]>(data);
-
-  const onSave = async () => {
-    const validated = await trigger('name');
-    if (validated) {
-      const formValues = getValues();
-      const values = {
-        description: formValues.description,
-        name: formValues.name,
-        redirectUris: [formValues.redirectUri, formValues.redirectUriSecond],
-        postLogoutRedirectUris: [
-          formValues.postLogoutRedirectUri,
-          formValues.postLogoutRedirectUriSecond,
-        ],
-      };
-      const clientId = await submit(values, api, snackbar, t);
-      if (clientId) {
-        navigate(getRoute(OAUTH_CLIENT_ROUTE, clientId));
-      }
-    }
-  };
 
   const onDelete = async (id: string) => {
     try {
@@ -144,9 +105,9 @@ export default function Index() {
       }
     } catch {
       snackbar(
-        t('common.feedback.delete', {
+        t("common.feedback.delete", {
           item: `${t(
-            'pages.oAuthClient.sections.secrets.deleteFeedback'
+            "pages.oAuthClient.sections.secrets.deleteFeedback"
           )} ${id}`,
         })
       );
@@ -167,12 +128,12 @@ export default function Index() {
         }}
         modal={{
           id: `delete-${oauthClient.id}-modal`,
-          PaperProps: { sx: { minWidth: '500px' } },
-          title: t('common.dialog.deleteTitle'),
+          PaperProps: { sx: { minWidth: "500px" } },
+          title: t("common.dialog.deleteTitle"),
           actions: {
             save: {
-              variant: 'error',
-              label: t('common.dialog.confirmButton'),
+              variant: "error",
+              label: t("common.dialog.confirmButton"),
               onClick: () => onDelete(oauthClient.id),
             },
           },
@@ -190,118 +151,7 @@ export default function Index() {
   );
 
   return (
-    <Box>
-      <Box
-        sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}
-      >
-        <Modal
-          button={{
-            id: 'create',
-            variant: 'dark',
-            startIcon: <Add />,
-            content: t(
-              'pages.connectors.tabs.oAuthClients.pageButton.actionLabel'
-            ),
-          }}
-          modal={{
-            id: 'create-oauth-client-modal',
-            PaperProps: { sx: { minWidth: '500px' } },
-            title: t('common.dialog.createTitle'),
-            actions: {
-              cancel: {
-                onClick: async () => {
-                  reset();
-                },
-              },
-              save: {
-                onClick: onSave,
-                disabled: !!errors.name,
-              },
-            },
-          }}
-        >
-          <form>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  required
-                  error={!!errors.name}
-                  errorMessage={errors.name?.message}
-                  label={t('pages.oAuthClients.form.create.name.label')}
-                />
-              )}
-            />
-            <Controller
-              name="redirectUri"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label={t('pages.oAuthClients.form.create.redirectUri.label')}
-                />
-              )}
-            />
-            <Controller
-              name="redirectUriSecond"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label={t('pages.oAuthClients.form.create.redirectUri.label')}
-                />
-              )}
-            />
-            <Controller
-              name="postLogoutRedirectUri"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label={t(
-                    'pages.oAuthClients.form.create.postLogoutRedirectUri.label'
-                  )}
-                />
-              )}
-            />
-            <Controller
-              name="postLogoutRedirectUriSecond"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label={t(
-                    'pages.oAuthClients.form.create.postLogoutRedirectUri.label'
-                  )}
-                />
-              )}
-            />
-            <Box mt={2}>
-              <Controller
-                name="description"
-                control={control}
-                render={({ field }) => (
-                  <TextArea
-                    {...field}
-                    aria-label="text-area"
-                    minRows={10}
-                    placeholder={t(
-                      'pages.oAuthClients.form.create.description.placeholder'
-                    )}
-                  />
-                )}
-              />
-            </Box>
-          </form>
-        </Modal>
-      </Box>
+    <Box mt={2}>
       <Table
         id="oauth-clients-list"
         items={oAuthClients}
@@ -309,35 +159,35 @@ export default function Index() {
         withPagination={false}
         columns={[
           {
-            key: 'name',
-            label: t('pages.oAuthClients.table.columnLabel.name'),
+            key: "name",
+            label: t("pages.oAuthClients.table.columnLabel.name"),
             width: 20,
           },
           {
-            key: 'public',
-            label: t('pages.oAuthClients.table.columnLabel.public'),
+            key: "public",
+            label: t("pages.oAuthClients.table.columnLabel.public"),
           },
           {
-            key: 'description',
-            label: t('pages.oAuthClients.table.columnLabel.description'),
+            key: "description",
+            label: t("pages.oAuthClients.table.columnLabel.description"),
           },
         ]}
         renderItem={(oAuthClient: OAuthClient, index: number) => (
           <Row
             key={index}
             keys={[
-              'name',
+              "name",
               <Chip
                 key={index}
                 label={t(
                   `pages.oAuthClients.table.rows.${
-                    oAuthClient.public ? 'public' : 'private'
+                    oAuthClient.public ? "public" : "private"
                   }`
                 )}
                 variant="square"
-                color={oAuthClient.public ? 'green' : 'red'}
+                color={oAuthClient.public ? "green" : "red"}
               />,
-              'description',
+              "description",
             ]}
             item={oAuthClient}
             renderActions={() => renderRowActions(oAuthClient)}
