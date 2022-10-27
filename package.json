@@ -9,7 +9,6 @@
     "prepare": "husky install",
     "postinstall": "remix setup node",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "prettier": "prettier . -w",
     "start:local:mock:server": "PORT=5001 ts-node tests/api/server.ts",
     "start:local:test": "API_URL_BACK=http://localhost:5001 API_URL_FRONT=http://localhost:5001 playwright test tests/* --headed"
   },
@@ -22,7 +21,7 @@
     "@mui/icons-material": "^5.8.4",
     "@mui/lab": "^5.0.0-alpha.92",
     "@mui/material": "latest",
-    "@numaryhq/storybook": "^0.6.59",
+    "@numaryhq/storybook": "^0.6.61",
     "@opentelemetry/api": "^1.2.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.33.0",
     "@opentelemetry/resources": "^1.7.0",
