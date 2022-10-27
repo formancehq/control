@@ -314,7 +314,7 @@ export default {
             name: {
               label: 'Name',
               errors: {
-                required: 'App name is required',
+                required: 'Oauth client name is required',
               },
             },
             description: {
