@@ -11,52 +11,25 @@ import { Row } from '@numaryhq/storybook';
 
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
-import { ApiClient } from '~/src/utils/api';
 
 export const meta: MetaFunction = () => ({
   title: 'Apps',
   description: 'Apps',
 });
 
-export type CreateStripeConnector = {
-  connector: string;
-  pollingPeriod: string;
-  secretKey: string;
-  pageSize: string;
+type Connectors = {
+  name: string;
+  status: string;
 };
 
-export type CreateDummyPayConnector = {
-  filePollingPeriod: string;
-  fileGenerationPeriod: string;
-  directory: string;
+type ConnectorsLoaderData = {
+  connectors: Connectors[];
 };
 
-export type CreateWiseConnector = {
-  apiKey: string;
-};
-
-export type CreateModulrConnector = {
-  apiKey: string;
-  apiSecret: string;
-  endpoint: string;
-};
-
-export type ConnectorParams =
-  | CreateStripeConnector
-  | CreateDummyPayConnector
-  | CreateWiseConnector
-  | CreateModulrConnector;
-
-export const submit = async (values: ConnectorParams, api: ApiClient) => {
-  console.log({ values });
-};
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async () => {
   const connectors = [
     {
-      id: '1',
       name: 'Stripe',
-      description: 'Stripe',
       status: 'Active',
     },
   ];
@@ -66,7 +39,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   const { t } = useTranslation();
-  const { connectors } = useLoaderData();
+  const { connectors } = useLoaderData<ConnectorsLoaderData>();
 
   return (
     <Box mt={2}>
@@ -85,7 +58,7 @@ export default function Index() {
             label: t('pages.connectors.table.columnLabel.status'),
           },
         ]}
-        renderItem={(connector: any, index: number) => (
+        renderItem={(connector: Connectors, index: number) => (
           <Row
             key={index}
             keys={[
