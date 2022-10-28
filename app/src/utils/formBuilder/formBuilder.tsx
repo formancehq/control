@@ -42,7 +42,7 @@ export const connectorsConfig = {
       required: true,
     },
     pageSize: {
-      datatype: 'int',
+      datatype: 'duration ns',
     },
   },
   wise: {
@@ -53,65 +53,66 @@ export const connectorsConfig = {
   },
 };
 
-// export const buildSchema = (inputs: any) => {
-//   const rule = (input: any) =>
-//     input.required
-//       ? yup.string().required(
-//           i18n.t('common.input.required.error', {
-//             value: input.value.toLowerCase(),
-//           })
-//         )
-//       : yup.string();
-
-//   return yup.object({
-//     ...inputs.map((input: any) => ({
-//       [input.name]: rule(input),
-//     })),
-//   });
-// };
-
-// console.log(buildSchema(connectorsConfig['dummypay']));
-
 const inputsFactory = ({
   inputConfig,
   name,
   control,
   errors,
   label,
+  parentName,
 }: {
   inputConfig: { datatype: string; required?: boolean };
   name: string;
   control: any;
   errors: any;
   label: string;
+  parentName: string;
 }) => {
+  const commonConfig = {
+    label: label.toLocaleLowerCase(),
+    fullWidth: true,
+    required: inputConfig.required,
+    error: !!errors?.[parentName]?.[name],
+    errorMessage:
+      errors?.[parentName]?.[name] &&
+      i18n.t('common.formErrorsMessage.requiredInputs', {
+        inputName: name.toLowerCase(),
+      }),
+  };
+
   switch (inputConfig.datatype) {
     case 'string':
       return (
         <Controller
-          name={name}
+          name={`${parentName}.${name}`}
           key={name}
-          //   rules={{ ...(inputConfig.required && { required: true }) }}
-          rules={{ required: true }}
+          rules={{ required: inputConfig.required }}
           control={control}
-          render={({ field }) => (
+          render={({ field: { ref, ...rest } }) => (
+            <TextField {...rest} inputRef={ref} {...commonConfig} />
+          )}
+        />
+      );
+    case 'duration ns':
+      return (
+        <Controller
+          name={`${parentName}.${name}`}
+          key={name}
+          rules={{ required: inputConfig.required }}
+          control={control}
+          render={({ field: { ref, ...rest } }) => (
             <TextField
-              {...field}
-              required
-              error={!!errors[name]}
-              errorMessage={
-                errors[name] &&
-                i18n.t('common.formErrorsMessage.requiredInputs', {
-                  inputName: name.toLowerCase(),
-                })
-              }
-              label={label}
+              {...rest}
+              inputRef={ref}
+              type="number"
+              {...commonConfig}
+
+              // TODO adapt the format so we can have a unit for the input
+              // endAdornment="Seconds"
             />
           )}
         />
       );
-    case 'number':
-      return <input type="number" name={name} />;
     default:
       throw new Error('error');
   }
@@ -124,7 +125,7 @@ export const buildForm = ({
 }: {
   errors: any;
   control: any;
-  connectorKey: 'stripe' | 'wise';
+  connectorKey: 'stripe' | 'wise' | 'modulr' | 'dummypay';
 }) =>
   Object.entries(connectorsConfig[connectorKey]).map(([key, value]) =>
     inputsFactory({
@@ -133,5 +134,6 @@ export const buildForm = ({
       control,
       errors,
       label: key,
+      parentName: connectorKey,
     })
   );
