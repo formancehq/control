@@ -503,6 +503,7 @@ export default {
         },
       },
       forms: {
+        selectEntity: 'Select a {{entityName}}',
         metadata: {
           json: {
             prettify: 'Prettify',

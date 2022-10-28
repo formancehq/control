@@ -1,11 +1,12 @@
 import React from 'react';
 
-import { Controller, useForm } from 'react-hook-form';
-import * as yup from 'yup';
+import { lowerCase } from 'lodash';
+import { Controller } from 'react-hook-form';
 
 import { TextField } from '@numaryhq/storybook';
 
 import i18n from '~/src/translations';
+import { ObjectOf } from '~/src/types/generic';
 
 export const connectorsConfig = {
   dummypay: {
@@ -69,14 +70,14 @@ const inputsFactory = ({
   parentName: string;
 }) => {
   const commonConfig = {
-    label: label.toLocaleLowerCase(),
+    label: lowerCase(label),
     fullWidth: true,
     required: inputConfig.required,
     error: !!errors?.[parentName]?.[name],
     errorMessage:
       errors?.[parentName]?.[name] &&
       i18n.t('common.formErrorsMessage.requiredInputs', {
-        inputName: name.toLowerCase(),
+        inputName: lowerCase(name),
       }),
   };
 
@@ -123,7 +124,7 @@ export const buildForm = ({
   control,
   connectorKey,
 }: {
-  errors: any;
+  errors: ObjectOf<any>;
   control: any;
   connectorKey: 'stripe' | 'wise' | 'modulr' | 'dummypay';
 }) =>
