@@ -7,54 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Select } from '@numaryhq/storybook';
 
+import {
+  buildForm,
+  connectorsConfig,
+} from '~/routes/connectors/apps/formBuilder';
 import Modal from '~/src/components/Wrappers/Modal';
-import { buildForm } from '~/src/utils/formBuilder/formBuilder';
-
-const connectorsConfig = {
-  dummypay: {
-    directory: {
-      datatype: 'string',
-      required: true,
-    },
-    fileGenerationPeriod: {
-      datatype: 'duration ns',
-    },
-    filePollingPeriod: {
-      datatype: 'duration ns',
-    },
-  },
-  modulr: {
-    apiKey: {
-      datatype: 'string',
-      required: true,
-    },
-    apiSecret: {
-      datatype: 'string',
-      required: true,
-    },
-    endpoint: {
-      datatype: 'string',
-    },
-  },
-  stripe: {
-    pollingPeriod: {
-      datatype: 'duration ns',
-    },
-    apiKey: {
-      datatype: 'string',
-      required: true,
-    },
-    pageSize: {
-      datatype: 'int',
-    },
-  },
-  wise: {
-    apiKey: {
-      datatype: 'string',
-      required: true,
-    },
-  },
-};
 
 export const CreateConnectorsForm: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -64,8 +21,21 @@ export const CreateConnectorsForm: FunctionComponent = () => {
     label: key,
   }));
 
+  const defaultValuesFromConfig = Object.entries(connectorsConfig).reduce(
+    (acc, [key, value]) => ({
+      ...acc,
+      [key]: Object.entries(value).reduce(
+        (acc, [key]) => ({
+          ...acc,
+          [key]: '',
+        }),
+        {}
+      ),
+    }),
+    {}
+  );
+
   const {
-    getValues,
     trigger,
     formState: { errors, isValid },
     control,
@@ -77,11 +47,7 @@ export const CreateConnectorsForm: FunctionComponent = () => {
     mode: 'onChange',
     defaultValues: {
       connectorSelect: '',
-      modulr: {
-        apiKey: '',
-        apiSecret: '',
-        endpoint: '',
-      },
+      ...defaultValuesFromConfig,
     },
   });
 
@@ -93,12 +59,9 @@ export const CreateConnectorsForm: FunctionComponent = () => {
 
   const onSave = async () => {
     await trigger();
-
-    console.log(getValues(), !isEmpty(errors), { errors });
     if (!isEmpty(errors)) {
       return null;
     }
-    console.log('closed');
     reset();
   };
 
@@ -152,7 +115,13 @@ export const CreateConnectorsForm: FunctionComponent = () => {
             />
           )}
         />
-        {connectorKey && buildForm({ connectorKey, control, errors })}
+        {connectorKey &&
+          buildForm({
+            config: connectorsConfig,
+            connectorKey,
+            control,
+            errors,
+          })}
       </form>
     </Modal>
   );
