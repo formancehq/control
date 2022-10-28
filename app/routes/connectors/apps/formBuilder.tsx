@@ -1,11 +1,12 @@
 import React from 'react';
 
-import { lowerCase } from 'lodash';
+import { capitalize, lowerCase } from 'lodash';
 import { Controller } from 'react-hook-form';
 
 import { TextField } from '@numaryhq/storybook';
 
 import i18n from '~/src/translations';
+import { ConnectorConfigFormProps } from '~/src/types/connectorsConfig';
 import { ObjectOf } from '~/src/types/generic';
 
 export const connectorsConfig = {
@@ -35,12 +36,12 @@ export const connectorsConfig = {
     },
   },
   stripe: {
-    pollingPeriod: {
-      datatype: 'duration ns',
-    },
     apiKey: {
       datatype: 'string',
       required: true,
+    },
+    pollingPeriod: {
+      datatype: 'duration ns',
     },
     pageSize: {
       datatype: 'duration ns',
@@ -65,12 +66,12 @@ const inputsFactory = ({
   inputConfig: { datatype: string; required?: boolean };
   name: string;
   control: any;
-  errors: any;
+  errors: ObjectOf<any>;
   label: string;
   parentName: string;
 }) => {
-  const commonConfig = {
-    label: lowerCase(label),
+  const textFieldSharedConfig = {
+    label: capitalize(lowerCase(label)),
     fullWidth: true,
     required: inputConfig.required,
     error: !!errors?.[parentName]?.[name],
@@ -81,33 +82,33 @@ const inputsFactory = ({
       }),
   };
 
+  const controllerSharedConfig = {
+    name: `${parentName}.${name}`,
+    key: name,
+    control: control,
+    rules: { required: inputConfig.required },
+  };
+
   switch (inputConfig.datatype) {
     case 'string':
       return (
         <Controller
-          name={`${parentName}.${name}`}
-          key={name}
-          rules={{ required: inputConfig.required }}
-          control={control}
+          {...controllerSharedConfig}
           render={({ field: { ref, ...rest } }) => (
-            <TextField {...rest} inputRef={ref} {...commonConfig} />
+            <TextField {...rest} {...textFieldSharedConfig} inputRef={ref} />
           )}
         />
       );
     case 'duration ns':
       return (
         <Controller
-          name={`${parentName}.${name}`}
-          key={name}
-          rules={{ required: inputConfig.required }}
-          control={control}
+          {...controllerSharedConfig}
           render={({ field: { ref, ...rest } }) => (
             <TextField
               {...rest}
+              {...textFieldSharedConfig}
               inputRef={ref}
               type="number"
-              {...commonConfig}
-
               // TODO adapt the format so we can have a unit for the input
               // endAdornment="Seconds"
             />
@@ -122,13 +123,15 @@ const inputsFactory = ({
 export const buildForm = ({
   errors,
   control,
+  config,
   connectorKey,
 }: {
   errors: ObjectOf<any>;
   control: any;
-  connectorKey: 'stripe' | 'wise' | 'modulr' | 'dummypay';
+  config: ConnectorConfigFormProps;
+  connectorKey: keyof ConnectorConfigFormProps;
 }) =>
-  Object.entries(connectorsConfig[connectorKey]).map(([key, value]) =>
+  Object.entries(config[connectorKey]).map(([key, value]) =>
     inputsFactory({
       inputConfig: value,
       name: key,
