@@ -67,7 +67,7 @@ export const CreateConnectorsForm: FunctionComponent = () => {
   const {
     getValues,
     trigger,
-    formState: { errors, isDirty },
+    formState: { errors, isValid },
     control,
     clearErrors,
     reset,
@@ -124,7 +124,7 @@ export const CreateConnectorsForm: FunctionComponent = () => {
           save: {
             onClick: onSave,
             label: t('common.dialog.saveButton'),
-            disabled: !isEmpty(errors) || !isDirty,
+            disabled: !isValid,
           },
         }}
         title={t('common.dialog.createTitle')}
