@@ -414,7 +414,7 @@ export default {
         },
       },
       dialog: {
-        createTitle: 'Create',
+        createTitle: 'Creation',
         updateTitle: 'Update',
         deleteTitle: 'Delete confirmation ✋',
         cancelButton: 'Cancel',
