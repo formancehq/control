@@ -9,7 +9,6 @@ import { Page, Tabs } from '@numaryhq/storybook';
 
 import { CreateForm } from '~/routes/connectors/oauth-clients/CreateForm';
 import {
-  APPS_ROUTE,
   connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
 } from '~/src/components/Navbar/routes';
@@ -27,13 +26,14 @@ export default function Index() {
   const handleActive = (path: string) => location.pathname.includes(path);
 
   const config = [
-    {
-      active: handleActive('apps'),
-      label: t('pages.connectors.tabs.apps.title'),
-      onClick: () => navigate(APPS_ROUTE),
-      type: 'connectors',
-      action: <></>,
-    },
+    // TODO uncomment when connectors feature is ready
+    // {
+    //   active: handleActive('apps'),
+    //   label: t('pages.connectors.tabs.apps.title'),
+    //   onClick: () => navigate(APPS_ROUTE),
+    //   type: 'connectors',
+    //   action: <CreateConnectorsForm />,
+    // },
     {
       active: handleActive('oauth-clients'),
       label: t('pages.connectors.tabs.oAuthClients.title'),

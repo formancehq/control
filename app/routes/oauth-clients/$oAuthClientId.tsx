@@ -75,7 +75,7 @@ export default function Index() {
     return (
       <>
         {uris.length > 0 && (
-          <Grid container sx={{ mb: 1, mt: 2 }}>
+          <Grid container sx={{ mb: 1, mt: 1 }}>
             <Grid item xs={2}>
               <Typography variant="bold">
                 {t(`pages.oAuthClient.sections.details.${key}`)}
@@ -170,7 +170,7 @@ export default function Index() {
         >
           <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
             <>
-              <Grid container sx={{ marginBottom: 1 }}>
+              <Grid container sx={{ mb: 1, mt: 2 }}>
                 <Grid item xs={2}>
                   <Typography variant="bold">
                     {t('pages.oAuthClients.table.columnLabel.public')}
@@ -193,7 +193,7 @@ export default function Index() {
                   const item = get(oAuthClient, key);
                   if (item)
                     return (
-                      <Grid container key={index} sx={{ marginBottom: 1 }}>
+                      <Grid container key={index} sx={{ marginBottom: 2 }}>
                         <Grid item xs={2}>
                           <Typography variant="bold">
                             {t(`pages.oAuthClient.sections.details.${key}`)}
