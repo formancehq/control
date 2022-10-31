@@ -18,5 +18,5 @@ export type OAuthClient = {
   metadata: ObjectOf<any>;
   id: string;
   scopes: string[];
-  Secrets: OAuthSecret[];
+  secrets: OAuthSecret[];
 };

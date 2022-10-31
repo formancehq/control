@@ -64,7 +64,7 @@ export default function Index() {
     oAuthClientId: string;
   }>();
   const [secrets, setSecrets] = useState<OAuthSecret[]>(
-    oAuthClient.Secrets.map((secret) => ({ ...secret, clear: undefined }))
+    oAuthClient.secrets.map((secret) => ({ ...secret, clear: undefined }))
   );
   const { typography } = useTheme();
   const [copiedMessage, setCopiedMessage] = useState<string>('');

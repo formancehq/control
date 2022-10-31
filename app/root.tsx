@@ -362,6 +362,7 @@ export function CatchBoundary() {
   const caught = useCatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  logger(caught, 'app/root/CatchBoundary');
 
   const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));
   const message = t(`common.boundaries.errorState.${error}.title`);
