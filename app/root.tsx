@@ -230,11 +230,7 @@ const renderError = (
             variant="stroke"
             startIcon={<Logout />}
             onClick={() => {
-              try {
-                navigate('auth/redirect-logout');
-              } catch (e) {
-                console.log('eeeeeee', e);
-              }
+              navigate('auth/redirect-logout');
             }}
             sx={{ mt: 5 }}
           />

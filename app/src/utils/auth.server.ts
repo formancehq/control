@@ -136,11 +136,12 @@ export const introspect = async (
   openIdConfig: OpenIdConfiguration,
   accessToken: string
 ): Promise<{ active: boolean }> => {
+  console.info('Access token', accessToken);
   const auth = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
   const buff = new Buffer(auth);
   const basic = buff.toString('base64');
   const data = new FormData();
-  data.append('token', accessToken);
+  data.append('token', accessToken || '');
 
   return fetch(openIdConfig.introspection_endpoint, {
     headers: { Authorization: `Basic ${basic}` },

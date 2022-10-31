@@ -44,7 +44,7 @@ Then run the app in production mode:
 
 ```sh
 // .env is not sourced by remix
-API_URL=http://localhost/api CLIENT_ID=control CLIENT_SECRET=mysupersecret ENCRYPTION_KEY=mysuperencryptionkey ENCRYPTION_IV=6f0c77c78a624022 remix-serve build
+API_URL=http://localhost/api CLIENT_ID=control CLIENT_SECRET=mysupersecret ENCRYPTION_KEY=mysuperencryptionkey ENCRYPTION_IV=6f0c77c78a624022 REDIRECT_URI=http://localhost:3000 OTEL_TRACES=false OTEL_TRACES_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces remix-serve build
 ```
 
 ### DIY
