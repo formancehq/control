@@ -329,6 +329,9 @@ export default {
           },
         },
       },
+      webhook: {
+        title: 'Webhook',
+      },
       webhooks: {
         table: {
           columnLabel: {

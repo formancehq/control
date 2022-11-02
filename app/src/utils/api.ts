@@ -84,8 +84,15 @@ export const logger = (stack?: any, from?: string, more?: any) => {
 
 export const toJson = async <T>(response: Response): Promise<undefined | T> => {
   if (response?.status === 200 || response?.status === 201) {
-    return (await response.json()) as T;
+    try {
+      return (await response.json()) as T;
+    } catch {
+      console.log('passe');
+
+      return {} as T;
+    }
   }
+
   if (response?.status === 204) {
     return {} as T;
   }
