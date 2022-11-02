@@ -151,7 +151,7 @@ export const CreateForm: FunctionComponent = () => {
             />
           )}
         />
-        <Box mt={2}>
+        <Box mt={1}>
           <Controller
             name="description"
             control={control}
