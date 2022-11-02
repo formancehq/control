@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect } from 'react';
 
 import { Add } from '@mui/icons-material';
-import { isEmpty } from 'lodash';
+import { pickBy, isEmpty } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -12,9 +12,37 @@ import {
   connectorsConfig,
 } from '~/routes/connectors/apps/formBuilder';
 import Modal from '~/src/components/Wrappers/Modal';
+import { SnackbarSetter } from '~/src/contexts/service';
+import { useService } from '~/src/hooks/useService';
+import { ConnectorConfigFormProps } from '~/src/types/connectorsConfig';
+import { ApiClient, API_PAYMENT } from '~/src/utils/api';
+
+export const submit = async (
+  values: Partial<ConnectorConfigFormProps>,
+  connectorKey: keyof ConnectorConfigFormProps,
+  api: ApiClient,
+  snackbar: SnackbarSetter,
+  t: any
+) => {
+  try {
+    await api.postResource<any>(
+      `${API_PAYMENT}/connectors/${connectorKey}`,
+      values
+    );
+    // TODO find a better way to refresh the page
+    // await navigate('./apps', { replace: true });
+  } catch {
+    snackbar(
+      t('pages.apps.form.errors.errorOrDuplicate', {
+        connectorName: connectorKey,
+      })
+    );
+  }
+};
 
 export const CreateConnectorsForm: FunctionComponent = () => {
   const { t } = useTranslation();
+  const { api, snackbar } = useService();
 
   const formattedConnectorConfig = Object.keys(connectorsConfig).map((key) => ({
     id: key,
@@ -37,6 +65,7 @@ export const CreateConnectorsForm: FunctionComponent = () => {
 
   const {
     trigger,
+    getValues,
     formState: { errors, isValid },
     control,
     clearErrors,
@@ -53,15 +82,20 @@ export const CreateConnectorsForm: FunctionComponent = () => {
 
   const connectorKey = watch('connectorSelect');
 
-  // const handleOpeningModal = () => {
-  //   setIsModalOpen(true);
-  // };
-
   const onSave = async () => {
     await trigger();
+
     if (!isEmpty(errors)) {
       return null;
     }
+
+    // TODO change the type to it's real type
+    const sanitizedValues: Partial<ConnectorConfigFormProps> = pickBy(
+      getValues(connectorKey),
+      (value) => value.length > 0
+    );
+
+    await submit(sanitizedValues, connectorKey, api, snackbar, t);
     reset();
   };
 

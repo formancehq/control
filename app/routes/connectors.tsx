@@ -11,8 +11,8 @@ import { CreateConnectorsForm as AppsForm } from '~/routes/connectors/apps/Creat
 import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients/CreateForm';
 import { CreateForm as WebhookForm } from '~/routes/connectors/webhooks/CreateForm';
 import {
-  APPS_ROUTE,
   connectors as connectorsConfig,
+  APPS_ROUTE,
   OAUTH_CLIENTS_ROUTE,
   WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
