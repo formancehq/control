@@ -1,28 +1,28 @@
-import * as React from 'react';
-import { useState } from 'react';
+import * as React from "react";
+import { useState } from "react";
 
-import { Delete } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
-import type { MetaFunction } from '@remix-run/node';
-import { Session } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
-import { LoaderFunction } from '@remix-run/server-runtime';
-import { Trans, useTranslation } from 'react-i18next';
+import { Delete } from "@mui/icons-material";
+import { Box, Switch, Typography } from "@mui/material";
+import type { MetaFunction } from "@remix-run/node";
+import { Session } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/server-runtime";
+import { Trans, useTranslation } from "react-i18next";
 
-import { Chip, Date, Row } from '@numaryhq/storybook';
+import { Chip, Date, Row } from "@numaryhq/storybook";
 
-import Modal from '~/src/components/Wrappers/Modal';
-import Table from '~/src/components/Wrappers/Table';
-import { useService } from '~/src/hooks/useService';
-import { Cursor } from '~/src/types/generic';
-import { Webhook } from '~/src/types/webhook';
-import { API_WEBHOOK } from '~/src/utils/api';
-import { createApiClient } from '~/src/utils/api.server';
-import { handleResponse, withSession } from '~/src/utils/auth.server';
+import Modal from "~/src/components/Wrappers/Modal";
+import Table from "~/src/components/Wrappers/Table";
+import { useService } from "~/src/hooks/useService";
+import { Cursor } from "~/src/types/generic";
+import { Webhook } from "~/src/types/webhook";
+import { API_WEBHOOK } from "~/src/utils/api";
+import { createApiClient } from "~/src/utils/api.server";
+import { handleResponse, withSession } from "~/src/utils/auth.server";
 
 export const meta: MetaFunction = () => ({
-  title: 'Webhooks',
-  description: 'List',
+  title: "Webhooks",
+  description: "List",
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -30,7 +30,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     // TODO handle pagination when backend is ready
     const webhooks = await (
       await createApiClient(session)
-    ).getResource<Cursor<Webhook>>(`${API_WEBHOOK}/configs`, 'cursor');
+    ).getResource<Cursor<Webhook>>(`${API_WEBHOOK}/configs`, "cursor");
 
     if (webhooks) {
       return webhooks;
@@ -48,6 +48,38 @@ export default function Index() {
   const { api, snackbar } = useService();
   const [webhooks, setWebhooks] = useState<Webhook[]>(cursor.data);
 
+  const onStatusChange = async (
+    id: string,
+    active: boolean,
+    endpoint: string
+  ) => {
+    let result = undefined;
+    const route = active ? "activate" : "deactivate";
+    try {
+      result = await api.putResource<unknown>(
+        `${API_WEBHOOK}/configs/${id}/${route}`
+      );
+    } catch {
+      snackbar(
+        t("common.feedback.update", {
+          item: `${t("pages.webhook.title")} ${endpoint}`,
+        })
+      );
+    }
+    if (result) {
+      setWebhooks(
+        webhooks.map((webhook) => {
+          if (webhook._id === id) {
+            return {
+              ...webhook,
+              active,
+            };
+          }
+          return webhook;
+        })
+      );
+    }
+  };
   const onDelete = async (id: string, endpoint: string) => {
     let result = undefined;
     try {
@@ -56,8 +88,8 @@ export default function Index() {
       );
     } catch {
       snackbar(
-        t('common.feedback.delete', {
-          item: `${t('pages.webhook.title')} ${endpoint}`,
+        t("common.feedback.delete", {
+          item: `${t("pages.webhook.title")} ${endpoint}`,
         })
       );
     }
@@ -68,6 +100,13 @@ export default function Index() {
 
   const renderRowActions = (webhook: Webhook) => (
     <Box component="span" key={webhook._id} display="inline-flex">
+      <Switch
+        defaultChecked={webhook.active}
+        color="warning"
+        onChange={() =>
+          onStatusChange(webhook._id, !webhook.active, webhook.endpoint)
+        }
+      />
       <Modal
         button={{
           id: `delete-${webhook._id}`,
@@ -75,12 +114,12 @@ export default function Index() {
         }}
         modal={{
           id: `delete-${webhook._id}-modal`,
-          PaperProps: { sx: { minWidth: '500px' } },
-          title: t('common.dialog.deleteTitle'),
+          PaperProps: { sx: { minWidth: "500px" } },
+          title: t("common.dialog.deleteTitle"),
           actions: {
             save: {
-              variant: 'error',
-              label: t('common.dialog.confirmButton'),
+              variant: "error",
+              label: t("common.dialog.confirmButton"),
               onClick: () => onDelete(webhook._id, webhook.endpoint),
             },
           },
@@ -106,27 +145,27 @@ export default function Index() {
         withPagination={false}
         columns={[
           {
-            key: 'endpoint',
-            label: t('pages.webhooks.table.columnLabel.endpoint'),
+            key: "endpoint",
+            label: t("pages.webhooks.table.columnLabel.endpoint"),
           },
           {
-            key: 'eventTypes',
-            label: t('pages.webhooks.table.columnLabel.eventTypes'),
+            key: "eventTypes",
+            label: t("pages.webhooks.table.columnLabel.eventTypes"),
           },
           {
-            key: 'active',
-            label: t('pages.webhooks.table.columnLabel.active'),
+            key: "active",
+            label: t("pages.webhooks.table.columnLabel.active"),
           },
           {
-            key: 'createdAt',
-            label: t('pages.webhooks.table.columnLabel.createdAt'),
+            key: "createdAt",
+            label: t("pages.webhooks.table.columnLabel.createdAt"),
           },
         ]}
         renderItem={(webhook: Webhook, index: number) => (
           <Row
             key={index}
             keys={[
-              'endpoint',
+              "endpoint",
               <Box component="span" key={index}>
                 {webhook.eventTypes.map((event, key: number) => (
                   <Chip
@@ -142,11 +181,11 @@ export default function Index() {
                 key={index}
                 label={t(
                   `pages.webhooks.table.rows.${
-                    webhook.active ? 'active' : 'off'
+                    webhook.active ? "active" : "off"
                   }`
                 )}
                 variant="square"
-                color={webhook.active ? 'green' : 'red'}
+                color={webhook.active ? "green" : "red"}
               />,
               <Date key={index} timestamp={webhook.createdAt} />,
             ]}
