@@ -1,8 +1,8 @@
-import { ActionFunction, json, Session } from "@remix-run/node";
+import { ActionFunction, json, Session } from '@remix-run/node';
 
-import { Methods } from "~/src/utils/api";
-import { createApiClient } from "~/src/utils/api.server";
-import { withSession } from "~/src/utils/auth.server";
+import { Methods } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { withSession } from '~/src/utils/auth.server';
 
 export const action: ActionFunction = async ({ request }) => {
   async function handleData(session: Session) {
@@ -24,7 +24,7 @@ export const action: ActionFunction = async ({ request }) => {
         ret = await apiClient.deleteResource(body.params, body.path);
         break;
       default:
-        throw new Error("Method not handled");
+        throw new Error('Method not handled');
     }
 
     return ret;
@@ -34,7 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
   throw json(result.callbackResult, {
     headers: result.cookieValue
       ? {
-          "Set-Cookie": result.cookieValue,
+          'Set-Cookie': result.cookieValue,
         }
       : {},
   });
