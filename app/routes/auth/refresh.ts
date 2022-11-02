@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return json(
     {
-      interval: floor((authentication.expires_in * 10000) / 5),
+      interval: floor((authentication.expires_in * 1000) / 5),
     },
     {
       headers: {
