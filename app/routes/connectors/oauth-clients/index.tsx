@@ -9,18 +9,15 @@ import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import * as yup from 'yup';
 
 import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
 
 import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Navbar/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
-import { SnackbarSetter } from '~/src/contexts/service';
 import { useService } from '~/src/hooks/useService';
-import i18n from '~/src/translations';
 import { OAuthClient } from '~/src/types/oauthClient';
-import { API_AUTH, ApiClient } from '~/src/utils/api';
+import { API_AUTH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 
@@ -28,50 +25,6 @@ export const meta: MetaFunction = () => ({
   title: 'OAuth clients',
   description: 'List',
 });
-
-export type CreateOAuthClient = {
-  name: string;
-  description?: string;
-  redirectUri?: string;
-  redirectUriSecond?: string;
-  postLogoutRedirectUri?: string;
-  postLogoutRedirectUriSecond?: string;
-};
-
-export const schema = yup.object({
-  name: yup
-    .string()
-    .required(i18n.t('pages.oAuthClients.form.create.name.errors.required')),
-  description: yup.string(),
-  redirectUri: yup.string(),
-  redirectUriSecond: yup.string(),
-  postLogoutRedirectUri: yup.string(),
-  postLogoutRedirectUriSecond: yup.string(),
-});
-
-export const submit = async (
-  values: CreateOAuthClient,
-  api: ApiClient,
-  snackbar: SnackbarSetter,
-  t: any
-): Promise<undefined | string> => {
-  try {
-    const client = await api.postResource<OAuthClient>(
-      `${API_AUTH}/clients`,
-      values,
-      'data'
-    );
-    if (client && client.id) {
-      return client.id;
-    }
-  } catch {
-    snackbar(
-      t('common.feedback.create', {
-        item: `${t('pages.oAuthClient.title')} ${values.name}`,
-      })
-    );
-  }
-};
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {

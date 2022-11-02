@@ -9,6 +9,7 @@ export const TRANSACTION_ROUTE = '/ledgers/:slug/transactions/:id';
 export const PAYMENTS_ROUTE = '/payments';
 export const PAYMENT_ROUTE = '/payments/:id';
 export const OAUTH_CLIENTS_ROUTE = '/connectors/oauth-clients';
+export const WEBHOOKS_ROUTE = '/connectors/webhooks';
 export const APPS_ROUTE = '/connectors/apps';
 export const OAUTH_CLIENT_ROUTE = '/oauth-clients/:id';
 export const ACCOUNTS_ROUTE = '/accounts';
@@ -76,6 +77,7 @@ export const connectors: RouterConfig = {
     getRoute(CONNECTORS_ROUTE),
     getRoute(APPS_ROUTE),
     getRoute(OAUTH_CLIENTS_ROUTE),
+    getRoute(WEBHOOKS_ROUTE),
   ],
   icon: <Share />,
 };

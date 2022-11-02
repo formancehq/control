@@ -329,6 +329,47 @@ export default {
           },
         },
       },
+      webhooks: {
+        table: {
+          columnLabel: {
+            endpoint: 'Endpoint',
+            eventTypes: 'Events',
+            active: 'Status',
+            createdAt: 'Date',
+          },
+          rows: {
+            active: 'Active',
+            off: 'Off',
+          },
+        },
+        form: {
+          create: {
+            endpoint: {
+              label: 'Endpoint',
+              errors: {
+                required:
+                  'The endpoint URL should be a valid https URL and be unique.',
+              },
+            },
+            secret: {
+              label: 'Secret',
+              helperText:
+                "The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)",
+              errors: {
+                encoding: 'Wrong encoded format',
+              },
+            },
+            eventTypes: {
+              label: 'Events',
+              helperText:
+                "The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)",
+              errors: {
+                required: 'You must choose at least one event',
+              },
+            },
+          },
+        },
+      },
     },
     common: {
       showMore: 'Show more',

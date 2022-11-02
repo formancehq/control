@@ -7,10 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Page, Tabs } from '@numaryhq/storybook';
 
-import { CreateForm } from '~/routes/connectors/oauth-clients/CreateForm';
+import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients/CreateForm';
 import {
   connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
+  WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
 
 export const meta: MetaFunction = () => ({
@@ -39,7 +40,13 @@ export default function Index() {
       label: t('pages.connectors.tabs.oAuthClients.title'),
       onClick: () => navigate(OAUTH_CLIENTS_ROUTE),
       type: 'oAuthClients',
-      action: <CreateForm />,
+      action: <OAuthClientForm />,
+    },
+    {
+      active: handleActive('webhooks'),
+      label: t('pages.connectors.tabs.webhooks.title'),
+      onClick: () => navigate(WEBHOOKS_ROUTE),
+      type: 'webhooks',
     },
   ];
 
