@@ -60,9 +60,7 @@ export default function Index() {
     } catch {
       snackbar(
         t('common.feedback.delete', {
-          item: `${t(
-            'pages.oAuthClient.sections.secrets.deleteFeedback'
-          )} ${id}`,
+          item: `${t('pages.oAuthClient.title')} ${id}`,
         })
       );
     }

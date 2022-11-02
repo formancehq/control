@@ -1,16 +1,19 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { Box } from '@mui/material';
+import { Delete } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Chip, Date, Row } from '@numaryhq/storybook';
 
+import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
+import { useService } from '~/src/hooks/useService';
 import { Cursor } from '~/src/types/generic';
 import { Webhook } from '~/src/types/webhook';
 import { API_WEBHOOK } from '~/src/utils/api';
@@ -41,15 +44,65 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   const { t } = useTranslation();
-  const data = useLoaderData();
-  const [webhooks, _setWebhooks] = useState<Webhook[]>(data);
+  const cursor = useLoaderData() as unknown as Cursor<Webhook>;
+  const { api, snackbar } = useService();
+  const [webhooks, setWebhooks] = useState<Webhook[]>(cursor.data);
+
+  const onDelete = async (id: string, endpoint: string) => {
+    let result = undefined;
+    try {
+      result = await api.deleteResource<unknown>(
+        `${API_WEBHOOK}/configs/${id}`
+      );
+    } catch {
+      snackbar(
+        t('common.feedback.delete', {
+          item: `${t('pages.webhook.title')} ${endpoint}`,
+        })
+      );
+    }
+    if (result) {
+      setWebhooks(webhooks.filter((webhook) => webhook._id !== id));
+    }
+  };
+
+  const renderRowActions = (webhook: Webhook) => (
+    <Box component="span" key={webhook._id} display="inline-flex">
+      <Modal
+        button={{
+          id: `delete-${webhook._id}`,
+          startIcon: <Delete />,
+        }}
+        modal={{
+          id: `delete-${webhook._id}-modal`,
+          PaperProps: { sx: { minWidth: '500px' } },
+          title: t('common.dialog.deleteTitle'),
+          actions: {
+            save: {
+              variant: 'error',
+              label: t('common.dialog.confirmButton'),
+              onClick: () => onDelete(webhook._id, webhook.endpoint),
+            },
+          },
+        }}
+      >
+        <Typography>
+          <Trans
+            i18nKey="common.dialog.messages.confirmDelete"
+            values={{ item: webhook.endpoint }}
+            components={{ bold: <strong /> }}
+          />
+        </Typography>
+      </Modal>
+    </Box>
+  );
 
   return (
     <Box mt={2}>
       <Table
         id="webhooks-list"
         items={webhooks}
-        action={false}
+        action
         withPagination={false}
         columns={[
           {
@@ -98,6 +151,7 @@ export default function Index() {
               <Date key={index} timestamp={webhook.createdAt} />,
             ]}
             item={webhook}
+            renderActions={() => renderRowActions(webhook)}
           />
         )}
       />
