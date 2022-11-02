@@ -1,28 +1,28 @@
-type inputType = {
+export type InputType = {
   datatype: string;
   required?: boolean;
 };
 
 type StripeConfig = {
-  apiKey: inputType;
-  pollingPeriod: inputType;
-  pageSize: inputType;
+  apiKey: InputType;
+  pollingPeriod: InputType;
+  pageSize: InputType;
 };
 
 type ModulrConfig = {
-  apiKey: inputType;
-  apiSecret: inputType;
-  endpoint: inputType;
+  apiKey: InputType;
+  apiSecret: InputType;
+  endpoint: InputType;
 };
 
 type DummyPayConfig = {
-  directory: inputType;
-  fileGenerationPeriod: inputType;
-  filePollingPeriod: inputType;
+  directory: InputType;
+  fileGenerationPeriod: InputType;
+  filePollingPeriod: InputType;
 };
 
 type WiseConfig = {
-  apiKey: inputType;
+  apiKey: InputType;
 };
 
 export type ConnectorConfigFormProps = {

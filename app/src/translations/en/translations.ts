@@ -265,6 +265,14 @@ export default {
           },
         },
       },
+      apps: {
+        form: {
+          errors: {
+            errorOrDuplicate:
+              '{{connectorName}} connector could not be created it might already exist 😣',
+          },
+        },
+      },
       oAuthClient: {
         title: 'OAuth Client',
         sections: {
@@ -401,6 +409,11 @@ export default {
       },
     },
     common: {
+      status: {
+        active: 'Active',
+        paused: 'paused',
+        error: 'Error',
+      },
       formErrorsMessage: {
         requiredInputs: '{{inputName}} is required',
       },
@@ -493,11 +506,15 @@ export default {
       dialog: {
         createTitle: 'Creation',
         updateTitle: 'Update',
-        deleteTitle: 'Delete confirmation',
+        resetTitle: 'Reset',
+        confirmation: '{{action}} confirmation ✋',
+        deleteTitle: 'Delete confirmation ✋',
         cancelButton: 'Cancel',
         saveButton: 'Save',
         confirmButton: 'Confirm',
         messages: {
+          reset:
+            '⚠️ Are you sure you want to reset <bold>{{item}}</bold> ? It will uninstall and reinstall the following provider and delete all previous payments linked to it, This action is not reversible.',
           confirmDelete:
             'Are you sure you want to delete <bold>{{item}}</bold> ? This action is not reversible.',
         },

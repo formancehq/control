@@ -6,7 +6,10 @@ import { Controller } from 'react-hook-form';
 import { TextField } from '@numaryhq/storybook';
 
 import i18n from '~/src/translations';
-import { ConnectorConfigFormProps } from '~/src/types/connectorsConfig';
+import {
+  ConnectorConfigFormProps,
+  InputType,
+} from '~/src/types/connectorsConfig';
 import { ObjectOf } from '~/src/types/generic';
 
 export const connectorsConfig = {
@@ -44,7 +47,7 @@ export const connectorsConfig = {
       datatype: 'duration ns',
     },
     pageSize: {
-      datatype: 'duration ns',
+      datatype: 'integer',
     },
   },
   wise: {
@@ -63,7 +66,7 @@ const inputsFactory = ({
   label,
   parentName,
 }: {
-  inputConfig: { datatype: string; required?: boolean };
+  inputConfig: InputType;
   name: string;
   control: any;
   errors: ObjectOf<any>;
@@ -100,6 +103,7 @@ const inputsFactory = ({
         />
       );
     case 'duration ns':
+    case 'integer':
       return (
         <Controller
           {...controllerSharedConfig}
@@ -109,8 +113,9 @@ const inputsFactory = ({
               {...textFieldSharedConfig}
               inputRef={ref}
               type="number"
-              // TODO adapt the format so we can have a unit for the input
-              // endAdornment="Seconds"
+              {...(inputConfig.datatype !== 'integer' && {
+                endAdornment: 'Seconds',
+              })}
             />
           )}
         />
