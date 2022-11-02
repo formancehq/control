@@ -1,6 +1,6 @@
-import { get } from "lodash";
+import { get } from 'lodash';
 
-import { ApiClient, logger, Methods, toJson } from "~/src/utils/api";
+import { ApiClient, logger, Methods, toJson } from '~/src/utils/api';
 
 export class ReactApiClient implements ApiClient {
   getResource<T>(
@@ -38,7 +38,7 @@ export class ReactApiClient implements ApiClient {
     body?: any,
     path?: string
   ): Promise<T | undefined | void> {
-    return fetch("/proxify", {
+    return fetch('/proxify', {
       method: Methods.POST,
       body: JSON.stringify({
         params,
@@ -53,8 +53,8 @@ export class ReactApiClient implements ApiClient {
         return path ? get(json, path, json) : json;
       })
       .catch((e: any) => {
-        logger(e, "api.client", { params, path, body, method });
-        throw new Error("Error");
+        logger(e, 'api.client', { params, path, body, method });
+        throw new Error('Error');
       });
   }
 }

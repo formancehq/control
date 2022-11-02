@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment*/
-import { Session } from "@remix-run/node";
-import { get, isUndefined } from "lodash";
+import { Session } from '@remix-run/node';
+import { get, isUndefined } from 'lodash';
 
 import {
   ApiClient,
@@ -8,10 +8,10 @@ import {
   logger,
   Methods,
   toJson,
-} from "~/src/utils/api";
-import { parseSessionHolder } from "~/src/utils/auth.server";
+} from '~/src/utils/api';
+import { parseSessionHolder } from '~/src/utils/auth.server';
 
-export type Headers = { Authorization?: string; "Content-Type": string };
+export type Headers = { Authorization?: string; 'Content-Type': string };
 
 export const createApiClient = async (
   session: Session,
@@ -26,13 +26,13 @@ export class DefaultApiClient implements ApiClient {
   constructor(session: Session, url?: string) {
     this.baseUrl = url;
     this.headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
-    if (typeof process !== "undefined") {
+    if (typeof process !== 'undefined') {
       if (isUndefined(url)) {
         if (process.env.API_URL) {
           this.baseUrl = process.env.API_URL;
-        } else throw new Error("API_URL is not defined");
+        } else throw new Error('API_URL is not defined');
       }
     }
     this.session = session;
@@ -100,13 +100,13 @@ export class DefaultApiClient implements ApiClient {
         return path ? get(json, path) : json;
       })
       .catch((e: any) => {
-        logger(e, "api.server", {
+        logger(e, 'api.server', {
           params,
           body,
           headers: this.headers,
           method,
         });
-        throw new Error("Error");
+        throw new Error('Error');
       }); // allow error to be catch on higher level (root) // TODO improve handler
   }
 }
