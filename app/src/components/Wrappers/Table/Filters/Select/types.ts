@@ -9,4 +9,5 @@ export type SelectProps = {
   name: string;
   variant?: 'light' | 'dark';
   type?: Filters.TERMS | Filters.LEDGERS;
+  onChange?: () => void;
 };

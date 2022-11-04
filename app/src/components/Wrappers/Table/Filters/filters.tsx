@@ -29,12 +29,14 @@ export const buildOptions = (
 export const renderOption = (
   props: any,
   option: AutocompleteOption,
-  name?: Filters.TERMS | Filters.LEDGERS
+  name?: Filters.TERMS | Filters.LEDGERS,
+  onChange?: () => void
 ) => (
   <Checkbox
     key={option.id}
     value={option.id}
     name={name || Filters.TERMS}
     label={option.label}
+    onChange={onChange}
   />
 );

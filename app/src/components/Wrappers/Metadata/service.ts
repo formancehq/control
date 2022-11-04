@@ -15,7 +15,7 @@ export const submit = async (
   resource: LedgerResources.TRANSACTIONS | LedgerResources.ACCOUNTS,
   ledger: string,
   api: ApiClient
-): Promise<boolean | undefined> =>
+): Promise<void | undefined | boolean> =>
   await api.postResource<boolean>(
     `${API_LEDGER}/${ledger}/${resource}/${id}/${LedgerSubResources.METADATA}`,
     json

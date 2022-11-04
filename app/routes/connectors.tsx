@@ -8,9 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { Page, Tabs } from '@numaryhq/storybook';
 
 import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients/CreateForm';
+import { CreateForm as WebhookForm } from '~/routes/connectors/webhooks/CreateForm';
 import {
   connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
+  WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
 
 export const meta: MetaFunction = () => ({
@@ -41,14 +43,13 @@ export default function Index() {
       type: 'oAuthClients',
       action: <OAuthClientForm />,
     },
-    // TODO uncomment when feature is ready
-    // {
-    //   active: handleActive('webhooks'),
-    //   label: t('pages.connectors.tabs.webhooks.title'),
-    //   onClick: () => navigate(WEBHOOKS_ROUTE),
-    //   type: 'webhooks',
-    //   action: <WebhookForm />,
-    // },
+    {
+      active: handleActive('webhooks'),
+      label: t('pages.connectors.tabs.webhooks.title'),
+      onClick: () => navigate(WEBHOOKS_ROUTE),
+      type: 'webhooks',
+      action: <WebhookForm />,
+    },
   ];
 
   const activeConfig = config.find((item) => item.active);
