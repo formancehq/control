@@ -350,7 +350,8 @@ export default {
             endpoint: {
               label: 'Endpoint',
               errors: {
-                required:
+                required: 'Required',
+                valid:
                   'The endpoint URL should be a valid https URL and be unique.',
               },
             },
@@ -359,11 +360,12 @@ export default {
               helperText:
                 "The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)",
               errors: {
-                encoding: 'Wrong encoded format',
+                valid: 'Wrong encoded format',
               },
             },
             eventTypes: {
               label: 'Events',
+              placeholder: 'Select one or many events',
               helperText:
                 "The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)",
               errors: {

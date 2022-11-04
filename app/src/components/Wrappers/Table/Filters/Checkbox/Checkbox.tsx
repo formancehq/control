@@ -13,31 +13,37 @@ const Checkbox: FunctionComponent<CheckboxProps> = ({
   name,
   value,
   label = value,
+  onChange,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const all = searchParams.getAll(name);
   const [checked, setChecked] = useState(all.includes(value));
 
   const handleOnChange = (checked: boolean, value: string, name: string) => {
-    // TODO improve
-    if (name !== Filters.TERMS && name !== Filters.LEDGERS) {
-      return null;
-    }
+    // TODO improve to make it generic (maybe a factory ?)
 
-    const query = buildQuery(searchParams) as any;
-
-    if (checked) {
-      const find = query[name]
-        ? query[name].find((val: string) => val === value)
-        : undefined;
-      if (!find) {
-        query[name] = query[name] ? [...query[name], value] : [value];
-      }
+    if (onChange) {
+      onChange();
     } else {
-      query[name] = query[name].filter((val: string) => val !== value);
-    }
+      if (name !== Filters.TERMS && name !== Filters.LEDGERS) {
+        return null;
+      }
 
-    setSearchParams(query as URLSearchParamsInit);
+      const query = buildQuery(searchParams) as any;
+
+      if (checked) {
+        const find = query[name]
+          ? query[name].find((val: string) => val === value)
+          : undefined;
+        if (!find) {
+          query[name] = query[name] ? [...query[name], value] : [value];
+        }
+      } else {
+        query[name] = query[name].filter((val: string) => val !== value);
+      }
+
+      setSearchParams(query as URLSearchParamsInit);
+    }
   };
 
   useEffect(() => {

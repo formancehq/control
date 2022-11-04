@@ -23,6 +23,7 @@ const Select: FunctionComponent<SelectProps> = ({
   name,
   variant = 'light',
   type = Filters.TERMS,
+  onChange,
 }) => {
   const { t } = useTranslation();
 
@@ -41,7 +42,7 @@ const Select: FunctionComponent<SelectProps> = ({
         disableCloseOnSelect
         getOptionLabel={(option: AutocompleteOption) => option.label}
         renderOption={(props: any, option: AutocompleteOption) =>
-          renderOption(props, option, type)
+          renderOption(props, option, type, onChange)
         }
         style={{ width }}
       />

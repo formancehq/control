@@ -103,7 +103,7 @@ export default function Index() {
     <Box component="span" key={webhook._id} display="inline-flex">
       <Switch
         checked={webhook.active}
-        color="warning"
+        color="default"
         inputProps={{ 'aria-label': 'controlled' }}
         onChange={() =>
           onStatusChange(webhook._id, !webhook.active, webhook.endpoint)
