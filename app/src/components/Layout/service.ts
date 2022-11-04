@@ -12,6 +12,7 @@ import {
   OAUTH_CLIENTS_ROUTE,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
+  WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
 import { ObjectOf } from '~/src/types/generic';
 
@@ -64,6 +65,23 @@ const buildOAuthClientBreadcrumbs = (
   ];
 };
 
+const buildWebhookBreadcrumbs = (
+  navigate: NavigateFunction,
+  id: string
+): BreadcrumbsLink[] => {
+  const bread = {
+    label: i18n.t('common.breadcrumbs.targets.webhooks'),
+    onClick: () => navigate(getRoute(WEBHOOKS_ROUTE)),
+  };
+
+  return [
+    bread,
+    {
+      label: id,
+    },
+  ];
+};
+
 const buildLedgerBreadcrumbs = (
   target: string,
   id: string,
@@ -101,6 +119,7 @@ export const breadcrumbsFactory = (
   );
   const paymentsRoute = match('/payments/:paymentId');
   const oAuthClientsRoute = match('/oauth-clients/:oAuthClientId');
+  const webhooksRoute = match('/webhooks/:webhookId');
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
@@ -139,6 +158,9 @@ export const breadcrumbsFactory = (
   }
   if (oAuthClientsRoute) {
     return buildOAuthClientBreadcrumbs(navigate, params.oAuthClientId);
+  }
+  if (webhooksRoute) {
+    return buildWebhookBreadcrumbs(navigate, params.webhookId);
   }
 
   return undefined;

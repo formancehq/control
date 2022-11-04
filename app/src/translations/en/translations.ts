@@ -331,6 +331,20 @@ export default {
       },
       webhook: {
         title: 'Webhook',
+        sections: {
+          details: {
+            title: 'Details',
+            endpoint: 'Endpoint',
+            events: 'Events',
+            createdAt: 'Created at',
+            modifiedAt: 'Updated at',
+          },
+          secrets: {
+            title: 'Secrets',
+            reveal: 'Reveal',
+            renew: 'Renew',
+          },
+        },
       },
       webhooks: {
         table: {
@@ -446,6 +460,7 @@ export default {
           accounts: 'Accounts',
           transactions: 'Transactions',
           oAuthClients: 'OAuth Apps',
+          webhooks: 'Webhooks',
         },
       },
       search: {

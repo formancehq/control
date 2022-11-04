@@ -1,16 +1,18 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { Delete } from '@mui/icons-material';
+import { ArrowRight, Delete, Share } from '@mui/icons-material';
 import { Box, Switch, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { Trans, useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-import { Chip, Date, Row } from '@numaryhq/storybook';
+import { Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
 
+import { getRoute, WEBHOOK_ROUTE } from '~/src/components/Navbar/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
@@ -47,7 +49,7 @@ export default function Index() {
   const cursor = useLoaderData() as unknown as Cursor<Webhook>;
   const { api, snackbar } = useService();
   const [webhooks, setWebhooks] = useState<Webhook[]>(cursor.data);
-
+  const navigate = useNavigate();
   const onStatusChange = async (
     id: string,
     active: boolean,
@@ -101,6 +103,11 @@ export default function Index() {
 
   const renderRowActions = (webhook: Webhook) => (
     <Box component="span" key={webhook._id} display="inline-flex">
+      <LoadingButton
+        id={`show-${webhook._id}`}
+        onClick={() => navigate(getRoute(WEBHOOK_ROUTE, webhook._id))}
+        endIcon={<ArrowRight />}
+      />
       <Switch
         checked={webhook.active}
         color="default"
@@ -167,7 +174,15 @@ export default function Index() {
           <Row
             key={index}
             keys={[
-              'endpoint',
+              <Box
+                component="span"
+                display="flex"
+                alignItems="center"
+                key={index}
+              >
+                <Share fontSize="small" />
+                <Typography ml={1}>{webhook.endpoint}</Typography>
+              </Box>,
               <Box component="span" key={index}>
                 {webhook.eventTypes.map((event, key: number) => (
                   <Chip
