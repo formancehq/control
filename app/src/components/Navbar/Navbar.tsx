@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { ArrowDropDown, Person } from "@mui/icons-material";
+import { ArrowDropDown, Person } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -9,22 +9,22 @@ import {
   MenuItem,
   Typography,
   useTheme,
-} from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+} from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import Search from "./../Search";
+import Search from './../Search';
 
-import { Navbar as FormanceNavbar } from "@numaryhq/storybook";
+import { Navbar as FormanceNavbar } from '@numaryhq/storybook';
 
-import LinkWrapper from "../Wrappers/LinkWrapper";
+import LinkWrapper from '../Wrappers/LinkWrapper';
 
 import {
   getRoute,
   OVERVIEW_ROUTE,
   routerConfig,
-} from "~/src/components/Navbar/routes";
-import { useService } from "~/src/hooks/useService";
+} from '~/src/components/Navbar/routes';
+import { useService } from '~/src/hooks/useService';
 
 const Navbar: FunctionComponent = () => {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const Navbar: FunctionComponent = () => {
     label: t(route.label),
   }));
 
-  const settings = [t("topbar.logout")];
+  const settings = [t('topbar.logout')];
 
   return (
     <FormanceNavbar
@@ -63,17 +63,17 @@ const Navbar: FunctionComponent = () => {
       routes={formattedRouterConfig}
       location={location}
       linkWrapper={
-        <LinkWrapper to={""} prefetch={"none"} color={""}>
+        <LinkWrapper to={''} prefetch={'none'} color={''}>
           <Box />
         </LinkWrapper>
       }
     >
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "120px",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '120px',
         }}
       >
         <Search />
@@ -99,17 +99,17 @@ const Navbar: FunctionComponent = () => {
               <ArrowDropDown sx={{ color: theme.palette.grey[500] }} />
             </IconButton>
             <Menu
-              sx={{ mt: "45px" }}
+              sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}

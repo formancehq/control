@@ -11,7 +11,6 @@ import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients
 import {
   connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
-  WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
 
 export const meta: MetaFunction = () => ({
@@ -42,12 +41,14 @@ export default function Index() {
       type: 'oAuthClients',
       action: <OAuthClientForm />,
     },
-    {
-      active: handleActive('webhooks'),
-      label: t('pages.connectors.tabs.webhooks.title'),
-      onClick: () => navigate(WEBHOOKS_ROUTE),
-      type: 'webhooks',
-    },
+    // TODO uncomment when feature is ready
+    // {
+    //   active: handleActive('webhooks'),
+    //   label: t('pages.connectors.tabs.webhooks.title'),
+    //   onClick: () => navigate(WEBHOOKS_ROUTE),
+    //   type: 'webhooks',
+    //   action: <WebhookForm />,
+    // },
   ];
 
   const activeConfig = config.find((item) => item.active);
