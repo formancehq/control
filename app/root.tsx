@@ -35,7 +35,6 @@ import Layout from '~/src/components/Layout';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
-import { useService } from '~/src/hooks/useService';
 import {
   Authentication,
   CurrentUser,
@@ -124,7 +123,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 const renderError = (
   navigate: NavigateFunction,
   t: any,
-  origin: string,
   message?: string,
   description?: string
 ): ReactElement => (
@@ -176,7 +174,7 @@ const renderError = (
             variant="stroke"
             startIcon={<Logout />}
             onClick={() => {
-              window.location.href = `${origin}/auth/redirect-logout`;
+              window.location.href = `${window.origin}/auth/redirect-logout`;
             }}
             sx={{ mt: 5 }}
           />
@@ -244,7 +242,6 @@ const Document = withEmotionCache(
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
   const { currentUser, metas } = useLoaderData();
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const [loading, _load, stopLoading] = useOpen(true);
   const [feedback, setFeedback] = useState({
@@ -348,12 +345,11 @@ export default function App() {
 export function ErrorBoundary({ error }: { error: Error }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { metas } = useService();
   logger(error, 'app/root', undefined);
 
   return (
     <Document title="Error!">
-      <Layout>{renderError(navigate, t, metas.origin)}</Layout>
+      <Layout>{renderError(navigate, t)}</Layout>
     </Document>
   );
 }
@@ -362,8 +358,6 @@ export function CatchBoundary() {
   const caught = useCatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { metas } = useService();
-
   logger(caught, 'app/root/CatchBoundary');
 
   const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));
@@ -372,9 +366,7 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>
-        {renderError(navigate, t, metas.origin, message, description)}
-      </Layout>
+      <Layout>{renderError(navigate, t, message, description)}</Layout>
     </Document>
   );
 }
