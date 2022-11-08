@@ -249,7 +249,7 @@ export default {
             },
           },
           oAuthClients: {
-            title: 'Oauth Clients',
+            title: 'OAuth Clients',
             pageButton: {
               actionLabel: 'Add an Oauth Client',
               actionId: 'oauth-clients',
@@ -269,6 +269,14 @@ export default {
             trusted: 'Trusted',
             redirectUris: 'Redirect uris',
             postLogoutRedirectUris: 'Post logout redirect uris',
+          },
+          dangerZone: {
+            title: 'Manage',
+            delete: {
+              title: 'Delete OAuth Client',
+              description:
+                "This action will definitely delete your OAuth Client. You won't be able to use your secret for machine to machine treatments.",
+            },
           },
           secrets: {
             title: 'Secrets',
@@ -340,6 +348,14 @@ export default {
             createdAt: 'Created at',
             modifiedAt: 'Updated at',
           },
+          dangerZone: {
+            title: 'Manage',
+            delete: {
+              title: 'Delete webhook',
+              description:
+                'This action will definitely delete your webhook config and will no longer work.',
+            },
+          },
           secrets: {
             title: 'Secrets',
             reveal: 'Reveal',
@@ -353,11 +369,11 @@ export default {
             endpoint: 'Endpoint',
             eventTypes: 'Events',
             active: 'Status',
-            createdAt: 'Date',
+            createdAt: 'Creation date',
           },
           rows: {
             active: 'Active',
-            off: 'Off',
+            inactive: 'Inactive',
           },
         },
         form: {
@@ -396,16 +412,19 @@ export default {
       filters: {
         ledgers: 'Ledgers',
       },
+      buttons: {
+        delete: 'Delete',
+      },
       feedback: {
-        error: 'Something wrong happened 😕',
-        delete: '{{item}} could not be deleted 😣',
-        create: '{{item}} could not be created 😣',
-        update: '{{item}} could not be updated 😣',
+        error: 'Something wrong happened',
+        delete: '{{item}} could not be deleted',
+        create: '{{item}} could not be created',
+        update: '{{item}} could not be updated',
       },
       boundaries: {
         errorState: {
           error: {
-            title: 'Well, this is unexpected. Sorry 🙏',
+            title: 'Well, this is unexpected. Sorry',
             description:
               'You can try again by refreshing your browser. If the error is still persisting, please feel free to ask for help on our discord.',
             button: 'Help !',
@@ -460,7 +479,7 @@ export default {
           ledgers: 'Ledgers',
           accounts: 'Accounts',
           transactions: 'Transactions',
-          oAuthClients: 'OAuth Apps',
+          oAuthClients: 'OAuth Clients',
           webhooks: 'Webhooks',
         },
       },
@@ -478,13 +497,13 @@ export default {
       dialog: {
         createTitle: 'Creation',
         updateTitle: 'Update',
-        deleteTitle: 'Delete confirmation ✋',
+        deleteTitle: 'Delete confirmation',
         cancelButton: 'Cancel',
         saveButton: 'Save',
         confirmButton: 'Confirm',
         messages: {
           confirmDelete:
-            '⚠️ Are you sure you want to delete <bold>{{item}}</bold> ? This action is no reversible.',
+            'Are you sure you want to delete <bold>{{item}}</bold> ? This action is not reversible.',
         },
       },
       forms: {

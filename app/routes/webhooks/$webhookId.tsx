@@ -1,17 +1,18 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { AutoMode, Share, Visibility } from '@mui/icons-material';
+import { AutoMode, Delete, Share, Visibility } from '@mui/icons-material';
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { first, get, pick } from 'lodash';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 
 import {
+  ActionZone,
   Chip,
   Date,
   LoadingButton,
@@ -21,8 +22,11 @@ import {
   theme,
 } from '@numaryhq/storybook';
 
+import { getRoute, WEBHOOKS_ROUTE } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
+import WebhookStatus from '~/src/components/Wrappers/WebhookStatus';
 import { useService } from '~/src/hooks/useService';
 import { Webhook } from '~/src/types/webhook';
 import { API_WEBHOOK } from '~/src/utils/api';
@@ -66,16 +70,37 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 
 export default function Index() {
-  const webhook = useLoaderData() as unknown as Webhook;
+  const data = useLoaderData() as unknown as Webhook;
   const { t } = useTranslation();
   const { api, snackbar } = useService();
   const { webhookId: id } = useParams<{
     webhookId: string;
   }>();
+  const navigate = useNavigate();
   const [copiedMessage, setCopiedMessage] = useState<string>('');
+  const [webhook, setWebhook] = useState<Webhook>(data);
   const [secret, setSecret] = useState<string>(
     '******************************'
   );
+
+  const onDelete = async (id: string, endpoint: string) => {
+    let result = undefined;
+    try {
+      result = await api.deleteResource<unknown>(
+        `${API_WEBHOOK}/configs/${id}`
+      );
+    } catch {
+      snackbar(
+        t('common.feedback.delete', {
+          item: `${t('pages.webhook.title')} ${endpoint}`,
+        })
+      );
+    }
+    if (result) {
+      navigate(getRoute(WEBHOOKS_ROUTE));
+    }
+  };
+
   const onRenew = async () => {
     let result = undefined;
     try {
@@ -122,11 +147,13 @@ export default function Index() {
 
   return (
     <Page id="webhook" title={t('pages.webhook.title')}>
-      <Box mt="26px">
+      <>
         <Box
+          mt="26px"
           sx={{
             display: 'flex',
             flexDirection: 'column',
+            borderRadius: '4px',
             padding: '0 26px 26px 26px',
             backgroundColor: theme.palette.neutral[0],
           }}
@@ -141,14 +168,11 @@ export default function Index() {
                   </Typography>
                 </Grid>
                 <Grid item xs={10}>
-                  <Chip
-                    label={t(
-                      `pages.webhooks.table.rows.${
-                        webhook.active ? 'active' : 'off'
-                      }`
-                    )}
-                    variant="square"
-                    color={webhook.active ? 'green' : 'red'}
+                  <WebhookStatus
+                    webhook={webhook}
+                    onChangeCallback={() => {
+                      setWebhook({ ...webhook, active: !webhook.active });
+                    }}
                   />
                 </Grid>
               </Grid>
@@ -161,6 +185,7 @@ export default function Index() {
                 </Grid>
                 <Grid item xs={10}>
                   <Tooltip
+                    id="endpoint-tooltip"
                     title={copiedMessage}
                     onClose={() => setCopiedMessage('')}
                   >
@@ -219,50 +244,92 @@ export default function Index() {
             </>
           </SectionWrapper>
           <SectionWrapper title={t('pages.webhook.sections.secrets.title')}>
-            <Box mt={2}>
-              <Table
-                id="webhook-secrets-list"
-                items={[webhook]}
-                action
-                withPagination={false}
-                withHeader={false}
-                columns={[
-                  {
-                    key: 'secret',
-                    label: '',
-                  },
-                ]}
-                renderItem={(webhook: Webhook, index: number) => (
-                  <Row
-                    key={index}
-                    keys={[
-                      <Box
-                        component="span"
-                        display="flex"
-                        alignItems="center"
-                        key={index}
+            <Table
+              id="webhook-secrets-list"
+              items={[webhook]}
+              action
+              withPagination={false}
+              withHeader={false}
+              columns={[
+                {
+                  key: 'secret',
+                  label: '',
+                },
+              ]}
+              renderItem={(webhook: Webhook, index: number) => (
+                <Row
+                  key={index}
+                  keys={[
+                    <Box
+                      component="span"
+                      display="flex"
+                      alignItems="center"
+                      key={index}
+                    >
+                      <Tooltip
+                        title={copiedMessage}
+                        onClick={async () => {
+                          await copyTokenToClipboard(secret);
+                          setCopiedMessage(t('common.tooltip.copied'));
+                        }}
+                        onClose={() => setCopiedMessage('')}
                       >
-                        <Tooltip
-                          title={copiedMessage}
-                          onClick={async () => {
-                            await copyTokenToClipboard(secret);
-                            setCopiedMessage(t('common.tooltip.copied'));
-                          }}
-                          onClose={() => setCopiedMessage('')}
-                        >
-                          <Chip key={index} label={secret} variant="square" />
-                        </Tooltip>
-                      </Box>,
-                    ]}
-                    item={webhook}
-                    renderActions={() => renderRowActions(webhook)}
-                  />
-                )}
-              />
-            </Box>
+                        <Chip key={index} label={secret} variant="square" />
+                      </Tooltip>
+                    </Box>,
+                  ]}
+                  item={webhook}
+                  renderActions={() => renderRowActions(webhook)}
+                />
+              )}
+            />
+          </SectionWrapper>
+          <SectionWrapper title={t('pages.webhook.sections.dangerZone.title')}>
+            <ActionZone
+              actions={[
+                {
+                  key: 'delete-webhook',
+                  title: t('pages.webhook.sections.dangerZone.delete.title'),
+                  description: t(
+                    'pages.webhook.sections.dangerZone.delete.description'
+                  ),
+                  button: (
+                    <Modal
+                      button={{
+                        id: `delete-${webhook._id}`,
+                        startIcon: <Delete />,
+                        content: t('common.buttons.delete'),
+                        variant: 'error',
+                      }}
+                      modal={{
+                        id: `delete-${webhook._id}-modal`,
+                        PaperProps: { sx: { minWidth: '500px' } },
+                        title: t('common.dialog.deleteTitle'),
+                        actions: {
+                          save: {
+                            variant: 'error',
+                            label: t('common.dialog.confirmButton'),
+                            onClick: () =>
+                              onDelete(webhook._id, webhook.endpoint),
+                          },
+                        },
+                      }}
+                    >
+                      <Typography>
+                        <Trans
+                          i18nKey="common.dialog.messages.confirmDelete"
+                          values={{ item: webhook.endpoint }}
+                          components={{ bold: <strong /> }}
+                        />
+                      </Typography>
+                    </Modal>
+                  ),
+                },
+              ]}
+            />
           </SectionWrapper>
         </Box>
-      </Box>
+      </>
     </Page>
   );
 }

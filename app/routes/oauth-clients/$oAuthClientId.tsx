@@ -9,11 +9,19 @@ import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { get, pick } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 
-import { Chip, Page, Row, SectionWrapper, theme } from '@numaryhq/storybook';
+import {
+  ActionZone,
+  Chip,
+  Page,
+  Row,
+  SectionWrapper,
+  theme,
+} from '@numaryhq/storybook';
 
+import { getRoute, OAUTH_CLIENTS_ROUTE } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
@@ -66,6 +74,7 @@ export default function Index() {
   const [secrets, setSecrets] = useState<OAuthSecret[]>(
     oAuthClient.secrets.map((secret) => ({ ...secret, clear: undefined }))
   );
+  const navigate = useNavigate();
   const { typography } = useTheme();
   const [copiedMessage, setCopiedMessage] = useState<string>('');
 
@@ -97,6 +106,22 @@ export default function Index() {
       </>
     );
   };
+  const onDeleteClient = async (id: string) => {
+    try {
+      const result = await api.deleteResource<unknown>(
+        `${API_AUTH}/clients/${id}`
+      );
+      if (result) {
+        navigate(getRoute(OAUTH_CLIENTS_ROUTE));
+      }
+    } catch {
+      snackbar(
+        t('common.feedback.delete', {
+          item: `${t('pages.oAuthClient.title')} ${id}`,
+        })
+      );
+    }
+  };
 
   const onDelete = async (idSecret: string) => {
     try {
@@ -116,7 +141,7 @@ export default function Index() {
   };
 
   const renderRowActions = (secret: OAuthSecret) => (
-    <Box component="span" key={secret.id}>
+    <Box component="span" key={secret.id} sx={{ float: 'right' }}>
       <Modal
         button={{
           id: `delete-${secret.id}`,
@@ -224,7 +249,7 @@ export default function Index() {
               <Table
                 id="oauth-client-secrets-list"
                 items={secrets}
-                action={true}
+                action
                 withPagination={false}
                 columns={[
                   {
@@ -263,23 +288,27 @@ export default function Index() {
                             <Box component="span" sx={{ display: 'block' }}>
                               {t('pages.oAuthClient.sections.secrets.clear')}
                             </Box>
-                            <Tooltip
-                              title={copiedMessage}
-                              onClose={() => setCopiedMessage('')}
-                            >
-                              <Chip
-                                onClick={async () => {
-                                  await copyTokenToClipboard(
-                                    secret.clear || ''
-                                  );
-                                  setCopiedMessage(t('common.tooltip.copied'));
-                                }}
-                                sx={{ marginLeft: 1 }}
-                                label={secret.clear}
-                                color="blue"
-                                variant="square"
-                              />
-                            </Tooltip>
+                            <Box component="span">
+                              <Tooltip
+                                title={copiedMessage}
+                                onClose={() => setCopiedMessage('')}
+                              >
+                                <Chip
+                                  onClick={async () => {
+                                    await copyTokenToClipboard(
+                                      secret.clear || ''
+                                    );
+                                    setCopiedMessage(
+                                      t('common.tooltip.copied')
+                                    );
+                                  }}
+                                  sx={{ marginLeft: 1 }}
+                                  label={secret.clear}
+                                  color="blue"
+                                  variant="square"
+                                />
+                              </Tooltip>
+                            </Box>
                           </Alert>
                         )}
                       </>,
@@ -290,6 +319,53 @@ export default function Index() {
                 )}
               />
             </Box>
+          </SectionWrapper>
+          <SectionWrapper
+            title={t('pages.oAuthClient.sections.dangerZone.title')}
+          >
+            <ActionZone
+              actions={[
+                {
+                  key: 'delete-oAuthClient',
+                  title: t(
+                    'pages.oAuthClient.sections.dangerZone.delete.title'
+                  ),
+                  description: t(
+                    'pages.oAuthClient.sections.dangerZone.delete.description'
+                  ),
+                  button: (
+                    <Modal
+                      button={{
+                        id: `delete-${oAuthClient.id}`,
+                        startIcon: <Delete />,
+                        content: t('common.buttons.delete'),
+                        variant: 'error',
+                      }}
+                      modal={{
+                        id: `delete-${oAuthClient.id}-modal`,
+                        PaperProps: { sx: { minWidth: '500px' } },
+                        title: t('common.dialog.deleteTitle'),
+                        actions: {
+                          save: {
+                            variant: 'error',
+                            label: t('common.dialog.confirmButton'),
+                            onClick: () => onDeleteClient(oAuthClient.id),
+                          },
+                        },
+                      }}
+                    >
+                      <Typography>
+                        <Trans
+                          i18nKey="common.dialog.messages.confirmDelete"
+                          values={{ item: oAuthClient.name }}
+                          components={{ bold: <strong /> }}
+                        />
+                      </Typography>
+                    </Modal>
+                  ),
+                },
+              ]}
+            />
           </SectionWrapper>
         </Box>
       </Box>
