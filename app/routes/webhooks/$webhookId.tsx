@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { Share } from '@mui/icons-material';
+import { AutoMode, Share, Visibility } from '@mui/icons-material';
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -76,22 +76,46 @@ export default function Index() {
   const [secret, setSecret] = useState<string>(
     '******************************'
   );
+  const onRenew = async () => {
+    let result = undefined;
+    try {
+      result = await api.putResource<string>(
+        `${API_WEBHOOK}/configs/${id}/secret/change`
+      );
+    } catch {
+      snackbar(
+        t('common.feedback.update', {
+          item: `${t('pages.webhook.secret')} ${webhook.endpoint}`,
+        })
+      );
+    }
+    if (result) {
+      setSecret(secret);
+    }
+  };
 
   const renderRowActions = (webhook: Webhook) => (
-    <Box component="span" key={webhook._id} display="inline-flex">
+    <Box
+      component="span"
+      key={webhook._id}
+      display="inline-flex"
+      sx={{ float: 'right' }}
+    >
       <LoadingButton
         variant="stroke"
         id="webhook-reveal-secret"
         sx={{ ml: 1 }}
+        startIcon={<Visibility />}
         content={t('pages.webhook.sections.secrets.reveal')}
         onClick={() => setSecret(webhook.secret)}
       />
       <LoadingButton
-        variant="primary"
+        variant="stroke"
         id="webhook-renew-secret"
         sx={{ ml: 1 }}
+        startIcon={<AutoMode />}
         content={t('pages.webhook.sections.secrets.renew')}
-        onClick={() => setSecret(webhook.secret)}
+        onClick={onRenew}
       />
     </Box>
   );
@@ -206,7 +230,6 @@ export default function Index() {
                   {
                     key: 'secret',
                     label: '',
-                    width: 80,
                   },
                 ]}
                 renderItem={(webhook: Webhook, index: number) => (
