@@ -163,10 +163,6 @@ export const introspect = async (
 export const handleResponse = async (
   data: SessionWrapper
 ): Promise<TypedResponse<any>> => {
-  if (data.cookieValue) {
-    console.info('New cookie value received, write it');
-  }
-
   return json(data.callbackResult, {
     headers: data.cookieValue
       ? {
@@ -184,11 +180,6 @@ export const withSession = async (
   const c = await callback(session);
   const commitSession = await sessionStorage.commitSession(session);
   const commitSessionCookieValue = commitSession.split(';')[0];
-
-  if (request.headers.get('Cookie') != commitSessionCookieValue) {
-    console.info('Original cookie: ', request.headers.get('Cookie'));
-    console.info('Committed session: ', commitSessionCookieValue);
-  }
 
   return {
     cookieValue:

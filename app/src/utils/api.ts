@@ -91,8 +91,6 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
     try {
       return (await response.json()) as T;
     } catch {
-      console.log('passe');
-
       return {} as T;
     }
   }
