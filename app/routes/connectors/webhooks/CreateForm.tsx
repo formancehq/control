@@ -53,11 +53,7 @@ export const schema = yup.object({
     .test(
       'eventTypes',
       i18n.t('pages.webhooks.form.create.eventTypes.errors.valid'),
-      (value) => {
-        console.log(value);
-
-        return value.length >= 1;
-      }
+      (value) => value.length >= 1
     ),
 });
 
@@ -79,7 +75,6 @@ export const CreateForm: FunctionComponent = () => {
       eventTypes: [],
     },
   });
-  console.log(errors);
   const [event, setEvent] = useState<string[]>([]);
   const { typography } = useTheme();
 
@@ -160,64 +155,62 @@ export const CreateForm: FunctionComponent = () => {
         <Controller
           name="eventTypes"
           control={control}
-          render={({ field: { onChange, ...rest } }) => {
-            console.log(event);
-
-            return (
-              <FormControl sx={{ mt: 1, width: 550 }}>
-                <InputLabel id="event-label">
-                  {t('pages.webhooks.form.create.eventTypes.label')}
-                </InputLabel>
-                <Select
-                  {...rest}
-                  labelId="event-label"
-                  multiple
-                  value={event}
-                  onChange={(event) => {
-                    handleChange(event);
-                    onChange(event);
-                  }}
-                  input={
-                    <OutlinedInput
-                      id="select-event"
-                      label={t('pages.webhooks.form.create.eventTypes.label')}
-                      sx={{ height: event.length > 2 ? 'auto' : '40px' }}
-                    />
-                  }
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} variant="square" />
-                      ))}
-                    </Box>
-                  )}
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        maxHeight: 48 * 4.5 + 8,
-                        width: 250,
-                      },
+          render={({ field: { onChange, ref, ...rest } }) => (
+            <FormControl sx={{ mt: 1, width: 548 }}>
+              <InputLabel id="event-label" shrink>
+                {t('pages.webhooks.form.create.eventTypes.label')}
+              </InputLabel>
+              <Select
+                {...rest}
+                labelId="event-label"
+                multiple
+                value={event}
+                onChange={(event) => {
+                  handleChange(event);
+                  onChange(event);
+                }}
+                input={
+                  <OutlinedInput
+                    ref={ref}
+                    notched
+                    id="select-event"
+                    label={t('pages.webhooks.form.create.eventTypes.label')}
+                    sx={{ height: event.length > 2 ? 'auto' : '40px' }}
+                  />
+                }
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value) => (
+                      <Chip key={value} label={value} variant="square" />
+                    ))}
+                  </Box>
+                )}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: 48 * 4.5 + 8,
+                      width: 250,
                     },
-                  }}
-                >
-                  {events.map((currentEvent) => (
-                    <MenuItem
-                      key={currentEvent}
-                      value={currentEvent}
-                      style={{
-                        fontWeight:
-                          event.indexOf(currentEvent) === -1
-                            ? typography.body1.fontWeight
-                            : 500,
-                      }}
-                    >
-                      {currentEvent}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            );
-          }}
+                  },
+                }}
+              >
+                {events.map((currentEvent) => (
+                  <MenuItem
+                    key={currentEvent}
+                    value={currentEvent}
+                    style={{
+                      fontWeight:
+                        event.indexOf(currentEvent) === -1
+                          ? typography.body1.fontWeight
+                          : 500,
+                    }}
+                  >
+                    {currentEvent}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
         />
       </form>
     </Modal>

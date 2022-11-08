@@ -50,6 +50,7 @@ export default function Index() {
   const { api, snackbar } = useService();
   const [webhooks, setWebhooks] = useState<Webhook[]>(cursor.data);
   const navigate = useNavigate();
+
   const onStatusChange = async (
     id: string,
     active: boolean,
@@ -83,6 +84,7 @@ export default function Index() {
       );
     }
   };
+
   const onDelete = async (id: string, endpoint: string) => {
     let result = undefined;
     try {
@@ -111,6 +113,11 @@ export default function Index() {
       <Switch
         checked={webhook.active}
         color="default"
+        sx={{
+          '.MuiButtonBase-root:hover': {
+            background: 'transparent',
+          },
+        }}
         inputProps={{ 'aria-label': 'controlled' }}
         onChange={() =>
           onStatusChange(webhook._id, !webhook.active, webhook.endpoint)

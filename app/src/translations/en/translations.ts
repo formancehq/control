@@ -331,6 +331,7 @@ export default {
       },
       webhook: {
         title: 'Webhook',
+        secret: 'Webhook secret',
         sections: {
           details: {
             title: 'Details',
