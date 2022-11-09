@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { Add, Delete } from '@mui/icons-material';
-import { Alert, Box, Grid, Tooltip, Typography, useTheme } from '@mui/material';
+import { Alert, Box, Grid, Typography, useTheme } from '@mui/material';
 import { ColorVariants } from '@numaryhq/storybook/dist/cjs/types/types';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -17,6 +17,7 @@ import {
   Chip,
   Page,
   Row,
+  Secret,
   SectionWrapper,
   theme,
 } from '@numaryhq/storybook';
@@ -30,7 +31,6 @@ import { OAuthClient, OAuthSecret } from '~/src/types/oauthClient';
 import { API_AUTH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { copyTokenToClipboard } from '~/src/utils/clipboard';
 
 export const meta: MetaFunction = () => ({
   title: 'OAuth Client',
@@ -76,7 +76,6 @@ export default function Index() {
   );
   const navigate = useNavigate();
   const { typography } = useTheme();
-  const [copiedMessage, setCopiedMessage] = useState<string>('');
 
   const renderUris = (key: string, color?: ColorVariants) => {
     const uris = get(oAuthClient, key, []) || [];
@@ -91,15 +90,21 @@ export default function Index() {
               </Typography>
             </Grid>
             <Grid item xs={10}>
-              {uris.map((uri: string, index: number) => (
-                <Chip
-                  key={index}
-                  label={uri}
-                  color={color}
-                  variant="square"
-                  sx={{ marginRight: 1 }}
-                />
-              ))}
+              {uris.lenght > 0 ? (
+                uris.map((uri: string, index: number) => (
+                  <Chip
+                    key={index}
+                    label={uri}
+                    color={color}
+                    variant="square"
+                    sx={{ marginRight: 1 }}
+                  />
+                ))
+              ) : (
+                <Typography variant="placeholder">
+                  {t('pages.oAuthClient.sections.details.uris.placeholder')}
+                </Typography>
+              )}
             </Grid>
           </Grid>
         )}
@@ -195,6 +200,7 @@ export default function Index() {
         >
           <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
             <>
+              {/* Type */}
               <Grid container sx={{ mb: 1, mt: 2 }}>
                 <Grid item xs={2}>
                   <Typography variant="bold">
@@ -209,10 +215,11 @@ export default function Index() {
                       }`
                     )}
                     variant="square"
-                    color={oAuthClient.public ? 'green' : 'red'}
+                    color="yellow"
                   />
                 </Grid>
               </Grid>
+              {/* Name / description */}
               {Object.keys(pick(oAuthClient, ['name', 'description'])).map(
                 (key: string, index: number) => {
                   const item = get(oAuthClient, key);
@@ -231,8 +238,10 @@ export default function Index() {
                     );
                 }
               )}
-              {renderUris('redirectUris')}
-              {renderUris('postLogoutRedirectUris', 'brown')}
+              {/* Redirect uri */}
+              {renderUris('redirectUris', 'violet')}
+              {/* Post logout uri */}
+              {renderUris('postLogoutRedirectUris', 'green')}
             </>
           </SectionWrapper>
           <SectionWrapper
@@ -250,29 +259,15 @@ export default function Index() {
                 id="oauth-client-secrets-list"
                 items={secrets}
                 action
+                columns={[]}
                 withPagination={false}
-                columns={[
-                  {
-                    key: 'lastDigits',
-                    label: t(
-                      'pages.oAuthClient.sections.secrets.table.columnLabel.lastDigits'
-                    ),
-                  },
-                  {
-                    key: 'clear',
-                    label: t(
-                      'pages.oAuthClient.sections.secrets.table.columnLabel.clear'
-                    ),
-                  },
-                ]}
+                withHeader={false}
                 renderItem={(secret: OAuthSecret, index: number) => (
                   <Row
                     key={index}
                     keys={[
-                      <Typography
-                        key={index}
-                      >{`*************${secret.lastDigits}`}</Typography>,
-                      <>
+                      <Secret lastDigits={secret.lastDigits} key={index} />,
+                      <Box component="span" key={index}>
                         {secret.clear && (
                           <Alert
                             key={index}
@@ -288,30 +283,16 @@ export default function Index() {
                             <Box component="span" sx={{ display: 'block' }}>
                               {t('pages.oAuthClient.sections.secrets.clear')}
                             </Box>
-                            <Box component="span">
-                              <Tooltip
-                                title={copiedMessage}
-                                onClose={() => setCopiedMessage('')}
-                              >
-                                <Chip
-                                  onClick={async () => {
-                                    await copyTokenToClipboard(
-                                      secret.clear || ''
-                                    );
-                                    setCopiedMessage(
-                                      t('common.tooltip.copied')
-                                    );
-                                  }}
-                                  sx={{ marginLeft: 1 }}
-                                  label={secret.clear}
-                                  color="blue"
-                                  variant="square"
-                                />
-                              </Tooltip>
-                            </Box>
+                            <Secret
+                              key={index}
+                              lastDigits="13cd"
+                              value={secret.clear || ''}
+                              color="blue"
+                              tooltipMessage={t('common.tooltip.copied')}
+                            />
                           </Alert>
                         )}
-                      </>,
+                      </Box>,
                     ]}
                     item={secret}
                     renderActions={() => renderRowActions(secret)}

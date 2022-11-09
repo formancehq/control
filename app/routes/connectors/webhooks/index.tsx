@@ -69,18 +69,22 @@ export default function Index() {
           {
             key: 'endpoint',
             label: t('pages.webhooks.table.columnLabel.endpoint'),
+            width: 20,
           },
           {
             key: 'eventTypes',
             label: t('pages.webhooks.table.columnLabel.eventTypes'),
+            width: 60,
           },
           {
             key: 'active',
             label: t('pages.webhooks.table.columnLabel.active'),
+            width: 10,
           },
           {
             key: 'createdAt',
             label: t('pages.webhooks.table.columnLabel.createdAt'),
+            width: 10,
           },
         ]}
         renderItem={(webhook: Webhook, index: number) => (
@@ -96,7 +100,13 @@ export default function Index() {
                 <Share fontSize="small" />
                 <Typography ml={1}>{webhook.endpoint}</Typography>
               </Box>,
-              <Box component="span" key={index}>
+              <Box
+                component="span"
+                key={index}
+                display="flex"
+                gap="16px"
+                flexWrap="wrap"
+              >
                 {webhook.eventTypes.map((event, key: number) => (
                   <Chip
                     key={key}
