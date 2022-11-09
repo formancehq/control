@@ -151,7 +151,11 @@ export const CreateForm: FunctionComponent = () => {
             />
           )}
         />
-        <Box mt={1}>
+        <Box
+          mt={1}
+          sx={{ textarea: { width: '518px !important' } }}
+          id={'test'}
+        >
           <Controller
             name="description"
             control={control}

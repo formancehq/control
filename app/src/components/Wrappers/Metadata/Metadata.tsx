@@ -109,6 +109,7 @@ const Metadata: FunctionComponent<MetadataProps> = ({
             render={({ field }) => (
               <TextArea
                 {...field}
+                json
                 aria-label="text-area"
                 minRows={10}
                 error={!!errors.json}
