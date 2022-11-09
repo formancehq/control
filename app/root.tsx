@@ -279,23 +279,11 @@ export default function App() {
             setTimeout(refreshToken, interval)
           )
           .catch(async (reason) => {
+            console.info('Error while refreshing token: ', reason);
             if (reason?.status === 400) {
               console.info('End session');
               window.location.href = `${origin}/auth/redirect-logout`;
-            } else {
-              // retry one last time
-              console.info('Retry refresh');
-              const refresh = await fetch(`${metas.origin}/auth/refresh`);
-              switch (refresh?.status) {
-                case 200:
-                  return refresh.json();
-                case 500:
-                  return (window.location.href = `${origin}/auth/logout`);
-                default:
-                  return (window.location.href = `${origin}/auth/redirect-logout`);
-              }
             }
-            console.info('Error refreshing token: ', reason);
           });
       };
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

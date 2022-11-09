@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { AutoMode, Delete, Share, Visibility } from '@mui/icons-material';
-import { Box, Grid, Tooltip, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
@@ -18,6 +18,7 @@ import {
   LoadingButton,
   Page,
   Row,
+  Secret,
   SectionWrapper,
   theme,
 } from '@numaryhq/storybook';
@@ -32,7 +33,6 @@ import { Webhook } from '~/src/types/webhook';
 import { API_WEBHOOK } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { copyTokenToClipboard } from '~/src/utils/clipboard';
 
 export const meta: MetaFunction = () => ({
   title: 'Webhook',
@@ -77,7 +77,6 @@ export default function Index() {
     webhookId: string;
   }>();
   const navigate = useNavigate();
-  const [copiedMessage, setCopiedMessage] = useState<string>('');
   const [webhook, setWebhook] = useState<Webhook>(data);
   const [secret, setSecret] = useState<string>(
     '******************************'
@@ -104,8 +103,9 @@ export default function Index() {
   const onRenew = async () => {
     let result = undefined;
     try {
-      result = await api.putResource<string>(
-        `${API_WEBHOOK}/configs/${id}/secret/change`
+      result = await api.putResource<Webhook[]>(
+        `${API_WEBHOOK}/configs/${id}/secret/change`,
+        'cursor.data'
       );
     } catch {
       snackbar(
@@ -115,7 +115,8 @@ export default function Index() {
       );
     }
     if (result) {
-      setSecret(secret);
+      const secret = first(result)?.secret;
+      if (secret) setSecret(secret);
     }
   };
 
@@ -184,23 +185,13 @@ export default function Index() {
                   </Typography>
                 </Grid>
                 <Grid item xs={10}>
-                  <Tooltip
-                    id="endpoint-tooltip"
-                    title={copiedMessage}
-                    onClose={() => setCopiedMessage('')}
-                  >
-                    <Chip
-                      label={webhook.endpoint}
-                      variant="square"
-                      color="blue"
-                      icon={<Share fontSize="small" />}
-                      onClick={async () => {
-                        await copyTokenToClipboard(webhook.endpoint);
-                        setCopiedMessage(t('common.tooltip.copied'));
-                      }}
-                      sx={{ marginRight: 1 }}
-                    />
-                  </Tooltip>
+                  <Chip
+                    label={webhook.endpoint}
+                    variant="square"
+                    color="blue"
+                    icon={<Share fontSize="small" />}
+                    sx={{ marginRight: 1 }}
+                  />
                 </Grid>
               </Grid>
               {/* Events */}
@@ -250,33 +241,16 @@ export default function Index() {
               action
               withPagination={false}
               withHeader={false}
-              columns={[
-                {
-                  key: 'secret',
-                  label: '',
-                },
-              ]}
+              columns={[]}
               renderItem={(webhook: Webhook, index: number) => (
                 <Row
                   key={index}
                   keys={[
-                    <Box
-                      component="span"
-                      display="flex"
-                      alignItems="center"
+                    <Secret
+                      value={secret}
+                      tooltipMessage={t('common.tooltip.copied')}
                       key={index}
-                    >
-                      <Tooltip
-                        title={copiedMessage}
-                        onClick={async () => {
-                          await copyTokenToClipboard(secret);
-                          setCopiedMessage(t('common.tooltip.copied'));
-                        }}
-                        onClose={() => setCopiedMessage('')}
-                      >
-                        <Chip key={index} label={secret} variant="square" />
-                      </Tooltip>
-                    </Box>,
+                    />,
                   ]}
                   item={webhook}
                   renderActions={() => renderRowActions(webhook)}

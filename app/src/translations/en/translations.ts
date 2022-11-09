@@ -269,6 +269,9 @@ export default {
             trusted: 'Trusted',
             redirectUris: 'Redirect uris',
             postLogoutRedirectUris: 'Post logout redirect uris',
+            uris: {
+              placeholder: 'Not configured',
+            },
           },
           dangerZone: {
             title: 'Manage',
@@ -284,12 +287,6 @@ export default {
             deleteFeedback: 'Secret',
             clear:
               'For security purpose, full clear secret display is only ephemeral. Keep it safe somewhere',
-            table: {
-              columnLabel: {
-                lastDigits: 'Last digits',
-                clear: '',
-              },
-            },
           },
         },
         forms: {
@@ -381,26 +378,14 @@ export default {
             endpoint: {
               label: 'Endpoint',
               errors: {
-                required: 'Required',
                 valid:
                   'The endpoint URL should be a valid https URL and be unique.',
               },
             },
-            secret: {
-              label: 'Secret',
-              helperText:
-                "The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)",
-              errors: {
-                valid: 'Wrong encoded format',
-              },
-            },
             eventTypes: {
               label: 'Events',
-              placeholder: 'Select one or many events',
-              helperText:
-                "The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)",
               errors: {
-                required: 'You must choose at least one event',
+                valid: 'You must choose at least one event',
               },
             },
           },

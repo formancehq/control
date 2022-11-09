@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 
-import { Box, Switch, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+
+import { Switch } from '@numaryhq/storybook';
 
 import { WebhookStatusProps } from '~/src/components/Wrappers/WebhookStatus/types';
 import { useService } from '~/src/hooks/useService';
@@ -48,13 +50,7 @@ const WebhookStatus: FunctionComponent<WebhookStatusProps> = ({
       </Typography>
       <Switch
         checked={webhook.active}
-        color="default"
-        sx={{
-          '.MuiButtonBase-root:hover': {
-            background: 'transparent',
-          },
-        }}
-        inputProps={{ 'aria-label': 'controlled' }}
+        variant="blue"
         onChange={onStatusChange}
       />
     </Box>

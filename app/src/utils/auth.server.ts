@@ -136,7 +136,6 @@ export const introspect = async (
   openIdConfig: OpenIdConfiguration,
   accessToken: string
 ): Promise<{ active: boolean }> => {
-  console.info('Access token', accessToken);
   const auth = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
   const buff = new Buffer(auth);
   const basic = buff.toString('base64');
@@ -162,15 +161,14 @@ export const introspect = async (
 
 export const handleResponse = async (
   data: SessionWrapper
-): Promise<TypedResponse<any>> => {
-  return json(data.callbackResult, {
+): Promise<TypedResponse<any>> =>
+  json(data.callbackResult, {
     headers: data.cookieValue
       ? {
           'Set-Cookie': data.cookieValue,
         }
       : {},
   });
-};
 
 export const withSession = async (
   request: Request,
