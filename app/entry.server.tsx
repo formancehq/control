@@ -32,6 +32,7 @@ export default async function handleRequest(
   if (typeof process !== 'undefined' && process.env.OTEL_TRACES) {
     const collectorOptions = {
       url: process.env.OTEL_TRACES_EXPORTER_OTLP_ENDPOINT,
+      insecure: process.env.OTEL_TRACES_EXPORTER_OTLP_INSECURE,
       concurrencyLimit: 10, // an optional limit on pending requests
     };
     const exporter = new OTLPTraceExporter(collectorOptions);
