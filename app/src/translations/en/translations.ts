@@ -307,6 +307,7 @@ export default {
           columnLabel: {
             name: 'Name',
             public: 'Type',
+            id: 'ID',
             description: 'Description',
           },
           rows: {

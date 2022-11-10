@@ -83,7 +83,7 @@ export default function Index() {
     return (
       <>
         {uris.length > 0 && (
-          <Grid container sx={{ mb: 1, mt: 1 }}>
+          <Grid container sx={{ mb: 2, mt: 1 }}>
             <Grid item xs={2}>
               <Typography variant="bold">
                 {t(`pages.oAuthClient.sections.details.${key}`)}
@@ -200,6 +200,17 @@ export default function Index() {
         >
           <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
             <>
+              {/* ID */}
+              <Grid container sx={{ mb: 1, mt: 2 }}>
+                <Grid item xs={2}>
+                  <Typography variant="bold">
+                    {t('pages.oAuthClients.table.columnLabel.id')}
+                  </Typography>
+                </Grid>
+                <Grid item xs={10}>
+                  <Chip variant="square" label={oAuthClient.id} />
+                </Grid>
+              </Grid>
               {/* Type */}
               <Grid container sx={{ mb: 1, mt: 2 }}>
                 <Grid item xs={2}>
