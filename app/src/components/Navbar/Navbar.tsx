@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 
 import { ArrowDropDown, Person } from '@mui/icons-material';
 import {
@@ -25,16 +25,44 @@ import {
   routerConfig,
 } from '~/src/components/Navbar/routes';
 import { useService } from '~/src/hooks/useService';
+import { CurrentUser } from '~/src/utils/api';
 
 const Navbar: FunctionComponent = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const theme = useTheme();
-  const { currentUser, metas } = useService();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const { api, setCurrentUser, currentUser, metas } = useService();
+
+  const getCurrentUser = async () => {
+    try {
+      const user = await api.getResource<CurrentUser>(
+        `${metas.openIdConfig.userinfo_endpoint.split('api')[1]}`
+      );
+      if (user) {
+        const pseudo =
+          user && user.email ? user.email.split('@')[0] : undefined;
+
+        setCurrentUser({
+          ...user,
+          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
+          pseudo,
+        });
+      }
+    } catch (e) {
+      console.info('Current user could not be retrieved');
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      await getCurrentUser();
+    })();
+  }, []);
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };

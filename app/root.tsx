@@ -42,18 +42,15 @@ import {
   logger,
 } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
-import { createApiClient } from '~/src/utils/api.server';
 import {
   AUTH_CALLBACK_ROUTE,
   COOKIE_NAME,
   decrypt,
-  encrypt,
   getJwtPayload,
   getOpenIdConfig,
   getSession,
   handleResponse,
   REDIRECT_URI,
-  refreshToken,
   State,
   withSession,
 } from '~/src/utils/auth.server';
@@ -82,39 +79,18 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   return handleResponse(
-    await withSession(request, async (session) => {
-      let currentUser = undefined;
+    await withSession(request, async () => {
       const sessionHolder = decrypt<Authentication>(cookie);
-
-      const refresh = await refreshToken(
-        openIdConfig,
-        sessionHolder.refresh_token
-      );
-      if (refresh.access_token) {
-        session.set(COOKIE_NAME, encrypt(refresh));
-        const api = await createApiClient(session, '');
-        currentUser = await api.getResource<CurrentUser>(
-          openIdConfig.userinfo_endpoint
-        );
-        const payload = getJwtPayload(sessionHolder);
-        const pseudo =
-          currentUser && currentUser.email
-            ? currentUser.email.split('@')[0]
-            : undefined;
-        currentUser = {
-          ...currentUser,
-          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
-          pseudo,
-          scp: payload ? payload.scp : [],
-        };
-      }
+      const payload = getJwtPayload(sessionHolder);
 
       return {
         metas: {
           origin: REDIRECT_URI,
           openIdConfig,
         },
-        currentUser,
+        currentUser: {
+          scp: payload ? payload.scp : [],
+        },
       };
     })
   );
@@ -241,7 +217,8 @@ const Document = withEmotionCache(
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { currentUser, metas } = useLoaderData();
+  const { metas, currentUser } = useLoaderData();
+  const [user, setUser] = useState<CurrentUser>(currentUser);
   const { t } = useTranslation();
   const [loading, _load, stopLoading] = useOpen(true);
   const [feedback, setFeedback] = useState({
@@ -310,7 +287,8 @@ export default function App() {
         <ServiceContext.Provider
           value={{
             api: new ReactApiClient(),
-            currentUser,
+            currentUser: user,
+            setCurrentUser: (user: CurrentUser) => setUser(user),
             metas,
             snackbar: displayFeedback,
           }}

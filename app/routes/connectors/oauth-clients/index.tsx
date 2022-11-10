@@ -13,6 +13,7 @@ import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
 
 import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
+import { useService } from '~/src/hooks/useService';
 import { OAuthClient } from '~/src/types/oauthClient';
 import { API_AUTH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -43,6 +44,8 @@ export default function Index() {
   const { t } = useTranslation();
   const oAuthClients = useLoaderData() as OAuthClient[];
   const navigate = useNavigate();
+  const { currentUser } = useService();
+  console.log('controle', currentUser);
 
   const renderRowActions = (oauthClient: OAuthClient) => (
     <Box
