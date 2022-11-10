@@ -11,6 +11,7 @@ import { CreateConnectorsForm } from '~/routes/connectors/apps/CreateConnectorsF
 import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients/CreateForm';
 import { CreateForm as WebhookForm } from '~/routes/connectors/webhooks/CreateForm';
 import {
+  APPS_ROUTE,
   connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
   WEBHOOKS_ROUTE,
@@ -29,14 +30,13 @@ export default function Index() {
   const handleActive = (path: string) => location.pathname.includes(path);
 
   const config = [
-    // TODO uncomment when connectors feature is ready
-    // {
-    //   active: handleActive('apps'),
-    //   label: t('pages.connectors.tabs.apps.title'),
-    //   onClick: () => navigate(APPS_ROUTE),
-    //   type: 'connectors',
-    //   action: <CreateConnectorsForm />,
-    // },
+    {
+      active: handleActive('apps'),
+      label: t('pages.connectors.tabs.apps.title'),
+      onClick: () => navigate(APPS_ROUTE),
+      type: 'connectors',
+      action: <CreateConnectorsForm />,
+    },
     {
       active: handleActive('oauth-clients'),
       label: t('pages.connectors.tabs.oAuthClients.title'),
