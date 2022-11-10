@@ -12,6 +12,9 @@ import {
 } from '~/src/types/connectorsConfig';
 import { ObjectOf } from '~/src/types/generic';
 
+// TODO this config is hardcoded for now but the idea is to fetch it from the API
+// so the backend can change the config without having to update the frontend
+
 export const connectorsConfig = {
   dummypay: {
     directory: {
@@ -113,15 +116,20 @@ const inputsFactory = ({
               {...textFieldSharedConfig}
               inputRef={ref}
               type="number"
-              {...(inputConfig.datatype !== 'integer' && {
-                endAdornment: 'Seconds',
-              })}
+              endAdornment={
+                inputConfig.datatype === 'duration ns' &&
+                `${i18n.t('common.units.units.seconds')}`
+              }
             />
           )}
         />
       );
     default:
-      throw new Error('error');
+      throw new Error(
+        i18n.t('pages.apps.form.errors.inputTypeDoesntExist', {
+          fieldType: inputConfig.datatype,
+        })
+      );
   }
 };
 

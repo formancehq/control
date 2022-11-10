@@ -14,18 +14,19 @@ import {
 import Modal from '~/src/components/Wrappers/Modal';
 import { SnackbarSetter } from '~/src/contexts/service';
 import { useService } from '~/src/hooks/useService';
-import { ConnectorConfigFormProps } from '~/src/types/connectorsConfig';
+import { ConnectorFormValues } from '~/src/types/connectorsConfig';
+import { ObjectOf } from '~/src/types/generic';
 import { ApiClient, API_PAYMENT } from '~/src/utils/api';
 
 export const submit = async (
-  values: Partial<ConnectorConfigFormProps>,
-  connectorKey: keyof ConnectorConfigFormProps,
+  values: Partial<ConnectorFormValues>,
+  connectorKey: keyof ConnectorFormValues,
   api: ApiClient,
   snackbar: SnackbarSetter,
   t: any
 ) => {
   try {
-    await api.postResource<any>(
+    await api.postResource<ObjectOf<any>>(
       `${API_PAYMENT}/connectors/${connectorKey}`,
       values
     );
@@ -40,7 +41,7 @@ export const submit = async (
   }
 };
 
-export const CreateConnectorsForm: FunctionComponent = () => {
+export const CreateConnectorForm: FunctionComponent = () => {
   const { t } = useTranslation();
   const { api, snackbar } = useService();
 
@@ -49,7 +50,7 @@ export const CreateConnectorsForm: FunctionComponent = () => {
     label: key,
   }));
 
-  const defaultValuesFromConfig = Object.entries(connectorsConfig).reduce(
+  const initFormWithDefaultValues = Object.entries(connectorsConfig).reduce(
     (acc, [key, value]) => ({
       ...acc,
       [key]: Object.entries(value).reduce(
@@ -76,7 +77,7 @@ export const CreateConnectorsForm: FunctionComponent = () => {
     mode: 'onChange',
     defaultValues: {
       connectorSelect: '',
-      ...defaultValuesFromConfig,
+      ...initFormWithDefaultValues,
     },
   });
 
@@ -89,8 +90,7 @@ export const CreateConnectorsForm: FunctionComponent = () => {
       return null;
     }
 
-    // TODO change the type to it's real type
-    const sanitizedValues: Partial<ConnectorConfigFormProps> = pickBy(
+    const sanitizedValues: Partial<ConnectorFormValues> = pickBy(
       getValues(connectorKey),
       (value) => value.length > 0
     );
