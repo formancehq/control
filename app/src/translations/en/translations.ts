@@ -266,11 +266,28 @@ export default {
         },
       },
       apps: {
+        title: 'App',
         form: {
           errors: {
+            inputTypeDoesntExist:
+              'Form builder has no method factory for field type {{fieldType}}',
             errorOrDuplicate:
               '{{connectorName}} connector could not be created it might already exist 😣',
           },
+        },
+      },
+      app: {
+        table: {
+          errorLogs: 'Error Logs',
+          showErrorLogs: 'Show error logs',
+        },
+        dangerZone: {
+          deleteConnector: 'Delete connector instance',
+          deleteConnectorInfo:
+            'This will remove this connector instance and all its associated payments data.',
+          resetConnector: 'Reset connector instance',
+          resetConnectorInfo:
+            'This will delete all the historical payments data for this connector and restart synchronization from scratch.',
         },
       },
       oAuthClient: {
@@ -429,6 +446,9 @@ export default {
         delete: '{{item}} could not be deleted',
         create: '{{item}} could not be created',
         update: '{{item}} could not be updated',
+      },
+      units: {
+        seconds: 'seconds',
       },
       boundaries: {
         errorState: {

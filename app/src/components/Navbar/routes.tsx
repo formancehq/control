@@ -12,6 +12,7 @@ export const OAUTH_CLIENTS_ROUTE = '/connectors/oauth-clients';
 export const WEBHOOKS_ROUTE = '/connectors/webhooks';
 export const WEBHOOK_ROUTE = '/webhooks/:id';
 export const APPS_ROUTE = '/connectors/apps';
+export const APP_ROUTE = '/apps/:appName';
 export const OAUTH_CLIENT_ROUTE = '/oauth-clients/:id';
 export const ACCOUNTS_ROUTE = '/accounts';
 export const TRANSACTIONS_ROUTE = '/transactions';

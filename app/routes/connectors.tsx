@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Page, Tabs } from '@numaryhq/storybook';
 
-import { CreateConnectorsForm as AppsForm } from '~/routes/connectors/apps/CreateConnectorsForm';
+import { CreateConnectorForm as AppsForm } from '~/routes/connectors/apps/CreateConnectorForm';
 import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients/CreateForm';
 import { CreateForm as WebhookForm } from '~/routes/connectors/webhooks/CreateForm';
 import {
