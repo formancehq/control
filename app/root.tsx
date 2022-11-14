@@ -9,7 +9,6 @@ import {
   CircularProgress,
   Typography,
   unstable_useEnhancedEffect as useEnhancedEffect,
-  useTheme,
 } from '@mui/material';
 import { redirect } from '@remix-run/node';
 import {
@@ -97,7 +96,6 @@ export const loader: LoaderFunction = async ({ request }) => {
         currentUser = await api.getResource<CurrentUser>(
           openIdConfig.userinfo_endpoint
         );
-        console.log(currentUser);
         const payload = getJwtPayload(sessionHolder);
         const pseudo =
           currentUser && currentUser.email
@@ -246,7 +244,6 @@ export default function App() {
   const { currentUser, metas } = useLoaderData();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { typography } = useTheme();
   const [loading, _load, stopLoading] = useOpen(true);
   const [feedback, setFeedback] = useState({
     active: false,

@@ -10,10 +10,10 @@ import { useTranslation } from 'react-i18next';
 
 import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
 
-import { getRoute, APP_ROUTE } from '~/src/components/Navbar/routes';
+import { APP_ROUTE, getRoute } from '~/src/components/Navbar/routes';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
-import { Connectors } from '~/src/types/connectorsConfig';
+import { Connector } from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -22,8 +22,6 @@ export const meta: MetaFunction = () => ({
   title: 'Apps',
   description: 'Apps',
 });
-
-type ConnectorsLoaderData = Connectors[];
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
@@ -43,17 +41,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   const { t } = useTranslation();
-  const connectorsData = useLoaderData<ConnectorsLoaderData>();
+  const connectorsData = useLoaderData<Connector[]>();
   const navigate = useNavigate();
 
-  const renderRowActions = (connector: Connectors) => (
-    <Box sx={{ display: 'flex' }}>
-      <LoadingButton
-        id={`show-${connector.provider}`}
-        onClick={() => navigate(getRoute(APP_ROUTE, connector.provider))}
-        endIcon={<ArrowRight />}
-      />
-    </Box>
+  const renderRowActions = (connector: Connector) => (
+    <LoadingButton
+      id={`show-${connector.provider}`}
+      onClick={() => navigate(getRoute(APP_ROUTE, connector.provider))}
+      endIcon={<ArrowRight />}
+      key={connector.provider}
+    />
   );
 
   return (
@@ -61,7 +58,7 @@ export default function Index() {
       <Table
         id="connectors-list"
         items={connectorsData}
-        action={true}
+        action
         withPagination={false}
         columns={[
           {
@@ -73,7 +70,7 @@ export default function Index() {
             label: t('pages.connectors.table.columnLabel.status'),
           },
         ]}
-        renderItem={(connector: Connectors, index: number) => (
+        renderItem={(connector: Connector, index: number) => (
           <Row
             key={index}
             item={connectorsData}

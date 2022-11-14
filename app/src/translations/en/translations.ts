@@ -242,25 +242,19 @@ export default {
           apps: {
             title: 'Apps',
             pageButton: {
-              actionLabel: 'Add a Connector',
-              actionId: 'createApps',
-              actionEvent: 'open-create-apps-modal',
+              actionLabel: 'Add an App',
             },
           },
           webhooks: {
             title: 'Webhooks',
             pageButton: {
               actionLabel: 'Add a Webhook',
-              actionId: 'oauth-clients',
-              actionEvent: 'open-create-webhooks-modal',
             },
           },
           oAuthClients: {
             title: 'OAuth Clients',
             pageButton: {
               actionLabel: 'Add an Oauth Client',
-              actionId: 'oauth-clients',
-              actionEvent: 'open-create-oauth-modal',
             },
           },
         },
@@ -277,17 +271,33 @@ export default {
         },
       },
       app: {
-        table: {
-          errorLogs: 'Error Logs',
-          showErrorLogs: 'Show error logs',
-        },
-        dangerZone: {
-          deleteConnector: 'Delete connector instance',
-          deleteConnectorInfo:
-            'This will remove this connector instance and all its associated payments data.',
-          resetConnector: 'Reset connector instance',
-          resetConnectorInfo:
-            'This will delete all the historical payments data for this connector and restart synchronization from scratch.',
+        sections: {
+          dangerZone: {
+            title: 'Manage',
+            delete: {
+              title: 'Delete connector instance',
+              button: 'Delete',
+              description:
+                'This will remove this connector instance and all its associated payments data.',
+            },
+            reset: {
+              title: 'Reset connector instance',
+              button: 'Reset',
+              description:
+                'This will delete all the historical payments data for this connector and restart synchronization from scratch.',
+            },
+          },
+          tasks: {
+            title: 'Tasks',
+            table: {
+              columnLabel: {
+                status: 'Status',
+                error: 'Error',
+                createdAt: 'Creation date',
+                descriptor: 'Description',
+              },
+            },
+          },
         },
       },
       oAuthClient: {
@@ -510,6 +520,7 @@ export default {
           transactions: 'Transactions',
           oAuthClients: 'OAuth Clients',
           webhooks: 'Webhooks',
+          apps: 'Apps',
         },
       },
       search: {

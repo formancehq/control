@@ -19,7 +19,7 @@ export type ConnectorFormValues = {
   wise: ObjectOf<string>;
 };
 
-export type Connectors = {
+export type Connector = {
   provider: string;
   disabled: boolean;
 };

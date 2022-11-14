@@ -19,11 +19,11 @@ import {
   Row,
   Secret,
   SectionWrapper,
-  theme,
 } from '@numaryhq/storybook';
 
 import { getRoute, OAUTH_CLIENTS_ROUTE } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import DetailPage from '~/src/components/Wrappers/DetailPage';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
@@ -189,15 +189,8 @@ export default function Index() {
 
   return (
     <Page id="oAuthClient" title={t('pages.oAuthClient.title')}>
-      <Box mt="26px">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '0 26px 26px 26px',
-            backgroundColor: theme.palette.neutral[0],
-          }}
-        >
+      <DetailPage>
+        <>
           <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
             <>
               {/* ID */}
@@ -359,8 +352,8 @@ export default function Index() {
               ]}
             />
           </SectionWrapper>
-        </Box>
-      </Box>
+        </>
+      </DetailPage>
     </Page>
   );
 }

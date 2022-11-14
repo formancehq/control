@@ -24,6 +24,7 @@ import {
 } from '@numaryhq/storybook';
 
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import DetailPage from '~/src/components/Wrappers/DetailPage';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
@@ -224,16 +225,8 @@ export default function PaymentDetails() {
       id="payment"
       title={titleHeader(t('pages.payment.title'), details.createdAt)}
     >
-      <Box mt="26px">
-        {/* ID */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '26px',
-            backgroundColor: theme.palette.neutral[0],
-          }}
-        >
+      <DetailPage>
+        <>
           <Grid container spacing="26px">
             <Grid item xs={6}>
               {boxWithCopyToClipboard(
@@ -374,13 +367,12 @@ export default function PaymentDetails() {
             />
           </SectionWrapper>
           {Divider}
-
           {/* Raw object */}
           <SectionWrapper title={t('pages.payment.rawObject')}>
             <JsonViewer jsonData={details.raw} />
           </SectionWrapper>
-        </Box>
-      </Box>
+        </>
+      </DetailPage>
     </Page>
   );
 }
