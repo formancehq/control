@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
 
 import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import Table from '~/src/components/Wrappers/Table';
 import { OAuthClient } from '~/src/types/oauthClient';
 import { API_AUTH } from '~/src/utils/api';
@@ -22,6 +23,10 @@ export const meta: MetaFunction = () => ({
   title: 'OAuth clients',
   description: 'List',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ComponentErrorBoundary id="oauth-clients" error={error} />;
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {

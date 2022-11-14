@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
 
 import { getRoute, WEBHOOK_ROUTE } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import Table from '~/src/components/Wrappers/Table';
 import WebhookStatus from '~/src/components/Wrappers/WebhookStatus';
 import { Cursor } from '~/src/types/generic';
@@ -25,6 +26,10 @@ export const meta: MetaFunction = () => ({
   title: 'Webhooks',
   description: 'List',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ComponentErrorBoundary id="webhooks" error={error} />;
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {

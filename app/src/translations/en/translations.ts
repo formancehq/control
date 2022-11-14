@@ -412,8 +412,8 @@ export default {
           error: {
             title: 'Well, this is unexpected. Sorry',
             description:
-              'You can try again by refreshing your browser. If the error is still persisting, please feel free to ask for help on our discord.',
-            button: 'Help !',
+              'You can try again by refreshing your browser. If the error is still persisting, please feel free to ask for help to our support team.',
+            button: 'Refresh !',
           },
           serviceDown: {
             title: 'Hm, we are experiencing technical difficulties.',

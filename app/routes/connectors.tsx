@@ -14,11 +14,22 @@ import {
   OAUTH_CLIENTS_ROUTE,
   WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 
 export const meta: MetaFunction = () => ({
   title: 'Connectors',
   description: 'Connectors',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <ComponentErrorBoundary
+      id={connectorsConfig.id}
+      title="pages.connectors.title"
+      error={error}
+    />
+  );
+}
 
 export default function Index() {
   const { t } = useTranslation();

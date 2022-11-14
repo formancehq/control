@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react';
 
-import { Support } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { camelCase, get } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -22,8 +21,7 @@ const ComponentErrorBoundary: FunctionComponent<
 
   const actionMap = {
     [Errors.NOT_FOUND]: () => navigate(getRoute(OVERVIEW_ROUTE)),
-    [Errors.SERVICE_DOWN]: () =>
-      window.open('https://discord.com/invite/xyHvcbzk4w'),
+    [Errors.SERVICE_DOWN]: () => window.location.reload(),
     [Errors.ERROR]: () => navigate(getRoute(OVERVIEW_ROUTE)),
     [Errors.UNAUTHORIZED]: () => navigate(getRoute(OVERVIEW_ROUTE)),
     [Errors.FORBIDDEN]: () => navigate(getRoute(OVERVIEW_ROUTE)),
@@ -33,7 +31,7 @@ const ComponentErrorBoundary: FunctionComponent<
   const translation = get(actionMap, key) ? camelCase(key) : 'error';
 
   return (
-    <Page id={id} title={t(titlePage)}>
+    <Page id={id} title={titlePage ? t(titlePage) : undefined}>
       <Box mt={1}>
         <EmptyState
           title={t(`common.boundaries.errorState.${translation}.title`)}
@@ -50,7 +48,6 @@ const ComponentErrorBoundary: FunctionComponent<
                     `common.boundaries.errorState.${translation}.button`
                   )}
                   variant="primary"
-                  endIcon={<Support />}
                   onClick={() => action()}
                 />
               </Box>

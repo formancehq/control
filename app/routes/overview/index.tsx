@@ -7,6 +7,7 @@ import type { LoaderFunction, MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { get } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   animated,
   useTransition as useAnimationTransition,
@@ -23,7 +24,7 @@ import {
 
 import { LedgerList } from '../ledgers/list';
 
-import { overview } from '~/src/components/Navbar/routes';
+import { CONNECTORS_ROUTE, overview } from '~/src/components/Navbar/routes';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
@@ -39,6 +40,12 @@ export const meta: MetaFunction = () => ({
   title: 'Overview',
   description: 'Show a dashboard with tasks and status',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.log(error);
+
+  return <Index />;
+}
 
 type Ledger = { slug: string; stats: number; color: string };
 
@@ -116,9 +123,9 @@ export default function Index() {
   const shouldDisplaySetup = payments === 0 || accounts === 0;
   const [searchParams] = useSearchParams();
   const urlParamsLedgers = searchParams.getAll('ledgers');
+  const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, _load, stopLoading] = useOpen(true);
-
   const loadingTransition = useAnimationTransition(ledgers.length, {
     from: { opacity: 0 },
     enter: { opacity: 1 },
@@ -150,7 +157,6 @@ export default function Index() {
         >
           <Page id={overview.id}>
             <>
-              {/* TODO uncomment when current user is ready*/}
               {currentUser && currentUser.pseudo && (
                 <Box
                   display="flex"
@@ -186,7 +192,6 @@ export default function Index() {
                   </Box>
                 </Box>
               )}
-
               {/*  STATUS */}
               <Box mt={5}>
                 <Box
@@ -263,7 +268,16 @@ export default function Index() {
                         ))
                     ) : (
                       <animated.div style={props}>
-                        <Box mr={3}>
+                        <Box
+                          mr={3}
+                          onClick={() => navigate(CONNECTORS_ROUTE)}
+                          sx={{
+                            ':hover': {
+                              opacity: 0.3,
+                              cursor: 'pointer',
+                            },
+                          }}
+                        >
                           <StatsCard
                             icon={<AccountBalance />}
                             variant="violet"
@@ -279,6 +293,7 @@ export default function Index() {
                   )}
                 </Box>
               </Box>
+              )
             </>
           </Page>
         </Box>
