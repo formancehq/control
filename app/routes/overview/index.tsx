@@ -41,9 +41,7 @@ export const meta: MetaFunction = () => ({
   description: 'Show a dashboard with tasks and status',
 });
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.log(error);
-
+export function ErrorBoundary() {
   return <Index />;
 }
 

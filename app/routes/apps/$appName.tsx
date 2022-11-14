@@ -1,28 +1,30 @@
 import React from 'react';
 
 import { ContentCopy, Delete, RestartAlt } from '@mui/icons-material';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
-import { capitalize, pickBy } from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { pickBy } from 'lodash';
+import { Trans, useTranslation } from 'react-i18next';
 import { LoaderFunction, useLoaderData } from 'remix';
 import invariant from 'tiny-invariant';
 
 import {
+  ActionZone,
   Chip,
-  JsonViewer,
   Date,
+  JsonViewer,
+  LoadingButton,
   Page,
   Row,
   SectionWrapper,
-  LoadingButton,
 } from '@numaryhq/storybook';
 
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
+import DetailPage from '~/src/components/Wrappers/DetailPage';
 import Modal from '~/src/components/Wrappers/Modal/Modal';
 import Table from '~/src/components/Wrappers/Table/Table';
 import { useService } from '~/src/hooks/useService';
-import { Connectors } from '~/src/types/connectorsConfig';
+import { Connector } from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -47,20 +49,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
     invariant(params.appName, 'Expected params.appName');
 
-    const appTask = await (
+    const tasks = await (
       await createApiClient(session)
     ).getResource<any>(`${API_PAYMENT}/connectors/${params.appName}/tasks`);
 
-    const appStatus = await (
+    const connectors = await (
       await createApiClient(session)
-    ).getResource<any>(`${API_PAYMENT}/connectors`, 'data');
+    ).getResource<Connector[]>(`${API_PAYMENT}/connectors`, 'data');
 
-    const filteredAppStatus = appStatus
-      ? appStatus.find((app: Connectors) => app.provider === params.appName)
+    const status = connectors
+      ? connectors.find((app: Connector) => app.provider === params.appName)
       : {};
 
-    if (appTask) {
-      return { appTask, filteredAppStatus, appName: params.appName };
+    if (tasks) {
+      return { tasks, status, name: params.appName };
     }
 
     return null;
@@ -106,29 +108,29 @@ const renderErrorLogModal = (index: number, t: any, errorLog: string) => (
 
 export default function Index() {
   const { t } = useTranslation();
-  const loaderData = useLoaderData<any>();
+  const { tasks, name, status } = useLoaderData<any>();
   const { api, snackbar } = useService();
 
   // TODO add navigate
-  const onDelete = async (connectorName: string) => {
+  const onDelete = async (name: string) => {
     try {
       const result = await api.deleteResource<unknown>(
-        `${API_PAYMENT}/connectors/${connectorName}`
+        `${API_PAYMENT}/connectors/${name}`
       );
     } catch {
       snackbar(
         t('common.feedback.delete', {
-          item: connectorName,
+          item: name,
         })
       );
     }
   };
 
   // TODO add reset behavior
-  const onReset = async (connectorName: string) => {
+  const onReset = async (name: string) => {
     try {
       await api.postResource<unknown>(
-        `${API_PAYMENT}/connectors/${connectorName}/reset`,
+        `${API_PAYMENT}/connectors/${name}/reset`,
         {}
       );
     } catch {
@@ -138,151 +140,128 @@ export default function Index() {
 
   return (
     <Page id="app-details">
-      <Box mt="26px">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '0 26px 26px 26px',
-            backgroundColor: (theme) => theme.palette.neutral[0],
-          }}
-        >
+      <DetailPage>
+        <>
           <SectionWrapper
-            title={capitalize(loaderData.appName) + ' status'}
+            title={t('pages.app.sections.dangerZone.title')}
             button={{
-              content: loaderData.filteredAppStatus.disabled
-                ? 'Active'
-                : 'Error',
-              variant: loaderData.filteredAppStatus.disabled
-                ? 'primary'
-                : 'error',
+              content: t(
+                `pages.app.section.status.${
+                  status.disabled ? 'active' : 'error'
+                }`
+              ),
+              variant: status.disabled ? 'primary' : 'error',
             }}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                border: (theme) => `1px solid ${theme.palette.neutral[200]}`,
-                borderRadius: '4px',
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  width: '95%',
-                  m: '10px',
-                }}
-              >
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant="bold">
-                    {t('pages.app.dangerZone.deleteConnector')}
-                  </Typography>
-                  <Typography variant="action" color="text.secondary">
-                    {t('pages.app.dangerZone.deleteConnectorInfo')}
-                  </Typography>
-                </Box>
-                <Modal
-                  button={{
-                    id: `delete-${loaderData.appName}`,
-                    variant: 'error',
-                    content: t('pages.app.dangerZone.deleteConnector'),
-                    startIcon: <Delete />,
-                  }}
-                  modal={{
-                    id: `delete-${loaderData.appName}-modal`,
-                    PaperProps: { sx: { minWidth: '500px' } },
-                    title: t('common.dialog.deleteTitle'),
-                    actions: {
-                      save: {
+            <ActionZone
+              actions={[
+                {
+                  key: 'delete-app',
+                  title: t('pages.app.sections.dangerZone.delete.title'),
+                  description: t(
+                    'pages.app.sections.dangerZone.delete.description'
+                  ),
+                  button: (
+                    <Modal
+                      button={{
+                        id: `delete-${name}`,
+                        startIcon: <Delete />,
+                        content: t(
+                          'pages.app.sections.dangerZone.delete.button'
+                        ),
                         variant: 'error',
-                        label: t('common.dialog.confirmButton'),
-                        onClick: () => onDelete(loaderData.appName),
-                      },
-                    },
-                  }}
-                >
-                  <Typography>
-                    {t('pages.app.dangerZone.deleteConnectorInfo')}
-                  </Typography>
-                </Modal>
-              </Box>
-              <Divider
-                sx={{
-                  width: '100%',
-                  background: (theme) => theme.palette.neutral[100],
-                }}
-              />
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  width: '95%',
-                  m: '10px',
-                }}
-              >
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant="bold">
-                    {t('pages.app.dangerZone.resetConnector')}
-                  </Typography>
-                  <Typography variant="action" color="text.secondary">
-                    {t('pages.app.dangerZone.resetConnectorInfo')}
-                  </Typography>
-                </Box>
-                <Modal
-                  button={{
-                    id: `reset-${loaderData.appName}`,
-                    content: t('pages.app.dangerZone.resetConnector'),
-                    variant: 'error',
-                    startIcon: <RestartAlt />,
-                  }}
-                  modal={{
-                    id: `reset-${loaderData.appName}-modal`,
-                    PaperProps: { sx: { minWidth: '500px' } },
-                    title: t('common.dialog.confirmation', {
-                      action: t('common.dialog.resetTitle'),
-                    }),
-                    actions: {
-                      save: {
+                      }}
+                      modal={{
+                        id: `delete-${name}-modal`,
+                        PaperProps: { sx: { minWidth: '500px' } },
+                        title: t('common.dialog.deleteTitle'),
+                        actions: {
+                          save: {
+                            variant: 'error',
+                            label: t('common.dialog.confirmButton'),
+                            onClick: () => onDelete(name),
+                          },
+                        },
+                      }}
+                    >
+                      <Typography>
+                        <Trans
+                          i18nKey="common.dialog.messages.confirmDelete"
+                          values={{ item: name }}
+                          components={{ bold: <strong /> }}
+                        />
+                      </Typography>
+                    </Modal>
+                  ),
+                },
+                {
+                  key: 'reset-app',
+                  title: t('pages.app.sections.dangerZone.reset.title'),
+                  description: t(
+                    'pages.app.sections.dangerZone.reset.description'
+                  ),
+                  button: (
+                    <Modal
+                      button={{
+                        id: `delete-${name}`,
+                        startIcon: <RestartAlt />,
+                        content: t(
+                          'pages.app.sections.dangerZone.reset.button'
+                        ),
                         variant: 'error',
-                        label: t('common.dialog.confirmButton'),
-                        onClick: () => onReset(loaderData.appName),
-                      },
-                    },
-                  }}
-                >
-                  <Typography>
-                    {t('pages.app.dangerZone.resetConnectorInfo')}
-                  </Typography>
-                </Modal>
-              </Box>
-            </Box>
+                      }}
+                      modal={{
+                        id: `reset-${name}-modal`,
+                        PaperProps: { sx: { minWidth: '500px' } },
+                        title: t('common.dialog.resetTitle'),
+                        actions: {
+                          save: {
+                            variant: 'error',
+                            label: t('common.dialog.confirmButton'),
+                            onClick: () => onReset(name),
+                          },
+                        },
+                      }}
+                    >
+                      <Typography>
+                        <Trans
+                          i18nKey="common.dialog.messages.confirmReset"
+                          values={{ item: name }}
+                          components={{ bold: <strong /> }}
+                        />
+                      </Typography>
+                    </Modal>
+                  ),
+                },
+              ]}
+            />
           </SectionWrapper>
-          <SectionWrapper title={'Tasks'}>
+          <SectionWrapper title={'pages.app.sections.tasks.title'}>
             <Table
-              id="connectors-list"
-              items={loaderData.appTask}
-              action={true}
+              id="task-list"
+              items={tasks}
+              action
               withPagination={false}
               columns={[
                 {
                   key: 'status',
-                  label: 'status',
+                  label: t('pages.app.sections.tasks.table.columnLabel.status'),
                 },
                 {
                   key: 'error',
-                  label: 'error',
+                  label: t('pages.app.sections.tasks.table.columnLabel.error'),
                 },
                 {
                   key: 'createdAt',
-                  label: 'createdAt',
+                  label: t(
+                    'pages.app.sections.tasks.table.columnLabel.createdAt'
+                  ),
                 },
                 {
                   key: 'descriptor',
-                  label: 'descriptor',
+                  label: t(
+                    'pages.app.sections.tasks.table.columnLabel.descriptor'
+                  ),
                 },
               ]}
               renderItem={(task: any, index: number) => (
@@ -319,8 +298,8 @@ export default function Index() {
               )}
             />
           </SectionWrapper>
-        </Box>
-      </Box>
+        </>
+      </DetailPage>
     </Page>
   );
 }

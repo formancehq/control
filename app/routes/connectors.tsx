@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
 
 import { Page, Tabs } from '@numaryhq/storybook';
 
-import { CreateConnectorForm as AppsForm } from '~/routes/connectors/apps/CreateConnectorForm';
+import { CreateForm as AppForm } from '~/routes/connectors/apps/CreateForm';
 import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients/CreateForm';
 import { CreateForm as WebhookForm } from '~/routes/connectors/webhooks/CreateForm';
 import {
-  connectors as connectorsConfig,
   APPS_ROUTE,
+  connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
   WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
@@ -45,8 +45,8 @@ export default function Index() {
       active: handleActive('apps'),
       label: t('pages.connectors.tabs.apps.title'),
       onClick: () => navigate(APPS_ROUTE),
-      type: 'connectors',
-      action: <AppsForm />,
+      type: 'apps',
+      action: <AppForm />,
     },
     {
       active: handleActive('oauth-clients'),

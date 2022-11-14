@@ -6,6 +6,7 @@ import { BreadcrumbsLink } from '@numaryhq/storybook';
 
 import {
   ACCOUNTS_ROUTE,
+  APPS_ROUTE,
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
   getRoute,
@@ -82,6 +83,23 @@ const buildWebhookBreadcrumbs = (
   ];
 };
 
+const buildAppBreadcrumbs = (
+  navigate: NavigateFunction,
+  id: string
+): BreadcrumbsLink[] => {
+  const bread = {
+    label: i18n.t('common.breadcrumbs.targets.apps'),
+    onClick: () => navigate(getRoute(APPS_ROUTE)),
+  };
+
+  return [
+    bread,
+    {
+      label: id,
+    },
+  ];
+};
+
 const buildLedgerBreadcrumbs = (
   target: string,
   id: string,
@@ -120,6 +138,7 @@ export const breadcrumbsFactory = (
   const paymentsRoute = match('/payments/:paymentId');
   const oAuthClientsRoute = match('/oauth-clients/:oAuthClientId');
   const webhooksRoute = match('/webhooks/:webhookId');
+  const appsRoute = match('/apps/:appName');
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
@@ -161,6 +180,9 @@ export const breadcrumbsFactory = (
   }
   if (webhooksRoute) {
     return buildWebhookBreadcrumbs(navigate, params.webhookId);
+  }
+  if (appsRoute) {
+    return buildAppBreadcrumbs(navigate, params.appName);
   }
 
   return undefined;

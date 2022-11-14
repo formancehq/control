@@ -20,11 +20,11 @@ import {
   Row,
   Secret,
   SectionWrapper,
-  theme,
 } from '@numaryhq/storybook';
 
 import { getRoute, WEBHOOKS_ROUTE } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import DetailPage from '~/src/components/Wrappers/DetailPage';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import WebhookStatus from '~/src/components/Wrappers/WebhookStatus';
@@ -148,17 +148,8 @@ export default function Index() {
 
   return (
     <Page id="webhook" title={t('pages.webhook.title')}>
-      <>
-        <Box
-          mt="26px"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            borderRadius: '4px',
-            padding: '0 26px 26px 26px',
-            backgroundColor: theme.palette.neutral[0],
-          }}
-        >
+      <DetailPage>
+        <>
           <SectionWrapper title={t('pages.webhook.sections.details.title')}>
             <>
               {/* Status */}
@@ -302,8 +293,8 @@ export default function Index() {
               ]}
             />
           </SectionWrapper>
-        </Box>
-      </>
+        </>
+      </DetailPage>
     </Page>
   );
 }

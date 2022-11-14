@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect } from 'react';
 
 import { Add } from '@mui/icons-material';
-import { pickBy, isEmpty } from 'lodash';
+import { isEmpty, pickBy } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +16,7 @@ import { SnackbarSetter } from '~/src/contexts/service';
 import { useService } from '~/src/hooks/useService';
 import { ConnectorFormValues } from '~/src/types/connectorsConfig';
 import { ObjectOf } from '~/src/types/generic';
-import { ApiClient, API_PAYMENT } from '~/src/utils/api';
+import { API_PAYMENT, ApiClient } from '~/src/utils/api';
 
 export const submit = async (
   values: Partial<ConnectorFormValues>,
@@ -41,7 +41,7 @@ export const submit = async (
   }
 };
 
-export const CreateConnectorForm: FunctionComponent = () => {
+export const CreateForm: FunctionComponent = () => {
   const { t } = useTranslation();
   const { api, snackbar } = useService();
 
