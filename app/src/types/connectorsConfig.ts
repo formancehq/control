@@ -23,3 +23,13 @@ export type Connector = {
   provider: string;
   disabled: boolean;
 };
+
+export type ConnectorTask = {
+  provider: string;
+  descriptor: { main: boolean };
+  createdAt: Date;
+  status: 'active' | 'error';
+  error: string;
+  state?: string;
+  id: string;
+};

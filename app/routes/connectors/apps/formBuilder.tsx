@@ -15,39 +15,44 @@ import { ObjectOf } from '~/src/types/generic';
 // TODO this config is hardcoded for now but the idea is to fetch it from the API
 // so the backend can change the config without having to update the frontend
 
+export enum FormTypes {
+  STRING = 'string',
+  DURATION = 'duration ns',
+  INTEGER = 'integer',
+}
 export const connectorsConfig = {
   dummypay: {
     directory: {
-      datatype: 'string',
+      datatype: FormTypes.STRING,
       required: true,
     },
     fileGenerationPeriod: {
-      datatype: 'duration ns',
+      datatype: FormTypes.DURATION,
     },
     filePollingPeriod: {
-      datatype: 'duration ns',
+      datatype: FormTypes.DURATION,
     },
   },
   modulr: {
     apiKey: {
-      datatype: 'string',
+      datatype: FormTypes.STRING,
       required: true,
     },
     apiSecret: {
-      datatype: 'string',
+      datatype: FormTypes.STRING,
       required: true,
     },
     endpoint: {
-      datatype: 'string',
+      datatype: FormTypes.STRING,
     },
   },
   stripe: {
     apiKey: {
-      datatype: 'string',
+      datatype: FormTypes.STRING,
       required: true,
     },
     pollingPeriod: {
-      datatype: 'duration ns',
+      datatype: FormTypes.DURATION,
     },
     pageSize: {
       datatype: 'integer',
@@ -55,7 +60,7 @@ export const connectorsConfig = {
   },
   wise: {
     apiKey: {
-      datatype: 'string',
+      datatype: FormTypes.STRING,
       required: true,
     },
   },
@@ -96,7 +101,7 @@ const inputsFactory = ({
   };
 
   switch (inputConfig.datatype) {
-    case 'string':
+    case FormTypes.STRING:
       return (
         <Controller
           {...controllerSharedConfig}
@@ -105,8 +110,8 @@ const inputsFactory = ({
           )}
         />
       );
-    case 'duration ns':
-    case 'integer':
+    case FormTypes.DURATION:
+    case FormTypes.INTEGER:
       return (
         <Controller
           {...controllerSharedConfig}
@@ -116,10 +121,6 @@ const inputsFactory = ({
               {...textFieldSharedConfig}
               inputRef={ref}
               type="number"
-              endAdornment={
-                inputConfig.datatype === 'duration ns' &&
-                `${i18n.t('common.units.units.seconds')}`
-              }
             />
           )}
         />

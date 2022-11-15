@@ -99,7 +99,14 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
     return {} as T;
   }
 
+  let body;
+  if (response && response.body) {
+    body = await response.json();
+  }
+
   throw new Error(
-    `Server responded with status ${response?.status} on ${response?.url} with message ${response?.statusText}`
+    `Server responded with status ${response?.status} on ${
+      response?.url
+    } with message ${response?.statusText} and body ${JSON.stringify(body)}`
   );
 };

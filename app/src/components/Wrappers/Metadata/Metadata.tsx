@@ -95,29 +95,31 @@ const Metadata: FunctionComponent<MetadataProps> = ({
         }}
       >
         <form>
-          <Box display="flex" justifyContent="end" mb={1}>
-            <LoadingButton
-              startIcon={<LocalFlorist />}
-              content={t('common.forms.metadata.json.prettify')}
-              onClick={handlePrettify}
-              variant="stroke"
+          <Box sx={{ textarea: { width: '518px !important' } }}>
+            <Box display="flex" justifyContent="end" mb={1}>
+              <LoadingButton
+                startIcon={<LocalFlorist />}
+                content={t('common.forms.metadata.json.prettify')}
+                onClick={handlePrettify}
+                variant="stroke"
+              />
+            </Box>
+            <Controller
+              name="json"
+              control={control}
+              render={({ field }) => (
+                <TextArea
+                  {...field}
+                  json
+                  aria-label="text-area"
+                  minRows={10}
+                  error={!!errors.json}
+                  errorMessage={errors.json?.message}
+                  placeholder={t('common.forms.metadata.json.placeholder')}
+                />
+              )}
             />
           </Box>
-          <Controller
-            name="json"
-            control={control}
-            render={({ field }) => (
-              <TextArea
-                {...field}
-                json
-                aria-label="text-area"
-                minRows={10}
-                error={!!errors.json}
-                errorMessage={errors.json?.message}
-                placeholder={t('common.forms.metadata.json.placeholder')}
-              />
-            )}
-          />
         </form>
       </Modal>
     </Box>

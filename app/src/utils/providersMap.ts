@@ -9,8 +9,8 @@ export const providersMap = {
     path: '/images/connectors/mangopay.svg',
     width: 90,
   },
-  [PaymentProviders.WIZE]: {
-    path: '/images/connectors/wize.svg',
+  [PaymentProviders.WISE]: {
+    path: '/images/connectors/wise.svg',
     width: 'initial',
   },
   [PaymentProviders.PAYPAL]: {
@@ -19,6 +19,10 @@ export const providersMap = {
   },
   [PaymentProviders.DEVENGO]: {
     path: '/images/connectors/devengo.svg',
+    width: 80,
+  },
+  [PaymentProviders.MODULR]: {
+    path: '/images/connectors/modulr.svg',
     width: 80,
   },
 };
