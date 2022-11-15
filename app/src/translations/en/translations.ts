@@ -266,13 +266,17 @@ export default {
             inputTypeDoesntExist:
               'Form builder has no method factory for field type {{fieldType}}',
             errorOrDuplicate:
-              '{{connectorName}} connector could not be created it might already exist 😣',
+              '{{connectorName}} connector could not be created',
           },
         },
       },
       app: {
         sections: {
           dangerZone: {
+            status: {
+              active: 'Active',
+              error: 'Error',
+            },
             title: 'Manage',
             delete: {
               title: 'Delete connector instance',
@@ -290,6 +294,11 @@ export default {
           tasks: {
             title: 'Tasks',
             table: {
+              rows: {
+                noLogs: 'No logs',
+                showErrorLogs: 'Display logs',
+                logsModalTitle: 'Logs',
+              },
               columnLabel: {
                 status: 'Status',
                 error: 'Error',
@@ -452,6 +461,7 @@ export default {
         delete: 'Delete',
       },
       feedback: {
+        success: 'Action done with success',
         error: 'Something wrong happened',
         delete: '{{item}} could not be deleted',
         create: '{{item}} could not be created',
@@ -538,14 +548,14 @@ export default {
         createTitle: 'Creation',
         updateTitle: 'Update',
         resetTitle: 'Reset',
-        confirmation: '{{action}} confirmation ✋',
-        deleteTitle: 'Delete confirmation ✋',
+        confirmation: '{{action}} confirmation',
+        deleteTitle: 'Delete confirmation',
         cancelButton: 'Cancel',
         saveButton: 'Save',
         confirmButton: 'Confirm',
         messages: {
-          reset:
-            '⚠️ Are you sure you want to reset <bold>{{item}}</bold> ? It will uninstall and reinstall the following provider and delete all previous payments linked to it, This action is not reversible.',
+          confirmReset:
+            'Are you sure you want to reset <bold>{{item}}</bold> ? It will uninstall and reinstall {{item}} and it dependencies. This action is not reversible.',
           confirmDelete:
             'Are you sure you want to delete <bold>{{item}}</bold> ? This action is not reversible.',
         },

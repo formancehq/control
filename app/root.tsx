@@ -13,6 +13,7 @@ import {
 import { redirect } from '@remix-run/node';
 import {
   Links,
+  LiveReload,
   Meta,
   NavigateFunction,
   Outlet,
@@ -42,18 +43,15 @@ import {
   logger,
 } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
-import { createApiClient } from '~/src/utils/api.server';
 import {
   AUTH_CALLBACK_ROUTE,
   COOKIE_NAME,
   decrypt,
-  encrypt,
   getJwtPayload,
   getOpenIdConfig,
   getSession,
   handleResponse,
   REDIRECT_URI,
-  refreshToken,
   State,
   withSession,
 } from '~/src/utils/auth.server';
@@ -82,97 +80,22 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   return handleResponse(
-    await withSession(request, async (session) => {
-      let currentUser = undefined;
+    await withSession(request, async () => {
       const sessionHolder = decrypt<Authentication>(cookie);
-
-      const refresh = await refreshToken(
-        openIdConfig,
-        sessionHolder.refresh_token
-      );
-      if (refresh.access_token) {
-        session.set(COOKIE_NAME, encrypt(refresh));
-        const api = await createApiClient(session, '');
-        currentUser = await api.getResource<CurrentUser>(
-          openIdConfig.userinfo_endpoint
-        );
-        const payload = getJwtPayload(sessionHolder);
-        const pseudo =
-          currentUser && currentUser.email
-            ? currentUser.email.split('@')[0]
-            : undefined;
-        currentUser = {
-          ...currentUser,
-          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
-          pseudo,
-          scp: payload ? payload.scp : [],
-        };
-      }
+      const payload = getJwtPayload(sessionHolder);
 
       return {
         metas: {
           origin: REDIRECT_URI,
           openIdConfig,
         },
-        currentUser,
+        currentUser: {
+          scp: payload ? payload.scp : [],
+        },
       };
     })
   );
 };
-
-const Document = withEmotionCache(
-  ({ children, title }: DocumentProps, emotionCache) => {
-    const clientStyleData = React.useContext(ClientStyleContext);
-    // Only executed on client
-    useEnhancedEffect(() => {
-      // re-link sheet container
-      emotionCache.sheet.container = document.head;
-      // re-inject tags
-      const tags = emotionCache.sheet.tags;
-      emotionCache.sheet.flush();
-      tags.forEach((tag) => {
-        // eslint-disable-next-line no-underscore-dangle
-        (emotionCache.sheet as any)._insertTag(tag);
-      });
-      // reset cache to reapply global styles
-      clientStyleData.reset();
-    }, []);
-
-    return (
-      <html lang="en">
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <meta name="theme-color" content={theme.palette.primary.main} />
-          <title>{title || 'Formance'}</title>
-          <Meta />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Inter:300,400,500,700&display=swap"
-          />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700&display=swap"
-          />
-          <Links />
-          <meta
-            name="emotion-insertion-point"
-            content="emotion-insertion-point"
-          />
-        </head>
-        <body>
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-        </body>
-      </html>
-    );
-  }
-);
 
 const renderError = (
   navigate: NavigateFunction,
@@ -228,7 +151,7 @@ const renderError = (
             variant="stroke"
             startIcon={<Logout />}
             onClick={() => {
-              navigate('auth/redirect-logout');
+              window.location.href = `${window.origin}/auth/redirect-logout`;
             }}
             sx={{ mt: 5 }}
           />
@@ -238,11 +161,66 @@ const renderError = (
   </Backdrop>
 );
 
+const Document = withEmotionCache(
+  ({ children, title }: DocumentProps, emotionCache) => {
+    const clientStyleData = React.useContext(ClientStyleContext);
+    // Only executed on client
+    useEnhancedEffect(() => {
+      // re-link sheet container
+      emotionCache.sheet.container = document.head;
+      // re-inject tags
+      const tags = emotionCache.sheet.tags;
+      emotionCache.sheet.flush();
+      tags.forEach((tag) => {
+        // eslint-disable-next-line no-underscore-dangle
+        (emotionCache.sheet as any)._insertTag(tag);
+      });
+      // reset cache to reapply global styles
+      clientStyleData.reset();
+    }, []);
+
+    return (
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+          <meta name="theme-color" content={theme.palette.primary.main} />
+          <title>{title || 'Formance'}</title>
+          <Meta />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Inter:300,400,500,700&display=swap"
+          />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700&display=swap"
+          />
+          <Links />
+          <meta
+            name="emotion-insertion-point"
+            content="emotion-insertion-point"
+          />
+        </head>
+        <body>
+          {children}
+          <ScrollRestoration />
+          <LiveReload />
+          <Scripts />
+        </body>
+      </html>
+    );
+  }
+);
+
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { currentUser, metas } = useLoaderData();
-  const navigate = useNavigate();
+  const { metas, currentUser } = useLoaderData();
+  const [user, setUser] = useState<CurrentUser>(currentUser);
   const { t } = useTranslation();
   const [loading, _load, stopLoading] = useOpen(true);
   const [feedback, setFeedback] = useState({
@@ -270,35 +248,17 @@ export default function App() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     if (!global.timer) {
-      console.info('Global time not defined, installing it');
-      const refreshToken = (): Promise<any> => {
-        console.info('Trigger refresh authentication');
-
-        return fetch(`${metas.origin}/auth/refresh`)
+      const refreshToken = (): Promise<any> =>
+        fetch(`${metas.origin}/auth/refresh`)
           .then((response) => response.json())
           .then(({ interval }: { interval: number }) =>
             setTimeout(refreshToken, interval)
           )
           .catch(async (reason) => {
-            if (reason?.status === 400) {
-              console.info('End session');
-              navigate('auth/redirect-logout');
-            } else {
-              // retry one last time
-              console.info('Retry refresh');
-              const refresh = await fetch(`${metas.origin}/auth/refresh`);
-              switch (refresh?.status) {
-                case 200:
-                  return refresh.json();
-                case 500:
-                  return await fetch(`${metas.origin}/auth/logout`);
-                default:
-                  return navigate('/auth/redirect-logout');
-              }
-            }
-            console.info('Error refreshing token: ', reason);
+            console.info('Error while refreshing token: ', reason);
+            console.info('End session');
+            window.location.href = `${origin}/auth/redirect-logout`;
           });
-      };
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       global.timer = refreshToken();
@@ -323,7 +283,8 @@ export default function App() {
         <ServiceContext.Provider
           value={{
             api: new ReactApiClient(),
-            currentUser,
+            currentUser: user,
+            setCurrentUser: (user: CurrentUser) => setUser(user),
             metas,
             snackbar: displayFeedback,
           }}

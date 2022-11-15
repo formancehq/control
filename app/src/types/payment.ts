@@ -22,8 +22,9 @@ export enum PaymentProviders {
   DEVENGO = 'devengo',
   STRIPE = 'stripe',
   MONGOPAY = 'mangopay',
-  WIZE = 'wize',
+  WISE = 'wise',
   PAYPAL = 'paypal',
+  MODULR = 'modulr',
 }
 
 export type Payment = {

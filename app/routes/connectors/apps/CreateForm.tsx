@@ -1,55 +1,29 @@
 import React, { FunctionComponent, useEffect } from 'react';
 
 import { Add } from '@mui/icons-material';
-import { isEmpty, pickBy } from 'lodash';
+import { Box } from '@mui/material';
+import { get, pickBy, toInteger } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { Select } from '@numaryhq/storybook';
 
 import {
   buildForm,
   connectorsConfig,
+  FormTypes,
 } from '~/routes/connectors/apps/formBuilder';
+import { APP_ROUTE, getRoute } from '~/src/components/Navbar/routes';
 import Modal from '~/src/components/Wrappers/Modal';
-import { SnackbarSetter } from '~/src/contexts/service';
 import { useService } from '~/src/hooks/useService';
 import { ConnectorFormValues } from '~/src/types/connectorsConfig';
 import { ObjectOf } from '~/src/types/generic';
-import { API_PAYMENT, ApiClient } from '~/src/utils/api';
-
-export const submit = async (
-  values: Partial<ConnectorFormValues>,
-  connectorKey: keyof ConnectorFormValues,
-  api: ApiClient,
-  snackbar: SnackbarSetter,
-  t: any
-) => {
-  try {
-    await api.postResource<ObjectOf<any>>(
-      `${API_PAYMENT}/connectors/${connectorKey}`,
-      values
-    );
-    // TODO find a better way to refresh the page
-    // await navigate('./apps', { replace: true });
-  } catch {
-    snackbar(
-      t('pages.apps.form.errors.errorOrDuplicate', {
-        connectorName: connectorKey,
-      })
-    );
-  }
-};
+import { API_PAYMENT } from '~/src/utils/api';
 
 export const CreateForm: FunctionComponent = () => {
   const { t } = useTranslation();
   const { api, snackbar } = useService();
-
-  const formattedConnectorConfig = Object.keys(connectorsConfig).map((key) => ({
-    id: key,
-    label: key,
-  }));
-
   const initFormWithDefaultValues = Object.entries(connectorsConfig).reduce(
     (acc, [key, value]) => ({
       ...acc,
@@ -63,7 +37,6 @@ export const CreateForm: FunctionComponent = () => {
     }),
     {}
   );
-
   const {
     trigger,
     getValues,
@@ -80,23 +53,58 @@ export const CreateForm: FunctionComponent = () => {
       ...initFormWithDefaultValues,
     },
   });
+  const navigate = useNavigate();
+
+  const formattedConnectorConfig = Object.keys(connectorsConfig).map((key) => ({
+    id: key,
+    label: key,
+  }));
 
   const connectorKey = watch('connectorSelect');
 
   const onSave = async () => {
-    await trigger();
-
-    if (!isEmpty(errors)) {
+    const valid = await trigger();
+    if (!valid) {
       return null;
     }
 
+    const config = get(connectorsConfig, connectorKey);
+    const values = getValues(connectorKey);
+    Object.keys(values).map((key) => {
+      const currentKey = get(config, key);
+      if (currentKey) {
+        switch (currentKey.datatype) {
+          case FormTypes.DURATION:
+            values[key] = `${values[key]}s`;
+            break;
+          case FormTypes.INTEGER:
+            values[key] = toInteger(values[key]);
+            break;
+          default:
+            break;
+        }
+      }
+    });
     const sanitizedValues: Partial<ConnectorFormValues> = pickBy(
-      getValues(connectorKey),
+      values,
       (value) => value.length > 0
     );
 
-    await submit(sanitizedValues, connectorKey, api, snackbar, t);
-    reset();
+    try {
+      const connector = await api.postResource<ObjectOf<any>>(
+        `${API_PAYMENT}/connectors/${connectorKey}`,
+        sanitizedValues
+      );
+      if (connector) {
+        navigate(getRoute(APP_ROUTE, connectorKey));
+      }
+    } catch {
+      snackbar(
+        t('pages.apps.form.errors.errorOrDuplicate', {
+          connectorName: connectorKey,
+        })
+      );
+    }
   };
 
   useEffect(() => {
@@ -129,26 +137,29 @@ export const CreateForm: FunctionComponent = () => {
       }}
     >
       <form onSubmit={handleSubmit(onSave)}>
-        <Controller
-          name="connectorSelect"
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { ref, onChange, ...rest } }) => (
-            <Select
-              {...rest}
-              items={formattedConnectorConfig}
-              placeholder={t('common.forms.selectEntity', {
-                entityName: 'connector',
-              })}
-              error={!!errors.connectorSelect}
-              select={{
-                ref: ref,
-                inputRef: ref,
-                onChange: onChange,
-              }}
-            />
-          )}
-        />
+        <Box mb={1}>
+          <Controller
+            name="connectorSelect"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { ref, onChange, ...rest } }) => (
+              <Select
+                {...rest}
+                items={formattedConnectorConfig}
+                placeholder={t('common.forms.selectEntity', {
+                  entityName: 'connector',
+                })}
+                error={!!errors.connectorSelect}
+                select={{
+                  ref: ref,
+                  inputRef: ref,
+                  onChange: onChange,
+                }}
+              />
+            )}
+          />
+        </Box>
+
         {connectorKey &&
           buildForm({
             config: connectorsConfig,

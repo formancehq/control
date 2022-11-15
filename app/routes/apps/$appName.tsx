@@ -1,10 +1,11 @@
 import React from 'react';
 
-import { ContentCopy, Delete, RestartAlt } from '@mui/icons-material';
+import { Delete, RestartAlt, Visibility } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { pickBy } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { LoaderFunction, useLoaderData } from 'remix';
 import invariant from 'tiny-invariant';
 
@@ -13,18 +14,19 @@ import {
   Chip,
   Date,
   JsonViewer,
-  LoadingButton,
   Page,
   Row,
   SectionWrapper,
+  ShellViewer,
 } from '@numaryhq/storybook';
 
+import { APPS_ROUTE } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
 import DetailPage from '~/src/components/Wrappers/DetailPage';
 import Modal from '~/src/components/Wrappers/Modal/Modal';
 import Table from '~/src/components/Wrappers/Table/Table';
 import { useService } from '~/src/hooks/useService';
-import { Connector } from '~/src/types/connectorsConfig';
+import { Connector, ConnectorTask } from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -51,18 +53,25 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
     const tasks = await (
       await createApiClient(session)
-    ).getResource<any>(`${API_PAYMENT}/connectors/${params.appName}/tasks`);
-
+    ).getResource<ConnectorTask[]>(
+      `${API_PAYMENT}/connectors/${params.appName}/tasks`
+    );
     const connectors = await (
       await createApiClient(session)
     ).getResource<Connector[]>(`${API_PAYMENT}/connectors`, 'data');
 
     const status = connectors
-      ? connectors.find((app: Connector) => app.provider === params.appName)
+      ? connectors.find(
+          (connector: Connector) => connector.provider === params.appName
+        )
       : {};
 
     if (tasks) {
-      return { tasks, status, name: params.appName };
+      return {
+        tasks,
+        status,
+        name: params.appName,
+      };
     }
 
     return null;
@@ -71,52 +80,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return handleResponse(await withSession(request, handleData));
 };
 
-const renderErrorLogModal = (index: number, t: any, errorLog: string) => (
-  <Modal
-    key={index}
-    button={{
-      id: `show-error-logs-${index}`,
-      variant: 'dark',
-      content: t('pages.app.table.showErrorLogs'),
-    }}
-    modal={{
-      id: `show-error-logs-modal-${index}`,
-      PaperProps: { sx: { minWidth: '500px' } },
-      title: t('pages.app.table.errorLogs'),
-    }}
-  >
-    <Box
-      sx={{
-        background: (theme) => theme.palette.neutral[900],
-        color: (theme) => theme.palette.default.bright,
-        p: '10px',
-        height: '200px',
-        display: 'flex',
-        borderRadius: '4px',
-        mb: '26px',
-      }}
-    >
-      <Typography variant="headline">{errorLog}</Typography>
-      <LoadingButton
-        id="copyToCliboardWrapper"
-        variant="dark"
-        startIcon={<ContentCopy />}
-      />
-    </Box>
-  </Modal>
-);
-
 export default function Index() {
   const { t } = useTranslation();
   const { tasks, name, status } = useLoaderData<any>();
+  const navigate = useNavigate();
   const { api, snackbar } = useService();
 
-  // TODO add navigate
   const onDelete = async (name: string) => {
     try {
       const result = await api.deleteResource<unknown>(
         `${API_PAYMENT}/connectors/${name}`
       );
+      if (result) {
+        navigate(APPS_ROUTE);
+      }
     } catch {
       snackbar(
         t('common.feedback.delete', {
@@ -126,13 +103,13 @@ export default function Index() {
     }
   };
 
-  // TODO add reset behavior
   const onReset = async (name: string) => {
     try {
-      await api.postResource<unknown>(
+      const result = await api.postResource<unknown>(
         `${API_PAYMENT}/connectors/${name}/reset`,
         {}
       );
+      if (result) snackbar(t('common.feedback.success'));
     } catch {
       snackbar(t('common.feedback.error'));
     }
@@ -142,16 +119,20 @@ export default function Index() {
     <Page id="app-details">
       <DetailPage>
         <>
+          {/* Danger zone */}
           <SectionWrapper
             title={t('pages.app.sections.dangerZone.title')}
-            button={{
-              content: t(
-                `pages.app.section.status.${
-                  status.disabled ? 'active' : 'error'
-                }`
-              ),
-              variant: status.disabled ? 'primary' : 'error',
-            }}
+            element={
+              <Chip
+                variant="square"
+                color={status.disabled ? 'red' : 'green'}
+                label={t(
+                  `pages.app.sections.dangerZone.status.${
+                    status.disabled ? 'error' : 'active'
+                  }`
+                )}
+              />
+            }
           >
             <ActionZone
               actions={[
@@ -236,7 +217,8 @@ export default function Index() {
               ]}
             />
           </SectionWrapper>
-          <SectionWrapper title={'pages.app.sections.tasks.title'}>
+          {/* Tasks section */}
+          <SectionWrapper title={t('pages.app.sections.tasks.title')}>
             <Table
               id="task-list"
               items={tasks}
@@ -279,10 +261,34 @@ export default function Index() {
                       }
                       variant="square"
                     />,
-                    <>
-                      {!!task.error &&
-                        renderErrorLogModal(index, t, task.error)}
-                    </>,
+                    <Box component="span" key={index}>
+                      {task.error ? (
+                        <Modal
+                          key={index}
+                          button={{
+                            id: `show-error-logs-${index}`,
+                            variant: 'stroke',
+                            startIcon: <Visibility />,
+                            content: t(
+                              'pages.app.sections.tasks.table.rows.showErrorLogs'
+                            ),
+                          }}
+                          modal={{
+                            id: `show-error-logs-modal-${index}`,
+                            PaperProps: { sx: { minWidth: '500px' } },
+                            title: t(
+                              'pages.app.sections.tasks.table.rows.logsModalTitle'
+                            ),
+                          }}
+                        >
+                          <ShellViewer data={task.error} />
+                        </Modal>
+                      ) : (
+                        <Typography variant="placeholder">
+                          {t('pages.app.sections.tasks.table.rows.noLogs')}
+                        </Typography>
+                      )}
+                    </Box>,
                     <Box key={index}>
                       <Date timestamp={task.createdAt} />
                     </Box>,

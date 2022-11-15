@@ -15,6 +15,7 @@ import invariant from 'tiny-invariant';
 import {
   ActionZone,
   Chip,
+  LoadingButton,
   Page,
   Row,
   Secret,
@@ -250,13 +251,15 @@ export default function Index() {
           </SectionWrapper>
           <SectionWrapper
             title={t('pages.oAuthClient.sections.secrets.title')}
-            button={{
-              id: `create-secret-${id}`,
-              onClick: handleCreateSecret,
-              startIcon: <Add />,
-              variant: 'dark',
-              content: t('pages.oAuthClient.sections.secrets.create'),
-            }}
+            element={
+              <LoadingButton
+                id={`create-secret-${id}`}
+                onClick={handleCreateSecret}
+                startIcon={<Add />}
+                variant="dark"
+                content={t('pages.oAuthClient.sections.secrets.create')}
+              />
+            }
           >
             <Box mt={2}>
               <Table
