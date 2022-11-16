@@ -103,6 +103,7 @@ const boxWithCopyToClipboard = (
         display: 'flex',
         alignItems: 'center',
         p: '15px',
+        borderRadius: '4px',
         justifyContent: 'space-between',
         backgroundColor: color,
       }}
@@ -113,12 +114,7 @@ const boxWithCopyToClipboard = (
           {id}
         </Typography>
       </Tooltip>
-      <Tooltip
-        open={open}
-        onClose={handleClose}
-        // onOpen={handleOpen}
-        title={tooltipTitle}
-      >
+      <Tooltip open={open} onClose={handleClose} title={tooltipTitle}>
         <Box component="span">
           <LoadingButton
             id="copyToCliboardWrapper"
@@ -227,7 +223,7 @@ export default function PaymentDetails() {
     >
       <DetailPage>
         <>
-          <Grid container spacing="26px">
+          <Grid container spacing="26px" sx={{ mt: 0 }}>
             <Grid item xs={6}>
               {boxWithCopyToClipboard(
                 t('pages.payment.id'),

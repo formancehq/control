@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
 import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
 import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
@@ -42,12 +42,12 @@ export const meta: MetaFunction = () => ({
 });
 
 export function ErrorBoundary() {
-  return <Index />;
+  return <Overview />;
 }
 
 type Ledger = { slug: string; stats: number; color: string };
 
-type LoaderReturnValue = {
+type OverviewData = {
   accounts: Cursor<Account> | undefined;
   payments: Cursor<Payment> | undefined;
   ledgers: string[] | [];
@@ -109,10 +109,15 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
+  const data = useLoaderData<OverviewData>() as OverviewData;
+
+  return <Overview data={data} />;
+}
+
+const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
   const { t } = useTranslation();
   const [stats, setStats] = useState<Ledger[]>([]);
   const { currentUser } = useService();
-  const data = useLoaderData<LoaderReturnValue>();
   const { api } = useService();
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
   const accounts = get(data, 'accounts.total.value', 0) as number;
@@ -316,6 +321,7 @@ export default function Index() {
             width="400px"
           >
             <Link
+              id="tasks-tuto"
               href="https://docs.formance.com/oss/ledger/get-started/hello-world"
               underline="none"
               target="_blank"
@@ -376,13 +382,14 @@ export default function Index() {
                 width="400px"
               >
                 <Link
-                  id="set-up-payments"
+                  id="setup-payments"
                   href="https://docs.formance.com/oss/payments/reference/api"
                   underline="none"
                   target="_blank"
                   rel="noopener"
                 >
                   <LoadingButton
+                    id="setup-payments-button"
                     variant="dark"
                     content={t('pages.overview.setUp.connexion.buttonText')}
                     sx={{ mt: '12px' }}
@@ -398,15 +405,15 @@ export default function Index() {
                 width="400px"
               >
                 <Link
+                  id="setup-ledger"
                   href="https://docs.formance.com/oss/ledger/reference/api"
                   underline="none"
                   target="_blank"
                   rel="noopener"
                 >
                   <LoadingButton
+                    id="setup-ledger-button"
                     variant="dark"
-                    id="set-up-ledger"
-                    href="https://docs.formance.com/oss/ledger/reference/api"
                     content={t('pages.overview.setUp.ledger.buttonText')}
                     sx={{ mt: '12px' }}
                     startIcon={<NorthEast />}
@@ -419,4 +426,4 @@ export default function Index() {
       )}
     </>
   );
-}
+};
