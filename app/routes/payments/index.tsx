@@ -33,7 +33,7 @@ const paymentProviders = [
   PaymentProviders.STRIPE,
   PaymentProviders.DEVENGO,
   PaymentProviders.MONGOPAY,
-  PaymentProviders.WIZE,
+  PaymentProviders.WISE,
   PaymentProviders.PAYPAL,
 ];
 const paymentStatus = [
@@ -58,7 +58,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       {
         ...buildQuery(url.searchParams),
         target: SearchTargets.PAYMENT,
-        policy: SearchPolicies.OR,
+        policy: SearchPolicies.AND,
       },
       'cursor'
     );

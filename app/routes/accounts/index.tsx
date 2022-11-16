@@ -36,7 +36,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       {
         ...buildQuery(url.searchParams),
         target: SearchTargets.ACCOUNT,
-        policy: SearchPolicies.OR,
+        policy: SearchPolicies.AND,
       },
       'cursor'
     );
