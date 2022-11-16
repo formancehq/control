@@ -1,10 +1,6 @@
 version: '3.8'
 services:
-  otel-collector:
-    image: otel/opentelemetry-collector
-    command: [ "--config=/etc/otel-collector-config.yml" ]
-    volumes:
-      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+  zipkin:
+    image: openzipkin/zipkin
     ports:
-      - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP http receiver
+    - 9411:9411/tcp

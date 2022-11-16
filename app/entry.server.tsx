@@ -3,11 +3,19 @@ import * as React from 'react';
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 import { ThemeProvider } from '@mui/material/styles';
-import { trace } from '@opentelemetry/api';
+import { propagation } from '@opentelemetry/api';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { CompositePropagator } from '@opentelemetry/core';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { B3InjectEncoding, B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import {
+  BatchSpanProcessor,
+  ConsoleSpanExporter,
+  SpanExporter,
+} from '@opentelemetry/sdk-trace-base';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { RemixServer } from '@remix-run/react';
@@ -19,27 +27,59 @@ import createEmotionCache from './src/utils/createEmotionCache';
 
 import { theme } from '@numaryhq/storybook';
 
-export default async function handleRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  remixContext: EntryContext
-) {
-  const cache = createEmotionCache();
-  const { extractCriticalToChunks } = createEmotionServer(cache);
-
-  // otel
+function configureTelemetry() {
   if (typeof process !== 'undefined' && process.env.OTEL_TRACES) {
-    const collectorOptions = {
-      url: process.env.OTEL_TRACES_EXPORTER_OTLP_ENDPOINT,
-      insecure: process.env.OTEL_TRACES_EXPORTER_OTLP_INSECURE,
-      concurrencyLimit: 10, // an optional limit on pending requests
-    };
-    const exporter = new OTLPTraceExporter(collectorOptions);
-    const provider = new NodeTracerProvider({
-      resource: new Resource({
+    let exporter: SpanExporter;
+    switch (process.env.OTEL_TRACES_EXPORTER) {
+      case 'otlp':
+        exporter = new OTLPTraceExporter({
+          url: process.env.OTEL_TRACES_EXPORTER_OTLP_ENDPOINT,
+          concurrencyLimit: 10, // an optional limit on pending requests
+        });
+        break;
+      case 'zipkin':
+        console.info(
+          'Configure ZipKin exporter with endpoint: ' +
+            process.env.OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT
+        );
+        exporter = new ZipkinExporter({
+          url: process.env.OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT,
+          serviceName: 'control',
+        });
+        propagation.setGlobalPropagator(
+          new CompositePropagator({
+            propagators: [
+              new B3Propagator(),
+              new B3Propagator({
+                injectEncoding: B3InjectEncoding.MULTI_HEADER,
+              }),
+            ],
+          })
+        );
+        break;
+      case 'console':
+        exporter = new ConsoleSpanExporter();
+        break;
+      case undefined:
+        return;
+      case '':
+        return;
+      default:
+        throw new Error(
+          'Unexpected OpenTelemetry exporter type: ' +
+            process.env.OTEL_TRACES_EXPORTER
+        );
+    }
+
+    const resource = Resource.default().merge(
+      new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: 'control',
-      }),
+        [SemanticResourceAttributes.SERVICE_VERSION]: '0.1.0', // TODO: Get version
+      })
+    );
+
+    const provider = new NodeTracerProvider({
+      resource,
     });
     provider.addSpanProcessor(
       new BatchSpanProcessor(exporter, {
@@ -51,11 +91,31 @@ export default async function handleRequest(
     );
     provider.register();
     registerInstrumentations({
-      instrumentations: [new RemixInstrumentation()],
+      instrumentations: [
+        new RemixInstrumentation({
+          actionFormDataAttributes: {
+            loader: true,
+            action: true,
+          },
+        }),
+        getNodeAutoInstrumentations(),
+      ],
       tracerProvider: provider,
     });
-    trace.getTracer('control');
   }
+}
+
+export default async function handleRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
+) {
+  const cache = createEmotionCache();
+  const { extractCriticalToChunks } = createEmotionServer(cache);
+
+  // otel
+  configureTelemetry();
 
   const MuiRemixServer = () => (
     <CacheProvider value={cache}>

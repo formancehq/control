@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment*/
+import * as otlpApi from '@opentelemetry/api';
+import { SpanStatusCode } from '@opentelemetry/api';
 import { Session } from '@remix-run/node';
 import { get, isUndefined } from 'lodash';
 
@@ -85,9 +87,32 @@ export class DefaultApiClient implements ApiClient {
       Authorization: `Bearer ${sessionHolder.access_token}`,
     };
 
+    const activeOtlpContext = otlpApi.context.active();
+    const carrier = {};
+    otlpApi.propagation.inject(
+      activeOtlpContext,
+      carrier,
+      otlpApi.defaultTextMapSetter
+    );
+    const span = otlpApi.trace
+      .getTracer('Api Client')
+      .startSpan('http.request');
+
+    // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md
+    const parsedUrl = new URL(uri);
+    span.setAttributes({
+      'http.method': method,
+      'http.url': uri,
+      'net.peer.name': parsedUrl.host,
+      'net.peer.port': parsedUrl.port,
+    });
+
     return fetch(uri, {
       method,
-      headers: this.headers,
+      headers: {
+        ...this.headers,
+        ...carrier,
+      },
       body: body
         ? body instanceof FormData
           ? body
@@ -95,6 +120,16 @@ export class DefaultApiClient implements ApiClient {
         : undefined,
     })
       .then(async (response) => {
+        span.setAttributes({
+          'http.status': response.status,
+        });
+        if (response.status > 400) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: await response.text(),
+          });
+        }
+
         const json = await toJson<T>(response);
 
         return path ? get(json, path) : json;
@@ -107,7 +142,9 @@ export class DefaultApiClient implements ApiClient {
           method,
           headers: this.headers,
         });
+        span.recordException(e);
         throw new Error('Error');
-      }); // allow error to be catch on higher level (root) // TODO improve handler
+      }) // allow error to be catch on higher level (root) // TODO improve handler
+      .finally(() => span.end());
   }
 }
