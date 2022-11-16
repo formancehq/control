@@ -103,8 +103,9 @@ export class DefaultApiClient implements ApiClient {
         logger(e, 'api.server', {
           params,
           body,
-          headers: this.headers,
+          url: uri,
           method,
+          headers: this.headers,
         });
         throw new Error('Error');
       }); // allow error to be catch on higher level (root) // TODO improve handler

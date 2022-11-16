@@ -115,8 +115,11 @@ export default function Index() {
       );
     }
     if (result) {
-      const secret = first(result)?.secret;
-      if (secret) setSecret(secret);
+      const newSecret = first(result)?.secret;
+      if (newSecret) {
+        setSecret(newSecret);
+        setWebhook({ ...webhook, secret: newSecret });
+      }
     }
   };
 

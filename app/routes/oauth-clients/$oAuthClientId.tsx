@@ -129,7 +129,7 @@ export default function Index() {
     }
   };
 
-  const onDelete = async (idSecret: string) => {
+  const onDeleteSecret = async (idSecret: string) => {
     try {
       const result = await api.deleteResource<unknown>(
         `${API_AUTH}/clients/${id}/secrets/${idSecret}`
@@ -161,7 +161,7 @@ export default function Index() {
             save: {
               variant: 'error',
               label: t('common.dialog.confirmButton'),
-              onClick: () => onDelete(secret.id),
+              onClick: () => onDeleteSecret(secret.id),
             },
           },
         }}
@@ -176,6 +176,7 @@ export default function Index() {
       </Modal>
     </Box>
   );
+
   const handleCreateSecret = async () => {
     const secret = await api.postResource<OAuthSecret>(
       `${API_AUTH}/clients/${id}/secrets`,

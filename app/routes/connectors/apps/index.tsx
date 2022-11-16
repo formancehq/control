@@ -25,12 +25,11 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
-    const connectorsStatus = await (
+    const connectors = await (
       await createApiClient(session)
-    ).getResource<any>(`${API_PAYMENT}/connectors`, 'data');
-
-    if (connectorsStatus) {
-      return connectorsStatus;
+    ).getResource<Connector[]>(`${API_PAYMENT}/connectors`, 'data');
+    if (connectors) {
+      return connectors;
     }
 
     return null;
