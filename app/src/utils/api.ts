@@ -77,13 +77,18 @@ export type JwtPayload = {
 };
 
 export const logger = (stack?: any, from?: string, more?: any) => {
-  const error = {
-    from: from || 'utils/api',
-    stack,
-    more,
-  };
-  // eslint-disable-next-line no-console
-  console.error(error);
+  if (
+    typeof process !== 'undefined' &&
+    process.env.NODE_ENV === 'development'
+  ) {
+    const error = {
+      from: from || 'utils/api',
+      stack,
+      more,
+    };
+    // eslint-disable-next-line no-console
+    console.info(error);
+  }
 };
 
 export const toJson = async <T>(response: Response): Promise<undefined | T> => {
@@ -99,14 +104,5 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
     return {} as T;
   }
 
-  let body;
-  if (response && response.body) {
-    body = await response.json();
-  }
-
-  throw new Error(
-    `Server responded with status ${response?.status} on ${
-      response?.url
-    } with message ${response?.statusText} and body ${JSON.stringify(body)}`
-  );
+  throw new Error('Response body could not be handled');
 };

@@ -8,8 +8,10 @@ import {
   API_AUTH,
   Authentication,
   JwtPayload,
+  Methods,
   SessionWrapper,
 } from '~/src/utils/api';
+import { Otel } from '~/src/utils/otel';
 
 export const COOKIE_NAME = 'auth_session';
 export const AUTH_CALLBACK_ROUTE = '/auth/login';
@@ -69,22 +71,19 @@ export interface OpenIdConfiguration {
 
 export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
   const uri = `${process.env.API_URL}${API_AUTH}/.well-known/openid-configuration`;
+  const otel = new Otel(Methods.GET, uri, 'Auth client');
 
   return fetch(uri)
     .catch((e) => {
-      throw new Error(
-        `Unable to fetch OIDC discovery on ${uri}: ${e.toString()}`
-      );
+      otel.span.recordException(e);
+      throw new Error('Error while fetching openid config');
     })
-    .then((response) => {
-      if (response.status != 200) {
-        throw new Error(
-          `Unexpected status code ${response.status} when fetching openid config`
-        );
-      }
+    .then(async (response) => {
+      await otel.handleResponse(response);
 
       return response.json();
-    });
+    })
+    .finally(() => otel.span.end());
 };
 
 export const getJwtPayload = (
@@ -99,18 +98,21 @@ export const exchangeToken = async (
   code: string
 ): Promise<Authentication> => {
   const uri = `${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}`;
+  const otel = new Otel(Methods.GET, uri, 'Auth client');
 
-  return await fetch(uri).then((response) => {
-    if (response.status != 200) {
-      throw new Error(
-        `Unexpected status code ${
-          response.status
-        } when refreshing token, body ${response.text()}`
-      );
-    }
+  return await fetch(uri)
+    .then(async (response) => {
+      await otel.handleResponse(response);
+      if (response.status != 200) {
+        throw new Error('Error while exchanging token');
+      }
 
-    return response.json();
-  });
+      return response.json();
+    })
+    .catch((e) => {
+      otel.span.recordException(e);
+    })
+    .finally(() => otel.span.end());
 };
 
 export const refreshToken = async (
@@ -118,18 +120,21 @@ export const refreshToken = async (
   refreshToken: string
 ): Promise<Authentication> => {
   const uri = `${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&refresh_token=${refreshToken}`;
+  const otel = new Otel(Methods.GET, uri, 'Auth client');
 
-  return fetch(uri).then(async (response) => {
-    if (response.status != 200) {
-      throw new Error(
-        `Unexpected status code ${
-          response.status
-        } when refreshing token, body ${await response.text()}`
-      );
-    }
+  return fetch(uri)
+    .then(async (response) => {
+      await otel.handleResponse(response);
+      if (response.status != 200) {
+        throw new Error('Error while refreshing access token');
+      }
 
-    return await response.json();
-  });
+      return await response.json();
+    })
+    .catch((e) => {
+      otel.span.recordException(e);
+    })
+    .finally(() => otel.span.end());
 };
 
 export const introspect = async (
@@ -141,22 +146,30 @@ export const introspect = async (
   const basic = buff.toString('base64');
   const data = new FormData();
   data.append('token', accessToken || '');
+  const otel = new Otel(
+    Methods.POST,
+    openIdConfig.introspection_endpoint,
+    'Auth client',
+    data
+  );
 
   return fetch(openIdConfig.introspection_endpoint, {
     headers: { Authorization: `Basic ${basic}` },
-    method: 'POST',
+    method: Methods.POST,
     body: data,
-  }).then(async (response) => {
-    if (response.status != 200) {
-      throw new Error(
-        `Unexpected status code ${
-          response.status
-        } when introspect token, body ${await response.text()}`
-      );
-    }
+  })
+    .then(async (response) => {
+      await otel.handleResponse(response);
+      if (response.status != 200) {
+        throw new Error('Error while instrospecting access token');
+      }
 
-    return await response.json();
-  });
+      return await response.json();
+    })
+    .catch((e) => {
+      otel.span.recordException(e);
+    })
+    .finally(() => otel.span.end());
 };
 
 export const handleResponse = async (

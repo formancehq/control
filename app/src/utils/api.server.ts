@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment*/
-import * as otlpApi from '@opentelemetry/api';
-import { SpanStatusCode } from '@opentelemetry/api';
 import { Session } from '@remix-run/node';
 import { get, isUndefined } from 'lodash';
 
@@ -12,6 +10,7 @@ import {
   toJson,
 } from '~/src/utils/api';
 import { parseSessionHolder } from '~/src/utils/auth.server';
+import { Otel } from '~/src/utils/otel';
 
 export type Headers = { Authorization?: string; 'Content-Type': string };
 
@@ -86,32 +85,13 @@ export class DefaultApiClient implements ApiClient {
       ...this.headers,
       Authorization: `Bearer ${sessionHolder.access_token}`,
     };
-
-    const activeOtlpContext = otlpApi.context.active();
-    const carrier = {};
-    otlpApi.propagation.inject(
-      activeOtlpContext,
-      carrier,
-      otlpApi.defaultTextMapSetter
-    );
-    const span = otlpApi.trace
-      .getTracer('Api Client')
-      .startSpan('http.request');
-
-    // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md
-    const parsedUrl = new URL(uri);
-    span.setAttributes({
-      'http.method': method,
-      'http.url': uri,
-      'net.peer.name': parsedUrl.host,
-      'net.peer.port': parsedUrl.port,
-    });
+    const otel = new Otel(method, uri, 'Api client', body);
 
     return fetch(uri, {
       method,
       headers: {
         ...this.headers,
-        ...carrier,
+        ...otel.carrier,
       },
       body: body
         ? body instanceof FormData
@@ -120,15 +100,7 @@ export class DefaultApiClient implements ApiClient {
         : undefined,
     })
       .then(async (response) => {
-        span.setAttributes({
-          'http.status': response.status,
-        });
-        if (response.status > 400) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: await response.text(),
-          });
-        }
+        await otel.handleResponse(response);
 
         const json = await toJson<T>(response);
 
@@ -142,9 +114,9 @@ export class DefaultApiClient implements ApiClient {
           method,
           headers: this.headers,
         });
-        span.recordException(e);
+        otel.span.recordException(e);
         throw new Error('Error');
       }) // allow error to be catch on higher level (root) // TODO improve handler
-      .finally(() => span.end());
+      .finally(() => otel.span.end());
   }
 }
