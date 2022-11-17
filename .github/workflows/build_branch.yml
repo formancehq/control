@@ -29,6 +29,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          target: app
           tags: ghcr.io/formancehq/control:${{ github.sha }}
           build-args: |
             APP_SHA=${{ github.sha }}
