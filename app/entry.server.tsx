@@ -5,7 +5,10 @@ import createEmotionServer from '@emotion/server/create-instance';
 import { ThemeProvider } from '@mui/material/styles';
 import { propagation } from '@opentelemetry/api';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { CompositePropagator } from '@opentelemetry/core';
+import {
+  CompositePropagator,
+  W3CTraceContextPropagator,
+} from '@opentelemetry/core';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
@@ -46,16 +49,6 @@ function configureTelemetry() {
           url: process.env.OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT,
           serviceName: 'control',
         });
-        propagation.setGlobalPropagator(
-          new CompositePropagator({
-            propagators: [
-              new B3Propagator(),
-              new B3Propagator({
-                injectEncoding: B3InjectEncoding.MULTI_HEADER,
-              }),
-            ],
-          })
-        );
         break;
       case 'console':
         exporter = new ConsoleSpanExporter();
@@ -70,6 +63,18 @@ function configureTelemetry() {
             process.env.OTEL_TRACES_EXPORTER
         );
     }
+
+    propagation.setGlobalPropagator(
+      new CompositePropagator({
+        propagators: [
+          new B3Propagator(),
+          new B3Propagator({
+            injectEncoding: B3InjectEncoding.MULTI_HEADER,
+          }),
+          new W3CTraceContextPropagator(),
+        ],
+      })
+    );
 
     const resource = Resource.default().merge(
       new Resource({
