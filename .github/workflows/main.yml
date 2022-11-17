@@ -41,6 +41,7 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - run: yarn install
+      - run: yarn build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx

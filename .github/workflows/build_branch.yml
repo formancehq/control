@@ -28,6 +28,7 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - run: yarn install
+      - run: yarn build
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
