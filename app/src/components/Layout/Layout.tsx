@@ -2,14 +2,14 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 
 import { CircularProgress } from '@mui/material';
-import { useSearchParams, useTransition, useNavigate } from '@remix-run/react';
+import { useNavigate, useSearchParams, useTransition } from '@remix-run/react';
 import { useMatch, useParams } from 'react-router-dom';
 import {
-  useTransition as useAnimationTransition,
   animated,
+  useTransition as useAnimationTransition,
 } from 'react-spring';
 
-import { Breadcrumbs, theme } from '@numaryhq/storybook';
+import { Breadcrumbs } from '@numaryhq/storybook';
 
 import { breadcrumbsFactory } from '~/src/components/Layout/service';
 import { LayoutProps } from '~/src/components/Layout/types';
@@ -40,11 +40,9 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
           <animated.div
             style={{
               ...props,
-              display: 'flex',
-              height: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-              background: theme.palette.neutral[0],
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
             }}
           >
             <CircularProgress size={30} />
