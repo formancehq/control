@@ -255,8 +255,10 @@ export default function App() {
             setTimeout(refreshToken, interval)
           )
           .catch(async (reason) => {
-            console.info('Error while refreshing token: ', reason);
-            console.info('End session');
+            console.info(
+              'Error when refreshing access token. Ending session',
+              reason
+            );
             window.location.href = `${origin}/auth/redirect-logout`;
           });
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

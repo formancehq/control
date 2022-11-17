@@ -59,8 +59,8 @@ function configureTelemetry() {
         return;
       default:
         throw new Error(
-          'Unexpected OpenTelemetry exporter type: ' +
-            process.env.OTEL_TRACES_EXPORTER
+          `Unexpected OpenTelemetry exporter type:
+            ${process.env.OTEL_TRACES_EXPORTER}`
         );
     }
 
