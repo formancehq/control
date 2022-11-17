@@ -23,6 +23,11 @@ jobs:
           registry: ghcr.io
           username: 'NumaryBot'
           password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn install
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
