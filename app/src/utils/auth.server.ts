@@ -1,0 +1,204 @@
+import crypto from 'crypto';
+
+import { createCookieSessionStorage, json, Session } from '@remix-run/node';
+import { TypedResponse } from '@remix-run/server-runtime';
+
+import { ObjectOf } from '~/src/types/generic';
+import {
+  API_AUTH,
+  Authentication,
+  JwtPayload,
+  Methods,
+  SessionWrapper,
+} from '~/src/utils/api';
+import { Otel } from '~/src/utils/otel';
+
+export const COOKIE_NAME = 'auth_session';
+export const AUTH_CALLBACK_ROUTE = '/auth/login';
+export const REDIRECT_URI = process.env.REDIRECT_URI;
+
+export interface State {
+  redirectTo: string;
+}
+
+export const parseSessionHolder = (session: Session): Authentication =>
+  decrypt<Authentication>(session.get(COOKIE_NAME));
+
+// export the whole sessionStorage object
+export const sessionStorage = createCookieSessionStorage({
+  cookie: {
+    name: COOKIE_NAME, // use any name you want here
+    sameSite: 'lax', // this helps with CSRF
+    path: '/', // remember to add this so the cookie will work in all routes
+    httpOnly: true, // for security reasons, make this cookie http only
+    secrets: [process.env.CLIENT_SECRET || 'secret'], // replace this with an actual secret
+    secure: process.env.NODE_ENV === 'production',
+  },
+});
+
+export const encrypt = (payload: Authentication): string => {
+  const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
+  const iv = process.env.ENCRYPTION_IV!;
+
+  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+  let encrypted = cipher.update(JSON.stringify(payload), 'utf8', 'base64');
+  encrypted += cipher.final('base64');
+
+  return encrypted;
+};
+
+export const decrypt = <T>(cookie: string): T => {
+  if (cookie) {
+    const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
+    const iv = process.env.ENCRYPTION_IV!;
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const decrypted = decipher.update(cookie, 'base64', 'utf8');
+    const final = decrypted + decipher.final('utf8');
+
+    return JSON.parse(final);
+  }
+
+  return { refresh_token: undefined } as T;
+};
+
+export interface OpenIdConfiguration {
+  authorization_endpoint: string;
+  userinfo_endpoint: string;
+  token_endpoint: string;
+  end_session_endpoint: string;
+  introspection_endpoint: string;
+}
+
+export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
+  const uri = `${process.env.API_URL}${API_AUTH}/.well-known/openid-configuration`;
+  const otel = new Otel(Methods.GET, uri, 'Auth client');
+
+  return fetch(uri)
+    .catch((e) => {
+      otel.span.recordException(e);
+      throw new Error('Error while fetching openid config');
+    })
+    .then(async (response) => {
+      await otel.handleResponse(response);
+
+      return response.json();
+    })
+    .finally(() => otel.span.end());
+};
+
+export const getJwtPayload = (
+  decryptedCookie: Authentication
+): JwtPayload | undefined =>
+  JSON.parse(
+    Buffer.from(decryptedCookie.access_token.split('.')[1], 'base64').toString()
+  );
+
+export const exchangeToken = async (
+  openIdConfig: ObjectOf<any>,
+  code: string
+): Promise<Authentication> => {
+  const uri = `${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}`;
+  const otel = new Otel(Methods.GET, uri, 'Auth client');
+
+  return await fetch(uri)
+    .then(async (response) => {
+      await otel.handleResponse(response);
+      if (response.status != 200) {
+        throw new Error('Error while exchanging token');
+      }
+
+      return response.json();
+    })
+    .catch((e) => {
+      otel.span.recordException(e);
+    })
+    .finally(() => otel.span.end());
+};
+
+export const refreshToken = async (
+  openIdConfig: OpenIdConfiguration,
+  refreshToken: string
+): Promise<Authentication> => {
+  const uri = `${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&refresh_token=${refreshToken}`;
+  const otel = new Otel(Methods.GET, uri, 'Auth client');
+
+  return fetch(uri)
+    .then(async (response) => {
+      await otel.handleResponse(response);
+      if (response.status != 200) {
+        throw new Error('Error while refreshing access token');
+      }
+
+      return await response.json();
+    })
+    .catch((e) => {
+      otel.span.recordException(e);
+    })
+    .finally(() => otel.span.end());
+};
+
+export const introspect = async (
+  openIdConfig: OpenIdConfiguration,
+  accessToken: string
+): Promise<{ active: boolean }> => {
+  const auth = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
+  const buff = new Buffer(auth);
+  const basic = buff.toString('base64');
+  const data = new FormData();
+  data.append('token', accessToken || '');
+  const otel = new Otel(
+    Methods.POST,
+    openIdConfig.introspection_endpoint,
+    'Auth client',
+    data
+  );
+
+  return fetch(openIdConfig.introspection_endpoint, {
+    headers: { Authorization: `Basic ${basic}` },
+    method: Methods.POST,
+    body: data,
+  })
+    .then(async (response) => {
+      await otel.handleResponse(response);
+      if (response.status != 200) {
+        throw new Error('Error while instrospecting access token');
+      }
+
+      return await response.json();
+    })
+    .catch((e) => {
+      otel.span.recordException(e);
+    })
+    .finally(() => otel.span.end());
+};
+
+export const handleResponse = async (
+  data: SessionWrapper
+): Promise<TypedResponse<any>> =>
+  json(data.callbackResult, {
+    headers: data.cookieValue
+      ? {
+          'Set-Cookie': data.cookieValue,
+        }
+      : {},
+  });
+
+export const withSession = async (
+  request: Request,
+  callback: (session: Session) => any
+): Promise<SessionWrapper> => {
+  const session = await getSession(request.headers.get('Cookie'));
+  const c = await callback(session);
+  const commitSession = await sessionStorage.commitSession(session);
+  const commitSessionCookieValue = commitSession.split(';')[0];
+
+  return {
+    cookieValue:
+      request.headers.get('Cookie') != commitSessionCookieValue
+        ? commitSession
+        : undefined,
+    callbackResult: c,
+  };
+};
+
+export const { getSession, destroySession, commitSession } = sessionStorage;

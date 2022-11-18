@@ -1,12 +1,50 @@
-# Numary Control [![test](https://github.com/numary/ledger/actions/workflows/test.yml/badge.svg)](https://github.com/numary/ledger/actions/workflows/test.yml)
+# Control OSS
 
-A simple dashboard for Numary Ledger
+## Stack
 
-<!-- <img width="858" alt="control-screenshot" src="https://user-images.githubusercontent.com/1770991/126158742-393ac0d0-1048-4b57-a7fd-7381f3da2ca8.png"> -->
+- [Remix Docs](https://remix.run/docs)
+- [Formance Local Stack](https://github.com/formancehq/stack)
 
-<img width="909" alt="control-screenshot" src="https://user-images.githubusercontent.com/1770991/153751534-d8bba99e-610a-4b8c-9c63-4bde6eb6f96f.png">
+## Development
 
+From your terminal:
 
-# Documentation
+```sh
+touch .env
+```
 
-You can find the complete Numary documentation at [docs.numary.com](https://docs.numary.com)
+```
+// works with [Formance Local Stack](https://github.com/formancehq/stack)
+API_URL=http://localhost/api
+CLIENT_ID=control
+CLIENT_SECRET=mysupersecret
+ENCRYPTION_KEY=mysuperencryptionkey
+# randomBytes(8)
+ENCRYPTION_IV=6f0c77c78a624022
+REDIRECT_URI=http://localhost:3000
+# change to 1 to activate opentelemetry
+OTEL_TRACES=0
+OTEL_TRACES_EXPORTER=zipkin
+OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT=http://localhost:9411/api/v2/spans
+```
+
+```sh
+yarn dev
+```
+
+This starts your app in development mode, rebuilding assets on file changes.
+
+If you need to run open-tel use `docker compose up` and change OTEL_TRACES to 1.
+
+## Deployment
+
+```sh
+yarn build
+```
+
+Then run the app in production mode:
+
+```sh
+# /!\ .env is not sourced by remix
+API_URL=http://localhost/api CLIENT_ID=control CLIENT_SECRET=mysupersecret ENCRYPTION_KEY=mysuperencryptionkey ENCRYPTION_IV=6f0c77c78a624022 REDIRECT_URI=http://localhost:3000 OTEL_TRACES=0 OTEL_TRACES_EXPORTER=zipkin OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT=http://localhost:9411/api/v2/spans remix-serve build
+```
