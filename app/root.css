@@ -16,6 +16,7 @@ body {
 .Graph {
   background-color: #fff;
   margin-top: 24px;
+  border-radius: 4px;
 }
 
 .Graph svg g polygon {

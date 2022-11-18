@@ -113,21 +113,38 @@ const Navbar: FunctionComponent = () => {
                 sx={{
                   width: 24,
                   height: 24,
+                  padding: '1px',
+                  borderRadius: '4px',
                   bgcolor: theme.palette.green.bright,
                 }}
               >
                 {currentUser.avatarLetter ? (
-                  currentUser.avatarLetter
+                  <Typography variant="bold">
+                    {currentUser.avatarLetter}
+                  </Typography>
                 ) : (
                   <Person />
                 )}
               </Avatar>
             </IconButton>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <ArrowDropDown sx={{ color: theme.palette.grey[500] }} />
+              <ArrowDropDown sx={{ color: theme.palette.neutral[500] }} />
             </IconButton>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{
+                mt: '45px',
+                ul: {
+                  padding: '6px',
+                  margin: 0,
+                  background: theme.palette.neutral[800],
+                  color: theme.palette.neutral[0],
+                },
+              }}
+              PaperProps={{
+                sx: {
+                  boxShadow: 'none',
+                },
+              }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -143,7 +160,15 @@ const Navbar: FunctionComponent = () => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleLogout}>
+                <MenuItem
+                  key={setting}
+                  onClick={handleLogout}
+                  sx={{
+                    ':hover': {
+                      background: theme.palette.neutral[700],
+                    },
+                  }}
+                >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}

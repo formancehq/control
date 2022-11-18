@@ -166,12 +166,13 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <Box display="flex">
+                  <Box display="flex" alignItems="center">
                     <Avatar
                       sx={{
                         backgroundColor: ({ palette }) => palette.neutral[800],
-                        width: 72,
-                        height: 72,
+                        width: 52,
+                        height: 52,
+                        borderRadius: '4px',
                       }}
                     >
                       <Person fontSize="large" />
