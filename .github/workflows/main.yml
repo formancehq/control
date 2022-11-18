@@ -92,6 +92,9 @@ jobs:
   Assets:
     name: "Push Assets to S3"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     if: github.event.action == 'released'
     steps:
       - uses: actions/checkout@v3
