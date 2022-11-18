@@ -10,7 +10,6 @@ import {
   toJson,
 } from '~/src/utils/api';
 import { parseSessionHolder } from '~/src/utils/auth.server';
-import { Otel } from '~/src/utils/otel';
 
 export type Headers = { Authorization?: string; 'Content-Type': string };
 
@@ -85,14 +84,10 @@ export class DefaultApiClient implements ApiClient {
       ...this.headers,
       Authorization: `Bearer ${sessionHolder.access_token}`,
     };
-    const otel = new Otel(method, uri, 'Api client', body);
 
     return fetch(uri, {
       method,
-      headers: {
-        ...this.headers,
-        ...otel.carrier,
-      },
+      headers: this.headers,
       body: body
         ? body instanceof FormData
           ? body
@@ -100,8 +95,6 @@ export class DefaultApiClient implements ApiClient {
         : undefined,
     })
       .then(async (response) => {
-        await otel.handleResponse(response);
-
         const json = await toJson<T>(response);
 
         return path ? get(json, path) : json;
@@ -114,9 +107,7 @@ export class DefaultApiClient implements ApiClient {
           method,
           headers: this.headers,
         });
-        otel.span.recordException(e);
         throw new Error('Error');
-      }) // allow error to be catch on higher level (root) // TODO improve handler
-      .finally(() => otel.span.end());
+      }); // allow error to be catch on higher level (root) // TODO improve handler
   }
 }
