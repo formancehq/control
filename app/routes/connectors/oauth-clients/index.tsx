@@ -25,7 +25,13 @@ export const meta: MetaFunction = () => ({
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  return <ComponentErrorBoundary id="oauth-clients" error={error} />;
+  return (
+    <ComponentErrorBoundary
+      id="oauth-clients"
+      error={error}
+      showAction={false}
+    />
+  );
 }
 
 export const loader: LoaderFunction = async ({ request }) => {

@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
 
 import { APP_ROUTE, getRoute } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Connector } from '~/src/types/connectorsConfig';
@@ -22,6 +23,10 @@ export const meta: MetaFunction = () => ({
   title: 'Apps',
   description: 'Apps',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ComponentErrorBoundary id="apps" error={error} showAction={false} />;
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {

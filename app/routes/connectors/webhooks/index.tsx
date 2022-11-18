@@ -28,7 +28,9 @@ export const meta: MetaFunction = () => ({
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  return <ComponentErrorBoundary id="webhooks" error={error} />;
+  return (
+    <ComponentErrorBoundary id="webhooks" error={error} showAction={false} />
+  );
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
