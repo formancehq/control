@@ -4,3 +4,9 @@ services:
     image: openzipkin/zipkin
     ports:
     - 9411:9411/tcp
+  collector:
+    image: otel/opentelemetry-collector
+    volumes:
+    - ./otel-config.yml:/etc/otelcol/config.yaml
+    ports:
+    - 4317:4317

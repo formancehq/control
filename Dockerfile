@@ -22,4 +22,5 @@ FROM node:16-slim as app
 WORKDIR /app
 ENV NODE_ENV=production
 ADD . .
+ENV DEBUG=1
 CMD ["yarn", "run", "start"]

@@ -2,9 +2,16 @@ import * as React from 'react';
 
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
+import * as grpc from '@grpc/grpc-js';
 import { ThemeProvider } from '@mui/material/styles';
-import { propagation } from '@opentelemetry/api';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import {
+  diag,
+  DiagConsoleLogger,
+  DiagLogLevel,
+  SpanKind,
+  trace,
+} from '@opentelemetry/api';
+import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
 import {
   CompositePropagator,
   W3CTraceContextPropagator,
@@ -12,11 +19,13 @@ import {
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { B3InjectEncoding, B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
 import {
   BatchSpanProcessor,
   ConsoleSpanExporter,
+  SimpleSpanProcessor,
   SpanExporter,
 } from '@opentelemetry/sdk-trace-base';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
@@ -33,11 +42,19 @@ import { theme } from '@numaryhq/storybook';
 function configureTelemetry() {
   if (typeof process !== 'undefined' && process.env.OTEL_TRACES) {
     let exporter: SpanExporter;
+    if (process.env.DEBUG) {
+      diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+    }
     switch (process.env.OTEL_TRACES_EXPORTER) {
       case 'otlp':
+        console.info(
+          'Configure OTLP exporter with endpoint: ' +
+            process.env.OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+        );
         exporter = new OTLPTraceExporter({
           url: process.env.OTEL_TRACES_EXPORTER_OTLP_ENDPOINT,
           concurrencyLimit: 10, // an optional limit on pending requests
+          credentials: grpc.credentials.createInsecure(),
         });
         break;
       case 'zipkin':
@@ -64,22 +81,12 @@ function configureTelemetry() {
         );
     }
 
-    propagation.setGlobalPropagator(
-      new CompositePropagator({
-        propagators: [
-          new B3Propagator(),
-          new B3Propagator({
-            injectEncoding: B3InjectEncoding.MULTI_HEADER,
-          }),
-          new W3CTraceContextPropagator(),
-        ],
-      })
-    );
+    const contextManager = new AsyncHooksContextManager();
+    contextManager.enable();
 
     const resource = Resource.default().merge(
       new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: 'control',
-        [SemanticResourceAttributes.SERVICE_VERSION]: '0.1.0', // TODO: Get version
       })
     );
 
@@ -87,14 +94,21 @@ function configureTelemetry() {
       resource,
     });
     provider.addSpanProcessor(
-      new BatchSpanProcessor(exporter, {
-        maxQueueSize: 100,
-        maxExportBatchSize: 10,
-        scheduledDelayMillis: 500,
-        exportTimeoutMillis: 30000,
-      })
+      new SimpleSpanProcessor(exporter)
     );
-    provider.register();
+    provider.register({
+      propagator: new CompositePropagator({
+        propagators: [
+          new B3Propagator(),
+          new B3Propagator({
+            injectEncoding: B3InjectEncoding.MULTI_HEADER,
+          }),
+          new W3CTraceContextPropagator(),
+        ],
+      }),
+      contextManager: contextManager,
+    });
+    console.info('Register instrumentations');
     registerInstrumentations({
       instrumentations: [
         new RemixInstrumentation({
@@ -103,12 +117,15 @@ function configureTelemetry() {
             action: true,
           },
         }),
-        getNodeAutoInstrumentations(),
+        new HttpInstrumentation(),
       ],
       tracerProvider: provider,
     });
   }
 }
+
+// otel
+configureTelemetry();
 
 export default async function handleRequest(
   request: Request,
@@ -118,9 +135,6 @@ export default async function handleRequest(
 ) {
   const cache = createEmotionCache();
   const { extractCriticalToChunks } = createEmotionServer(cache);
-
-  // otel
-  configureTelemetry();
 
   const MuiRemixServer = () => (
     <CacheProvider value={cache}>
