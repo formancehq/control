@@ -4,13 +4,7 @@ import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 import * as grpc from '@grpc/grpc-js';
 import { ThemeProvider } from '@mui/material/styles';
-import {
-  diag,
-  DiagConsoleLogger,
-  DiagLogLevel,
-  SpanKind,
-  trace,
-} from '@opentelemetry/api';
+import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
 import {
   CompositePropagator,
@@ -23,7 +17,6 @@ import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { B3InjectEncoding, B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
 import {
-  BatchSpanProcessor,
   ConsoleSpanExporter,
   SimpleSpanProcessor,
   SpanExporter,
@@ -40,7 +33,11 @@ import createEmotionCache from './src/utils/createEmotionCache';
 import { theme } from '@numaryhq/storybook';
 
 function configureTelemetry() {
-  if (typeof process !== 'undefined' && process.env.OTEL_TRACES) {
+  if (
+    typeof process !== 'undefined' &&
+    process.env.OTEL_TRACES &&
+    process.env.OTEL_TRACES == '1'
+  ) {
     let exporter: SpanExporter;
     if (process.env.DEBUG) {
       diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
@@ -48,8 +45,7 @@ function configureTelemetry() {
     switch (process.env.OTEL_TRACES_EXPORTER) {
       case 'otlp':
         console.info(
-          'Configure OTLP exporter with endpoint: ' +
-            process.env.OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+          `Configure OTLP exporter with endpoint: ${process.env.OTEL_TRACES_EXPORTER_OTLP_ENDPOINT}`
         );
         exporter = new OTLPTraceExporter({
           url: process.env.OTEL_TRACES_EXPORTER_OTLP_ENDPOINT,
@@ -59,8 +55,7 @@ function configureTelemetry() {
         break;
       case 'zipkin':
         console.info(
-          'Configure ZipKin exporter with endpoint: ' +
-            process.env.OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT
+          `Configure ZipKin exporter with endpoint: ${process.env.OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT}`
         );
         exporter = new ZipkinExporter({
           url: process.env.OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT,
@@ -93,9 +88,7 @@ function configureTelemetry() {
     const provider = new NodeTracerProvider({
       resource,
     });
-    provider.addSpanProcessor(
-      new SimpleSpanProcessor(exporter)
-    );
+    provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
     provider.register({
       propagator: new CompositePropagator({
         propagators: [
