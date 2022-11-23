@@ -21,7 +21,7 @@ import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { buildQuery } from '~/src/utils/search';
+import { sanitizeQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
   title: 'Transactions',
@@ -30,13 +30,12 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
-    const url = new URL(request.url);
     const transactions = await (
       await createApiClient(session)
     ).postResource<Cursor<Transaction>>(
       API_SEARCH,
       {
-        ...buildQuery(url.searchParams),
+        ...sanitizeQuery(request),
         target: SearchTargets.TRANSACTION,
         policy: SearchPolicies.AND,
       },

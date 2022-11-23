@@ -115,8 +115,9 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
             label: t('pages.transactions.table.columnLabel.ledger'),
           },
           {
-            key: 'date',
+            key: 'timestamp',
             label: t('pages.transactions.table.columnLabel.date'),
+            sort: true,
           },
         ]}
         renderItem={(
