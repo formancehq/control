@@ -26,7 +26,7 @@ import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { buildQuery } from '~/src/utils/search';
+import { sanitizeQuery } from '~/src/utils/search';
 
 const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
 const paymentProviders = [
@@ -50,13 +50,12 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
-    const url = new URL(request.url);
     const results = await (
       await createApiClient(session)
     ).postResource<Cursor<Payment>>(
       API_SEARCH,
       {
-        ...buildQuery(url.searchParams),
+        ...sanitizeQuery(request),
         target: SearchTargets.PAYMENT,
         policy: SearchPolicies.AND,
       },

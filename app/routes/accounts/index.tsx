@@ -19,7 +19,7 @@ import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { buildQuery } from '~/src/utils/search';
+import { sanitizeQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
   title: 'Accounts',
@@ -28,13 +28,12 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
-    const url = new URL(request.url);
     const accounts = await (
       await createApiClient(session)
     ).postResource<Cursor<Account>>(
       API_SEARCH,
       {
-        ...buildQuery(url.searchParams),
+        ...sanitizeQuery(request),
         target: SearchTargets.ACCOUNT,
         policy: SearchPolicies.AND,
       },
@@ -72,7 +71,6 @@ export default function Index() {
         }}
       >
         <Form method="get">
-          {/* TODO remove width when having multiple filter*/}
           <FiltersBar>
             <LedgerList />
           </FiltersBar>
