@@ -36,7 +36,7 @@ function configureTelemetry() {
   if (
     typeof process !== 'undefined' &&
     process.env.OTEL_TRACES &&
-    process.env.OTEL_TRACES == '1'
+    (process.env.OTEL_TRACES == '1' || process.env.OTEL_TRACES == 'true')
   ) {
     let exporter: SpanExporter;
     if (process.env.DEBUG) {
