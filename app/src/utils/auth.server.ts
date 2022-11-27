@@ -24,14 +24,20 @@ export const parseSessionHolder = (session: Session): Authentication =>
   decrypt<Authentication>(session.get(COOKIE_NAME));
 
 // export the whole sessionStorage object
+const production = process.env.NODE_ENV === 'production'
+if(production) {
+  console.info("Load session storage with production configuration")
+} else {
+  console.info("Load session storage with development configuration")
+}
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: COOKIE_NAME, // use any name you want here
     sameSite: 'lax', // this helps with CSRF
     path: '/', // remember to add this so the cookie will work in all routes
-    httpOnly: process.env.NODE_ENV === 'production', // for security reasons, make this cookie http only
+    httpOnly: production, // for security reasons, make this cookie http only
     secrets: [process.env.CLIENT_SECRET || 'secret'], // replace this with an actual secret
-    secure: process.env.NODE_ENV === 'production',
+    secure: production,
   },
 });
 
