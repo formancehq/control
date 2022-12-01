@@ -133,7 +133,7 @@ const Metadata: FunctionComponent<MetadataProps> = ({
           background: ({ palette }) => palette.neutral[900],
           justifyContent: 'space-between',
           alignItems: 'self-start',
-          borderRadius: '4px',
+          borderRadius: '6px',
           p: '12px',
           '& ul': {
             marginTop: '0px !important',

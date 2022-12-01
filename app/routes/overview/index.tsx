@@ -14,11 +14,10 @@ import {
 } from 'react-spring';
 
 import {
+  ActionCard,
   LoadingButton,
-  OnBoarding,
   Page,
   StatsCard,
-  theme,
   TitleWithBar,
 } from '@numaryhq/storybook';
 
@@ -149,15 +148,11 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
     <>
       <Box
         sx={{
-          backgroundColor: ({ palette }) => palette.neutral[900],
+          backgroundColor: ({ palette }) => palette.neutral[0],
+          borderRadius: '6px',
         }}
       >
-        <Box
-          sx={{
-            borderTop: ({ palette }) => `1px solid ${palette.neutral[800]}`,
-            borderBottom: ({ palette }) => `1px solid ${palette.neutral[800]}`,
-          }}
-        >
+        <Box>
           <Page id={overview.id}>
             <>
               {currentUser && currentUser.pseudo && (
@@ -178,10 +173,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                       <Person fontSize="large" />
                     </Avatar>
                     <Box display="flex-column" p={2} alignItems="center">
-                      <Typography
-                        variant="headline"
-                        sx={{ color: ({ palette }) => palette.neutral[0] }}
-                      >
+                      <Typography variant="headline">
                         {`${t('pages.overview.hello')} ${
                           currentUser.pseudo
                         } 👋`}
@@ -207,13 +199,10 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                     },
                   }}
                 >
-                  <TitleWithBar
-                    title={t('pages.overview.status')}
-                    titleColor={theme.palette.neutral[0]}
-                  />
+                  <TitleWithBar title={t('pages.overview.status')} />
                   {ledgers.length > 1 && (
                     <FiltersBar>
-                      <LedgerList variant="dark" />
+                      <LedgerList />
                     </FiltersBar>
                   )}
                 </Box>
@@ -297,7 +286,6 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                   )}
                 </Box>
               </Box>
-              )
             </>
           </Page>
         </Box>
@@ -316,7 +304,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
           justifyContent="flex-start"
           gap="26px"
         >
-          <OnBoarding
+          <ActionCard
             title={t('pages.overview.tasks.tuto.title')}
             description={t('pages.overview.tasks.tuto.description')}
             width="400px"
@@ -336,8 +324,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                 startIcon={<NorthEast />}
               />
             </Link>
-          </OnBoarding>
-          <OnBoarding
+          </ActionCard>
+          <ActionCard
             title={t('pages.overview.tasks.useCaseLib.title')}
             description={t('pages.overview.tasks.useCaseLib.description')}
             width="400px"
@@ -356,7 +344,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                 startIcon={<NorthEast />}
               />
             </Link>
-          </OnBoarding>
+          </ActionCard>
         </Box>
       </Page>
 
@@ -377,7 +365,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
             gap="26px"
           >
             {payments === 0 && (
-              <OnBoarding
+              <ActionCard
                 title={t('pages.overview.setUp.connexion.title')}
                 description={t('pages.overview.setUp.connexion.description')}
                 width="400px"
@@ -397,10 +385,10 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                     startIcon={<NorthEast />}
                   />
                 </Link>
-              </OnBoarding>
+              </ActionCard>
             )}
             {accounts === 0 && (
-              <OnBoarding
+              <ActionCard
                 title={t('pages.overview.setUp.ledger.title')}
                 description={t('pages.overview.setUp.ledger.description')}
                 width="400px"
@@ -420,7 +408,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                     startIcon={<NorthEast />}
                   />
                 </Link>
-              </OnBoarding>
+              </ActionCard>
             )}
           </Box>
         </Page>

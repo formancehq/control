@@ -1,6 +1,12 @@
 import React from 'react';
 
-import { AccountBalance, CreditCard, Home, Share } from '@mui/icons-material';
+import {
+  AccountBalance,
+  Apps,
+  CreditCard,
+  Home,
+  Share,
+} from '@mui/icons-material';
 
 export const ROOT_ROUTE = '/';
 export const OVERVIEW_ROUTE = '/overview';
@@ -84,10 +90,41 @@ export const connectors: RouterConfig = {
   icon: <Share />,
 };
 
-export const routerConfig: RouterConfig[] = [
-  overview,
-  payments,
-  accounts,
-  transactions,
-  connectors,
+export const apps: RouterConfig = {
+  id: 'apps',
+  label: 'navbar.title.apps',
+  path: [getRoute(APPS_ROUTE)],
+  icon: <Apps />,
+};
+
+export const oAuthClients: RouterConfig = {
+  id: 'oAuthClient',
+  label: 'navbar.title.oAuthClients',
+  path: [getRoute(OAUTH_CLIENTS_ROUTE)],
+  icon: <Apps />,
+};
+export const webhooks: RouterConfig = {
+  id: 'webhooks',
+  label: 'navbar.title.webhooks',
+  path: [getRoute(WEBHOOKS_ROUTE)],
+  icon: <Share />,
+};
+
+export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
+  {
+    label: undefined,
+    children: [overview],
+  },
+  {
+    label: 'sidebar.ledgers',
+    children: [accounts, transactions],
+  },
+  {
+    label: undefined,
+    children: [payments],
+  },
+  {
+    label: 'sidebar.configuration',
+    children: [apps, oAuthClients, webhooks],
+  },
 ];

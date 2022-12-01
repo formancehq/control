@@ -42,10 +42,6 @@ const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
             setSearchParams(query as URLSearchParamsInit);
           }
         }}
-        sx={{
-          m: 0,
-          p: 0,
-        }}
       />
     </Box>
   );

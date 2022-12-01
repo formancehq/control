@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect, useState } from 'react';
 
-import {
-  AccountBalance,
-  CreditCard,
-  SearchOutlined,
-} from '@mui/icons-material';
+import { AccountBalance, CreditCard } from '@mui/icons-material';
 import { Box, CircularProgress, Grid, Typography } from '@mui/material';
 import { get, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -49,7 +45,7 @@ import {
 
 // TODo improve
 const Search: FunctionComponent = () => {
-  const [open, handleOpen, handleClose] = useOpen();
+  const [open, _handleOpen, handleClose] = useOpen();
   const [loading, load, stopLoading] = useOpen();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -370,31 +366,22 @@ const Search: FunctionComponent = () => {
   );
 
   return (
-    <>
-      <LoadingButton
-        id="trigger-search"
-        startIcon={<SearchOutlined />}
-        onClick={handleOpen}
-        variant="transparent"
-        sx={{ color: ({ palette }) => palette.neutral[0] }}
-      />
-      <SbSearch
-        open={open}
-        placeholder={t('common.search.placeholder')}
-        name="terms"
-        required={true}
-        onKeyDown={handleOnKeyDown}
-        onChange={handleOnChange}
-        onClose={handleClose}
-        renderChildren={(value) => {
-          if (value) {
-            return renderChildren(value);
-          }
+    <SbSearch
+      open={open}
+      placeholder={t('common.search.placeholder')}
+      name="terms"
+      required={true}
+      onKeyDown={handleOnKeyDown}
+      onChange={handleOnChange}
+      onClose={handleClose}
+      renderChildren={(value) => {
+        if (value) {
+          return renderChildren(value);
+        }
 
-          return <></>;
-        }}
-      />
-    </>
+        return <></>;
+      }}
+    />
   );
 };
 export default Search;

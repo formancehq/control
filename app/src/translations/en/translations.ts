@@ -1,5 +1,9 @@
 export default {
   translation: {
+    sidebar: {
+      ledgers: 'Ledgers',
+      configuration: 'Configuration',
+    },
     topbar: {
       logout: 'Logout',
       search: {
@@ -11,24 +15,6 @@ export default {
             payments: 'Payments',
           },
           more: 'More',
-        },
-      },
-      ledger: {
-        form: {
-          dialog: {
-            title: 'Create a new ledger',
-            createButton: 'Create',
-            closeButton: 'Close',
-          },
-        },
-        content: {
-          title: 'Ledgers',
-          addButton: 'New ledger',
-          tooltip: {
-            copy: {
-              info: 'Copy ledger slug',
-            },
-          },
         },
       },
       notifications: {
@@ -43,6 +29,9 @@ export default {
         ledgers: 'Ledgers',
         payments: 'Payments',
         connectors: 'Connectors',
+        apps: 'Apps',
+        oAuthClients: 'OAuth Clients',
+        webhooks: 'Webhooks',
       },
     },
     pages: {

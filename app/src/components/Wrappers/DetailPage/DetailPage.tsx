@@ -13,7 +13,7 @@ const DetailPage: FunctionComponent<DetailPageProps> = ({ children }) => (
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: '4px',
+        borderRadius: '6px',
         padding: '0 26px 26px 26px',
         backgroundColor: theme.palette.neutral[0],
       }}
