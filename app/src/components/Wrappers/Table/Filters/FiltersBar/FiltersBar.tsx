@@ -5,7 +5,18 @@ import { Box } from '@mui/material';
 const FiltersBar: FunctionComponent<{ children: ReactElement }> = ({
   children,
 }) => (
-  <Box display="flex" id="filters-bar" mb="26px" gap="26px" flexWrap="wrap">
+  <Box
+    display="flex"
+    id="filters-bar"
+    mb="-12px"
+    p="8px 10px"
+    gap="26px"
+    borderRadius="6px"
+    flexWrap="wrap"
+    alignItems="center"
+    alignSelf="center"
+    sx={{ background: ({ palette }) => palette.neutral[0] }}
+  >
     {children}
   </Box>
 );

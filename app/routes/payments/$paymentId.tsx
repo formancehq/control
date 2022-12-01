@@ -103,7 +103,7 @@ const boxWithCopyToClipboard = (
         display: 'flex',
         alignItems: 'center',
         p: '15px',
-        borderRadius: '4px',
+        borderRadius: '6px',
         justifyContent: 'space-between',
         backgroundColor: color,
       }}
