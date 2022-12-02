@@ -43,7 +43,7 @@ hydrateRoot(
         <GlobalStyles
           styles={{
             body: {
-              backgroundColor: '#EEF1F5',
+              backgroundColor: '#FFF',
               margin: 0,
               padding: 0,
             },

@@ -103,95 +103,83 @@ function ResponsiveDrawer(props: Props) {
   };
 
   const drawer = (
-    <div>
-      <Toolbar sx={{ '& img': { width: '60px', ml: '24px', mb: 1 } }}>
-        <Box display="flex" alignItems="center" alignSelf="center">
-          <img src="/images/logoYellow.svg" alt="logo" />
-          <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
-            FORMANCE
-          </Typography>
-        </Box>
-      </Toolbar>
-      <Box>
-        {routerConfig.map(({ label: groupLabel, children }, index) => (
-          <React.Fragment key={index}>
-            {groupLabel && (
-              <Box mt={index === 1 ? 1 : 3} p={1} ml={3}>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    textTransform: 'uppercase',
-                    color: palette.neutral[400],
-                  }}
-                >
-                  {t(groupLabel)}
-                </Typography>
-              </Box>
-            )}
+    <Box mt={10}>
+      {routerConfig.map(({ label: groupLabel, children }, index) => (
+        <React.Fragment key={index}>
+          {groupLabel && (
+            <Box mt={index === 1 ? 1 : 3} p={1} ml={3}>
+              <Typography
+                variant="caption"
+                sx={{
+                  textTransform: 'uppercase',
+                  color: palette.neutral[500],
+                }}
+              >
+                {t(groupLabel)}
+              </Typography>
+            </Box>
+          )}
 
-            {children.map(({ label, path, id, icon }) => {
-              const selected = isArray(path)
-                ? path.includes(location.pathname)
-                : path === location.pathname;
+          {children.map(({ label, path, id, icon }) => {
+            const selected = isArray(path)
+              ? path.includes(location.pathname)
+              : path === location.pathname;
 
-              return (
-                <Box
+            return (
+              <Box
+                key={id}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginLeft: '24px',
+                }}
+              >
+                <LinkWrapper
+                  to={isArray(path) ? (path[0] as string) : (path as string)}
+                  prefetch="intent"
                   key={id}
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginLeft: '24px',
-                  }}
+                  color="inherit"
                 >
-                  <LinkWrapper
-                    to={isArray(path) ? (path[0] as string) : (path as string)}
-                    prefetch="intent"
-                    key={id}
-                    color={selected ? palette.neutral[800] : 'inherit'}
-                  >
-                    <Button
-                      sx={{
-                        width: 200,
-                        m: '4px 0 4px 0',
+                  <Button
+                    sx={{
+                      width: 200,
+                      m: '4px 0 4px 0',
+                      p: '10px 10px 10px 14px',
+                      color: palette.blue.darker,
+                      display: 'flex',
+                      borderRadius: '6px',
+                      justifyContent: 'start',
+                      textTransform: 'none',
+                      ':hover': {
                         p: '10px 10px 10px 14px',
-                        color: selected
-                          ? palette.neutral[800]
-                          : palette.neutral[500],
-                        display: 'flex',
-                        borderRadius: '6px',
-                        justifyContent: 'start',
-                        textTransform: 'none',
-                        ':hover': {
-                          p: '10px 10px 10px 14px',
-                          color: palette.neutral[800],
-                        },
-                      }}
-                      startIcon={icon}
-                    >
-                      {t(label)}
-                    </Button>
-                  </LinkWrapper>
-                  {selected && (
-                    <Box
-                      component="span"
-                      sx={{
-                        borderLeft: `6px solid ${palette.yellow.bright}`,
-                        borderRadius: '6px',
-                        width: 4,
-                        height: 40,
-                        position: 'relative',
-                        right: '-4px',
-                      }}
-                    />
-                  )}
-                </Box>
-              );
-            })}
-          </React.Fragment>
-        ))}
-      </Box>
-    </div>
+                        color: palette.blue.darker,
+                      },
+                    }}
+                    startIcon={icon}
+                  >
+                    {t(label)}
+                  </Button>
+                </LinkWrapper>
+                {selected && (
+                  <Box
+                    component="span"
+                    sx={{
+                      borderLeft: `6px solid ${palette.blue.darker}`,
+                      borderRadius: '6px',
+                      width: 4,
+                      height: 40,
+                      position: 'relative',
+                      right: '-4px',
+                    }}
+                  />
+                )}
+              </Box>
+            );
+          })}
+        </React.Fragment>
+      ))}
+    </Box>
   );
 
   const muiDrawerStyle = {
@@ -200,9 +188,9 @@ function ResponsiveDrawer(props: Props) {
       width: drawerWidth,
       boxShadow: 'none',
       border: '0px !important',
-      borderRight: `2px solid ${palette.neutral[100]} !important`,
+      borderRight: `1px solid ${palette.neutral[200]} !important`,
       borderRadius: '0 !important',
-      background: palette.neutral[0],
+      background: palette.neutral[100],
     },
   };
 
@@ -222,12 +210,11 @@ function ResponsiveDrawer(props: Props) {
       <AppBar
         position="fixed"
         sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
           boxShadow: 'none',
           border: '0 !important',
           borderRadius: '0 !important',
-          background: palette.neutral[0],
+          background: palette.neutral[800],
+          zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -241,9 +228,11 @@ function ResponsiveDrawer(props: Props) {
               startIcon={<Menu />}
               onClick={handleDrawerToggle}
               variant="transparent"
-              sx={{ mr: 2 }}
+              sx={{ mr: 2, display: 'none' }}
             />
-            <Search />
+            <Box ml={2}>
+              <Search />
+            </Box>
           </Box>
           {currentUser && (
             <Box mr={1}>

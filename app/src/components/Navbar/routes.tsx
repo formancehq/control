@@ -6,6 +6,8 @@ import {
   CreditCard,
   Home,
   Share,
+  Webhook,
+  Widgets,
 } from '@mui/icons-material';
 
 export const ROOT_ROUTE = '/';
@@ -94,7 +96,7 @@ export const apps: RouterConfig = {
   id: 'apps',
   label: 'navbar.title.apps',
   path: [getRoute(APPS_ROUTE)],
-  icon: <Apps />,
+  icon: <Widgets />,
 };
 
 export const oAuthClients: RouterConfig = {
@@ -107,7 +109,7 @@ export const webhooks: RouterConfig = {
   id: 'webhooks',
   label: 'navbar.title.webhooks',
   path: [getRoute(WEBHOOKS_ROUTE)],
-  icon: <Share />,
+  icon: <Webhook />,
 };
 
 export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
@@ -120,7 +122,7 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
     children: [accounts, transactions],
   },
   {
-    label: undefined,
+    label: 'sidebar.payments',
     children: [payments],
   },
   {

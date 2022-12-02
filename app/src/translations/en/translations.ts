@@ -1,6 +1,7 @@
 export default {
   translation: {
     sidebar: {
+      payments: 'Payments',
       ledgers: 'Ledgers',
       configuration: 'Configuration',
     },
