@@ -7,6 +7,7 @@ import { BreadcrumbsLink } from '@numaryhq/storybook';
 import {
   ACCOUNTS_ROUTE,
   APPS_ROUTE,
+  CONNECTORS_ROUTE,
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
   getRoute,
@@ -59,6 +60,12 @@ const buildOAuthClientBreadcrumbs = (
   };
 
   return [
+    ...buildIndexBreadcrumbs(
+      navigate,
+      'connectors',
+      getRoute(CONNECTORS_ROUTE),
+      i18n.t(`common.breadcrumbs.categories.configuration`)
+    ),
     bread,
     {
       label: id,
@@ -76,6 +83,12 @@ const buildWebhookBreadcrumbs = (
   };
 
   return [
+    ...buildIndexBreadcrumbs(
+      navigate,
+      'connectors',
+      getRoute(CONNECTORS_ROUTE),
+      i18n.t(`common.breadcrumbs.categories.configuration`)
+    ),
     bread,
     {
       label: id,
@@ -93,11 +106,31 @@ const buildAppBreadcrumbs = (
   };
 
   return [
+    ...buildIndexBreadcrumbs(
+      navigate,
+      'connectors',
+      getRoute(CONNECTORS_ROUTE),
+      i18n.t(`common.breadcrumbs.categories.configuration`)
+    ),
     bread,
     {
       label: id,
     },
   ];
+};
+
+const buildIndexBreadcrumbs = (
+  navigate: NavigateFunction,
+  target: string,
+  route: string,
+  category: string
+): BreadcrumbsLink[] => {
+  const bread = {
+    label: i18n.t(`common.breadcrumbs.targets.${target}`),
+    onClick: () => navigate(route),
+  };
+
+  return [{ label: category }, bread];
 };
 
 const buildLedgerBreadcrumbs = (
@@ -139,6 +172,10 @@ export const breadcrumbsFactory = (
   const oAuthClientsRoute = match('/oauth-clients/:oAuthClientId');
   const webhooksRoute = match('/webhooks/:webhookId');
   const appsRoute = match('/apps/:appName');
+  const accountsIndex = match('/accounts');
+  const connectorsIndex = match('/connectors/:id');
+  const transactionsIndex = match('/transactions');
+  const paymentsIndex = match('/payments');
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
@@ -183,6 +220,39 @@ export const breadcrumbsFactory = (
   }
   if (appsRoute) {
     return buildAppBreadcrumbs(navigate, params.appName);
+  }
+
+  if (accountsIndex) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'accounts',
+      getRoute(ACCOUNTS_ROUTE),
+      i18n.t(`common.breadcrumbs.categories.ledgers`)
+    );
+  }
+  if (transactionsIndex) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'transactions',
+      getRoute(TRANSACTIONS_ROUTE),
+      i18n.t(`common.breadcrumbs.categories.ledgers`)
+    );
+  }
+  if (connectorsIndex) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'connectors',
+      getRoute(CONNECTORS_ROUTE),
+      i18n.t(`common.breadcrumbs.categories.configuration`)
+    );
+  }
+  if (paymentsIndex) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'payments',
+      getRoute(PAYMENTS_ROUTE),
+      i18n.t(`common.breadcrumbs.categories.payments`)
+    );
   }
 
   return undefined;

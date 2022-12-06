@@ -513,14 +513,20 @@ export default {
         copied: 'Copied! ✔️',
       },
       breadcrumbs: {
-        targets: {
+        categories: {
           payments: 'Payments',
+          ledgers: 'Ledgers',
+          configuration: 'Configuration',
+        },
+        targets: {
+          payments: 'PayIn - PayOut',
           ledgers: 'Ledgers',
           accounts: 'Accounts',
           transactions: 'Transactions',
           oAuthClients: 'OAuth Clients',
           webhooks: 'Webhooks',
           apps: 'Apps',
+          connectors: 'Connectors',
         },
       },
       search: {
