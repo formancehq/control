@@ -24,7 +24,6 @@ import {
 
 import { getRoute, OAUTH_CLIENTS_ROUTE } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
-import DetailPage from '~/src/components/Wrappers/DetailPage';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
@@ -190,174 +189,170 @@ export default function Index() {
   };
 
   return (
-    <Page id="oAuthClient" title={t('pages.oAuthClient.title')}>
-      <DetailPage>
-        <>
-          <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
-            <>
-              {/* ID */}
-              <Grid container sx={{ mb: 1, mt: 2 }}>
-                <Grid item xs={2}>
-                  <Typography variant="bold">
-                    {t('pages.oAuthClients.table.columnLabel.id')}
-                  </Typography>
-                </Grid>
-                <Grid item xs={10}>
-                  <Chip variant="square" label={oAuthClient.id} />
-                </Grid>
+    <Page id="oAuthClient" title={oAuthClient.name}>
+      <>
+        <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
+          <>
+            {/* ID */}
+            <Grid container sx={{ mb: 1, mt: 2 }}>
+              <Grid item xs={2}>
+                <Typography variant="bold">
+                  {t('pages.oAuthClients.table.columnLabel.id')}
+                </Typography>
               </Grid>
-              {/* Type */}
-              <Grid container sx={{ mb: 1, mt: 2 }}>
-                <Grid item xs={2}>
-                  <Typography variant="bold">
-                    {t('pages.oAuthClients.table.columnLabel.public')}
-                  </Typography>
-                </Grid>
-                <Grid item xs={10}>
-                  <Chip
-                    label={t(
-                      `pages.oAuthClients.table.rows.${
-                        oAuthClient.public ? 'public' : 'private'
-                      }`
-                    )}
-                    variant="square"
-                    color="yellow"
-                  />
-                </Grid>
+              <Grid item xs={10}>
+                <Chip variant="square" label={oAuthClient.id} />
               </Grid>
-              {/* Name / description */}
-              {Object.keys(pick(oAuthClient, ['name', 'description'])).map(
-                (key: string, index: number) => {
-                  const item = get(oAuthClient, key);
-                  if (item)
-                    return (
-                      <Grid container key={index} sx={{ marginBottom: 2 }}>
-                        <Grid item xs={2}>
-                          <Typography variant="bold">
-                            {t(`pages.oAuthClient.sections.details.${key}`)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={10}>
-                          <Typography>{item}</Typography>
-                        </Grid>
+            </Grid>
+            {/* Type */}
+            <Grid container sx={{ mb: 1, mt: 2 }}>
+              <Grid item xs={2}>
+                <Typography variant="bold">
+                  {t('pages.oAuthClients.table.columnLabel.public')}
+                </Typography>
+              </Grid>
+              <Grid item xs={10}>
+                <Chip
+                  label={t(
+                    `pages.oAuthClients.table.rows.${
+                      oAuthClient.public ? 'public' : 'private'
+                    }`
+                  )}
+                  variant="square"
+                  color="yellow"
+                />
+              </Grid>
+            </Grid>
+            {/* Name / description */}
+            {Object.keys(pick(oAuthClient, ['name', 'description'])).map(
+              (key: string, index: number) => {
+                const item = get(oAuthClient, key);
+                if (item)
+                  return (
+                    <Grid container key={index} sx={{ marginBottom: 2 }}>
+                      <Grid item xs={2}>
+                        <Typography variant="bold">
+                          {t(`pages.oAuthClient.sections.details.${key}`)}
+                        </Typography>
                       </Grid>
-                    );
-                }
-              )}
-              {/* Redirect uri */}
-              {renderUris('redirectUris', 'violet')}
-              {/* Post logout uri */}
-              {renderUris('postLogoutRedirectUris', 'green')}
-            </>
-          </SectionWrapper>
-          <SectionWrapper
-            title={t('pages.oAuthClient.sections.secrets.title')}
-            element={
-              <LoadingButton
-                id={`create-secret-${id}`}
-                onClick={handleCreateSecret}
-                startIcon={<Add />}
-                variant="dark"
-                content={t('pages.oAuthClient.sections.secrets.create')}
-              />
-            }
-          >
-            <Box mt={2}>
-              <Table
-                id="oauth-client-secrets-list"
-                items={secrets}
-                action
-                columns={[]}
-                withPagination={false}
-                withHeader={false}
-                renderItem={(secret: OAuthSecret, index: number) => (
-                  <Row
-                    key={index}
-                    keys={[
-                      <Secret lastDigits={secret.lastDigits} key={index} />,
-                      <Box component="span" key={index}>
-                        {secret.clear && (
-                          <Alert
-                            key={index}
-                            severity="info"
-                            sx={{
-                              backgroundColor: 'transparent',
-                              border: '0 !important',
-                              '.MuiAlert-message': {
-                                ...typography.body1,
-                              },
-                            }}
-                          >
-                            <Box component="span" sx={{ display: 'block' }}>
-                              {t('pages.oAuthClient.sections.secrets.clear')}
-                            </Box>
-                            <Secret
-                              key={index}
-                              lastDigits="13cd"
-                              value={secret.clear || ''}
-                              color="blue"
-                              tooltipMessage={t('common.tooltip.copied')}
-                            />
-                          </Alert>
-                        )}
-                      </Box>,
-                    ]}
-                    item={secret}
-                    renderActions={() => renderRowActions(secret)}
-                  />
-                )}
-              />
-            </Box>
-          </SectionWrapper>
-          <SectionWrapper
-            title={t('pages.oAuthClient.sections.dangerZone.title')}
-          >
-            <ActionZone
-              actions={[
-                {
-                  key: 'delete-oAuthClient',
-                  title: t(
-                    'pages.oAuthClient.sections.dangerZone.delete.title'
-                  ),
-                  description: t(
-                    'pages.oAuthClient.sections.dangerZone.delete.description'
-                  ),
-                  button: (
-                    <Modal
-                      button={{
-                        id: `delete-${oAuthClient.id}`,
-                        startIcon: <Delete />,
-                        content: t('common.buttons.delete'),
-                        variant: 'error',
-                      }}
-                      modal={{
-                        id: `delete-${oAuthClient.id}-modal`,
-                        PaperProps: { sx: { minWidth: '500px' } },
-                        title: t('common.dialog.deleteTitle'),
-                        actions: {
-                          save: {
-                            variant: 'error',
-                            label: t('common.dialog.confirmButton'),
-                            onClick: () => onDeleteClient(oAuthClient.id),
-                          },
-                        },
-                      }}
-                    >
-                      <Typography>
-                        <Trans
-                          i18nKey="common.dialog.messages.confirmDelete"
-                          values={{ item: oAuthClient.name }}
-                          components={{ bold: <strong /> }}
-                        />
-                      </Typography>
-                    </Modal>
-                  ),
-                },
-              ]}
+                      <Grid item xs={10}>
+                        <Typography>{item}</Typography>
+                      </Grid>
+                    </Grid>
+                  );
+              }
+            )}
+            {/* Redirect uri */}
+            {renderUris('redirectUris', 'violet')}
+            {/* Post logout uri */}
+            {renderUris('postLogoutRedirectUris', 'green')}
+          </>
+        </SectionWrapper>
+        <SectionWrapper
+          title={t('pages.oAuthClient.sections.secrets.title')}
+          element={
+            <LoadingButton
+              id={`create-secret-${id}`}
+              onClick={handleCreateSecret}
+              startIcon={<Add />}
+              variant="dark"
+              content={t('pages.oAuthClient.sections.secrets.create')}
             />
-          </SectionWrapper>
-        </>
-      </DetailPage>
+          }
+        >
+          <Box mt={2}>
+            <Table
+              id="oauth-client-secrets-list"
+              items={secrets}
+              action
+              columns={[]}
+              withPagination={false}
+              withHeader={false}
+              renderItem={(secret: OAuthSecret, index: number) => (
+                <Row
+                  key={index}
+                  keys={[
+                    <Secret lastDigits={secret.lastDigits} key={index} />,
+                    <Box component="span" key={index}>
+                      {secret.clear && (
+                        <Alert
+                          key={index}
+                          severity="info"
+                          sx={{
+                            backgroundColor: 'transparent',
+                            border: '0 !important',
+                            '.MuiAlert-message': {
+                              ...typography.body1,
+                            },
+                          }}
+                        >
+                          <Box component="span" sx={{ display: 'block' }}>
+                            {t('pages.oAuthClient.sections.secrets.clear')}
+                          </Box>
+                          <Secret
+                            key={index}
+                            lastDigits="13cd"
+                            value={secret.clear || ''}
+                            color="blue"
+                            tooltipMessage={t('common.tooltip.copied')}
+                          />
+                        </Alert>
+                      )}
+                    </Box>,
+                  ]}
+                  item={secret}
+                  renderActions={() => renderRowActions(secret)}
+                />
+              )}
+            />
+          </Box>
+        </SectionWrapper>
+        <SectionWrapper
+          title={t('pages.oAuthClient.sections.dangerZone.title')}
+        >
+          <ActionZone
+            actions={[
+              {
+                key: 'delete-oAuthClient',
+                title: t('pages.oAuthClient.sections.dangerZone.delete.title'),
+                description: t(
+                  'pages.oAuthClient.sections.dangerZone.delete.description'
+                ),
+                button: (
+                  <Modal
+                    button={{
+                      id: `delete-${oAuthClient.id}`,
+                      startIcon: <Delete />,
+                      content: t('common.buttons.delete'),
+                      variant: 'error',
+                    }}
+                    modal={{
+                      id: `delete-${oAuthClient.id}-modal`,
+                      PaperProps: { sx: { minWidth: '500px' } },
+                      title: t('common.dialog.deleteTitle'),
+                      actions: {
+                        save: {
+                          variant: 'error',
+                          label: t('common.dialog.confirmButton'),
+                          onClick: () => onDeleteClient(oAuthClient.id),
+                        },
+                      },
+                    }}
+                  >
+                    <Typography>
+                      <Trans
+                        i18nKey="common.dialog.messages.confirmDelete"
+                        values={{ item: oAuthClient.name }}
+                        components={{ bold: <strong /> }}
+                      />
+                    </Typography>
+                  </Modal>
+                ),
+              },
+            ]}
+          />
+        </SectionWrapper>
+      </>
     </Page>
   );
 }

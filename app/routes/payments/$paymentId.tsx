@@ -117,7 +117,7 @@ const boxWithCopyToClipboard = (
       <Tooltip open={open} onClose={handleClose} title={tooltipTitle}>
         <Box component="span">
           <LoadingButton
-            id="copyToCliboardWrapper"
+            id="copyToClipboardWrapper"
             variant="transparent"
             sx={{
               minWidth: 0,

@@ -45,7 +45,6 @@ import {
 
 // TODo improve
 const Search: FunctionComponent = () => {
-  const [open, _handleOpen, handleClose] = useOpen();
   const [loading, load, stopLoading] = useOpen();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -67,7 +66,6 @@ const Search: FunctionComponent = () => {
     if (e.keyCode === 27) {
       setSuggestions(undefined);
       setValue(undefined);
-      handleClose();
     }
     if (value.length > 2) {
       if (e.keyCode === 13) {
@@ -83,9 +81,10 @@ const Search: FunctionComponent = () => {
     }
   };
 
-  const handleTargetChange = (target: SearchTarget) => {
+  const handleTargetChange = (target: SearchTarget, close: () => void) => {
     setTarget(target);
     setSuggestions(undefined);
+    close();
   };
 
   useEffect(() => {
@@ -148,9 +147,13 @@ const Search: FunctionComponent = () => {
     })();
   }, [value, target]);
 
-  const handleViewAll = (target: SearchTargets, value: string) => {
+  const handleViewAll = (
+    target: SearchTargets,
+    value: string,
+    close: () => void
+  ) => {
     const params = `?terms=${value}&target=${target}&size=15`;
-    handleClose();
+    close();
     switch (target) {
       case SearchTargets.ACCOUNT:
         return navigate(`${getRoute(ACCOUNTS_ROUTE)}${params}`);
@@ -163,8 +166,12 @@ const Search: FunctionComponent = () => {
     }
   };
 
-  const handleOnClick = (item: SuggestionItem, target: SearchTarget) => {
-    handleClose();
+  const handleOnClick = (
+    item: SuggestionItem,
+    target: SearchTarget,
+    close: () => void
+  ) => {
+    close();
     switch (target) {
       case SearchTargets.ACCOUNT:
         return navigate(
@@ -182,7 +189,7 @@ const Search: FunctionComponent = () => {
   };
 
   // TODO improve with target factory instead of multiple conditions
-  const renderChildren = (value: string) => {
+  const renderChildren = (value: string, close: () => void) => {
     const noResults =
       get(
         suggestions,
@@ -195,9 +202,12 @@ const Search: FunctionComponent = () => {
         sx={{
           overflowY: 'auto',
           display: 'flex',
-          width: 800,
+          width: 700,
           mt: 2,
-          borderRadius: '4px',
+          ml: '-2px',
+          borderRadius: '6px',
+          zIndex: (theme) => theme.zIndex.drawer + 2,
+          position: 'absolute',
         }}
       >
         {/* Left block */}
@@ -207,35 +217,52 @@ const Search: FunctionComponent = () => {
             width: 60,
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: ({ palette }) => palette.neutral[50],
-            borderRight: ({ palette }) => `1px solid ${palette.neutral[200]}`,
+            backgroundColor: ({ palette }) => palette.neutral[700],
+            borderRight: ({ palette }) => `1px solid ${palette.neutral[600]}`,
           }}
         >
           {/* Target nav goes here*/}
           <LoadingButton
             id="ledgers"
-            variant={target === SearchTargets.LEDGER ? 'dark' : 'stroke'}
+            variant={target === SearchTargets.LEDGER ? 'light' : 'dark'}
             startIcon={<AccountBalance />}
             sx={{ width: 50, marginTop: 2 }}
-            onClick={() => handleTargetChange(SearchTargets.LEDGER)}
+            onClick={() => handleTargetChange(SearchTargets.LEDGER, close)}
           />
           <LoadingButton
             id="payments"
-            variant={target === SearchTargets.PAYMENT ? 'dark' : 'stroke'}
+            variant={target === SearchTargets.PAYMENT ? 'light' : 'dark'}
             startIcon={<CreditCard />}
             sx={{ width: 50, marginTop: 2 }}
-            onClick={() => handleTargetChange(SearchTargets.PAYMENT)}
+            onClick={() => handleTargetChange(SearchTargets.PAYMENT, close)}
           />
           {/* TODO add more such as report, reco, webhook...and so many more :D*/}
         </Box>
         {/* Right block */}
         <Box
           sx={{
-            backgroundColor: ({ palette }) => palette.neutral[0],
-            width: 800,
+            backgroundColor: ({ palette }) => palette.neutral[800],
+            width: 700,
             height: 400,
             p: 2,
             overflowY: 'auto',
+            scrollbarColor: 'dark',
+            /* width */
+            '::-webkit-scrollbar': {
+              width: '10px',
+            },
+            /* Track */
+            '::-webkit-scrollbar-track': {
+              background: ({ palette }) => palette.neutral[800],
+            },
+            /* Handle */
+            '::-webkit-scrollbar-thumb': {
+              background: ({ palette }) => palette.neutral[800],
+            },
+            /* Handle on hover */
+            '::-webkit-scrollbar-thumb:hover': {
+              background: ({ palette }) => palette.neutral[600],
+            },
           }}
         >
           <Typography variant="bold">
@@ -251,6 +278,7 @@ const Search: FunctionComponent = () => {
               <EmptyState
                 description={t('common.noResults')}
                 title=""
+                variant="dark"
                 sx={{ border: 0 }}
               />
             </Box>
@@ -269,17 +297,19 @@ const Search: FunctionComponent = () => {
                   {renderSuggestion(
                     get(suggestions, 'accounts'),
                     SearchTargets.ACCOUNT,
-                    value
+                    value,
+                    close
                   )}
                   {renderSuggestion(
                     get(suggestions, 'transactions'),
                     SearchTargets.TRANSACTION,
-                    value
+                    value,
+                    close
                   )}
                 </>
               )}
               {target !== SearchTargets.LEDGER && (
-                <>{renderSuggestion(suggestions, target, value)}</>
+                <>{renderSuggestion(suggestions, target, value, close)}</>
               )}
             </>
           )}
@@ -289,19 +319,24 @@ const Search: FunctionComponent = () => {
   };
 
   //todo type
-  const renderSuggestion = (data: any, target: SearchTarget, value: string) => (
+  const renderSuggestion = (
+    data: any,
+    target: SearchTarget,
+    value: string,
+    close: () => void
+  ) => (
     <Box mt={3}>
       {data.items.map((item: any, index: number) => (
         <Grid
           container
           key={index}
-          onClick={() => handleOnClick(item, target)}
+          onClick={() => handleOnClick(item, target, close)}
           p={1}
           sx={{
             cursor: 'pointer',
             ':hover': {
-              background: ({ palette }) => palette.neutral[50],
-              borderRadius: '4px',
+              background: ({ palette }) => palette.neutral[700],
+              borderRadius: '6px',
             },
           }}
         >
@@ -311,7 +346,7 @@ const Search: FunctionComponent = () => {
             ) : (
               <Chip
                 label={data.targetLabel}
-                color={target === SearchTargets.ACCOUNT ? 'default' : 'blue'}
+                color={target === SearchTargets.ACCOUNT ? 'blue' : 'green'}
                 variant="square"
               />
             )}
@@ -331,6 +366,7 @@ const Search: FunctionComponent = () => {
               <Chip
                 label={item.ledger}
                 variant="square"
+                color="brown"
                 icon={<AccountBalance fontSize="small" />}
                 sx={{
                   '& .MuiChipIcon': ({ palette }) => palette.neutral[300],
@@ -354,11 +390,11 @@ const Search: FunctionComponent = () => {
       {data.viewAll && (
         <Box display="flex" justifyContent="center" mt={2} mb={4}>
           <LoadingButton
-            variant="stroke"
+            variant="dark"
             content={`${t('common.search.viewAll', {
               target: target.toLowerCase(),
             })}s`}
-            onClick={() => handleViewAll(target, value)}
+            onClick={() => handleViewAll(target, value, close)}
           />
         </Box>
       )}
@@ -367,16 +403,14 @@ const Search: FunctionComponent = () => {
 
   return (
     <SbSearch
-      open={open}
       placeholder={t('common.search.placeholder')}
       name="terms"
       required={true}
       onKeyDown={handleOnKeyDown}
       onChange={handleOnChange}
-      onClose={handleClose}
-      renderChildren={(value) => {
+      renderChildren={(value: string, close: () => void) => {
         if (value) {
-          return renderChildren(value);
+          return renderChildren(value, close);
         }
 
         return <></>;

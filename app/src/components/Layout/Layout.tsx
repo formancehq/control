@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect } from 'react';
 
-import { ArrowDropDown, Menu, Person } from '@mui/icons-material';
+import { ArrowDropDown, NavigateBefore, Person } from '@mui/icons-material';
 import {
   AppBar,
   Avatar,
@@ -35,8 +35,6 @@ import LinkWrapper from '~/src/components/Wrappers/LinkWrapper';
 import { useService } from '~/src/hooks/useService';
 import { CurrentUser } from '~/src/utils/api';
 
-const drawerWidth = 250;
-
 interface Props {
   /**
    * Injected by the documentation to work in an iframe.
@@ -47,7 +45,7 @@ interface Props {
 
 function ResponsiveDrawer(props: Props) {
   const { t } = useTranslation();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [showMiniDrawer, setShowMiniDrawer] = React.useState(false);
   const location = useLocation();
   const { palette } = useTheme();
   const { api, setCurrentUser, currentUser, metas } = useService();
@@ -60,6 +58,8 @@ function ResponsiveDrawer(props: Props) {
     null
   );
   const settings = [t('topbar.logout')];
+  const drawerWidth = showMiniDrawer ? 80 : 250;
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -98,15 +98,24 @@ function ResponsiveDrawer(props: Props) {
       await getCurrentUser();
     })();
   }, []);
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+
+  const handleMiniDrawer = () => {
+    setShowMiniDrawer(!showMiniDrawer);
   };
 
   const drawer = (
-    <Box mt={10}>
+    <Box mt={12}>
+      <Box sx={{ float: 'right', mt: '-30px' }}>
+        <LoadingButton
+          startIcon={<NavigateBefore />}
+          variant="transparent"
+          onClick={handleMiniDrawer}
+        />
+      </Box>
+
       {routerConfig.map(({ label: groupLabel, children }, index) => (
         <React.Fragment key={index}>
-          {groupLabel && (
+          {groupLabel && !showMiniDrawer && (
             <Box mt={index === 1 ? 1 : 3} p={1} ml={3}>
               <Typography
                 variant="caption"
@@ -124,6 +133,20 @@ function ResponsiveDrawer(props: Props) {
             const selected = isArray(path)
               ? path.includes(location.pathname)
               : path === location.pathname;
+            const buttonSx = {
+              width: showMiniDrawer ? 'auto' : 200,
+              m: '4px 0 4px 0',
+              p: '10px 10px 10px 14px',
+              color: palette.blue.darker,
+              display: 'flex',
+              borderRadius: '6px',
+              justifyContent: 'start',
+              textTransform: 'none',
+              ':hover': {
+                p: '10px 10px 10px 14px',
+                color: palette.blue.darker,
+              },
+            };
 
             return (
               <Box
@@ -132,7 +155,7 @@ function ResponsiveDrawer(props: Props) {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginLeft: '24px',
+                  marginLeft: showMiniDrawer ? '12px' : '24px',
                 }}
               >
                 <LinkWrapper
@@ -141,25 +164,13 @@ function ResponsiveDrawer(props: Props) {
                   key={id}
                   color="inherit"
                 >
-                  <Button
-                    sx={{
-                      width: 200,
-                      m: '4px 0 4px 0',
-                      p: '10px 10px 10px 14px',
-                      color: palette.blue.darker,
-                      display: 'flex',
-                      borderRadius: '6px',
-                      justifyContent: 'start',
-                      textTransform: 'none',
-                      ':hover': {
-                        p: '10px 10px 10px 14px',
-                        color: palette.blue.darker,
-                      },
-                    }}
-                    startIcon={icon}
-                  >
-                    {t(label)}
-                  </Button>
+                  {!showMiniDrawer ? (
+                    <Button sx={buttonSx} startIcon={icon}>
+                      {t(label)}
+                    </Button>
+                  ) : (
+                    <IconButton sx={buttonSx}>{icon}</IconButton>
+                  )}
                 </LinkWrapper>
                 {selected && (
                   <Box
@@ -224,12 +235,6 @@ function ResponsiveDrawer(props: Props) {
             alignItems="center"
             alignSelf="center"
           >
-            <LoadingButton
-              startIcon={<Menu />}
-              onClick={handleDrawerToggle}
-              variant="transparent"
-              sx={{ mr: 2, display: 'none' }}
-            />
             <Box ml={2}>
               <Search />
             </Box>
@@ -317,27 +322,28 @@ function ResponsiveDrawer(props: Props) {
         <Drawer
           container={container}
           variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
+          open={showMiniDrawer}
+          onClose={handleMiniDrawer}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
             ...muiDrawerStyle,
           }}
         >
           {drawer}
         </Drawer>
-
-        {/* desktop */}
         <Drawer
-          variant="permanent"
+          container={container}
+          variant="temporary"
+          open={!showMiniDrawer}
+          onClose={handleMiniDrawer}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
           sx={{
-            display: { xs: 'none', sm: 'block' },
             ...muiDrawerStyle,
           }}
-          open
         >
           {drawer}
         </Drawer>
