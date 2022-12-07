@@ -114,7 +114,6 @@ const renderError = (
       justifyContent="space-evenly"
       sx={{
         width: '100%',
-        height: '100%',
         background: ({ palette }) => palette.neutral[0],
       }}
     >
@@ -273,7 +272,6 @@ export default function App() {
         <Box
           sx={{
             display: 'flex',
-            height: '100%',
             justifyContent: 'center',
             alignItems: 'center',
             background: theme.palette.neutral[0],

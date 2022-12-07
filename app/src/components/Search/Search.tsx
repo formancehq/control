@@ -241,7 +241,7 @@ const Search: FunctionComponent = () => {
         {/* Right block */}
         <Box
           sx={{
-            backgroundColor: ({ palette }) => palette.neutral[800],
+            backgroundColor: ({ palette }) => palette.neutral[0],
             width: 700,
             height: 400,
             p: 2,
@@ -253,15 +253,15 @@ const Search: FunctionComponent = () => {
             },
             /* Track */
             '::-webkit-scrollbar-track': {
-              background: ({ palette }) => palette.neutral[800],
+              background: ({ palette }) => palette.neutral[200],
             },
             /* Handle */
             '::-webkit-scrollbar-thumb': {
-              background: ({ palette }) => palette.neutral[800],
+              background: ({ palette }) => palette.neutral[200],
             },
             /* Handle on hover */
             '::-webkit-scrollbar-thumb:hover': {
-              background: ({ palette }) => palette.neutral[600],
+              background: ({ palette }) => palette.neutral[700],
             },
           }}
         >
@@ -335,7 +335,7 @@ const Search: FunctionComponent = () => {
           sx={{
             cursor: 'pointer',
             ':hover': {
-              background: ({ palette }) => palette.neutral[700],
+              background: ({ palette }) => palette.neutral[50],
               borderRadius: '6px',
             },
           }}
@@ -390,7 +390,7 @@ const Search: FunctionComponent = () => {
       {data.viewAll && (
         <Box display="flex" justifyContent="center" mt={2} mb={4}>
           <LoadingButton
-            variant="dark"
+            variant="stroke"
             content={`${t('common.search.viewAll', {
               target: target.toLowerCase(),
             })}s`}
