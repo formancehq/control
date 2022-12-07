@@ -146,150 +146,135 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
 
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: ({ palette }) => palette.neutral[0],
-          borderRadius: '6px',
-        }}
-      >
-        <Box>
-          <Page id={overview.id}>
-            <>
-              {currentUser && currentUser.pseudo && (
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
+      <Page id={overview.id}>
+        <>
+          {currentUser && currentUser.pseudo && (
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box display="flex" alignItems="center">
+                <Avatar
+                  sx={{
+                    backgroundColor: ({ palette }) => palette.neutral[800],
+                    width: 52,
+                    height: 52,
+                    borderRadius: '4px',
+                  }}
                 >
-                  <Box display="flex" alignItems="center">
-                    <Avatar
-                      sx={{
-                        backgroundColor: ({ palette }) => palette.neutral[800],
-                        width: 52,
-                        height: 52,
-                        borderRadius: '4px',
-                      }}
-                    >
-                      <Person fontSize="large" />
-                    </Avatar>
-                    <Box display="flex-column" p={2} alignItems="center">
-                      <Typography variant="headline">
-                        {`${t('pages.overview.hello')} ${
-                          currentUser.pseudo
-                        } 👋`}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ color: ({ palette }) => palette.neutral[400] }}
-                      >
-                        {t('pages.overview.subtitle')}
-                      </Typography>
-                    </Box>
-                  </Box>
+                  <Person fontSize="large" />
+                </Avatar>
+                <Box display="flex-column" p={2} alignItems="center">
+                  <Typography variant="headline">
+                    {`${t('pages.overview.hello')} ${currentUser.pseudo} 👋`}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ color: ({ palette }) => palette.neutral[400] }}
+                  >
+                    {t('pages.overview.subtitle')}
+                  </Typography>
                 </Box>
+              </Box>
+            </Box>
+          )}
+          {/*  STATUS */}
+          <Box mt={5}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                '& .MuiBox-root': {
+                  marginBottom: '0px',
+                },
+              }}
+            >
+              <TitleWithBar title={t('pages.overview.status')} />
+              {ledgers.length > 1 && (
+                <FiltersBar>
+                  <LedgerList />
+                </FiltersBar>
               )}
-              {/*  STATUS */}
-              <Box mt={5}>
+            </Box>
+
+            <Box
+              mt={3}
+              display="flex"
+              flexWrap="wrap"
+              data-testid="stats-card"
+              justifyContent="flex-start"
+              gap="26px"
+            >
+              {loading && (
                 <Box
                   sx={{
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    '& .MuiBox-root': {
-                      marginBottom: '0px',
-                    },
+                    width: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '276px',
                   }}
                 >
-                  <TitleWithBar title={t('pages.overview.status')} />
-                  {ledgers.length > 1 && (
-                    <FiltersBar>
-                      <LedgerList />
-                    </FiltersBar>
-                  )}
+                  <CircularProgress size={30} color="secondary" />
                 </Box>
+              )}
 
-                <Box
-                  mt={3}
-                  display="flex"
-                  flexWrap="wrap"
-                  data-testid="stats-card"
-                  justifyContent="flex-start"
-                  gap="26px"
-                >
-                  {loading && (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        width: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '276px',
-                      }}
-                    >
-                      <CircularProgress size={30} color="secondary" />
-                    </Box>
-                  )}
+              {/* TODO Add Transition Between loading state and empty/not empty state */}
 
-                  {/* TODO Add Transition Between loading state and empty/not empty state */}
-
-                  {loadingTransition((props, ledgersLength) =>
-                    ledgersLength > 0 ? (
-                      stats
-                        .filter((currentLedger: Ledger): Ledger[] | boolean =>
-                          urlParamsLedgers.length === 0
-                            ? true
-                            : urlParamsLedgers.includes(currentLedger.slug)
-                        )
-                        .map((ledger: Ledger, index: number) => (
-                          <animated.div key={index} style={props}>
-                            <Box>
-                              <StatsCard
-                                key={index}
-                                icon={<AccountBalance />}
-                                variant={ledger.color as any}
-                                title1={t('pages.overview.stats.transactions')}
-                                title2={t('pages.overview.stats.accounts')}
-                                chipValue={ledger.slug}
-                                value1={`${get(
-                                  ledger,
-                                  'stats.transactions',
-                                  '0'
-                                )}`}
-                                value2={`${get(ledger, 'stats.accounts', '0')}`}
-                              />
-                            </Box>
-                          </animated.div>
-                        ))
-                    ) : (
-                      <animated.div style={props}>
-                        <Box
-                          mr={3}
-                          onClick={() => navigate(CONNECTORS_ROUTE)}
-                          sx={{
-                            ':hover': {
-                              opacity: 0.3,
-                              cursor: 'pointer',
-                            },
-                          }}
-                        >
+              {loadingTransition((props, ledgersLength) =>
+                ledgersLength > 0 ? (
+                  stats
+                    .filter((currentLedger: Ledger): Ledger[] | boolean =>
+                      urlParamsLedgers.length === 0
+                        ? true
+                        : urlParamsLedgers.includes(currentLedger.slug)
+                    )
+                    .map((ledger: Ledger, index: number) => (
+                      <animated.div key={index} style={props}>
+                        <Box>
                           <StatsCard
+                            key={index}
                             icon={<AccountBalance />}
-                            variant="violet"
+                            variant={ledger.color as any}
                             title1={t('pages.overview.stats.transactions')}
                             title2={t('pages.overview.stats.accounts')}
-                            chipValue="get-started"
-                            value1="0"
-                            value2="0"
+                            chipValue={ledger.slug}
+                            value1={`${get(ledger, 'stats.transactions', '0')}`}
+                            value2={`${get(ledger, 'stats.accounts', '0')}`}
                           />
                         </Box>
                       </animated.div>
-                    )
-                  )}
-                </Box>
-              </Box>
-            </>
-          </Page>
-        </Box>
-      </Box>
+                    ))
+                ) : (
+                  <animated.div style={props}>
+                    <Box
+                      mr={3}
+                      onClick={() => navigate(CONNECTORS_ROUTE)}
+                      sx={{
+                        ':hover': {
+                          opacity: 0.3,
+                          cursor: 'pointer',
+                        },
+                      }}
+                    >
+                      <StatsCard
+                        icon={<AccountBalance />}
+                        variant="violet"
+                        title1={t('pages.overview.stats.transactions')}
+                        title2={t('pages.overview.stats.accounts')}
+                        chipValue="get-started"
+                        value1="0"
+                        value2="0"
+                      />
+                    </Box>
+                  </animated.div>
+                )
+              )}
+            </Box>
+          </Box>
+        </>
+      </Page>
 
       {/* TASKS */}
       <Page

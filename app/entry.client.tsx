@@ -46,6 +46,7 @@ hydrateRoot(
               backgroundColor: '#FFF',
               margin: 0,
               padding: 0,
+              height: '100%',
             },
           }}
         />
