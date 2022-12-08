@@ -272,8 +272,7 @@ export default function Index() {
                         save: {
                           variant: 'error',
                           label: t('common.dialog.confirmButton'),
-                          onClick: () =>
-                            onDelete(webhook.id, webhook.endpoint),
+                          onClick: () => onDelete(webhook.id, webhook.endpoint),
                         },
                       },
                     }}
