@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from 'react';
 
 import { Add } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { get, pickBy, toInteger } from 'lodash';
+import { get, isEmpty, pickBy, toInteger } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -71,17 +71,19 @@ export const CreateForm: FunctionComponent = () => {
     const config = get(connectorsConfig, connectorKey);
     const values = getValues(connectorKey);
     Object.keys(values).map((key) => {
-      const currentKey = get(config, key);
-      if (currentKey) {
-        switch (currentKey.datatype) {
-          case FormTypes.DURATION:
-            values[key] = `${values[key]}s`;
-            break;
-          case FormTypes.INTEGER:
-            values[key] = toInteger(values[key]);
-            break;
-          default:
-            break;
+      if (!isEmpty(values[key])) {
+        const currentKey = get(config, key);
+        if (currentKey) {
+          switch (currentKey.datatype) {
+            case FormTypes.DURATION:
+              values[key] = `${values[key]}s`;
+              break;
+            case FormTypes.INTEGER:
+              values[key] = toInteger(values[key]);
+              break;
+            default:
+              break;
+          }
         }
       }
     });
