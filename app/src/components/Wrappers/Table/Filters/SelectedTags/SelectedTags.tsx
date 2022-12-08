@@ -1,17 +1,17 @@
-import * as React from "react";
-import { FunctionComponent } from "react";
+import * as React from 'react';
+import { FunctionComponent } from 'react';
 
-import { Box } from "@mui/material";
-import { useSearchParams } from "@remix-run/react";
-import { first } from "lodash";
-import { URLSearchParamsInit } from "react-router-dom";
+import { Box } from '@mui/material';
+import { useSearchParams } from '@remix-run/react';
+import { first } from 'lodash';
+import { URLSearchParamsInit } from 'react-router-dom';
 
-import { Chip } from "@numaryhq/storybook";
+import { Chip } from '@numaryhq/storybook';
 
-import { Filters, getFieldValue } from "../filters";
+import { Filters, getFieldValue } from '../filters';
 
-import { SelectedTagsProps } from "~/src/components/Wrappers/Table/Filters/SelectedTags/types";
-import { buildQuery } from "~/src/utils/search";
+import { SelectedTagsProps } from '~/src/components/Wrappers/Table/Filters/SelectedTags/types';
+import { buildQuery } from '~/src/utils/search';
 
 const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
   name,
@@ -20,7 +20,7 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const all = searchParams.getAll(name);
   const chips = all.filter((item) =>
-    name === Filters.TERMS ? first(item.split("=")) === field : item
+    name === Filters.TERMS ? first(item.split('=')) === field : item
   );
   const onDelete = (item: string) => {
     const query = buildQuery(searchParams) as any;

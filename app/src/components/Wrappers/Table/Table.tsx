@@ -1,17 +1,17 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { Box } from "@mui/material";
-import { useSearchParams } from "@remix-run/react";
-import { omit } from "lodash";
-import { useTranslation } from "react-i18next";
+import { Box } from '@mui/material';
+import { useSearchParams } from '@remix-run/react';
+import { omit } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
-import { Table as SbTable } from "@numaryhq/storybook";
+import { Table as SbTable } from '@numaryhq/storybook';
 
-import SelectedTags from "~/src/components/Wrappers/Table/Filters/SelectedTags/SelectedTags";
-import { TableProps } from "~/src/components/Wrappers/Table/types";
-import { useTableFilters } from "~/src/hooks/useTableFilters";
-import { TableConfig } from "~/src/types/generic";
-import { buildQuery } from "~/src/utils/search";
+import SelectedTags from '~/src/components/Wrappers/Table/Filters/SelectedTags/SelectedTags';
+import { TableProps } from '~/src/components/Wrappers/Table/types';
+import { useTableFilters } from '~/src/hooks/useTableFilters';
+import { TableConfig } from '~/src/types/generic';
+import { buildQuery } from '~/src/utils/search';
 
 const Table: FunctionComponent<TableProps> = ({
   action = false,
@@ -21,7 +21,7 @@ const Table: FunctionComponent<TableProps> = ({
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { filters } = useTableFilters();
-  const all = searchParams.getAll("sort");
+  const all = searchParams.getAll('sort');
   const columnsSortedConfig = [
     ...columns.map((column) => {
       const found = all.find(
@@ -29,10 +29,10 @@ const Table: FunctionComponent<TableProps> = ({
       );
 
       return {
-        ...omit(column, ["sort"]),
+        ...omit(column, ['sort']),
         sort: column.sort
           ? {
-              onSort: (key: string, order: "desc" | "asc") => {
+              onSort: (key: string, order: 'desc' | 'asc') => {
                 const query = buildQuery(searchParams) as any;
 
                 if (query.sort) {
@@ -45,7 +45,7 @@ const Table: FunctionComponent<TableProps> = ({
                 }
                 setSearchParams(query);
               },
-              order: found ? found.split(":")[1] : ("desc" as any),
+              order: found ? found.split(':')[1] : ('desc' as any),
             }
           : undefined,
       };
@@ -56,20 +56,20 @@ const Table: FunctionComponent<TableProps> = ({
         ...columnsSortedConfig,
         {
           key: TableConfig.ACTIONS,
-          label: t("common.table.actionColumnLabel"),
+          label: t('common.table.actionColumnLabel'),
         },
       ]
     : columnsSortedConfig;
   const onNext = (next: string) => {
     setSearchParams({
-      target: searchParams.get("target") as string,
+      target: searchParams.get('target') as string,
       cursor: next,
     });
   };
 
   const onPrevious = (previous: string) => {
     setSearchParams({
-      target: searchParams.get("target") as string,
+      target: searchParams.get('target') as string,
       cursor: previous,
     });
   };
@@ -97,11 +97,11 @@ const Table: FunctionComponent<TableProps> = ({
       {...props}
       labels={{
         pagination: {
-          showing: t("common.table.pagination.showing"),
-          separator: t("common.table.pagination.separator"),
-          results: t("common.table.pagination.results"),
+          showing: t('common.table.pagination.showing'),
+          separator: t('common.table.pagination.separator'),
+          results: t('common.table.pagination.results'),
         },
-        noResults: t("common.noResults"),
+        noResults: t('common.noResults'),
       }}
       onNext={onNext}
       onPrevious={onPrevious}
