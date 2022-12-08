@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { FunctionComponent, useEffect } from 'react';
+import * as React from "react";
+import { FunctionComponent, useEffect } from "react";
 
-import { ArrowDropDown, Person } from '@mui/icons-material';
+import { ArrowDropDown, Person } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -10,12 +10,12 @@ import {
   MenuItem,
   Typography,
   useTheme,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
 
-import Search from '~/src/components/Search';
-import { useService } from '~/src/hooks/useService';
-import { CurrentUser } from '~/src/utils/api';
+import Search from "~/src/components/Search";
+import { useService } from "~/src/hooks/useService";
+import { CurrentUser } from "~/src/utils/api";
 
 const Topbar: FunctionComponent = () => {
   const { palette } = useTheme();
@@ -24,7 +24,7 @@ const Topbar: FunctionComponent = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-  const settings = [t('topbar.logout')];
+  const settings = [t("topbar.logout")];
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -42,20 +42,20 @@ const Topbar: FunctionComponent = () => {
   const getCurrentUser = async () => {
     try {
       const user = await api.getResource<CurrentUser>(
-        `${metas.openIdConfig.userinfo_endpoint.split('api')[1]}`
+        `${metas.openIdConfig.userinfo_endpoint.split("api")[1]}`
       );
       if (user) {
         const pseudo =
-          user && user.email ? user.email.split('@')[0] : undefined;
+          user && user.email ? user.email.split("@")[0] : undefined;
 
         setCurrentUser({
           ...user,
-          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
+          avatarLetter: pseudo ? pseudo.split("")[0].toUpperCase() : undefined,
           pseudo,
         });
       }
     } catch (e) {
-      console.info('Current user could not be retrieved');
+      console.info("Current user could not be retrieved");
     }
   };
 
@@ -68,17 +68,17 @@ const Topbar: FunctionComponent = () => {
   return (
     <Box
       sx={{
-        minHeight: '40px',
-        position: 'fixed',
-        width: '100%',
-        p: '8px 0 8px 0',
-        borderRadius: '0 !important',
+        minHeight: "40px",
+        position: "fixed",
+        width: "100%",
+        p: "8px 0 8px 0",
+        borderRadius: "0 !important",
         background: palette.neutral[800],
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignSelf: 'center',
-        alignItems: 'center',
+        display: "flex",
+        justifyContent: "space-between",
+        alignSelf: "center",
+        alignItems: "center",
       }}
       id="topbar"
     >
@@ -93,8 +93,8 @@ const Topbar: FunctionComponent = () => {
               sx={{
                 width: 24,
                 height: 24,
-                padding: '1px',
-                borderRadius: '4px',
+                padding: "1px",
+                borderRadius: "4px",
                 bgcolor: palette.red.bright,
               }}
             >
@@ -112,9 +112,9 @@ const Topbar: FunctionComponent = () => {
           </IconButton>
           <MuiMenu
             sx={{
-              mt: '45px',
+              mt: "45px",
               ul: {
-                padding: '6px',
+                padding: "6px",
                 margin: 0,
                 background: palette.neutral[800],
                 color: palette.neutral[0],
@@ -122,19 +122,19 @@ const Topbar: FunctionComponent = () => {
             }}
             PaperProps={{
               sx: {
-                boxShadow: 'none',
+                boxShadow: "none",
               },
             }}
             id="menu-appbar"
             anchorEl={anchorElUser}
             anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             keepMounted
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
@@ -144,7 +144,7 @@ const Topbar: FunctionComponent = () => {
                 key={setting}
                 onClick={handleLogout}
                 sx={{
-                  ':hover': {
+                  ":hover": {
                     background: palette.neutral[700],
                   },
                 }}

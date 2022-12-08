@@ -1,26 +1,26 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { Box } from '@mui/material';
-import type { MetaFunction } from '@remix-run/node';
-import { Outlet, useLocation, useNavigate } from '@remix-run/react';
-import { useTranslation } from 'react-i18next';
+import { Box } from "@mui/material";
+import type { MetaFunction } from "@remix-run/node";
+import { Outlet, useLocation, useNavigate } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 
-import { Page, Tabs } from '@numaryhq/storybook';
+import { Page, Tabs } from "@numaryhq/storybook";
 
-import { CreateForm as AppForm } from '~/routes/connectors/apps/CreateForm';
-import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients/CreateForm';
-import { CreateForm as WebhookForm } from '~/routes/connectors/webhooks/CreateForm';
+import { CreateForm as AppForm } from "~/routes/connectors/apps/CreateForm";
+import { CreateForm as OAuthClientForm } from "~/routes/connectors/oauth-clients/CreateForm";
+import { CreateForm as WebhookForm } from "~/routes/connectors/webhooks/CreateForm";
 import {
   APPS_ROUTE,
   connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
   WEBHOOKS_ROUTE,
-} from '~/src/components/Navbar/routes';
-import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+} from "~/src/components/Navbar/routes";
+import ComponentErrorBoundary from "~/src/components/Wrappers/ComponentErrorBoundary";
 
 export const meta: MetaFunction = () => ({
-  title: 'Connectors',
-  description: 'Connectors',
+  title: "Connectors",
+  description: "Connectors",
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -42,24 +42,24 @@ export default function Index() {
 
   const config = [
     {
-      active: handleActive('apps'),
-      label: t('pages.connectors.tabs.apps.title'),
+      active: handleActive("apps"),
+      label: t("pages.connectors.tabs.apps.title"),
       onClick: () => navigate(APPS_ROUTE),
-      type: 'apps',
+      type: "apps",
       action: <AppForm />,
     },
     {
-      active: handleActive('oauth-clients'),
-      label: t('pages.connectors.tabs.oAuthClients.title'),
+      active: handleActive("oauth-clients"),
+      label: t("pages.connectors.tabs.oAuthClients.title"),
       onClick: () => navigate(OAUTH_CLIENTS_ROUTE),
-      type: 'oAuthClients',
+      type: "oAuthClients",
       action: <OAuthClientForm />,
     },
     {
-      active: handleActive('webhooks'),
-      label: t('pages.connectors.tabs.webhooks.title'),
+      active: handleActive("webhooks"),
+      label: t("pages.connectors.tabs.webhooks.title"),
       onClick: () => navigate(WEBHOOKS_ROUTE),
-      type: 'webhooks',
+      type: "webhooks",
       action: <WebhookForm />,
     },
   ];
