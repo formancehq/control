@@ -395,7 +395,7 @@ export default {
             endpoint: 'Endpoint',
             events: 'Events',
             createdAt: 'Created at',
-            modifiedAt: 'Updated at',
+            updatedAt: 'Updated at',
           },
           dangerZone: {
             title: 'Manage',

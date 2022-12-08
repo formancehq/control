@@ -14,6 +14,7 @@ import { getRoute, WEBHOOK_ROUTE } from '~/src/components/Navbar/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
+import { Webhook } from '~/src/types/webhook';
 import { API_WEBHOOK } from '~/src/utils/api';
 import { validateURL } from '~/src/utils/validators';
 
@@ -71,12 +72,13 @@ export const CreateForm: FunctionComponent = () => {
     if (validated) {
       const formValues = getValues();
       try {
-        const webhook = await api.postResource<string>(
+        const webhook = await api.postResource<Webhook>(
           `${API_WEBHOOK}/configs`,
-          formValues
+          formValues,
+          'data'
         );
         if (webhook) {
-          navigate(getRoute(WEBHOOK_ROUTE, webhook));
+          navigate(getRoute(WEBHOOK_ROUTE, webhook.id));
         }
       } catch {
         snackbar(

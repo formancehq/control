@@ -1,9 +1,9 @@
 export type Webhook = {
-  _id: string;
+  id: string;
   endpoint: string;
   secret: string;
   eventTypes: string[];
   active: boolean;
   createdAt: Date;
-  modifiedAt: Date;
+  updatedAt: Date;
 };
