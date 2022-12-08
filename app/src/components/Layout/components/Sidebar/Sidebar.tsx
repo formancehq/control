@@ -38,6 +38,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         width,
         borderRight: `1px solid ${palette.neutral[200]} !important`,
         background: palette.neutral[100],
+        transition: 'all 0.25s',
       }}
     >
       <Box
@@ -48,7 +49,19 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
           pr: resized ? 0 : 1,
         }}
       >
-        <IconButton sx={{ ...buttonSx, width: 'auto' }} onClick={onResize}>
+        <IconButton
+          sx={{
+            ...buttonSx,
+            width: 'auto',
+            transition: 'all 0.85s',
+            ':hover': {
+              transform: 'rotate(360deg)',
+              transition: 'all 0.85s',
+              background: 'transparent',
+            },
+          }}
+          onClick={onResize}
+        >
           {resized ? <NavigateNext /> : <NavigateBefore />}
         </IconButton>
       </Box>

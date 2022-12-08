@@ -81,10 +81,9 @@ const Search: FunctionComponent = () => {
     }
   };
 
-  const handleTargetChange = (target: SearchTarget, close: () => void) => {
+  const handleTargetChange = (target: SearchTarget) => {
     setTarget(target);
     setSuggestions(undefined);
-    close();
   };
 
   useEffect(() => {
@@ -208,6 +207,8 @@ const Search: FunctionComponent = () => {
           borderRadius: '6px',
           zIndex: (theme) => theme.zIndex.drawer + 2,
           position: 'absolute',
+          border: ({ palette }) => `1px solid ${palette.neutral[100]}`,
+          boxShadow: 'rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset',
         }}
       >
         {/* Left block */}
@@ -227,14 +228,14 @@ const Search: FunctionComponent = () => {
             variant={target === SearchTargets.LEDGER ? 'light' : 'dark'}
             startIcon={<AccountBalance />}
             sx={{ width: 50, marginTop: 2 }}
-            onClick={() => handleTargetChange(SearchTargets.LEDGER, close)}
+            onClick={() => handleTargetChange(SearchTargets.LEDGER)}
           />
           <LoadingButton
             id="payments"
             variant={target === SearchTargets.PAYMENT ? 'light' : 'dark'}
             startIcon={<CreditCard />}
             sx={{ width: 50, marginTop: 2 }}
-            onClick={() => handleTargetChange(SearchTargets.PAYMENT, close)}
+            onClick={() => handleTargetChange(SearchTargets.PAYMENT)}
           />
           {/* TODO add more such as report, reco, webhook...and so many more :D*/}
         </Box>
@@ -278,7 +279,7 @@ const Search: FunctionComponent = () => {
               <EmptyState
                 description={t('common.noResults')}
                 title=""
-                variant="dark"
+                variant="light"
                 sx={{ border: 0 }}
               />
             </Box>
