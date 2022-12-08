@@ -114,6 +114,7 @@ const renderError = (
       justifyContent="space-evenly"
       sx={{
         width: '100%',
+        height: '100%',
         background: ({ palette }) => palette.neutral[0],
       }}
     >
@@ -325,10 +326,11 @@ export function CatchBoundary() {
   const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));
   const message = t(`common.boundaries.errorState.${error}.title`);
   const description = t(`common.boundaries.errorState.${error}.description`);
+  console.log('passe');
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>{renderError(navigate, t, message, description)}</Layout>
+      {renderError(navigate, t, message, description)}
     </Document>
   );
 }

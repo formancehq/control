@@ -1,23 +1,23 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { Box } from "@mui/material";
-import { camelCase, get } from "lodash";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Box } from '@mui/material';
+import { camelCase, get } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-import { ComponentErrorBoundaryProps } from "./types";
+import { ComponentErrorBoundaryProps } from './types';
 
-import { EmptyState, LoadingButton } from "@numaryhq/storybook";
+import { EmptyState, LoadingButton } from '@numaryhq/storybook';
 
-import { getRoute, OVERVIEW_ROUTE } from "~/src/components/Navbar/routes";
-import { Errors } from "~/src/types/generic";
+import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import { Errors } from '~/src/types/generic';
 
 const ComponentErrorBoundary: FunctionComponent<
   ComponentErrorBoundaryProps
-> = ({ id, title: titlePage, error, showAction = true }) => {
+> = ({ error, showAction = true }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const key = get(error, "message", "error");
+  const key = get(error, 'message', 'error');
 
   const actionMap = {
     [Errors.NOT_FOUND]: () => navigate(getRoute(OVERVIEW_ROUTE)),
@@ -28,7 +28,7 @@ const ComponentErrorBoundary: FunctionComponent<
   };
 
   const action = get(actionMap, key, actionMap[Errors.ERROR]);
-  const translation = get(actionMap, key) ? camelCase(key) : "error";
+  const translation = get(actionMap, key) ? camelCase(key) : 'error';
 
   return (
     <Box mt={1}>

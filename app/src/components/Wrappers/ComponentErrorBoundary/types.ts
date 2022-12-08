@@ -1,5 +1,5 @@
 export type ComponentErrorBoundaryProps = {
-  id: string;
+  id?: string;
   title?: string;
   error: Error;
   showAction?: boolean;

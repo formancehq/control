@@ -1,10 +1,10 @@
-import { Errors } from "~/src/types/generic";
+import { Errors } from '~/src/types/generic';
 
-export const API_SEARCH = "/search";
-export const API_LEDGER = "/ledger";
-export const API_PAYMENT = "/payments";
-export const API_AUTH = "/auth";
-export const API_WEBHOOK = "/webhooks";
+export const API_SEARCH = '/search';
+export const API_LEDGER = '/ledger';
+export const API_PAYMENT = '/payments';
+export const API_AUTH = '/auth';
+export const API_WEBHOOK = '/webhooks';
 
 export const errorsMap = {
   404: Errors.NOT_FOUND,
@@ -17,10 +17,10 @@ export const errorsMap = {
 };
 
 export enum Methods {
-  GET = "GET",
-  POST = "POST",
-  PUT = "PUT",
-  DELETE = "DELETE",
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
 }
 
 export interface ApiClient {
@@ -78,11 +78,11 @@ export type JwtPayload = {
 
 export const logger = (stack?: any, from?: string, more?: any) => {
   if (
-    typeof process !== "undefined" &&
-    process.env.NODE_ENV === "development"
+    typeof process !== 'undefined' &&
+    process.env.NODE_ENV === 'development'
   ) {
     const error = {
-      from: from || "utils/api",
+      from: from || 'utils/api',
       stack,
       more,
     };
@@ -104,5 +104,5 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
     return {} as T;
   }
 
-  throw new Error("Response body could not be handled");
+  throw new Error('Response body could not be handled');
 };
