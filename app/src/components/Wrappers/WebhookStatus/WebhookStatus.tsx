@@ -22,7 +22,7 @@ const WebhookStatus: FunctionComponent<WebhookStatusProps> = ({
     const route = webhook.active ? 'deactivate' : 'activate';
     try {
       result = await api.putResource<unknown>(
-        `${API_WEBHOOK}/configs/${webhook._id}/${route}`
+        `${API_WEBHOOK}/configs/${webhook.id}/${route}`
       );
     } catch {
       snackbar(

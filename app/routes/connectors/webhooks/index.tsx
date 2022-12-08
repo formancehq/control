@@ -58,8 +58,8 @@ export default function Index() {
 
   const renderRowActions = (webhook: Webhook) => (
     <LoadingButton
-      id={`show-${webhook._id}`}
-      onClick={() => navigate(getRoute(WEBHOOK_ROUTE, webhook._id))}
+      id={`show-${webhook.id}`}
+      onClick={() => navigate(getRoute(WEBHOOK_ROUTE, webhook.id))}
       endIcon={<ArrowRight />}
       sx={{ float: 'right' }}
     />
@@ -130,7 +130,7 @@ export default function Index() {
                 onChangeCallback={() => {
                   setWebhooks(
                     webhooks.map((wb) => {
-                      if (wb._id === webhook._id) {
+                      if (wb.id === webhook.id) {
                         return {
                           ...wb,
                           active: !wb.active,

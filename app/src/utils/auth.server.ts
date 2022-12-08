@@ -24,7 +24,9 @@ export const parseSessionHolder = (session: Session): Authentication =>
   decrypt<Authentication>(session.get(COOKIE_NAME));
 
 // export the whole sessionStorage object
-const unsecureCookies = process.env.UNSECURE_COOKIES === 'true' || process.env.UNSECURE_COOKIES === '1';
+const unsecureCookies =
+  process.env.UNSECURE_COOKIES === 'true' ||
+  process.env.UNSECURE_COOKIES === '1';
 if (unsecureCookies) {
   console.info('Load session storage with unsecure cookies');
 }
