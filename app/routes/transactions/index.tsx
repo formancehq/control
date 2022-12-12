@@ -37,7 +37,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       {
         ...sanitizeQuery(request),
         target: SearchTargets.TRANSACTION,
-        policy: SearchPolicies.AND,
+        policy: SearchPolicies.OR,
       },
       'cursor'
     );
