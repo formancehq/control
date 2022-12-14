@@ -30,14 +30,15 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
+    const query = sanitizeQuery(request);
     const transactions = await (
       await createApiClient(session)
     ).postResource<Cursor<Transaction>>(
       API_SEARCH,
       {
-        ...sanitizeQuery(request),
+        ...query,
         target: SearchTargets.TRANSACTION,
-        policy: SearchPolicies.AND,
+        policy: query.policy || SearchPolicies.AND,
       },
       'cursor'
     );

@@ -3,6 +3,7 @@ import { FunctionComponent } from 'react';
 
 import { NavigateBefore, NavigateNext } from '@mui/icons-material';
 import { Box, Button, IconButton, Typography, useTheme } from '@mui/material';
+import { useLocation } from '@remix-run/react';
 import { isArray } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -16,6 +17,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   resized,
 }) => {
   const { palette } = useTheme();
+  const location = useLocation();
   const { t } = useTranslation();
   const buttonSx = {
     width: resized ? 'auto' : 200,

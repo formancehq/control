@@ -27,7 +27,7 @@ import {
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction, TransactionHybrid } from '~/src/types/ledger';
-import { SearchTargets } from '~/src/types/search';
+import { SearchPolicies, SearchTargets } from '~/src/types/search';
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
@@ -72,7 +72,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       )}?terms=${`destination=${accountId!}`}&terms=${`source=${accountId!}`}&target=${
         SearchTargets.TRANSACTION
-      }&size=15`
+      }&policy=${SearchPolicies.OR}&size=15`
     );
 
   const renderRowActions = (transaction: TransactionHybrid) => (

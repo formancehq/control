@@ -31,13 +31,16 @@ const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
           if (e.keyCode === 13 && value && !isEmpty(value)) {
             const formattedValue = `${name}=${value}`;
             const query = buildQuery(searchParams) as any;
-            const found = query.terms
-              ? query.terms.find((val: string) => val === formattedValue)
-              : undefined;
-            if (!found) {
+            const regex = `${name}=`;
+            const index = query.terms
+              ? query.terms.findIndex((val: string) => val.match(regex))
+              : -1;
+            if (index === -1) {
               query.terms = query.terms
                 ? [...query.terms, formattedValue]
                 : [formattedValue];
+            } else {
+              query.terms[index] = formattedValue;
             }
             setSearchParams(query as URLSearchParamsInit);
           }
