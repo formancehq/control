@@ -78,7 +78,7 @@ export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
   const uri = `${process.env.API_URL}${API_AUTH}/.well-known/openid-configuration`;
 
   return fetch(uri)
-    .catch((e) => {
+    .catch(() => {
       throw new Error('Error while fetching openid config');
     })
     .then(async (response) => response.json());

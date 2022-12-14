@@ -13,12 +13,10 @@ import {
 import { redirect } from '@remix-run/node';
 import {
   Links,
-  LiveReload,
   Meta,
   NavigateFunction,
   Outlet,
   Scripts,
-  ScrollRestoration,
   useCatch,
   useLoaderData,
 } from '@remix-run/react';
@@ -207,8 +205,8 @@ const Document = withEmotionCache(
         </head>
         <body>
           {children}
-          <ScrollRestoration />
-          <LiveReload />
+          {/*<ScrollRestoration />*/}
+          {/*<LiveReload />*/}
           <Scripts />
         </body>
       </html>
@@ -326,7 +324,6 @@ export function CatchBoundary() {
   const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));
   const message = t(`common.boundaries.errorState.${error}.title`);
   const description = t(`common.boundaries.errorState.${error}.description`);
-  console.log('passe');
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
