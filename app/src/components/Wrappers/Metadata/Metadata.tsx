@@ -1,21 +1,15 @@
 import React, { FunctionComponent } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Edit, LocalFlorist } from '@mui/icons-material';
+import { Edit } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { MetadataProps } from './types';
 
-import {
-  JsonViewer,
-  LoadingButton,
-  SectionWrapper,
-  TextArea,
-} from '@numaryhq/storybook';
+import { Code, JsonViewer, SectionWrapper } from '@numaryhq/storybook';
 
 import Modal from '../Modal';
 
@@ -56,16 +50,6 @@ const Metadata: FunctionComponent<MetadataProps> = ({
     }
   };
 
-  const handlePrettify = () => {
-    try {
-      setValue('json', prettyJson(JSON.parse(getValues('json'))), {
-        shouldValidate: true,
-      });
-    } catch (e) {
-      noop();
-    }
-  };
-
   const renderRowActions = (metadata: string) => (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
       <Modal
@@ -81,7 +65,7 @@ const Metadata: FunctionComponent<MetadataProps> = ({
         }}
         modal={{
           PaperProps: { sx: { minWidth: '500px' } },
-          title: t('common.dialog.updateTitle'),
+          title: t('common.dialog.metadata.update'),
           actions: {
             cancel: {
               label: t('common.dialog.cancelButton'),
@@ -95,27 +79,17 @@ const Metadata: FunctionComponent<MetadataProps> = ({
         }}
       >
         <form>
-          <Box sx={{ textarea: { width: '518px !important' } }}>
-            <Box display="flex" justifyContent="end" mb={1}>
-              <LoadingButton
-                startIcon={<LocalFlorist />}
-                content={t('common.forms.metadata.json.prettify')}
-                onClick={handlePrettify}
-                variant="stroke"
-              />
-            </Box>
+          <Box>
             <Controller
               name="json"
               control={control}
               render={({ field }) => (
-                <TextArea
-                  {...field}
-                  json
-                  aria-label="text-area"
-                  minRows={10}
+                <Code
+                  code={field.value}
+                  editor
                   error={!!errors.json}
                   errorMessage={errors.json?.message}
-                  placeholder={t('common.forms.metadata.json.placeholder')}
+                  onChange={field.onChange}
                 />
               )}
             />

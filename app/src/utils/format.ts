@@ -9,6 +9,3 @@ export const initials = (name: string, depth = 2): string | undefined => {
 
   return undefined;
 };
-
-export const prettyJson = (json: JSON): string =>
-  JSON.stringify(json, undefined, 4);
