@@ -541,6 +541,9 @@ export default {
         },
       },
       dialog: {
+        metadata: {
+          update: 'Update metadata',
+        },
         createTitle: 'Creation',
         updateTitle: 'Update',
         resetTitle: 'Reset',
@@ -560,9 +563,7 @@ export default {
         selectEntity: 'Select a {{entityName}}',
         metadata: {
           json: {
-            prettify: 'Prettify',
             label: 'JSON',
-            placeholder: 'Add some metadata (JSON)',
             errors: {
               valid: 'JSON syntax error',
             },

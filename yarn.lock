@@ -1458,10 +1458,10 @@
   dependencies:
     json-parse-even-better-errors "^2.3.1"
 
-"@numaryhq/storybook@^0.10.1":
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/@numaryhq/storybook/-/storybook-0.10.1.tgz#78f1b27809023e29d0645ea95c5bee624063a340"
-  integrity sha512-rdpdZLBsaU9IiCFe0+dc0ZySJfO6Y5l3v9GQH+bGQ+84K6X3pBLpRpnoJOCmAPudw75+V+p7rxhukbYdA3RF9Q==
+"@numaryhq/storybook@^0.10.3":
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/@numaryhq/storybook/-/storybook-0.10.3.tgz#ef3b6971fd254063e597fb69ec13fd9e719772aa"
+  integrity sha512-VGcIYyswNYY04Vr/LPrVv88L8KdW7UpBacMHkaU+E5MPjSnd/R0byxbTG68p/7qrOg3JRrsqxLhKAzXNIU4k+A==
 
 "@opentelemetry/api-metrics@0.29.2":
   version "0.29.2"

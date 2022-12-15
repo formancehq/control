@@ -2,12 +2,11 @@ import * as yup from 'yup';
 
 import i18n from '../../../translations';
 
-import { ObjectOf } from '~/src/types/generic';
 import { LedgerResources, LedgerSubResources } from '~/src/types/ledger';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
 
-export const prettyJson = (json: JSON | ObjectOf<any>): string =>
-  JSON.stringify(json, undefined, 4);
+export const prettyJson = (json: any): string =>
+  JSON.stringify(json, undefined, 2);
 
 export const submit = async (
   json: string,
