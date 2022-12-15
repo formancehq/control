@@ -39,6 +39,12 @@ export const loader: LoaderFunction = async ({ request }) => {
         ...query,
         target: SearchTargets.TRANSACTION,
         policy: query.policy || SearchPolicies.AND,
+        sort: query.sort || [
+          {
+            key: 'timestamp',
+            order: 'desc',
+          },
+        ],
       },
       'cursor'
     );

@@ -13,10 +13,12 @@ import {
 import { redirect } from '@remix-run/node';
 import {
   Links,
+  LiveReload,
   Meta,
   NavigateFunction,
   Outlet,
   Scripts,
+  ScrollRestoration,
   useCatch,
   useLoaderData,
 } from '@remix-run/react';
@@ -205,8 +207,8 @@ const Document = withEmotionCache(
         </head>
         <body>
           {children}
-          {/*<ScrollRestoration />*/}
-          {/*<LiveReload />*/}
+          <ScrollRestoration />
+          <LiveReload />
           <Scripts />
         </body>
       </html>
