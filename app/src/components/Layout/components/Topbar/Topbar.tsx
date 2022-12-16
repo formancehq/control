@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect } from 'react';
 
-import { ArrowDropDown, Person } from '@mui/icons-material';
+import { ArrowDropDown, MenuOpen, Person } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -13,11 +13,12 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
+import { TopbarProps } from '~/src/components/Layout/components/Topbar/types';
 import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
 import { CurrentUser } from '~/src/utils/api';
 
-const Topbar: FunctionComponent = () => {
+const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
   const { api, setCurrentUser, currentUser, metas } = useService();
@@ -82,9 +83,28 @@ const Topbar: FunctionComponent = () => {
       }}
       id="topbar"
     >
-      <Box ml={2}>
+      <Box display="flex">
+        <IconButton
+          sx={{
+            transition: 'all 0.85s',
+            color: ({ palette }) => palette.neutral[500],
+            background: 'transparent',
+            ml: 2,
+            mr: 2,
+            ':hover': {
+              transform: `rotate(${resized ? '-180deg' : '180deg'})`,
+              color: ({ palette }) => palette.neutral[300],
+              transition: 'all 0.85s',
+              background: 'transparent',
+            },
+          }}
+          onClick={onResize}
+        >
+          <MenuOpen />
+        </IconButton>
         <Search />
       </Box>
+
       {currentUser && (
         <Box mr={1}>
           <IconButton sx={{ p: 0 }}>

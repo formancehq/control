@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 
-import { NavigateBefore, NavigateNext } from '@mui/icons-material';
 import { Box, Button, IconButton, Typography, useTheme } from '@mui/material';
 import { useLocation } from '@remix-run/react';
 import { isArray } from 'lodash';
@@ -11,11 +10,7 @@ import { SidebarProps } from '~/src/components/Layout/components/Sidebar/types';
 import { routerConfig } from '~/src/components/Navbar/routes';
 import LinkWrapper from '~/src/components/Wrappers/LinkWrapper';
 
-const Sidebar: FunctionComponent<SidebarProps> = ({
-  width,
-  onResize,
-  resized,
-}) => {
+const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
   const { palette } = useTheme();
   const location = useLocation();
   const { t } = useTranslation();
@@ -43,31 +38,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         transition: 'all 0.25s',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: resized ? 'center' : 'flex-end',
-          mt: 8,
-          pr: resized ? 0 : 1,
-        }}
-      >
-        <IconButton
-          sx={{
-            ...buttonSx,
-            width: 'auto',
-            transition: 'all 0.85s',
-            ':hover': {
-              transform: 'rotate(360deg)',
-              transition: 'all 0.85s',
-              background: 'transparent',
-            },
-          }}
-          onClick={onResize}
-        >
-          {resized ? <NavigateNext /> : <NavigateBefore />}
-        </IconButton>
-      </Box>
-      <Box>
+      <Box mt={9}>
         {routerConfig.map(({ label: groupLabel, children }, index) => (
           <Box key={index} sx={{ marginTop: resized ? '24px' : 'initial' }}>
             {groupLabel && !resized && (

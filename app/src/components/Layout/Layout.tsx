@@ -53,13 +53,9 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
           </animated.div>
         ) : (
           <animated.div style={{ height: '100%' }}>
-            <Topbar />
+            <Topbar resized={showMiniSidebar} onResize={handleMiniSidebar} />
             <Box id="layout" sx={{ minHeight: '100%', display: 'flex' }}>
-              <Sidebar
-                width={sideBarWidth}
-                onResize={handleMiniSidebar}
-                resized={showMiniSidebar}
-              />
+              <Sidebar width={sideBarWidth} resized={showMiniSidebar} />
               <Box
                 sx={{ width: { sm: `calc(100% - ${sideBarWidth}px)` } }}
                 mt={8}
