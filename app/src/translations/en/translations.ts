@@ -36,6 +36,26 @@ export default {
       },
     },
     pages: {
+      ledgers: {
+        title: 'Ledgers',
+        table: {
+          columnLabel: {
+            name: 'Name',
+          },
+        },
+      },
+      ledger: {
+        logs: {
+          table: {
+            columnLabel: {
+              type: 'Type',
+              date: 'Date',
+              hash: 'Hash',
+              data: 'Data',
+            },
+          },
+        },
+      },
       overview: {
         title: 'Overview',
         status: 'Status',

@@ -280,7 +280,6 @@ const Search: FunctionComponent = () => {
                 description={t('common.noResults')}
                 title=""
                 variant="light"
-                sx={{ border: 0 }}
               />
             </Box>
           )}

@@ -26,6 +26,8 @@ export const OAUTH_CLIENT_ROUTE = '/oauth-clients/:id';
 export const ACCOUNTS_ROUTE = '/accounts';
 export const TRANSACTIONS_ROUTE = '/transactions';
 export const CONNECTORS_ROUTE = APPS_ROUTE;
+export const LEDGERS_ROUTE = '/ledgers';
+export const LEDGERS_LOGS_ROUTE = '/ledgers/:id/logs';
 
 export const getRoute = (uri: string, id?: number | string): string =>
   id !== undefined ? uri.replace(/:\w+/, id.toString(10)) : uri;
@@ -74,6 +76,13 @@ export const accounts: RouterConfig = {
   icon: <AccountTree />,
 };
 
+export const ledgers: RouterConfig = {
+  id: 'ledgers',
+  label: 'navbar.title.ledgers',
+  path: getRoute(LEDGERS_ROUTE),
+  icon: <AccountBalance />,
+};
+
 export const transactions: RouterConfig = {
   id: 'transactions',
   label: 'navbar.title.transactions',
@@ -120,7 +129,7 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
   },
   {
     label: 'sidebar.ledgers',
-    children: [transactions, accounts],
+    children: [transactions, accounts, ledgers],
   },
   {
     label: 'sidebar.payments',

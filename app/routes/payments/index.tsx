@@ -18,7 +18,7 @@ import { TableFiltersContext } from '~/src/contexts/tableFilters';
 import { Connector } from '~/src/types/connectorsConfig';
 import { Cursor } from '~/src/types/generic';
 import { Payment, PaymentStatuses, PaymentTypes } from '~/src/types/payment';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_PAYMENT, API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -54,7 +54,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     const payments = await api.postResource<Cursor<Payment[]>>(
       API_SEARCH,
       {
-        ...sanitizeQuery(request),
+        ...(sanitizeQuery(request) as SearchBody),
         target: SearchTargets.PAYMENT,
         policy: SearchPolicies.AND,
       },

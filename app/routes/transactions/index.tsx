@@ -17,7 +17,7 @@ import Text from '~/src/components/Wrappers/Table/Filters/Text';
 import { TableFiltersContext } from '~/src/contexts/tableFilters';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -30,7 +30,7 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
-    const query = sanitizeQuery(request);
+    const query = sanitizeQuery(request) as SearchBody;
     const transactions = await (
       await createApiClient(session)
     ).postResource<Cursor<Transaction>>(
