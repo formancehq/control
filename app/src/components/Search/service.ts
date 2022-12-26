@@ -13,13 +13,12 @@ import {
   Suggestion,
   TransactionsSuggestions,
 } from '~/src/types/search';
-import { API_SEARCH } from '~/src/utils/api';
-import { ApiClient } from '~/src/utils/api.server';
+import { API_SEARCH, ApiClient } from '~/src/utils/api';
 
 export const getSuggestions = async (
   target: SearchTargets,
   value: string,
-  api: IApiClient
+  api: ApiClient
 ) => {
   const results = await api.postResource<
     Cursor<Account | Transaction | Payment>

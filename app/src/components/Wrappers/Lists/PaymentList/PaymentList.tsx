@@ -44,9 +44,13 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({
       id="payments-list"
       items={payments}
       withPagination={withPagination}
-      action={true}
+      action
       columns={[
-        { key: 'type', label: t('pages.payments.table.columnLabel.type') },
+        {
+          key: 'type',
+          label: t('pages.payments.table.columnLabel.type'),
+          width: 15,
+        },
         {
           key: 'provider',
           label: t('pages.payments.table.columnLabel.provider'),

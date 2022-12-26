@@ -8,6 +8,10 @@ export enum LedgerResources {
 export enum LedgerSubResources {
   METADATA = 'metadata',
 }
+export enum LedgerTypes {
+  SET_METADATA = 'SET_METADATA',
+  NEW_TRANSACTION = 'NEW_TRANSACTION',
+}
 
 export type Account = {
   ledger: string;
@@ -91,4 +95,12 @@ export type LedgerInfo = {
 export type LedgerStats = {
   transactions: number;
   accounts: number;
+};
+
+export type LedgerLog<T> = {
+  id: number;
+  type: LedgerTypes.SET_METADATA | LedgerTypes.NEW_TRANSACTION;
+  data: T;
+  hash: string;
+  date: Date;
 };

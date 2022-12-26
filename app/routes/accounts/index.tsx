@@ -15,7 +15,7 @@ import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { TableFiltersContext } from '~/src/contexts/tableFilters';
 import { Cursor } from '~/src/types/generic';
 import { Account } from '~/src/types/ledger';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -33,7 +33,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     ).postResource<Cursor<Account>>(
       API_SEARCH,
       {
-        ...sanitizeQuery(request),
+        ...(sanitizeQuery(request) as SearchBody),
         target: SearchTargets.ACCOUNT,
         policy: SearchPolicies.AND,
       },

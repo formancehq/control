@@ -11,6 +11,7 @@ import {
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
   getRoute,
+  LEDGERS_ROUTE,
   OAUTH_CLIENTS_ROUTE,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
@@ -49,6 +50,24 @@ const buildPaymentBreadcrumbs = (
   } else {
     return [bread, { label: id }];
   }
+};
+
+const buildLedgerLogsBreadcrumbs = (
+  navigate: NavigateFunction,
+  id: string
+): BreadcrumbsLink[] => {
+  const bread = {
+    label: i18n.t(`common.breadcrumbs.categories.ledgers`),
+    onClick: () => navigate(getRoute(LEDGERS_ROUTE)),
+  };
+
+  return [
+    bread,
+    { label: id },
+    {
+      label: 'logs',
+    },
+  ];
 };
 
 const buildOAuthClientBreadcrumbs = (
@@ -177,6 +196,8 @@ export const breadcrumbsFactory = (
   const connectorsIndex = match('/connectors/:id');
   const transactionsIndex = match('/transactions');
   const paymentsIndex = match('/payments');
+  const ledgersIndex = match('/ledgers');
+  const ledgerLogsRoute = match('/ledgers/:ledgerId/logs');
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
@@ -213,6 +234,9 @@ export const breadcrumbsFactory = (
   if (paymentsRoute) {
     return buildPaymentBreadcrumbs(navigate, params.paymentId, urlSearchParams);
   }
+  if (ledgerLogsRoute) {
+    return buildLedgerLogsBreadcrumbs(navigate, params.ledgerId);
+  }
   if (oAuthClientsRoute) {
     return buildOAuthClientBreadcrumbs(navigate, params.oAuthClientId);
   }
@@ -228,31 +252,43 @@ export const breadcrumbsFactory = (
       navigate,
       'accounts',
       getRoute(ACCOUNTS_ROUTE),
-      i18n.t(`common.breadcrumbs.categories.ledgers`)
+      i18n.t('common.breadcrumbs.categories.ledgers')
     );
   }
+
   if (transactionsIndex) {
     return buildIndexBreadcrumbs(
       navigate,
       'transactions',
       getRoute(TRANSACTIONS_ROUTE),
-      i18n.t(`common.breadcrumbs.categories.ledgers`)
+      i18n.t('common.breadcrumbs.categories.ledgers')
     );
   }
+
   if (connectorsIndex) {
     return buildIndexBreadcrumbs(
       navigate,
       'connectors',
       getRoute(CONNECTORS_ROUTE),
-      i18n.t(`common.breadcrumbs.categories.configuration`)
+      i18n.t('common.breadcrumbs.categories.configuration')
     );
   }
+
   if (paymentsIndex) {
     return buildIndexBreadcrumbs(
       navigate,
       'payments',
       getRoute(PAYMENTS_ROUTE),
-      i18n.t(`common.breadcrumbs.categories.payments`)
+      i18n.t('common.breadcrumbs.categories.payments')
+    );
+  }
+
+  if (ledgersIndex) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'ledgers',
+      getRoute(LEDGERS_ROUTE),
+      i18n.t('common.breadcrumbs.categories.ledgers')
     );
   }
 
