@@ -125,9 +125,7 @@ export default function Index() {
               variant="square"
               color={status.disabled ? 'red' : 'green'}
               label={t(
-                `pages.app.sections.dangerZone.status.${
-                  status.disabled ? 'error' : 'active'
-                }`
+                `common.status.${status.disabled ? 'inactive' : 'active'}`
               )}
             />
           }
@@ -251,7 +249,7 @@ export default function Index() {
                     label={
                       task.status
                         ? t('common.status.active')
-                        : t('common.status.error')
+                        : t('common.status.inactive')
                     }
                     variant="square"
                   />,
