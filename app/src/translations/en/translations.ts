@@ -263,10 +263,6 @@ export default {
       app: {
         sections: {
           dangerZone: {
-            status: {
-              active: 'Active',
-              error: 'Error',
-            },
             title: 'Manage',
             delete: {
               title: 'Delete connector instance',
@@ -437,8 +433,8 @@ export default {
     common: {
       status: {
         active: 'Active',
-        paused: 'paused',
-        error: 'Error',
+        paused: 'Paused',
+        inactive: 'Inactive',
       },
       formErrorsMessage: {
         requiredInputs: '{{inputName}} is required',

@@ -83,11 +83,11 @@ export default function Index() {
               <ProviderPicture key={index} provider={connector.provider} />,
               <Chip
                 key={index}
-                color={connector.disabled ? 'green' : 'red'}
+                color={connector.disabled ? 'red' : 'green'}
                 label={
                   connector.disabled
-                    ? t('common.status.active')
-                    : t('common.status.error')
+                    ? t('common.status.inactive')
+                    : t('common.status.active')
                 }
                 variant="square"
               />,
