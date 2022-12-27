@@ -68,7 +68,7 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
               key={index}
               label={payment.status}
               variant="square"
-              color={payment.status === 'succeeded' ? 'violet' : undefined}
+              color="violet"
             />,
             <Typography key={index}>{payment.reference}</Typography>,
             <Amount
