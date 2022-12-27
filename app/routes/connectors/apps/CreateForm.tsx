@@ -1,36 +1,40 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect } from "react";
 
-import { Add } from '@mui/icons-material';
-import { Box } from '@mui/material';
-import { get, isEmpty, pickBy, toInteger } from 'lodash';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Add } from "@mui/icons-material";
+import { Box, SelectChangeEvent } from "@mui/material";
+import { get, isEmpty, pickBy, toInteger } from "lodash";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
-import { Select } from '@numaryhq/storybook';
+import { Select } from "@numaryhq/storybook";
 
-import {
-  buildForm,
-  connectorsConfig,
-  FormTypes,
-} from '~/routes/connectors/apps/formBuilder';
-import { APP_ROUTE, getRoute } from '~/src/components/Navbar/routes';
-import Modal from '~/src/components/Wrappers/Modal';
-import { useService } from '~/src/hooks/useService';
-import { ConnectorFormValues } from '~/src/types/connectorsConfig';
-import { ObjectOf } from '~/src/types/generic';
-import { API_PAYMENT } from '~/src/utils/api';
+import { buildForm, FormTypes } from "~/routes/connectors/apps/formBuilder";
+import { APP_ROUTE, getRoute } from "~/src/components/Navbar/routes";
+import Modal from "~/src/components/Wrappers/Modal";
+import { useService } from "~/src/hooks/useService";
+import { Connector, ConnectorFormValues } from "~/src/types/connectorsConfig";
+import { ObjectOf } from "~/src/types/generic";
+import { API_PAYMENT } from "~/src/utils/api";
 
-export const CreateForm: FunctionComponent = () => {
+export type CreateFormProps = {
+  connectors: Connector[] | [];
+  configuration: ObjectOf<any>;
+};
+
+export const CreateForm: FunctionComponent<CreateFormProps> = ({
+  configuration,
+  connectors,
+}) => {
   const { t } = useTranslation();
   const { api, snackbar } = useService();
-  const initFormWithDefaultValues = Object.entries(connectorsConfig).reduce(
+  const initFormWithDefaultValues = Object.entries(configuration).reduce(
     (acc, [key, value]) => ({
       ...acc,
       [key]: Object.entries(value).reduce(
         (acc, [key]) => ({
           ...acc,
-          [key]: '',
+          [key]: "",
         }),
         {}
       ),
@@ -46,21 +50,22 @@ export const CreateForm: FunctionComponent = () => {
     reset,
     watch,
     handleSubmit,
+    setError,
   } = useForm<any>({
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
-      connectorSelect: '',
+      connectorSelect: "",
       ...initFormWithDefaultValues,
     },
   });
   const navigate = useNavigate();
 
-  const formattedConnectorConfig = Object.keys(connectorsConfig).map((key) => ({
+  const formattedConnectorConfig = Object.keys(configuration).map((key) => ({
     id: key,
     label: key,
   }));
 
-  const connectorKey = watch('connectorSelect');
+  const connectorKey = watch("connectorSelect");
 
   const onSave = async () => {
     const valid = await trigger();
@@ -68,13 +73,13 @@ export const CreateForm: FunctionComponent = () => {
       return null;
     }
 
-    const config = get(connectorsConfig, connectorKey);
+    const connectorConfig = get(configuration, connectorKey);
     const values = getValues(connectorKey);
     Object.keys(values).map((key) => {
       if (!isEmpty(values[key])) {
-        const currentKey = get(config, key);
+        const currentKey = get(connectorConfig, key);
         if (currentKey) {
-          switch (currentKey.datatype) {
+          switch (currentKey.dataType) {
             case FormTypes.DURATION:
               values[key] = `${values[key]}s`;
               break;
@@ -102,7 +107,7 @@ export const CreateForm: FunctionComponent = () => {
       }
     } catch {
       snackbar(
-        t('pages.apps.form.errors.errorOrDuplicate', {
+        t("pages.apps.form.errors.errorOrDuplicate", {
           connectorName: connectorKey,
         })
       );
@@ -116,15 +121,15 @@ export const CreateForm: FunctionComponent = () => {
   return (
     <Modal
       button={{
-        id: 'create',
-        variant: 'dark',
+        id: "create",
+        variant: "dark",
         startIcon: <Add />,
-        content: t('pages.connectors.tabs.apps.pageButton.actionLabel'),
+        content: t("pages.connectors.tabs.apps.pageButton.actionLabel"),
       }}
       modal={{
-        id: 'create-apps-modal',
-        PaperProps: { sx: { minWidth: '500px' } },
-        title: t('common.dialog.createTitle'),
+        id: "create-apps-modal",
+        PaperProps: { sx: { minWidth: "500px" } },
+        title: t("common.dialog.createTitle"),
         actions: {
           cancel: {
             onClick: async () => {
@@ -148,14 +153,32 @@ export const CreateForm: FunctionComponent = () => {
               <Select
                 {...rest}
                 items={formattedConnectorConfig}
-                placeholder={t('common.forms.selectEntity', {
-                  entityName: 'connector',
+                placeholder={t("common.forms.selectEntity", {
+                  entityName: "connector",
                 })}
                 error={!!errors.connectorSelect}
+                errorMessage={errors.connectorSelect?.message}
                 select={{
                   ref: ref,
                   inputRef: ref,
-                  onChange: onChange,
+                  onChange: (e: SelectChangeEvent<unknown>) => {
+                    const alreadyExist = connectors.find(
+                      (connector) => connector.provider === e.target.value
+                    );
+                    if (alreadyExist) {
+                      setError("connectorSelect", {
+                        type: "custom",
+                        message: t(
+                          "pages.apps.form.connectorsSelect.errors.duplicated",
+                          {
+                            connector: e.target.value.toLowerCase(),
+                          }
+                        ),
+                      });
+                    } else {
+                      onChange(e);
+                    }
+                  },
                 }}
               />
             )}
@@ -164,7 +187,7 @@ export const CreateForm: FunctionComponent = () => {
 
         {connectorKey &&
           buildForm({
-            config: connectorsConfig,
+            config: configuration,
             connectorKey,
             control,
             errors,

@@ -1,28 +1,34 @@
-import { PaymentProviders } from '~/src/types/payment';
-
 export const providersMap = {
-  [PaymentProviders.STRIPE]: {
-    path: '/images/connectors/stripe.svg',
+  stripe: {
+    path: "/images/connectors/stripe.svg",
     width: 28,
   },
-  [PaymentProviders.MONGOPAY]: {
-    path: '/images/connectors/mangopay.svg',
+  "mango-pay": {
+    path: "/images/connectors/mango-pay.svg",
     width: 90,
   },
-  [PaymentProviders.WISE]: {
-    path: '/images/connectors/wise.svg',
-    width: 'initial',
+  wise: {
+    path: "/images/connectors/wise.svg",
+    width: "initial",
   },
-  [PaymentProviders.PAYPAL]: {
-    path: '/images/connectors/paypal.svg',
+  paypal: {
+    path: "/images/connectors/paypal.svg",
     width: 30,
   },
-  [PaymentProviders.DEVENGO]: {
-    path: '/images/connectors/devengo.svg',
+  devengo: {
+    path: "/images/connectors/devengo.svg",
     width: 80,
   },
-  [PaymentProviders.MODULR]: {
-    path: '/images/connectors/modulr.svg',
+  modulr: {
+    path: "/images/connectors/modulr.svg",
     width: 80,
+  },
+  "banking-circle": {
+    path: "/images/connectors/banking-circle.svg",
+    width: 80,
+  },
+  "currency-cloud": {
+    path: "/images/connectors/currency-cloud.webp",
+    width: 40,
   },
 };

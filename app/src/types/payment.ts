@@ -1,9 +1,9 @@
-import { ObjectOf } from './generic';
+import { ObjectOf } from "./generic";
 
 export enum PaymentTypes {
-  PAY_IN = 'pay-in',
-  PAY_OUT = 'payout',
-  OTHER = 'other',
+  PAY_IN = "pay-in",
+  PAY_OUT = "payout",
+  OTHER = "other",
 }
 
 export type PaymentType =
@@ -12,19 +12,10 @@ export type PaymentType =
   | PaymentTypes.OTHER;
 
 export enum PaymentStatuses {
-  SUCCEEDED = 'succeeded',
-  CANCELLED = 'cancelled',
-  FAILED = 'failed',
-  PENDING = 'pending',
-}
-
-export enum PaymentProviders {
-  DEVENGO = 'devengo',
-  STRIPE = 'stripe',
-  MONGOPAY = 'mangopay',
-  WISE = 'wise',
-  PAYPAL = 'paypal',
-  MODULR = 'modulr',
+  SUCCEEDED = "succeeded",
+  CANCELLED = "cancelled",
+  FAILED = "failed",
+  PENDING = "pending",
 }
 
 export type Payment = {
