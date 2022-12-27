@@ -1,4 +1,4 @@
-import { ObjectOf } from "./generic";
+import { ObjectOf } from './generic';
 
 export type InputType = {
   dataType: string;
@@ -22,7 +22,7 @@ export type ConnectorTask = {
   provider: string;
   descriptor: { main: boolean };
   createdAt: Date;
-  status: "active" | "error";
+  status: 'active' | 'error';
   error: string;
   state?: string;
   id: string;

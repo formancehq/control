@@ -1,21 +1,21 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect } from 'react';
 
-import { Add } from "@mui/icons-material";
-import { Box, SelectChangeEvent } from "@mui/material";
-import { get, isEmpty, pickBy, toInteger } from "lodash";
-import { Controller, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Add } from '@mui/icons-material';
+import { Box, SelectChangeEvent } from '@mui/material';
+import { get, isEmpty, pickBy, toInteger } from 'lodash';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-import { Select } from "@numaryhq/storybook";
+import { Select } from '@numaryhq/storybook';
 
-import { buildForm, FormTypes } from "~/routes/connectors/apps/formBuilder";
-import { APP_ROUTE, getRoute } from "~/src/components/Navbar/routes";
-import Modal from "~/src/components/Wrappers/Modal";
-import { useService } from "~/src/hooks/useService";
-import { Connector, ConnectorFormValues } from "~/src/types/connectorsConfig";
-import { ObjectOf } from "~/src/types/generic";
-import { API_PAYMENT } from "~/src/utils/api";
+import { buildForm, FormTypes } from '~/routes/connectors/apps/formBuilder';
+import { APP_ROUTE, getRoute } from '~/src/components/Navbar/routes';
+import Modal from '~/src/components/Wrappers/Modal';
+import { useService } from '~/src/hooks/useService';
+import { Connector, ConnectorFormValues } from '~/src/types/connectorsConfig';
+import { ObjectOf } from '~/src/types/generic';
+import { API_PAYMENT } from '~/src/utils/api';
 
 export type CreateFormProps = {
   connectors: Connector[] | [];
@@ -34,7 +34,7 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
       [key]: Object.entries(value).reduce(
         (acc, [key]) => ({
           ...acc,
-          [key]: "",
+          [key]: '',
         }),
         {}
       ),
@@ -52,9 +52,9 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
     handleSubmit,
     setError,
   } = useForm<any>({
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      connectorSelect: "",
+      connectorSelect: '',
       ...initFormWithDefaultValues,
     },
   });
@@ -65,7 +65,7 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
     label: key,
   }));
 
-  const connectorKey = watch("connectorSelect");
+  const connectorKey = watch('connectorSelect');
 
   const onSave = async () => {
     const valid = await trigger();
@@ -107,7 +107,7 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
       }
     } catch {
       snackbar(
-        t("pages.apps.form.errors.errorOrDuplicate", {
+        t('pages.apps.form.errors.errorOrDuplicate', {
           connectorName: connectorKey,
         })
       );
@@ -121,15 +121,15 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
   return (
     <Modal
       button={{
-        id: "create",
-        variant: "dark",
+        id: 'create',
+        variant: 'dark',
         startIcon: <Add />,
-        content: t("pages.connectors.tabs.apps.pageButton.actionLabel"),
+        content: t('pages.connectors.tabs.apps.pageButton.actionLabel'),
       }}
       modal={{
-        id: "create-apps-modal",
-        PaperProps: { sx: { minWidth: "500px" } },
-        title: t("common.dialog.createTitle"),
+        id: 'create-apps-modal',
+        PaperProps: { sx: { minWidth: '500px' } },
+        title: t('common.dialog.createTitle'),
         actions: {
           cancel: {
             onClick: async () => {
@@ -153,8 +153,8 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
               <Select
                 {...rest}
                 items={formattedConnectorConfig}
-                placeholder={t("common.forms.selectEntity", {
-                  entityName: "connector",
+                placeholder={t('common.forms.selectEntity', {
+                  entityName: 'connector',
                 })}
                 error={!!errors.connectorSelect}
                 errorMessage={errors.connectorSelect?.message}
@@ -166,10 +166,10 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
                       (connector) => connector.provider === e.target.value
                     );
                     if (alreadyExist) {
-                      setError("connectorSelect", {
-                        type: "custom",
+                      setError('connectorSelect', {
+                        type: 'custom',
                         message: t(
-                          "pages.apps.form.connectorsSelect.errors.duplicated",
+                          'pages.apps.form.connectorsSelect.errors.duplicated',
                           {
                             connector: e.target.value.toLowerCase(),
                           }
