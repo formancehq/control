@@ -18,7 +18,10 @@ import { LayoutProps } from '~/src/components/Layout/types';
 
 const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   const transition = useTransition();
-  const [showMiniSidebar, setShowMiniSidebar] = React.useState(false);
+  const resizedSidebar = localStorage.getItem('resizedSidebar') || 'false';
+  const [showMiniSidebar, setShowMiniSidebar] = React.useState(
+    JSON.parse(resizedSidebar)
+  );
   const params = useParams();
   const navigate = useNavigate();
   const match = (pattern: string): boolean => !!useMatch(pattern);
@@ -27,6 +30,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
 
   const handleMiniSidebar = () => {
     setShowMiniSidebar(!showMiniSidebar);
+    localStorage.setItem('resizedSidebar', `${!showMiniSidebar}`);
   };
 
   const loadingTransition = useAnimationTransition(transition.state, {
