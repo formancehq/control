@@ -1,24 +1,24 @@
-import React from "react";
+import React from 'react';
 
-import { capitalize, lowerCase } from "lodash";
-import { Controller } from "react-hook-form";
+import { capitalize, lowerCase } from 'lodash';
+import { Controller } from 'react-hook-form';
 
-import { TextField } from "@numaryhq/storybook";
+import { TextField } from '@numaryhq/storybook';
 
-import i18n from "~/src/translations";
+import i18n from '~/src/translations';
 import {
   ConnectorConfigFormProps,
   InputType,
-} from "~/src/types/connectorsConfig";
-import { ObjectOf } from "~/src/types/generic";
+} from '~/src/types/connectorsConfig';
+import { ObjectOf } from '~/src/types/generic';
 
 // TODO this config is hardcoded for now but the idea is to fetch it from the API
 // so the backend can change the config without having to update the frontend
 
 export enum FormTypes {
-  STRING = "string",
-  DURATION = "duration ns",
-  INTEGER = "integer",
+  STRING = 'string',
+  DURATION = 'duration ns',
+  INTEGER = 'integer',
 }
 
 const inputsFactory = ({
@@ -43,7 +43,7 @@ const inputsFactory = ({
     error: !!errors?.[parentName]?.[name],
     errorMessage:
       errors?.[parentName]?.[name] &&
-      i18n.t("common.formErrorsMessage.requiredInputs", {
+      i18n.t('common.formErrorsMessage.requiredInputs', {
         inputName: lowerCase(name),
       }),
   };
@@ -82,7 +82,7 @@ const inputsFactory = ({
       );
     default:
       throw new Error(
-        i18n.t("pages.apps.form.errors.inputTypeDoesntExist", {
+        i18n.t('pages.apps.form.errors.inputTypeDoesntExist', {
           fieldType: inputConfig.dataType,
         })
       );

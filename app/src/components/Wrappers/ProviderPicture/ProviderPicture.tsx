@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { Box, Typography } from "@mui/material";
-import { get } from "lodash";
+import { Box, Typography } from '@mui/material';
+import { get } from 'lodash';
 
-import { ProviderPictureProps } from "./types";
+import { ProviderPictureProps } from './types';
 
-import { providersMap } from "~/src/utils/providersMap";
+import { providersMap } from '~/src/utils/providersMap';
 
 const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
   provider,
@@ -18,14 +18,14 @@ const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
       display="flex"
       alignItems="center"
       sx={{
-        "& img": {
+        '& img': {
           marginRight: 1,
-          width: logoAttr ? logoAttr.width : "initial",
+          width: logoAttr ? logoAttr.width : 'initial',
         },
       }}
     >
       {logoAttr && <img src={logoAttr.path} alt={provider} />}
-      <Typography sx={{ textTransform: "capitalize" }}>{provider}</Typography>
+      <Typography sx={{ textTransform: 'capitalize' }}>{provider}</Typography>
     </Box>
   );
 };

@@ -1,28 +1,28 @@
-import * as React from "react";
+import * as React from 'react';
 
-import type { MetaFunction, Session } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
-import { LoaderFunction } from "@remix-run/server-runtime";
-import { useTranslation } from "react-i18next";
+import type { MetaFunction, Session } from '@remix-run/node';
+import { Form, useLoaderData } from '@remix-run/react';
+import { LoaderFunction } from '@remix-run/server-runtime';
+import { useTranslation } from 'react-i18next';
 
-import { ObjectOf, Page } from "@numaryhq/storybook";
+import { ObjectOf, Page } from '@numaryhq/storybook';
 
-import { payments as paymentsConfig } from "~/src/components/Navbar/routes";
-import ComponentErrorBoundary from "~/src/components/Wrappers/ComponentErrorBoundary";
-import PaymentList from "~/src/components/Wrappers/Lists/PaymentList";
-import { Filters } from "~/src/components/Wrappers/Table/Filters/filters";
-import FiltersBar from "~/src/components/Wrappers/Table/Filters/FiltersBar";
-import Select from "~/src/components/Wrappers/Table/Filters/Select";
-import Text from "~/src/components/Wrappers/Table/Filters/Text";
-import { TableFiltersContext } from "~/src/contexts/tableFilters";
-import { Cursor } from "~/src/types/generic";
-import { Payment, PaymentStatuses, PaymentTypes } from "~/src/types/payment";
-import { SearchPolicies, SearchTargets } from "~/src/types/search";
-import { API_PAYMENT, API_SEARCH } from "~/src/utils/api";
-import { createApiClient } from "~/src/utils/api.server";
-import { handleResponse, withSession } from "~/src/utils/auth.server";
-import { sanitizeQuery } from "~/src/utils/search";
-import { Connector } from "~/src/types/connectorsConfig";
+import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
+import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
+import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import Select from '~/src/components/Wrappers/Table/Filters/Select';
+import Text from '~/src/components/Wrappers/Table/Filters/Text';
+import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { Connector } from '~/src/types/connectorsConfig';
+import { Cursor } from '~/src/types/generic';
+import { Payment, PaymentStatuses, PaymentTypes } from '~/src/types/payment';
+import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { API_PAYMENT, API_SEARCH } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { sanitizeQuery } from '~/src/utils/search';
 
 const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
 
@@ -34,8 +34,8 @@ const paymentStatus = [
 ];
 
 export const meta: MetaFunction = () => ({
-  title: "Payments",
-  description: "Show a list",
+  title: 'Payments',
+  description: 'Show a list',
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -54,11 +54,12 @@ export const loader: LoaderFunction = async ({ request }) => {
         target: SearchTargets.PAYMENT,
         policy: SearchPolicies.AND,
       },
-      "cursor"
+      'cursor'
     );
 
     if (payments && connectorsConfig) {
       const providers = Object.keys(connectorsConfig).map((key: string) => key);
+
       return { payments, providers };
     }
 
@@ -90,10 +91,10 @@ export default function Index() {
       <TableFiltersContext.Provider
         value={{
           filters: [
-            { field: "type", name: Filters.TERMS },
-            { field: "status", name: Filters.TERMS },
-            { field: "provider", name: Filters.TERMS },
-            { field: "reference", name: Filters.TERMS },
+            { field: 'type', name: Filters.TERMS },
+            { field: 'status', name: Filters.TERMS },
+            { field: 'provider', name: Filters.TERMS },
+            { field: 'reference', name: Filters.TERMS },
           ],
         }}
       >
@@ -105,24 +106,24 @@ export default function Index() {
                 options={paymentTypes}
                 field="type"
                 name="payment-type-autocomplete"
-                placeholder={t("pages.payments.filters.type")}
+                placeholder={t('pages.payments.filters.type')}
               />
               <Select
                 id="payment-status-autocomplete"
                 options={paymentStatus}
                 field="status"
                 name="payment-status-autocomplete"
-                placeholder={t("pages.payments.filters.status")}
+                placeholder={t('pages.payments.filters.status')}
               />
               <Select
                 id="payment-provider-autocomplete"
                 options={providers}
                 field="provider"
                 name="payment-provider-autocomplete"
-                placeholder={t("pages.payments.filters.provider")}
+                placeholder={t('pages.payments.filters.provider')}
               />
               <Text
-                placeholder={t("pages.payments.filters.reference")}
+                placeholder={t('pages.payments.filters.reference')}
                 name="reference"
               />
               {/* TODO uncomment when Search API is ready to filter on initialAmount*/}
