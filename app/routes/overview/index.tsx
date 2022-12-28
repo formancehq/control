@@ -4,8 +4,8 @@ import { FunctionComponent, useEffect, useState } from 'react';
 import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
 import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
 import type { LoaderFunction, MetaFunction, Session } from '@remix-run/node';
-import { useLoaderData, useSearchParams } from '@remix-run/react';
-import { get } from 'lodash';
+import { useLoaderData } from '@remix-run/react';
+import { get, take } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -21,10 +21,7 @@ import {
   TitleWithBar,
 } from '@numaryhq/storybook';
 
-import { LedgerList } from '../ledgers/list';
-
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Navbar/routes';
-import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import { Cursor } from '~/src/types/generic';
@@ -56,7 +53,8 @@ const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
 
 const getData = async (ledgersList: string[], api: ApiClient) => {
   const ledgers = [] as any;
-  for (const ledger of ledgersList) {
+  const firstThreeLedgers = take(ledgersList, 3);
+  for (const ledger of firstThreeLedgers) {
     const stats = await api.getResource<LedgerStats>(
       `${API_LEDGER}/${ledger}/stats`,
       'data'
@@ -123,8 +121,6 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
   const payments = get(data, 'payments.total.value', 0) as number;
   const ledgers = get(data, 'ledgers', []);
   const shouldDisplaySetup = payments === 0 || accounts === 0;
-  const [searchParams] = useSearchParams();
-  const urlParamsLedgers = searchParams.getAll('ledgers');
   const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, _load, stopLoading] = useOpen(true);
@@ -191,11 +187,6 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
               }}
             >
               <TitleWithBar title={t('pages.overview.status')} />
-              {ledgers.length > 1 && (
-                <FiltersBar>
-                  <LedgerList />
-                </FiltersBar>
-              )}
             </Box>
 
             <Box
@@ -221,31 +212,24 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
               )}
 
               {/* TODO Add Transition Between loading state and empty/not empty state */}
-
               {loadingTransition((props, ledgersLength) =>
                 ledgersLength > 0 ? (
-                  stats
-                    .filter((currentLedger: Ledger): Ledger[] | boolean =>
-                      urlParamsLedgers.length === 0
-                        ? true
-                        : urlParamsLedgers.includes(currentLedger.slug)
-                    )
-                    .map((ledger: Ledger, index: number) => (
-                      <animated.div key={index} style={props}>
-                        <Box>
-                          <StatsCard
-                            key={index}
-                            icon={<AccountBalance />}
-                            variant={ledger.color as any}
-                            title1={t('pages.overview.stats.transactions')}
-                            title2={t('pages.overview.stats.accounts')}
-                            chipValue={ledger.slug}
-                            value1={`${get(ledger, 'stats.transactions', '0')}`}
-                            value2={`${get(ledger, 'stats.accounts', '0')}`}
-                          />
-                        </Box>
-                      </animated.div>
-                    ))
+                  stats.map((ledger: Ledger, index: number) => (
+                    <animated.div key={index} style={props}>
+                      <Box>
+                        <StatsCard
+                          key={index}
+                          icon={<AccountBalance />}
+                          variant={ledger.color as any}
+                          title1={t('pages.overview.stats.transactions')}
+                          title2={t('pages.overview.stats.accounts')}
+                          chipValue={ledger.slug}
+                          value1={`${get(ledger, 'stats.transactions', '0')}`}
+                          value2={`${get(ledger, 'stats.accounts', '0')}`}
+                        />
+                      </Box>
+                    </animated.div>
+                  ))
                 ) : (
                   <animated.div style={props}>
                     <Box
