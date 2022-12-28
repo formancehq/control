@@ -5,7 +5,7 @@ import { Form, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
 
-import { ObjectOf, Page } from '@numaryhq/storybook';
+import { Page } from '@numaryhq/storybook';
 
 import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
@@ -23,6 +23,11 @@ import { API_PAYMENT, API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { sanitizeQuery } from '~/src/utils/search';
+
+type PaymentsData = {
+  payments: Payment[];
+  providers: string[];
+};
 
 const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
 
@@ -47,7 +52,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const payments = await (
       await api
-    ).postResource<Cursor<Payment>>(
+    ).postResource<Cursor<Payment[]>>(
       API_SEARCH,
       {
         ...sanitizeQuery(request),
@@ -81,10 +86,8 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export default function Index() {
   const { t } = useTranslation();
-  const { payments, providers } = useLoaderData<{
-    payments: Payment[];
-    providers: ObjectOf<any>;
-  }>();
+  const { payments, providers } =
+    useLoaderData<PaymentsData>() as unknown as PaymentsData;
 
   return (
     <Page id={paymentsConfig.id}>
