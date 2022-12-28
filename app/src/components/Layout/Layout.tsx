@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 
 import { Box, CircularProgress } from '@mui/material';
 import { useNavigate, useSearchParams, useTransition } from '@remix-run/react';
@@ -18,15 +18,17 @@ import { LayoutProps } from '~/src/components/Layout/types';
 
 const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   const transition = useTransition();
-  const resizedSidebar = localStorage.getItem('resizedSidebar') || 'false';
-  const [showMiniSidebar, setShowMiniSidebar] = React.useState(
-    JSON.parse(resizedSidebar)
-  );
+  const [showMiniSidebar, setShowMiniSidebar] = React.useState(false);
   const params = useParams();
   const navigate = useNavigate();
   const match = (pattern: string): boolean => !!useMatch(pattern);
   const [searchParams] = useSearchParams();
   const links = breadcrumbsFactory(params, match, navigate, searchParams);
+
+  useEffect(() => {
+    const resizedSidebar = localStorage.getItem('resizedSidebar') || 'false';
+    setShowMiniSidebar(JSON.parse(resizedSidebar));
+  }, []);
 
   const handleMiniSidebar = () => {
     setShowMiniSidebar(!showMiniSidebar);
