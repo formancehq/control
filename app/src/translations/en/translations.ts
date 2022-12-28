@@ -260,8 +260,8 @@ export default {
           errors: {
             inputTypeDoesntExist:
               'Form builder has no factory method for field type {{fieldType}}',
-            errorOrDuplicate:
-              '{{connectorName}} connector could not be created',
+            error:
+              "Something wrong happened while installing connector. Checkout {{connectorName}}'s page for more details.",
           },
         },
       },
@@ -272,12 +272,16 @@ export default {
             delete: {
               title: 'Delete connector instance',
               button: 'Delete',
+              confirm:
+                'Deleting the <bold>{{item}}</bold> connector will purge all of its synced data. This action is not reversible and deleted data will be lost forever',
               description:
                 'This will remove this connector instance and all its associated payments data.',
             },
             reset: {
               title: 'Reset connector instance',
               button: 'Reset',
+              confirm:
+                'Resetting the <bold>{{item}}</bold> connector will purge all of its synced data and restart the syncing from scratch. This action is not reversible and deleted data will be lost forever.',
               description:
                 'This will delete all the historical payments data for this connector and restart synchronization from scratch.',
             },
@@ -554,10 +558,7 @@ export default {
         saveButton: 'Save',
         confirmButton: 'Confirm',
         messages: {
-          confirmReset:
-            'Are you sure you want to reset <bold>{{item}}</bold> ? It will uninstall and reinstall {{item}} and it dependencies. This action is not reversible.',
-          confirmDelete:
-            'Are you sure you want to delete <bold>{{item}}</bold> ? This action is not reversible.',
+          warning: 'Are you absolutely sure?',
         },
       },
       forms: {

@@ -10,12 +10,17 @@ import { useNavigate } from 'react-router-dom';
 import { Select } from '@numaryhq/storybook';
 
 import { buildForm, FormTypes } from '~/routes/connectors/apps/formBuilder';
-import { APP_ROUTE, getRoute } from '~/src/components/Navbar/routes';
+import {
+  APP_ROUTE,
+  APPS_ROUTE,
+  getRoute,
+} from '~/src/components/Navbar/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import { useService } from '~/src/hooks/useService';
 import { Connector, ConnectorFormValues } from '~/src/types/connectorsConfig';
 import { ObjectOf } from '~/src/types/generic';
 import { API_PAYMENT } from '~/src/utils/api';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 export type CreateFormProps = {
   connectors: Connector[] | [];
@@ -103,12 +108,13 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
         sanitizedValues
       );
       if (connector) {
-        navigate(getRoute(APP_ROUTE, connectorKey));
+        navigate(getRoute(APP_ROUTE, connectorKey.toLowerCase()));
       }
     } catch {
+      navigate(getRoute(APPS_ROUTE));
       snackbar(
-        t('pages.apps.form.errors.errorOrDuplicate', {
-          connectorName: connectorKey,
+        t('pages.apps.form.errors.error', {
+          connectorName: lowerCaseAllWordsExceptFirstLetter(connectorKey),
         })
       );
     }
@@ -161,7 +167,7 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
                 select={{
                   ref: ref,
                   inputRef: ref,
-                  onChange: (e: SelectChangeEvent<unknown>) => {
+                  onChange: (e: SelectChangeEvent<any>) => {
                     const alreadyExist = connectors.find(
                       (connector) => connector.provider === e.target.value
                     );

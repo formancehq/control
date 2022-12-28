@@ -9,3 +9,6 @@ export const initials = (name: string, depth = 2): string | undefined => {
 
   return undefined;
 };
+
+export const lowerCaseAllWordsExceptFirstLetter = (str: string) =>
+  `${str.charAt(0).toUpperCase()}${str.slice(1).toLowerCase()}`;

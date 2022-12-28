@@ -79,7 +79,6 @@ export default function Index() {
   const location = useLocation();
   const connectorsData = useLoaderData<CreateFormProps>();
   const handleActive = (path: string) => location.pathname.includes(path);
-
   const config = [
     {
       active: handleActive('apps'),

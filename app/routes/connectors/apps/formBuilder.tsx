@@ -18,7 +18,7 @@ import { ObjectOf } from '~/src/types/generic';
 export enum FormTypes {
   STRING = 'string',
   DURATION = 'duration ns',
-  INTEGER = 'integer',
+  INTEGER = 'unsigned integer',
 }
 
 const inputsFactory = ({
