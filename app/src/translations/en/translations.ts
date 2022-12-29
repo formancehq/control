@@ -86,6 +86,7 @@ export default {
         copyToClipboardTooltip:
           '{{value}} has successfully been copied to clipboard !',
         reference: 'Reference',
+        scheme: 'Scheme',
         type: 'Type',
         processor: 'Processor',
         status: 'Status',
@@ -123,6 +124,7 @@ export default {
             type: 'Type',
             value: 'Value',
             reference: 'Reference',
+            scheme: 'Scheme',
             date: 'Date',
           },
         },
@@ -524,7 +526,7 @@ export default {
           configuration: 'Configuration',
         },
         targets: {
-          payments: 'PayIn - PayOut',
+          payments: 'Pay-in & Payout',
           ledgers: 'Ledgers',
           accounts: 'Accounts',
           transactions: 'Transactions',

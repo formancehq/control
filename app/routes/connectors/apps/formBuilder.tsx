@@ -107,6 +107,6 @@ export const buildForm = ({
       control,
       errors,
       label: key,
-      parentName: connectorKey,
+      parentName: connectorKey as string,
     })
   );

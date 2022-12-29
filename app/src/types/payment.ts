@@ -3,6 +3,7 @@ import { ObjectOf } from './generic';
 export enum PaymentTypes {
   PAY_IN = 'PAY-IN',
   PAY_OUT = 'PAYOUT',
+  TRANSFER = 'TRANSFER',
   OTHER = 'OTHER',
 }
 
@@ -16,6 +17,7 @@ export enum PaymentStatuses {
   CANCELLED = 'CANCELLED',
   FAILED = 'FAILED',
   PENDING = 'PENDING',
+  OTHER = 'OTHER',
 }
 
 export type Payment = {
@@ -24,29 +26,19 @@ export type Payment = {
   reference: string;
   scheme: string;
   type: PaymentTypes;
-  status: string;
+  status: PaymentStatuses;
   initialAmount: number;
   asset: string;
   createdAt: Date;
   raw: ObjectOf<any>;
 };
 
-export type PaymentDetail = {
-  id: string;
-  provider: string;
-  createdAt: string;
-  reference: string;
-  scheme: string;
-  type: PaymentType;
-  status: string;
-  initialAmount: number;
-  asset: string;
-  raw: ObjectOf<any>;
+export type PaymentDetail = Payment & {
   adjustments: Array<AdjustmentsItem>;
 };
 
 export interface AdjustmentsItem {
-  status: string;
+  status: PaymentStatuses;
   amount: number;
   date: string;
   absolute: boolean;

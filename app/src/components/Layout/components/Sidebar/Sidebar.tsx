@@ -18,14 +18,14 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
     width: resized ? 'auto' : 200,
     m: '4px 0 4px 0',
     p: '10px',
-    color: palette.blue.darker,
+    color: palette.neutral[600],
     display: 'flex',
     borderRadius: '6px',
     textTransform: 'none',
     justifyContent: resized ? 'center' : 'start',
     ':hover': {
       p: '10px',
-      color: palette.blue.darker,
+      color: palette.neutral[700],
     },
   };
 

@@ -1,35 +1,21 @@
 // TODO use S3 bucket for assets (soon)
 export const providersMap = {
   stripe: {
-    path: '/images/connectors/stripe.svg',
-    width: 28,
-  },
-  'mango-pay': {
-    path: '/images/connectors/mango-pay.svg',
-    width: 90,
+    path: '/images/payments/stripe.svg',
   },
   wise: {
-    path: '/images/connectors/wise.svg',
-    width: 'initial',
-  },
-  paypal: {
-    path: '/images/connectors/paypal.svg',
-    width: 30,
-  },
-  devengo: {
-    path: '/images/connectors/devengo.svg',
-    width: 80,
+    path: '/images/payments/wise.svg',
   },
   modulr: {
-    path: '/images/connectors/modulr.svg',
-    width: 80,
+    path: '/images/payments/modulr.svg',
   },
   'banking-circle': {
-    path: '/images/connectors/banking-circle.svg',
-    width: 80,
+    path: '/images/payments/banking-circle.svg',
   },
   'currency-cloud': {
-    path: '/images/connectors/currency-cloud.webp',
-    width: 40,
+    path: '/images/payments/currency-cloud.svg',
+  },
+  default: {
+    path: '/images/payments/default.svg',
   },
 };

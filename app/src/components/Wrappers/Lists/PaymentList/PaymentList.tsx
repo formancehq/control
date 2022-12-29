@@ -10,6 +10,7 @@ import { Amount, Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
 import { getRoute, PAYMENT_ROUTE } from '~/src/components/Navbar/routes';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
+import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Payment } from '~/src/types/payment';
@@ -49,6 +50,10 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
         },
         { key: 'status', label: t('pages.payments.table.columnLabel.status') },
         {
+          key: 'scheme',
+          label: t('pages.payments.table.columnLabel.scheme'),
+        },
+        {
           key: 'reference',
           label: t('pages.payments.table.columnLabel.reference'),
         },
@@ -65,11 +70,11 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
           keys={[
             <PayInChips key={index} type={payment.type} />,
             <ProviderPicture key={index} provider={payment.provider} />,
+            <PaymentStatusChip key={index} status={payment.status} />,
             <Chip
               key={index}
-              label={lowerCaseAllWordsExceptFirstLetter(payment.status)}
+              label={lowerCaseAllWordsExceptFirstLetter(payment.scheme)}
               variant="square"
-              color="violet"
             />,
             <Typography key={index}>{payment.reference}</Typography>,
             <Amount

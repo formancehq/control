@@ -13,7 +13,7 @@ const PayInChips: FunctionComponent<PayInChipsProps> = ({ type }) => (
   <Chip
     label={lowerCaseAllWordsExceptFirstLetter(type)}
     variant="square"
-    color={type === PaymentTypes.PAY_OUT ? 'red' : 'green'}
+    color="blue"
     icon={type === PaymentTypes.PAY_OUT ? <NorthEast /> : <SouthEast />}
   />
 );
