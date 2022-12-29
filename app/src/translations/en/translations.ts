@@ -184,7 +184,7 @@ export default {
         filters: {},
         table: {
           columnLabel: {
-            txid: '# Txid',
+            txid: 'Txid',
             status: 'Status',
             value: 'Value',
             source: 'Source',

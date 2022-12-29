@@ -41,6 +41,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         policy: query.policy || SearchPolicies.AND,
         sort: query.sort || [
           {
+            key: 'txid',
+            order: 'desc',
+          },
+          {
             key: 'timestamp',
             order: 'desc',
           },

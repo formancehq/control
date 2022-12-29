@@ -96,28 +96,34 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           {
             key: 'txid',
             label: t('pages.transactions.table.columnLabel.txid'),
+            sort: true,
+            width: 5,
           },
           {
             key: 'value',
             label: t('pages.transactions.table.columnLabel.value'),
+            width: 5,
           },
           {
             key: 'source',
             label: t('pages.transactions.table.columnLabel.source'),
+            width: 30,
           },
           {
             key: 'destination',
             label: t('pages.transactions.table.columnLabel.destination'),
+            width: 30,
           },
-
           {
             key: 'ledger',
             label: t('pages.transactions.table.columnLabel.ledger'),
+            width: 5,
           },
           {
             key: 'timestamp',
             label: t('pages.transactions.table.columnLabel.date'),
             sort: true,
+            width: 5,
           },
         ]}
         renderItem={(
