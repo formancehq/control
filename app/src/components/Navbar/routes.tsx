@@ -1,11 +1,12 @@
 import React from 'react';
 
 import {
-  AccountBalance,
+  AccountTree,
   Apps,
   CreditCard,
   Home,
   Share,
+  SwapHoriz,
   Webhook,
   Widgets,
 } from '@mui/icons-material';
@@ -70,14 +71,14 @@ export const accounts: RouterConfig = {
   id: 'accounts',
   label: 'navbar.title.accounts',
   path: getRoute(ACCOUNTS_ROUTE),
-  icon: <AccountBalance />,
+  icon: <AccountTree />,
 };
 
 export const transactions: RouterConfig = {
   id: 'transactions',
   label: 'navbar.title.transactions',
   path: getRoute(TRANSACTIONS_ROUTE),
-  icon: <AccountBalance />,
+  icon: <SwapHoriz />,
 };
 
 export const connectors: RouterConfig = {
@@ -119,7 +120,7 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
   },
   {
     label: 'sidebar.ledgers',
-    children: [accounts, transactions],
+    children: [transactions, accounts],
   },
   {
     label: 'sidebar.payments',
