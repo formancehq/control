@@ -149,10 +149,13 @@ export default function Index() {
           element={
             <Chip
               variant="square"
-              color={connector.disabled ? 'red' : 'green'}
-              label={t(
-                `common.status.${connector.disabled ? 'inactive' : 'active'}`
-              )}
+              // TODO uncomment when backend is ready (https://linear.app/formance/issue/NUM-1374/payments-connectors-always-enabled)
+              // color={connector.disabled ? 'red' : 'green'}
+              // label={t(
+              //   `common.status.${connector.disabled ? 'inactive' : 'active'}`
+              // )}
+              label={t('common.status.active')}
+              color="green"
             />
           }
         >

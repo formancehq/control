@@ -85,12 +85,15 @@ export default function Index() {
               <ProviderPicture key={index} provider={connector.provider} />,
               <Chip
                 key={index}
-                color={connector.disabled ? 'red' : 'green'}
-                label={
-                  connector.disabled
-                    ? t('common.status.inactive')
-                    : t('common.status.active')
-                }
+                // TODO uncomment when backend is ready (https://linear.app/formance/issue/NUM-1374/payments-connectors-always-enabled)
+                // color={connector.disabled ? 'red' : 'green'}
+                // label={
+                //   connector.disabled
+                //     ? t("common.status.inactive")
+                //     : t("common.status.active")
+                // }
+                label={t('common.status.active')}
+                color="green"
                 variant="square"
               />,
             ]}
