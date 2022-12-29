@@ -10,20 +10,28 @@ export enum Filters {
 }
 
 // TODO improve
-export const getFieldValue = (field: string): string => {
-  const isTerms = field.split('=').length > 1;
-  const formatted = field.replace(/=/g, ': ');
+export const getFieldValue = (
+  field: string,
+  formatLabel?: (item: string) => string
+): string => {
+  const splitValue = field.split('=');
+  const isTerms = splitValue.length > 1;
+  const label = `${splitValue[0]}=${
+    formatLabel ? formatLabel(splitValue[1]) : splitValue[1]
+  }`;
+  const formatted = label.replace(/=/g, ': ');
 
   return isTerms ? formatted : `ledger: ${field}`;
 };
 
 export const buildOptions = (
   arr: string[],
-  field?: string
+  field?: string,
+  formatLabel?: (item: string) => string
 ): AutocompleteOption[] =>
   arr.map((item) => ({
     id: `${field ? `${field}=` : ''}${item}`,
-    label: item,
+    label: formatLabel ? formatLabel(item) : item,
   }));
 
 export const renderOption = (

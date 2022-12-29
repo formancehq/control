@@ -18,7 +18,6 @@ import { Connector } from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 export const meta: MetaFunction = () => ({
   title: 'Apps',
@@ -83,12 +82,7 @@ export default function Index() {
             item={connectorsData}
             renderActions={() => renderRowActions(connector)}
             keys={[
-              <ProviderPicture
-                key={index}
-                provider={lowerCaseAllWordsExceptFirstLetter(
-                  connector.provider
-                )}
-              />,
+              <ProviderPicture key={index} provider={connector.provider} />,
               <Chip
                 key={index}
                 color={connector.disabled ? 'red' : 'green'}

@@ -1,9 +1,9 @@
 import { ObjectOf } from './generic';
 
 export enum PaymentTypes {
-  PAY_IN = 'pay-in',
-  PAY_OUT = 'payout',
-  OTHER = 'other',
+  PAY_IN = 'PAY-IN',
+  PAY_OUT = 'PAYOUT',
+  OTHER = 'OTHER',
 }
 
 export type PaymentType =
@@ -12,10 +12,10 @@ export type PaymentType =
   | PaymentTypes.OTHER;
 
 export enum PaymentStatuses {
-  SUCCEEDED = 'succeeded',
-  CANCELLED = 'cancelled',
-  FAILED = 'failed',
-  PENDING = 'pending',
+  SUCCEEDED = 'SUCCEEDED',
+  CANCELLED = 'CANCELLED',
+  FAILED = 'FAILED',
+  PENDING = 'PENDING',
 }
 
 export type Payment = {

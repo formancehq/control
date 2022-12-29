@@ -22,6 +22,7 @@ import { SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_PAYMENT, API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 import { sanitizeQuery } from '~/src/utils/search';
 
 type PaymentsData = {
@@ -94,9 +95,21 @@ export default function Index() {
       <TableFiltersContext.Provider
         value={{
           filters: [
-            { field: 'type', name: Filters.TERMS },
-            { field: 'status', name: Filters.TERMS },
-            { field: 'provider', name: Filters.TERMS },
+            {
+              field: 'type',
+              name: Filters.TERMS,
+              formatLabel: lowerCaseAllWordsExceptFirstLetter,
+            },
+            {
+              field: 'status',
+              name: Filters.TERMS,
+              formatLabel: lowerCaseAllWordsExceptFirstLetter,
+            },
+            {
+              field: 'provider',
+              name: Filters.TERMS,
+              formatLabel: lowerCaseAllWordsExceptFirstLetter,
+            },
             { field: 'reference', name: Filters.TERMS },
           ],
         }}
@@ -107,6 +120,7 @@ export default function Index() {
               <Select
                 id="payment-type-autocomplete"
                 options={paymentTypes}
+                formatLabel={lowerCaseAllWordsExceptFirstLetter}
                 field="type"
                 name="payment-type-autocomplete"
                 placeholder={t('pages.payments.filters.type')}
@@ -114,6 +128,7 @@ export default function Index() {
               <Select
                 id="payment-status-autocomplete"
                 options={paymentStatus}
+                formatLabel={lowerCaseAllWordsExceptFirstLetter}
                 field="status"
                 name="payment-status-autocomplete"
                 placeholder={t('pages.payments.filters.status')}
@@ -121,6 +136,7 @@ export default function Index() {
               <Select
                 id="payment-provider-autocomplete"
                 options={providers}
+                formatLabel={lowerCaseAllWordsExceptFirstLetter}
                 field="provider"
                 name="payment-provider-autocomplete"
                 placeholder={t('pages.payments.filters.provider')}

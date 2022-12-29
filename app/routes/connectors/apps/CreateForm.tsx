@@ -67,7 +67,7 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
 
   const formattedConnectorConfig = Object.keys(configuration).map((key) => ({
     id: key,
-    label: key,
+    label: lowerCaseAllWordsExceptFirstLetter(key),
   }));
 
   const connectorKey = watch('connectorSelect');
@@ -163,7 +163,7 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
                   entityName: 'connector',
                 })}
                 error={!!errors.connectorSelect}
-                errorMessage={errors.connectorSelect?.message}
+                errorMessage={errors.connectorSelect?.message as string}
                 select={{
                   ref: ref,
                   inputRef: ref,

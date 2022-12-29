@@ -21,9 +21,9 @@ const Select: FunctionComponent<SelectProps> = ({
   placeholder,
   width = 250,
   name,
-  variant = 'light',
   type = Filters.TERMS,
   onChange,
+  formatLabel,
 }) => {
   const { t } = useTranslation();
 
@@ -31,12 +31,11 @@ const Select: FunctionComponent<SelectProps> = ({
     <Box width={width}>
       <AutocompleteSelect
         id={id}
-        options={buildOptions(options, field) as readonly any[]}
+        options={buildOptions(options, field, formatLabel) as readonly any[]}
         name={name}
         placeholder={placeholder}
         renderTags={() => null}
         clearIcon={false}
-        variant={variant}
         noOptionsText={t('common.noResults')}
         multiple
         disableCloseOnSelect
