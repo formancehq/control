@@ -46,22 +46,33 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
         {
           key: 'provider',
           label: t('pages.payments.table.columnLabel.provider'),
-          width: 30,
+          width: 10,
         },
-        { key: 'status', label: t('pages.payments.table.columnLabel.status') },
+        {
+          key: 'status',
+          label: t('pages.payments.table.columnLabel.status'),
+          width: 15,
+        },
         {
           key: 'scheme',
           label: t('pages.payments.table.columnLabel.scheme'),
+          width: 15,
         },
         {
           key: 'reference',
           label: t('pages.payments.table.columnLabel.reference'),
+          width: 25,
         },
-        { key: 'value', label: t('pages.payments.table.columnLabel.value') },
+        {
+          key: 'value',
+          label: t('pages.payments.table.columnLabel.value'),
+          width: 10,
+        },
         {
           key: 'createdAt',
           label: t('pages.payments.table.columnLabel.date'),
           sort: true,
+          width: 10,
         },
       ]}
       renderItem={(payment: Payment, index: number) => (

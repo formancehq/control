@@ -70,10 +70,12 @@ export default function Index() {
           {
             key: 'provider',
             label: t('pages.connectors.table.columnLabel.name'),
+            width: 20,
           },
           {
             key: 'disabled',
             label: t('pages.connectors.table.columnLabel.status'),
+            width: 80,
           },
         ]}
         renderItem={(connector: Connector, index: number) => (
