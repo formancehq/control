@@ -51,6 +51,7 @@ const Table: FunctionComponent<TableProps> = ({
       };
     }),
   ];
+
   const columnsConfig = action
     ? [
         ...columnsSortedConfig,
@@ -60,6 +61,7 @@ const Table: FunctionComponent<TableProps> = ({
         },
       ]
     : columnsSortedConfig;
+
   const onNext = (next: string) => {
     setSearchParams({
       target: searchParams.get('target') as string,

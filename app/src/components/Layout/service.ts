@@ -17,6 +17,7 @@ import {
   WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
 import { ObjectOf } from '~/src/types/generic';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 export type State = {
   provider: string;
@@ -39,7 +40,7 @@ const buildPaymentBreadcrumbs = (
     return [
       bread,
       {
-        label: provider,
+        label: lowerCaseAllWordsExceptFirstLetter(provider),
       },
       {
         label: reference,

@@ -5,6 +5,7 @@ import { get } from 'lodash';
 
 import { ProviderPictureProps } from './types';
 
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 import { providersMap } from '~/src/utils/providersMap';
 
 const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
@@ -25,7 +26,7 @@ const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
       }}
     >
       {logoAttr && <img src={logoAttr.path} alt={provider} />}
-      <Typography sx={{ textTransform: 'capitalize' }}>{provider}</Typography>
+      <Typography>{lowerCaseAllWordsExceptFirstLetter(provider)}</Typography>
     </Box>
   );
 };

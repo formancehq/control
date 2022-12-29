@@ -13,6 +13,7 @@ import PayInChips from '~/src/components/Wrappers/PayInChips';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Payment } from '~/src/types/payment';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
             <ProviderPicture key={index} provider={payment.provider} />,
             <Chip
               key={index}
-              label={payment.status}
+              label={lowerCaseAllWordsExceptFirstLetter(payment.status)}
               variant="square"
               color="violet"
             />,

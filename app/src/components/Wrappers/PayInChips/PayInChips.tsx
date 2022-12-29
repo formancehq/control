@@ -7,10 +7,11 @@ import { PayInChipsProps } from './types';
 import { Chip } from '@numaryhq/storybook';
 
 import { PaymentTypes } from '~/src/types/payment';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 const PayInChips: FunctionComponent<PayInChipsProps> = ({ type }) => (
   <Chip
-    label={type}
+    label={lowerCaseAllWordsExceptFirstLetter(type)}
     variant="square"
     color={type === PaymentTypes.PAY_OUT ? 'red' : 'green'}
     icon={type === PaymentTypes.PAY_OUT ? <NorthEast /> : <SouthEast />}
