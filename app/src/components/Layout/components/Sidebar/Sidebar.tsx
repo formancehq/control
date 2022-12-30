@@ -39,7 +39,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
         transition: 'all 0.25s',
       }}
     >
-      <Box mt={9} sx={{ position: 'fixed', ml: resized ? 2 : 0 }}>
+      <Box mt={resized ? 6 : 9} sx={{ position: 'fixed', ml: resized ? 2 : 0 }}>
         {routerConfig.map(({ label: groupLabel, children }, index) => (
           <Box key={index} sx={{ marginTop: resized ? '24px' : 'initial' }}>
             {groupLabel && !resized && (
@@ -74,6 +74,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
                     justifyContent: resized ? 'center' : 'space-between',
                     marginLeft: resized ? '0px' : '24px',
                     alignItems: 'center',
+                    transition: 'all 0.25s',
                   }}
                 >
                   <LinkWrapper

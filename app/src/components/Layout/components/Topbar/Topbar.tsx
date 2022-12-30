@@ -75,7 +75,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         p: '8px 0 8px 0',
         borderRadius: '0 !important',
         background: palette.neutral[800],
-        zIndex: (theme) => theme.zIndex.drawer + 1,
+        zIndex: 9999,
         display: 'flex',
         justifyContent: 'space-between',
         alignSelf: 'center',
