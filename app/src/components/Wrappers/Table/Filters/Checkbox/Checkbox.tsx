@@ -7,7 +7,7 @@ import { URLSearchParamsInit } from 'react-router-dom';
 import { CheckboxProps } from './types';
 
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
-import { buildQuery } from '~/src/utils/search';
+import { buildQuery, resetCursor } from '~/src/utils/search';
 
 const Checkbox: FunctionComponent<CheckboxProps> = ({
   name,
@@ -28,9 +28,8 @@ const Checkbox: FunctionComponent<CheckboxProps> = ({
       if (name !== Filters.TERMS && name !== Filters.LEDGERS) {
         return null;
       }
-
-      const query = buildQuery(searchParams) as any;
-
+      let query = buildQuery(searchParams) as any;
+      query = resetCursor(query);
       if (checked) {
         const find = query[name]
           ? query[name].find((val: string) => val === value)
@@ -41,7 +40,6 @@ const Checkbox: FunctionComponent<CheckboxProps> = ({
       } else {
         query[name] = query[name].filter((val: string) => val !== value);
       }
-
       setSearchParams(query as URLSearchParamsInit);
     }
   };

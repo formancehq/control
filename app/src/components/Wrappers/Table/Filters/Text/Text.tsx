@@ -9,7 +9,7 @@ import { TextField } from '@numaryhq/storybook';
 
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import { TextProps } from '~/src/components/Wrappers/Table/Filters/Text/types';
-import { buildQuery } from '~/src/utils/search';
+import { buildQuery, resetCursor } from '~/src/utils/search';
 
 const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,7 +30,8 @@ const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
           const value = e.target.value;
           if (e.keyCode === 13 && value && !isEmpty(value)) {
             const formattedValue = `${name}=${value}`;
-            const query = buildQuery(searchParams) as any;
+            let query = buildQuery(searchParams) as any;
+            query = resetCursor(query);
             const regex = `${name}=`;
             const index = query.terms
               ? query.terms.findIndex((val: string) => val.match(regex))

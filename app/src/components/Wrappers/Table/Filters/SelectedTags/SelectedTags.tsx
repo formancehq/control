@@ -12,7 +12,7 @@ import { Filters, getFieldValue } from '../filters';
 
 import { SelectedTagsProps } from '~/src/components/Wrappers/Table/Filters/SelectedTags/types';
 import { useTableFilters } from '~/src/hooks/useTableFilters';
-import { buildQuery } from '~/src/utils/search';
+import { buildQuery, resetCursor } from '~/src/utils/search';
 
 const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
   name,
@@ -25,7 +25,8 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
     name === Filters.TERMS ? first(item.split('=')) === field : item
   );
   const onDelete = (item: string) => {
-    const query = buildQuery(searchParams) as any;
+    let query = buildQuery(searchParams) as any;
+    query = resetCursor(query);
     query.terms = query.terms
       ? query.terms.filter((val: string) => val !== item)
       : [];
