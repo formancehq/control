@@ -16,7 +16,10 @@ import Table from '~/src/components/Wrappers/Table';
 import { Payment } from '~/src/types/payment';
 import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
-const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
+const PaymentList: FunctionComponent<PaymentListProps> = ({
+  payments,
+  withPagination = true,
+}) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -40,6 +43,7 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
     <Table
       id="payments-list"
       items={payments}
+      withPagination={withPagination}
       action={true}
       columns={[
         { key: 'type', label: t('pages.payments.table.columnLabel.type') },

@@ -1,3 +1,3 @@
-import { Posting } from '../../../../../../common/types/ledger';
+import { TransactionHybrid } from '~/src/types/ledger';
 
-export type PostingsGraphProps = { postings: Posting[] };
+export type PostingsGraphProps = { transactions: TransactionHybrid[] };
