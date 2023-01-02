@@ -1,16 +1,16 @@
-import * as React from "react";
-import { useState } from "react";
+import * as React from 'react';
+import { useState } from 'react';
 
-import { Add, Delete } from "@mui/icons-material";
-import { Alert, Box, Grid, Typography, useTheme } from "@mui/material";
-import { ColorVariants } from "@numaryhq/storybook/dist/cjs/types/types";
-import type { MetaFunction, Session } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import { LoaderFunction } from "@remix-run/server-runtime";
-import { get, pick } from "lodash";
-import { Trans, useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
-import invariant from "tiny-invariant";
+import { Add, Delete } from '@mui/icons-material';
+import { Alert, Box, Grid, Typography, useTheme } from '@mui/material';
+import { ColorVariants } from '@numaryhq/storybook/dist/cjs/types/types';
+import type { MetaFunction, Session } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import { LoaderFunction } from '@remix-run/server-runtime';
+import { get, pick } from 'lodash';
+import { Trans, useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
+import invariant from 'tiny-invariant';
 
 import {
   ActionZone,
@@ -20,21 +20,21 @@ import {
   Row,
   Secret,
   SectionWrapper,
-} from "@numaryhq/storybook";
+} from '@numaryhq/storybook';
 
-import { getRoute, OAUTH_CLIENTS_ROUTE } from "~/src/components/Navbar/routes";
-import ComponentErrorBoundary from "~/src/components/Wrappers/ComponentErrorBoundary";
-import Modal from "~/src/components/Wrappers/Modal";
-import Table from "~/src/components/Wrappers/Table";
-import { useService } from "~/src/hooks/useService";
-import { OAuthClient, OAuthSecret } from "~/src/types/oauthClient";
-import { API_AUTH } from "~/src/utils/api";
-import { createApiClient } from "~/src/utils/api.server";
-import { handleResponse, withSession } from "~/src/utils/auth.server";
+import { getRoute, OAUTH_CLIENTS_ROUTE } from '~/src/components/Navbar/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import Modal from '~/src/components/Wrappers/Modal';
+import Table from '~/src/components/Wrappers/Table';
+import { useService } from '~/src/hooks/useService';
+import { OAuthClient, OAuthSecret } from '~/src/types/oauthClient';
+import { API_AUTH } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 export const meta: MetaFunction = () => ({
-  title: "OAuth Client",
-  description: "Show oauth client",
+  title: 'OAuth Client',
+  description: 'Show oauth client',
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -49,10 +49,10 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
-    invariant(params.oAuthClientId, "Expected params.oAuthClientId");
+    invariant(params.oAuthClientId, 'Expected params.oAuthClientId');
     const oauthClient = await (
       await createApiClient(session)
-    ).getResource<any>(`${API_AUTH}/clients/${params.oAuthClientId}`, "data");
+    ).getResource<any>(`${API_AUTH}/clients/${params.oAuthClientId}`, 'data');
 
     if (oauthClient) {
       return oauthClient;
@@ -79,6 +79,7 @@ export default function Index() {
 
   const renderUris = (key: string, color?: ColorVariants) => {
     const uris = get(oAuthClient, key, []) || [];
+
     return (
       <>
         {uris.length > 0 && (
@@ -101,7 +102,7 @@ export default function Index() {
                 ))
               ) : (
                 <Typography variant="placeholder">
-                  {t("pages.oAuthClient.sections.details.uris.placeholder")}
+                  {t('pages.oAuthClient.sections.details.uris.placeholder')}
                 </Typography>
               )}
             </Grid>
@@ -120,8 +121,8 @@ export default function Index() {
       }
     } catch {
       snackbar(
-        t("common.feedback.delete", {
-          item: `${t("pages.oAuthClient.title")} ${id}`,
+        t('common.feedback.delete', {
+          item: `${t('pages.oAuthClient.title')} ${id}`,
         })
       );
     }
@@ -137,15 +138,15 @@ export default function Index() {
       }
     } catch {
       snackbar(
-        t("common.feedback.delete", {
-          item: `${t("pages.oAuthClient.title")} ${id}`,
+        t('common.feedback.delete', {
+          item: `${t('pages.oAuthClient.title')} ${id}`,
         })
       );
     }
   };
 
   const renderRowActions = (secret: OAuthSecret) => (
-    <Box component="span" key={secret.id} sx={{ float: "right" }}>
+    <Box component="span" key={secret.id} sx={{ float: 'right' }}>
       <Modal
         button={{
           id: `delete-${secret.id}`,
@@ -153,12 +154,12 @@ export default function Index() {
         }}
         modal={{
           id: `delete-${secret.id}-modal`,
-          PaperProps: { sx: { minWidth: "500px" } },
-          title: t("common.dialog.deleteTitle"),
+          PaperProps: { sx: { minWidth: '500px' } },
+          title: t('common.dialog.deleteTitle'),
           actions: {
             save: {
-              variant: "error",
-              label: t("common.dialog.confirmButton"),
+              variant: 'error',
+              label: t('common.dialog.confirmButton'),
               onClick: () => onDeleteSecret(secret.id),
             },
           },
@@ -179,7 +180,7 @@ export default function Index() {
     const secret = await api.postResource<OAuthSecret>(
       `${API_AUTH}/clients/${id}/secrets`,
       {},
-      "data"
+      'data'
     );
     if (secret) {
       const secretList = [...secrets, secret] as OAuthSecret[];
@@ -190,13 +191,13 @@ export default function Index() {
   return (
     <Page id="oAuthClient" title={oAuthClient.name}>
       <>
-        <SectionWrapper title={t("pages.oAuthClient.sections.details.title")}>
+        <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
           <>
             {/* ID */}
             <Grid container sx={{ mb: 1, mt: 2 }}>
               <Grid item xs={2}>
                 <Typography variant="bold">
-                  {t("pages.oAuthClients.table.columnLabel.id")}
+                  {t('pages.oAuthClients.table.columnLabel.id')}
                 </Typography>
               </Grid>
               <Grid item xs={10}>
@@ -207,14 +208,14 @@ export default function Index() {
             <Grid container sx={{ mb: 1, mt: 2 }}>
               <Grid item xs={2}>
                 <Typography variant="bold">
-                  {t("pages.oAuthClients.table.columnLabel.public")}
+                  {t('pages.oAuthClients.table.columnLabel.public')}
                 </Typography>
               </Grid>
               <Grid item xs={10}>
                 <Chip
                   label={t(
                     `pages.oAuthClients.table.rows.${
-                      oAuthClient.public ? "public" : "private"
+                      oAuthClient.public ? 'public' : 'private'
                     }`
                   )}
                   variant="square"
@@ -223,7 +224,7 @@ export default function Index() {
               </Grid>
             </Grid>
             {/* Name / description */}
-            {Object.keys(pick(oAuthClient, ["name", "description"])).map(
+            {Object.keys(pick(oAuthClient, ['name', 'description'])).map(
               (key: string, index: number) => {
                 const item = get(oAuthClient, key);
                 if (item)
@@ -242,20 +243,20 @@ export default function Index() {
               }
             )}
             {/* Redirect uri */}
-            {renderUris("redirectUris", "violet")}
+            {renderUris('redirectUris', 'violet')}
             {/* Post logout uri */}
-            {renderUris("postLogoutRedirectUris", "green")}
+            {renderUris('postLogoutRedirectUris', 'green')}
           </>
         </SectionWrapper>
         <SectionWrapper
-          title={t("pages.oAuthClient.sections.secrets.title")}
+          title={t('pages.oAuthClient.sections.secrets.title')}
           element={
             <LoadingButton
               id={`create-secret-${id}`}
               onClick={handleCreateSecret}
               startIcon={<Add />}
               variant="dark"
-              content={t("pages.oAuthClient.sections.secrets.create")}
+              content={t('pages.oAuthClient.sections.secrets.create')}
             />
           }
         >
@@ -278,22 +279,22 @@ export default function Index() {
                           key={index}
                           severity="info"
                           sx={{
-                            backgroundColor: "transparent",
-                            border: "0 !important",
-                            ".MuiAlert-message": {
+                            backgroundColor: 'transparent',
+                            border: '0 !important',
+                            '.MuiAlert-message': {
                               ...typography.body1,
                             },
                           }}
                         >
-                          <Box component="span" sx={{ display: "block" }}>
-                            {t("pages.oAuthClient.sections.secrets.clear")}
+                          <Box component="span" sx={{ display: 'block' }}>
+                            {t('pages.oAuthClient.sections.secrets.clear')}
                           </Box>
                           <Secret
                             key={index}
                             lastDigits="13cd"
-                            value={secret.clear || ""}
+                            value={secret.clear || ''}
                             color="blue"
-                            tooltipMessage={t("common.tooltip.copied")}
+                            tooltipMessage={t('common.tooltip.copied')}
                           />
                         </Alert>
                       )}
@@ -307,32 +308,32 @@ export default function Index() {
           </Box>
         </SectionWrapper>
         <SectionWrapper
-          title={t("pages.oAuthClient.sections.dangerZone.title")}
+          title={t('pages.oAuthClient.sections.dangerZone.title')}
         >
           <ActionZone
             actions={[
               {
-                key: "delete-oAuthClient",
-                title: t("pages.oAuthClient.sections.dangerZone.delete.title"),
+                key: 'delete-oAuthClient',
+                title: t('pages.oAuthClient.sections.dangerZone.delete.title'),
                 description: t(
-                  "pages.oAuthClient.sections.dangerZone.delete.description"
+                  'pages.oAuthClient.sections.dangerZone.delete.description'
                 ),
                 button: (
                   <Modal
                     button={{
                       id: `delete-${oAuthClient.id}`,
                       startIcon: <Delete />,
-                      content: t("common.buttons.delete"),
-                      variant: "error",
+                      content: t('common.buttons.delete'),
+                      variant: 'error',
                     }}
                     modal={{
                       id: `delete-${oAuthClient.id}-modal`,
-                      PaperProps: { sx: { minWidth: "500px" } },
-                      title: t("common.dialog.deleteTitle"),
+                      PaperProps: { sx: { minWidth: '500px' } },
+                      title: t('common.dialog.deleteTitle'),
                       actions: {
                         save: {
-                          variant: "error",
-                          label: t("common.dialog.confirmButton"),
+                          variant: 'error',
+                          label: t('common.dialog.confirmButton'),
                           onClick: () => onDeleteClient(oAuthClient.id),
                         },
                       },

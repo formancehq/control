@@ -217,6 +217,9 @@ export default {
         graph: {
           title: 'Graph',
         },
+        reco: {
+          title: 'Reconciliation',
+        },
         metadata: {
           title: 'Metadata',
         },

@@ -26,28 +26,8 @@ import {
 } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
-import {
-  PostingHybrid,
-  Transaction,
-  TransactionHybrid,
-} from '~/src/types/ledger';
+import { Transaction, TransactionHybrid } from '~/src/types/ledger';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
-
-export const displayTxid = (
-  data: TransactionHybrid[] | PostingHybrid[],
-  item: TransactionHybrid | PostingHybrid
-): boolean => {
-  const groupedByTxid = data.filter(
-    (a: TransactionHybrid | PostingHybrid) => a.txid === item.txid
-  );
-  const first = head(groupedByTxid) as TransactionHybrid;
-
-  return (
-    first.destination === item.destination &&
-    first.source === item.source &&
-    first.txid === item.txid
-  );
-};
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
@@ -151,7 +131,15 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           index: number,
           data: TransactionHybrid[]
         ) => {
-          const displayElement = displayTxid(data, transaction);
+          const groupedByTxid = data.filter(
+            (a: TransactionHybrid) => a.txid === transaction.txid
+          );
+          const first = head(groupedByTxid) as TransactionHybrid;
+
+          const displayElement =
+            first.destination === transaction.destination &&
+            first.source === transaction.source &&
+            first.txid === transaction.txid;
 
           return (
             <Row

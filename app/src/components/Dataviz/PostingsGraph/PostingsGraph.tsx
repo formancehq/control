@@ -5,27 +5,28 @@ import Graphviz from 'graphviz-react';
 
 import { PostingsGraphProps } from './types';
 
-import { Posting } from '~/src/types/ledger';
+import { TransactionHybrid } from '~/src/types/ledger';
 
-const PostingsGraph: FunctionComponent<PostingsGraphProps> = ({ postings }) => {
+const PostingsGraph: FunctionComponent<PostingsGraphProps> = ({
+  transactions,
+}) => {
   let dot = '';
-
-  postings.map((posting: Posting) => {
-    const splitSource: string[] = posting.source.split(':');
-    const splitDest: string[] = posting.destination.split(':');
-    let source: string = posting.source;
-    let destination: string = posting.destination;
+  transactions.map((transaction: TransactionHybrid) => {
+    const splitSource: string[] = transaction.source.split(':');
+    const splitDest: string[] = transaction.destination.split(':');
+    let source: string = transaction.source;
+    let destination: string = transaction.destination;
 
     // Dot language is escaping semicolon from label.
     // To use semicolon as label we need to use dot special char <> encoding
     if (splitSource.length > 0) {
-      source = `<${posting.source}>`;
+      source = `<${transaction.source}>`;
     }
     if (splitDest.length > 0) {
-      destination = `<${posting.destination}>`;
+      destination = `<${transaction.destination}>`;
     }
     dot = `${dot} 
-           ${source} -> ${destination}[label="${posting.asset} ${posting.amount}",weight="${posting.amount}"];`;
+           ${source} -> ${destination}[label="${transaction.asset} ${transaction.amount}",weight="${transaction.amount}"];`;
   });
 
   return (
