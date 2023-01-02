@@ -10,9 +10,11 @@ import { Amount, Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
 import { getRoute, PAYMENT_ROUTE } from '~/src/components/Navbar/routes';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
+import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Payment } from '~/src/types/payment';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
   const navigate = useNavigate();
@@ -44,18 +46,33 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
         {
           key: 'provider',
           label: t('pages.payments.table.columnLabel.provider'),
-          width: 30,
+          width: 10,
         },
-        { key: 'status', label: t('pages.payments.table.columnLabel.status') },
+        {
+          key: 'status',
+          label: t('pages.payments.table.columnLabel.status'),
+          width: 15,
+        },
+        {
+          key: 'scheme',
+          label: t('pages.payments.table.columnLabel.scheme'),
+          width: 15,
+        },
         {
           key: 'reference',
           label: t('pages.payments.table.columnLabel.reference'),
+          width: 25,
         },
-        { key: 'value', label: t('pages.payments.table.columnLabel.value') },
+        {
+          key: 'value',
+          label: t('pages.payments.table.columnLabel.value'),
+          width: 10,
+        },
         {
           key: 'createdAt',
           label: t('pages.payments.table.columnLabel.date'),
           sort: true,
+          width: 10,
         },
       ]}
       renderItem={(payment: Payment, index: number) => (
@@ -64,11 +81,11 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({ payments }) => {
           keys={[
             <PayInChips key={index} type={payment.type} />,
             <ProviderPicture key={index} provider={payment.provider} />,
+            <PaymentStatusChip key={index} status={payment.status} />,
             <Chip
               key={index}
-              label={payment.status}
+              label={lowerCaseAllWordsExceptFirstLetter(payment.scheme)}
               variant="square"
-              color={payment.status === 'succeeded' ? 'violet' : undefined}
             />,
             <Typography key={index}>{payment.reference}</Typography>,
             <Amount

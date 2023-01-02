@@ -1,28 +1,21 @@
-import { PaymentProviders } from '~/src/types/payment';
-
+// TODO use S3 bucket for assets (soon)
 export const providersMap = {
-  [PaymentProviders.STRIPE]: {
-    path: '/images/connectors/stripe.svg',
-    width: 28,
+  stripe: {
+    path: '/images/payments/stripe.svg',
   },
-  [PaymentProviders.MONGOPAY]: {
-    path: '/images/connectors/mangopay.svg',
-    width: 90,
+  wise: {
+    path: '/images/payments/wise.svg',
   },
-  [PaymentProviders.WISE]: {
-    path: '/images/connectors/wise.svg',
-    width: 'initial',
+  modulr: {
+    path: '/images/payments/modulr.svg',
   },
-  [PaymentProviders.PAYPAL]: {
-    path: '/images/connectors/paypal.svg',
-    width: 30,
+  'banking-circle': {
+    path: '/images/payments/banking-circle.svg',
   },
-  [PaymentProviders.DEVENGO]: {
-    path: '/images/connectors/devengo.svg',
-    width: 80,
+  'currency-cloud': {
+    path: '/images/payments/currency-cloud.svg',
   },
-  [PaymentProviders.MODULR]: {
-    path: '/images/connectors/modulr.svg',
-    width: 80,
+  default: {
+    path: '/images/payments/default.svg',
   },
 };

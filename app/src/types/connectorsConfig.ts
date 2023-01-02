@@ -1,22 +1,16 @@
 import { ObjectOf } from './generic';
 
 export type InputType = {
-  datatype: string;
+  dataType: string;
   required?: boolean;
 };
 
 export type ConnectorConfigFormProps = {
-  stripe: Record<string, InputType>;
-  modulr: Record<string, InputType>;
-  dummypay: Record<string, InputType>;
-  wise: Record<string, InputType>;
+  [name: string]: Record<string, InputType>;
 };
 
 export type ConnectorFormValues = {
-  stripe: ObjectOf<string>;
-  modulr: ObjectOf<string>;
-  dummypay: ObjectOf<string>;
-  wise: ObjectOf<string>;
+  [name: string]: ObjectOf<string>;
 };
 
 export type Connector = {

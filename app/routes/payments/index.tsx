@@ -15,27 +15,23 @@ import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Select from '~/src/components/Wrappers/Table/Filters/Select';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
 import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { Connector } from '~/src/types/connectorsConfig';
 import { Cursor } from '~/src/types/generic';
-import {
-  Payment,
-  PaymentProviders,
-  PaymentStatuses,
-  PaymentTypes,
-} from '~/src/types/payment';
+import { Payment, PaymentStatuses, PaymentTypes } from '~/src/types/payment';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
-import { API_SEARCH } from '~/src/utils/api';
+import { API_PAYMENT, API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 import { sanitizeQuery } from '~/src/utils/search';
 
+type PaymentsData = {
+  payments: Payment[];
+  providers: string[];
+};
+
 const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
-const paymentProviders = [
-  PaymentProviders.STRIPE,
-  PaymentProviders.DEVENGO,
-  PaymentProviders.MONGOPAY,
-  PaymentProviders.WISE,
-  PaymentProviders.PAYPAL,
-];
+
 const paymentStatus = [
   PaymentStatuses.PENDING,
   PaymentStatuses.SUCCEEDED,
@@ -50,9 +46,14 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
-    const results = await (
-      await createApiClient(session)
-    ).postResource<Cursor<Payment>>(
+    const api = await createApiClient(session);
+    const connectorsConfig = await (
+      await api
+    ).getResource<Connector[]>(`${API_PAYMENT}/connectors/configs`);
+
+    const payments = await (
+      await api
+    ).postResource<Cursor<Payment[]>>(
       API_SEARCH,
       {
         ...sanitizeQuery(request),
@@ -61,7 +62,12 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
       'cursor'
     );
-    if (results) return results;
+
+    if (payments && connectorsConfig) {
+      const providers = Object.keys(connectorsConfig).map((key: string) => key);
+
+      return { payments, providers };
+    }
 
     return null;
   }
@@ -81,16 +87,29 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export default function Index() {
   const { t } = useTranslation();
-  const payments = useLoaderData();
+  const { payments, providers } =
+    useLoaderData<PaymentsData>() as unknown as PaymentsData;
 
   return (
     <Page id={paymentsConfig.id}>
       <TableFiltersContext.Provider
         value={{
           filters: [
-            { field: 'type', name: Filters.TERMS },
-            { field: 'status', name: Filters.TERMS },
-            { field: 'provider', name: Filters.TERMS },
+            {
+              field: 'type',
+              name: Filters.TERMS,
+              formatLabel: lowerCaseAllWordsExceptFirstLetter,
+            },
+            {
+              field: 'status',
+              name: Filters.TERMS,
+              formatLabel: lowerCaseAllWordsExceptFirstLetter,
+            },
+            {
+              field: 'provider',
+              name: Filters.TERMS,
+              formatLabel: lowerCaseAllWordsExceptFirstLetter,
+            },
             { field: 'reference', name: Filters.TERMS },
           ],
         }}
@@ -101,6 +120,7 @@ export default function Index() {
               <Select
                 id="payment-type-autocomplete"
                 options={paymentTypes}
+                formatLabel={lowerCaseAllWordsExceptFirstLetter}
                 field="type"
                 name="payment-type-autocomplete"
                 placeholder={t('pages.payments.filters.type')}
@@ -108,13 +128,15 @@ export default function Index() {
               <Select
                 id="payment-status-autocomplete"
                 options={paymentStatus}
+                formatLabel={lowerCaseAllWordsExceptFirstLetter}
                 field="status"
                 name="payment-status-autocomplete"
                 placeholder={t('pages.payments.filters.status')}
               />
               <Select
                 id="payment-provider-autocomplete"
-                options={paymentProviders}
+                options={providers}
+                formatLabel={lowerCaseAllWordsExceptFirstLetter}
                 field="provider"
                 name="payment-provider-autocomplete"
                 placeholder={t('pages.payments.filters.provider')}

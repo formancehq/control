@@ -81,15 +81,17 @@ export default function Index() {
           {
             key: 'name',
             label: t('pages.oAuthClients.table.columnLabel.name'),
-            width: 20,
+            width: 5,
           },
           {
             key: 'public',
             label: t('pages.oAuthClients.table.columnLabel.public'),
+            width: 15,
           },
           {
             key: 'description',
             label: t('pages.oAuthClients.table.columnLabel.description'),
+            width: 80,
           },
         ]}
         renderItem={(oAuthClient: OAuthClient, index: number) => (

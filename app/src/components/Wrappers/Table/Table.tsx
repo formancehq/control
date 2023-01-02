@@ -51,6 +51,7 @@ const Table: FunctionComponent<TableProps> = ({
       };
     }),
   ];
+
   const columnsConfig = action
     ? [
         ...columnsSortedConfig,
@@ -60,18 +61,19 @@ const Table: FunctionComponent<TableProps> = ({
         },
       ]
     : columnsSortedConfig;
+
+  const paginate = (cursor: string) => {
+    const query = buildQuery(searchParams) as any;
+    const params = { ...query, cursor } as any;
+    setSearchParams(params);
+  };
+
   const onNext = (next: string) => {
-    setSearchParams({
-      target: searchParams.get('target') as string,
-      cursor: next,
-    });
+    paginate(next);
   };
 
   const onPrevious = (previous: string) => {
-    setSearchParams({
-      target: searchParams.get('target') as string,
-      cursor: previous,
-    });
+    paginate(previous);
   };
 
   let activeFilters = false;

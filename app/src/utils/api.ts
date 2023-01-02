@@ -104,5 +104,7 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
     return {} as T;
   }
 
-  throw new Error('Response body could not be handled');
+  throw new Error(
+    `Responded [${response?.status}] with text [${response?.statusText}]`
+  );
 };

@@ -18,53 +18,8 @@ import { ObjectOf } from '~/src/types/generic';
 export enum FormTypes {
   STRING = 'string',
   DURATION = 'duration ns',
-  INTEGER = 'integer',
+  INTEGER = 'unsigned integer',
 }
-export const connectorsConfig = {
-  dummypay: {
-    directory: {
-      datatype: FormTypes.STRING,
-      required: true,
-    },
-    fileGenerationPeriod: {
-      datatype: FormTypes.DURATION,
-    },
-    filePollingPeriod: {
-      datatype: FormTypes.DURATION,
-    },
-  },
-  modulr: {
-    apiKey: {
-      datatype: FormTypes.STRING,
-      required: true,
-    },
-    apiSecret: {
-      datatype: FormTypes.STRING,
-      required: true,
-    },
-    endpoint: {
-      datatype: FormTypes.STRING,
-    },
-  },
-  stripe: {
-    apiKey: {
-      datatype: FormTypes.STRING,
-      required: true,
-    },
-    pollingPeriod: {
-      datatype: FormTypes.DURATION,
-    },
-    pageSize: {
-      datatype: 'integer',
-    },
-  },
-  wise: {
-    apiKey: {
-      datatype: FormTypes.STRING,
-      required: true,
-    },
-  },
-};
 
 const inputsFactory = ({
   inputConfig,
@@ -100,7 +55,7 @@ const inputsFactory = ({
     rules: { required: inputConfig.required },
   };
 
-  switch (inputConfig.datatype) {
+  switch (inputConfig.dataType) {
     case FormTypes.STRING:
       return (
         <Controller
@@ -128,7 +83,7 @@ const inputsFactory = ({
     default:
       throw new Error(
         i18n.t('pages.apps.form.errors.inputTypeDoesntExist', {
-          fieldType: inputConfig.datatype,
+          fieldType: inputConfig.dataType,
         })
       );
   }
@@ -152,6 +107,6 @@ export const buildForm = ({
       control,
       errors,
       label: key,
-      parentName: connectorKey,
+      parentName: connectorKey as string,
     })
   );

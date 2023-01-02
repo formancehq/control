@@ -26,6 +26,7 @@ import {
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import DetailPage from '~/src/components/Wrappers/DetailPage';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
+import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
@@ -33,6 +34,7 @@ import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { copyTokenToClipboard } from '~/src/utils/clipboard';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 // TODO remove this when Reconciliation is done
 interface Reconciliation {
@@ -266,12 +268,14 @@ export default function PaymentDetails() {
                   t('pages.payment.processor'),
                   <ProviderPicture provider={details.provider} />
                 )}
-
                 {dataItem(
                   t('pages.payment.status'),
+                  <PaymentStatusChip status={details.status} />
+                )}
+                {dataItem(
+                  t('pages.payment.scheme'),
                   <Chip
-                    color="violet"
-                    label={details.status}
+                    label={lowerCaseAllWordsExceptFirstLetter(details.scheme)}
                     variant="square"
                   />
                 )}

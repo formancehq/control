@@ -18,19 +18,20 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
     width: resized ? 'auto' : 200,
     m: '4px 0 4px 0',
     p: '10px',
-    color: palette.blue.darker,
+    color: palette.neutral[600],
     display: 'flex',
     borderRadius: '6px',
     textTransform: 'none',
     justifyContent: resized ? 'center' : 'start',
     ':hover': {
       p: '10px',
-      color: palette.blue.darker,
+      color: palette.neutral[700],
     },
   };
 
   return (
     <Box
+      id="sidebar"
       sx={{
         width,
         borderRight: `1px solid ${palette.neutral[200]} !important`,
@@ -38,7 +39,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
         transition: 'all 0.25s',
       }}
     >
-      <Box mt={9}>
+      <Box mt={resized ? 6 : 9} sx={{ position: 'fixed', ml: resized ? 2 : 0 }}>
         {routerConfig.map(({ label: groupLabel, children }, index) => (
           <Box key={index} sx={{ marginTop: resized ? '24px' : 'initial' }}>
             {groupLabel && !resized && (
@@ -73,6 +74,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
                     justifyContent: resized ? 'center' : 'space-between',
                     marginLeft: resized ? '0px' : '24px',
                     alignItems: 'center',
+                    transition: 'all 0.25s',
                   }}
                 >
                   <LinkWrapper

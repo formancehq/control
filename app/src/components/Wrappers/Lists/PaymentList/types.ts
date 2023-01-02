@@ -1,1 +1,3 @@
-export type PaymentListProps = { payments: [] };
+import { Payment } from '~/src/types/payment';
+
+export type PaymentListProps = { payments: Payment[] };

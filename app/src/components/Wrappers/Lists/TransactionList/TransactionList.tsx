@@ -26,8 +26,28 @@ import {
 } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
-import { Transaction, TransactionHybrid } from '~/src/types/ledger';
+import {
+  PostingHybrid,
+  Transaction,
+  TransactionHybrid,
+} from '~/src/types/ledger';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
+
+export const displayTxid = (
+  data: TransactionHybrid[] | PostingHybrid[],
+  item: TransactionHybrid | PostingHybrid
+): boolean => {
+  const groupedByTxid = data.filter(
+    (a: TransactionHybrid | PostingHybrid) => a.txid === item.txid
+  );
+  const first = head(groupedByTxid) as TransactionHybrid;
+
+  return (
+    first.destination === item.destination &&
+    first.source === item.source &&
+    first.txid === item.txid
+  );
+};
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
@@ -96,28 +116,34 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           {
             key: 'txid',
             label: t('pages.transactions.table.columnLabel.txid'),
+            sort: true,
+            width: 5,
           },
           {
             key: 'value',
             label: t('pages.transactions.table.columnLabel.value'),
+            width: 5,
           },
           {
             key: 'source',
             label: t('pages.transactions.table.columnLabel.source'),
+            width: 30,
           },
           {
             key: 'destination',
             label: t('pages.transactions.table.columnLabel.destination'),
+            width: 30,
           },
-
           {
             key: 'ledger',
             label: t('pages.transactions.table.columnLabel.ledger'),
+            width: 5,
           },
           {
             key: 'timestamp',
             label: t('pages.transactions.table.columnLabel.date'),
             sort: true,
+            width: 5,
           },
         ]}
         renderItem={(
@@ -125,14 +151,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           index: number,
           data: TransactionHybrid[]
         ) => {
-          const groupedByTxid = data.filter(
-            (a: TransactionHybrid) => a.txid === transaction.txid
-          );
-          const first = head(groupedByTxid) as TransactionHybrid;
-          const displayElement =
-            first.destination === transaction.destination &&
-            first.source === transaction.source &&
-            first.txid === transaction.txid;
+          const displayElement = displayTxid(data, transaction);
 
           return (
             <Row

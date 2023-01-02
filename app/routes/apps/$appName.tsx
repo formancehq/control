@@ -29,6 +29,7 @@ import { Connector, ConnectorTask } from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 export const meta: MetaFunction = () => ({
   title: 'App details',
@@ -59,17 +60,17 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       await createApiClient(session)
     ).getResource<Connector[]>(`${API_PAYMENT}/connectors`, 'data');
 
-    const status = connectors
+    const connector = connectors
       ? connectors.find(
-          (connector: Connector) => connector.provider === params.appName
+          (connector: Connector) =>
+            connector.provider === params.appName?.toUpperCase()
         )
       : {};
 
     if (tasks) {
       return {
         tasks,
-        status,
-        name: params.appName,
+        connector,
       };
     }
 
@@ -79,16 +80,38 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return handleResponse(await withSession(request, handleData));
 };
 
+const renderConfirmModalContent = (
+  connector: string,
+  action: 'delete' | 'reset',
+  t: any
+): JSX.Element => (
+  <>
+    <Typography pb={1}>{t('common.dialog.messages.warning')}</Typography>
+    <Typography>
+      <Trans
+        i18nKey={`pages.app.sections.dangerZone.${action}.confirm`}
+        values={{
+          item: lowerCaseAllWordsExceptFirstLetter(connector),
+        }}
+        components={{ bold: <strong /> }}
+      />
+    </Typography>
+  </>
+);
+
 export default function Index() {
   const { t } = useTranslation();
-  const { tasks, name, status } = useLoaderData<any>();
+  const { tasks, connector } = useLoaderData<{
+    tasks: any;
+    connector: Connector;
+  }>();
   const navigate = useNavigate();
   const { api, snackbar } = useService();
 
   const onDelete = async (name: string) => {
     try {
       const result = await api.deleteResource<unknown>(
-        `${API_PAYMENT}/connectors/${name}`
+        `${API_PAYMENT}/connectors/${connector.provider}`
       );
       if (result) {
         navigate(APPS_ROUTE);
@@ -115,7 +138,10 @@ export default function Index() {
   };
 
   return (
-    <Page id="app-details" title={name}>
+    <Page
+      id="app-details"
+      title={lowerCaseAllWordsExceptFirstLetter(connector.provider)}
+    >
       <>
         {/* Danger zone */}
         <SectionWrapper
@@ -123,12 +149,13 @@ export default function Index() {
           element={
             <Chip
               variant="square"
-              color={status.disabled ? 'red' : 'green'}
-              label={t(
-                `pages.app.sections.dangerZone.status.${
-                  status.disabled ? 'error' : 'active'
-                }`
-              )}
+              // TODO uncomment when backend is ready (https://linear.app/formance/issue/NUM-1374/payments-connectors-always-enabled)
+              // color={connector.disabled ? 'red' : 'green'}
+              // label={t(
+              //   `common.status.${connector.disabled ? 'inactive' : 'active'}`
+              // )}
+              label={t('common.status.active')}
+              color="green"
             />
           }
         >
@@ -156,18 +183,12 @@ export default function Index() {
                         save: {
                           variant: 'error',
                           label: t('common.dialog.confirmButton'),
-                          onClick: () => onDelete(name),
+                          onClick: () => onDelete(connector.provider),
                         },
                       },
                     }}
                   >
-                    <Typography>
-                      <Trans
-                        i18nKey="common.dialog.messages.confirmDelete"
-                        values={{ item: name }}
-                        components={{ bold: <strong /> }}
-                      />
-                    </Typography>
+                    {renderConfirmModalContent(connector.provider, 'delete', t)}
                   </Modal>
                 ),
               },
@@ -193,18 +214,12 @@ export default function Index() {
                         save: {
                           variant: 'error',
                           label: t('common.dialog.confirmButton'),
-                          onClick: () => onReset(name),
+                          onClick: () => onReset(connector.provider),
                         },
                       },
                     }}
                   >
-                    <Typography>
-                      <Trans
-                        i18nKey="common.dialog.messages.confirmReset"
-                        values={{ item: name }}
-                        components={{ bold: <strong /> }}
-                      />
-                    </Typography>
+                    {renderConfirmModalContent(connector.provider, 'reset', t)}
                   </Modal>
                 ),
               },
@@ -251,7 +266,7 @@ export default function Index() {
                     label={
                       task.status
                         ? t('common.status.active')
-                        : t('common.status.error')
+                        : t('common.status.inactive')
                     }
                     variant="square"
                   />,

@@ -1,4 +1,4 @@
-import { identity, pickBy, toNumber } from 'lodash';
+import { identity, omit, pickBy, toNumber } from 'lodash';
 
 import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
 
@@ -35,3 +35,6 @@ export const sanitizeQuery = (request: Request) => {
       : undefined,
   };
 };
+
+export const resetCursor = (query: SearchBody): SearchBody =>
+  omit(query, ['cursor']);

@@ -51,7 +51,9 @@ export default function Index() {
   const renderRowActions = (connector: Connector) => (
     <LoadingButton
       id={`show-${connector.provider}`}
-      onClick={() => navigate(getRoute(APP_ROUTE, connector.provider))}
+      onClick={() =>
+        navigate(getRoute(APP_ROUTE, connector.provider.toLowerCase()))
+      }
       endIcon={<ArrowRight />}
       key={connector.provider}
     />
@@ -68,10 +70,12 @@ export default function Index() {
           {
             key: 'provider',
             label: t('pages.connectors.table.columnLabel.name'),
+            width: 20,
           },
           {
             key: 'disabled',
             label: t('pages.connectors.table.columnLabel.status'),
+            width: 80,
           },
         ]}
         renderItem={(connector: Connector, index: number) => (
@@ -83,12 +87,15 @@ export default function Index() {
               <ProviderPicture key={index} provider={connector.provider} />,
               <Chip
                 key={index}
-                color={connector.disabled ? 'green' : 'red'}
-                label={
-                  connector.disabled
-                    ? t('common.status.active')
-                    : t('common.status.error')
-                }
+                // TODO uncomment when backend is ready (https://linear.app/formance/issue/NUM-1374/payments-connectors-always-enabled)
+                // color={connector.disabled ? 'red' : 'green'}
+                // label={
+                //   connector.disabled
+                //     ? t("common.status.inactive")
+                //     : t("common.status.active")
+                // }
+                label={t('common.status.active')}
+                color="green"
                 variant="square"
               />,
             ]}

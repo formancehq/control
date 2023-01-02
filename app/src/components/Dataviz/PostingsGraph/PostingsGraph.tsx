@@ -33,6 +33,7 @@ const PostingsGraph: FunctionComponent<PostingsGraphProps> = ({ postings }) => {
       sx={{
         textAlign: 'center',
         borderRadius: '6px',
+        border: '1px solid rgb(239, 241, 246)',
       }}
     >
       <Graphviz

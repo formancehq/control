@@ -11,7 +11,8 @@ import { Chip } from '@numaryhq/storybook';
 import { Filters, getFieldValue } from '../filters';
 
 import { SelectedTagsProps } from '~/src/components/Wrappers/Table/Filters/SelectedTags/types';
-import { buildQuery } from '~/src/utils/search';
+import { useTableFilters } from '~/src/hooks/useTableFilters';
+import { buildQuery, resetCursor } from '~/src/utils/search';
 
 const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
   name,
@@ -19,11 +20,13 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const all = searchParams.getAll(name);
+  const { filters } = useTableFilters();
   const chips = all.filter((item) =>
     name === Filters.TERMS ? first(item.split('=')) === field : item
   );
   const onDelete = (item: string) => {
-    const query = buildQuery(searchParams) as any;
+    let query = buildQuery(searchParams) as any;
+    query = resetCursor(query);
     query.terms = query.terms
       ? query.terms.filter((val: string) => val !== item)
       : [];
@@ -36,15 +39,21 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
   return (
     <>
       {chips.length > 0 &&
-        chips.map((item: string, index: number) => (
-          <Box mt={1} component="span" key={index}>
-            <Chip
-              label={field ? getFieldValue(item) : item}
-              variant="square"
-              onDelete={() => onDelete(item)}
-            />
-          </Box>
-        ))}
+        chips.map((item: string, index: number) => {
+          const filterConfig = filters.find((filter) => filter.field === field);
+
+          return (
+            <Box mt={1} component="span" key={index}>
+              <Chip
+                label={
+                  field ? getFieldValue(item, filterConfig?.formatLabel) : item
+                }
+                variant="square"
+                onDelete={() => onDelete(item)}
+              />
+            </Box>
+          );
+        })}
     </>
   );
 };

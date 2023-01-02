@@ -1,9 +1,10 @@
 import { ObjectOf } from './generic';
 
 export enum PaymentTypes {
-  PAY_IN = 'pay-in',
-  PAY_OUT = 'payout',
-  OTHER = 'other',
+  PAY_IN = 'PAY-IN',
+  PAY_OUT = 'PAYOUT',
+  TRANSFER = 'TRANSFER',
+  OTHER = 'OTHER',
 }
 
 export type PaymentType =
@@ -12,19 +13,11 @@ export type PaymentType =
   | PaymentTypes.OTHER;
 
 export enum PaymentStatuses {
-  SUCCEEDED = 'succeeded',
-  CANCELLED = 'cancelled',
-  FAILED = 'failed',
-  PENDING = 'pending',
-}
-
-export enum PaymentProviders {
-  DEVENGO = 'devengo',
-  STRIPE = 'stripe',
-  MONGOPAY = 'mangopay',
-  WISE = 'wise',
-  PAYPAL = 'paypal',
-  MODULR = 'modulr',
+  SUCCEEDED = 'SUCCEEDED',
+  CANCELLED = 'CANCELLED',
+  FAILED = 'FAILED',
+  PENDING = 'PENDING',
+  OTHER = 'OTHER',
 }
 
 export type Payment = {
@@ -33,29 +26,19 @@ export type Payment = {
   reference: string;
   scheme: string;
   type: PaymentTypes;
-  status: string;
+  status: PaymentStatuses;
   initialAmount: number;
   asset: string;
   createdAt: Date;
   raw: ObjectOf<any>;
 };
 
-export type PaymentDetail = {
-  id: string;
-  provider: string;
-  createdAt: string;
-  reference: string;
-  scheme: string;
-  type: PaymentType;
-  status: string;
-  initialAmount: number;
-  asset: string;
-  raw: ObjectOf<any>;
+export type PaymentDetail = Payment & {
   adjustments: Array<AdjustmentsItem>;
 };
 
 export interface AdjustmentsItem {
-  status: string;
+  status: PaymentStatuses;
   amount: number;
   date: string;
   absolute: boolean;

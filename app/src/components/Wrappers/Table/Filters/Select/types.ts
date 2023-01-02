@@ -7,7 +7,7 @@ export type SelectProps = {
   placeholder: string;
   width?: number;
   name: string;
-  variant?: 'light' | 'dark';
   type?: Filters.TERMS | Filters.LEDGERS;
   onChange?: () => void;
+  formatLabel?: (item: string) => string;
 };

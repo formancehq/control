@@ -25,6 +25,7 @@ import {
   getLedgerTransactionDetailsRoute,
 } from '~/src/components/Navbar/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import { displayTxid } from '~/src/components/Wrappers/Lists/TransactionList/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import Table from '~/src/components/Wrappers/Table';
 import { ObjectOf } from '~/src/types/generic';
@@ -157,37 +158,49 @@ export default function Index() {
                 label: t('pages.transaction.table.columnLabel.date'),
               },
             ]}
-            renderItem={(posting: PostingHybrid, index) => (
-              <Row
-                key={index}
-                keys={[
-                  <Txid id={posting.txid} key={posting.txid} />,
-                  <Amount
-                    asset={posting.asset}
-                    key={posting.txid}
-                    amount={posting.amount}
-                  />,
-                  <SourceDestination
-                    key={posting.txid}
-                    label={posting.source}
-                    color="blue"
-                    onClick={() =>
-                      handleSourceDestinationAction(posting.source)
-                    }
-                  />,
-                  <SourceDestination
-                    key={posting.txid}
-                    label={posting.destination}
-                    color="blue"
-                    onClick={() =>
-                      handleSourceDestinationAction(posting.destination)
-                    }
-                  />,
-                  <Date key={posting.txid} timestamp={posting.timestamp} />,
-                ]}
-                item={posting}
-              />
-            )}
+            renderItem={(
+              posting: PostingHybrid,
+              index,
+              data: PostingHybrid[]
+            ) => {
+              const displayElement = displayTxid(data, posting);
+
+              return (
+                <Row
+                  key={index}
+                  keys={[
+                    displayElement ? (
+                      <Txid id={posting.txid} key={posting.txid} />
+                    ) : (
+                      <></>
+                    ),
+                    <Amount
+                      asset={posting.asset}
+                      key={posting.txid}
+                      amount={posting.amount}
+                    />,
+                    <SourceDestination
+                      key={posting.txid}
+                      label={posting.source}
+                      color="blue"
+                      onClick={() =>
+                        handleSourceDestinationAction(posting.source)
+                      }
+                    />,
+                    <SourceDestination
+                      key={posting.txid}
+                      label={posting.destination}
+                      color="blue"
+                      onClick={() =>
+                        handleSourceDestinationAction(posting.destination)
+                      }
+                    />,
+                    <Date key={posting.txid} timestamp={posting.timestamp} />,
+                  ]}
+                  item={posting}
+                />
+              );
+            }}
           />
         </SectionWrapper>
         {/* Graph Section */}
