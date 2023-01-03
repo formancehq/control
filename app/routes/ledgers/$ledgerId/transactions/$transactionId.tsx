@@ -150,12 +150,14 @@ export default function Index() {
           </SectionWrapper>
         )}
         {/* Reco Section */}
-        <SectionWrapper title={t('pages.transaction.reco.title')}>
-          <PaymentList
-            payments={[transaction.payment]}
-            withPagination={false}
-          />
-        </SectionWrapper>
+        {transaction.payment && (
+          <SectionWrapper title={t('pages.transaction.reco.title')}>
+            <PaymentList
+              payments={[transaction.payment]}
+              withPagination={false}
+            />
+          </SectionWrapper>
+        )}
         {/* Metadata Section */}
         {id && (
           <Metadata
