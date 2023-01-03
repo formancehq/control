@@ -13,8 +13,8 @@ import { LoadingButton, Page, Row } from '@numaryhq/storybook';
 
 import {
   getRoute,
+  LEDGER_ROUTE,
   ledgers as ledgersConfig,
-  LEDGERS_LOGS_ROUTE,
 } from '~/src/components/Navbar/routes';
 import Table from '~/src/components/Wrappers/Table';
 import { createApiClient } from '~/src/utils/api.server';
@@ -51,7 +51,7 @@ export default function Index() {
     <Box component="span" key={name}>
       <LoadingButton
         id={`show-${name}`}
-        onClick={() => navigate(getRoute(LEDGERS_LOGS_ROUTE, name))}
+        onClick={() => navigate(getRoute(LEDGER_ROUTE, name))}
         endIcon={<ArrowRight />}
       />
     </Box>

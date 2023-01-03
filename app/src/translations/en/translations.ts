@@ -45,6 +45,30 @@ export default {
         },
       },
       ledger: {
+        sections: {
+          logs: {
+            title: 'Logs',
+          },
+          stats: {
+            title: 'Metrics',
+          },
+          info: {
+            version: 'Version',
+            storage: 'Storage driver',
+            server: 'Server',
+          },
+          migrations: {
+            title: 'Data migrations',
+            table: {
+              columnLabel: {
+                name: 'Name',
+                date: 'Date',
+                version: 'Version',
+                state: 'State',
+              },
+            },
+          },
+        },
         logs: {
           table: {
             columnLabel: {
@@ -550,7 +574,7 @@ export default {
         },
         targets: {
           payments: 'Pay-in & Payout',
-          ledgers: 'Ledgers',
+          ledgers: 'All',
           accounts: 'Accounts',
           transactions: 'Transactions',
           oAuthClients: 'OAuth Clients',

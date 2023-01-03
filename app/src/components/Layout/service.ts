@@ -70,6 +70,19 @@ const buildLedgerLogsBreadcrumbs = (
   ];
 };
 
+const buildSimpleDetailBreadcrumbs = (
+  navigate: NavigateFunction,
+  id: string,
+  category: string
+): BreadcrumbsLink[] => {
+  const bread = {
+    label: i18n.t(`common.breadcrumbs.categories.${category}`),
+    onClick: () => navigate(getRoute(LEDGERS_ROUTE)),
+  };
+
+  return [bread, { label: id }];
+};
+
 const buildOAuthClientBreadcrumbs = (
   navigate: NavigateFunction,
   id: string
@@ -188,16 +201,17 @@ export const breadcrumbsFactory = (
   const transactionsRoute = match(
     '/ledgers/:ledgerId/transactions/:transactionId'
   );
-  const paymentsRoute = match('/payments/:paymentId');
-  const oAuthClientsRoute = match('/oauth-clients/:oAuthClientId');
-  const webhooksRoute = match('/webhooks/:webhookId');
-  const appsRoute = match('/apps/:appName');
+  const paymentRoute = match('/payments/:paymentId');
+  const oAuthClientRoute = match('/oauth-clients/:oAuthClientId');
+  const webhookRoute = match('/webhooks/:webhookId');
+  const appRoute = match('/apps/:appName');
   const accountsIndex = match('/accounts');
   const connectorsIndex = match('/connectors/:id');
   const transactionsIndex = match('/transactions');
   const paymentsIndex = match('/payments');
   const ledgersIndex = match('/ledgers');
   const ledgerLogsRoute = match('/ledgers/:ledgerId/logs');
+  const ledgerRoute = match('/ledgers/:ledgerId');
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
@@ -231,19 +245,22 @@ export const breadcrumbsFactory = (
     );
   }
 
-  if (paymentsRoute) {
+  if (paymentRoute) {
     return buildPaymentBreadcrumbs(navigate, params.paymentId, urlSearchParams);
   }
   if (ledgerLogsRoute) {
     return buildLedgerLogsBreadcrumbs(navigate, params.ledgerId);
   }
-  if (oAuthClientsRoute) {
+  if (ledgerRoute) {
+    return buildSimpleDetailBreadcrumbs(navigate, params.ledgerId, 'ledgers');
+  }
+  if (oAuthClientRoute) {
     return buildOAuthClientBreadcrumbs(navigate, params.oAuthClientId);
   }
-  if (webhooksRoute) {
+  if (webhookRoute) {
     return buildWebhookBreadcrumbs(navigate, params.webhookId);
   }
-  if (appsRoute) {
+  if (appRoute) {
     return buildAppBreadcrumbs(navigate, params.appName);
   }
 
