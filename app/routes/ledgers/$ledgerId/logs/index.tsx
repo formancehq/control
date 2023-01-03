@@ -4,9 +4,11 @@ import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 
-import { ObjectOf, Page } from '@numaryhq/storybook';
+import { ObjectOf, Page, SectionWrapper } from '@numaryhq/storybook';
 
 import LedgerLogList from '~/src/components/Wrappers/Lists/LedgerLogList';
 import { Cursor } from '~/src/types/generic';
@@ -40,13 +42,19 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 
 export default function Index() {
+  const { t } = useTranslation();
   const logs = useLoaderData<
     Cursor<LedgerLog<Transaction | ObjectOf<any>>>
   >() as unknown as Cursor<LedgerLog<Transaction | ObjectOf<any>>>;
+  const { ledgerId: id } = useParams<{
+    ledgerId: string;
+  }>();
 
   return (
-    <Page id="ledgerLogs">
-      <LedgerLogList logs={logs} />
+    <Page id="ledgerLogs" title={id}>
+      <SectionWrapper title={t('pages.ledger.logs.title')}>
+        <LedgerLogList logs={logs} />
+      </SectionWrapper>
     </Page>
   );
 }
