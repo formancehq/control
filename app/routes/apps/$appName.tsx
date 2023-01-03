@@ -50,15 +50,14 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
     invariant(params.appName, 'Expected params.appName');
-
-    const tasks = await (
-      await createApiClient(session)
-    ).getResource<ConnectorTask[]>(
+    const api = await createApiClient(session);
+    const tasks = await api.getResource<ConnectorTask[]>(
       `${API_PAYMENT}/connectors/${params.appName}/tasks`
     );
-    const connectors = await (
-      await createApiClient(session)
-    ).getResource<Connector[]>(`${API_PAYMENT}/connectors`, 'data');
+    const connectors = await api.getResource<Connector[]>(
+      `${API_PAYMENT}/connectors`,
+      'data'
+    );
 
     const connector = connectors
       ? connectors.find(

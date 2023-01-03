@@ -40,15 +40,16 @@ export const meta: MetaFunction = () => ({
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   async function handleData(session: Session) {
-    const api = createApiClient(session);
+    const api = await createApiClient(session);
 
     if (url.pathname === APPS_ROUTE) {
-      const connectors = await (
-        await api
-      ).getResource<Connector[]>(`${API_PAYMENT}/connectors`, 'data');
-      const configuration = await (
-        await api
-      ).getResource<Connector[]>(`${API_PAYMENT}/connectors/configs`);
+      const connectors = await api.getResource<Connector[]>(
+        `${API_PAYMENT}/connectors`,
+        'data'
+      );
+      const configuration = await api.getResource<Connector[]>(
+        `${API_PAYMENT}/connectors/configs`
+      );
 
       if (connectors && configuration) {
         return { connectors, configuration };
