@@ -30,7 +30,7 @@ const buildPaymentBreadcrumbs = (
   urlSearchParams: URLSearchParams
 ): BreadcrumbsLink[] => {
   const bread = {
-    label: i18n.t('common.breadcrumbs.targets.payments'),
+    label: i18n.t('common.breadcrumbs.categories.payments'),
     onClick: () => navigate(getRoute(PAYMENTS_ROUTE)),
   };
   const provider = urlSearchParams.get('provider');
