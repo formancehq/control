@@ -113,6 +113,7 @@ export default function Index() {
           <TransactionList
             transactions={transactions as unknown as Cursor<Transaction>}
             withPagination
+            sortedColumns={['txid', 'date']}
           />
         </Form>
       </TableFiltersContext.Provider>

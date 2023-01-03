@@ -329,15 +329,22 @@ export default function PaymentDetails() {
                 )}
               </>
             </SectionWrapper>
-            {Divider}{' '}
+            {Divider}
           </>
         )}
 
         {/* Reconciliation*/}
-        <SectionWrapper title={t('pages.payment.reconciliation.title')}>
-          <TransactionList transactions={transactions} withPagination={false} />
-        </SectionWrapper>
-        {Divider}
+        {transactions.data.length > 0 && (
+          <>
+            <SectionWrapper title={t('pages.payment.reconciliation.title')}>
+              <TransactionList
+                transactions={transactions}
+                withPagination={false}
+              />
+            </SectionWrapper>
+            {Divider}
+          </>
+        )}
 
         {/* Metadata */}
         {/* TODO replace this when Metadata is done */}

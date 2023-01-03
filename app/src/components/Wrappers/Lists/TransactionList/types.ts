@@ -6,4 +6,5 @@ export type TransactionListProps = {
   withPagination: boolean;
   paginationSize?: number;
   showMore?: boolean;
+  sortedColumns?: string[];
 };

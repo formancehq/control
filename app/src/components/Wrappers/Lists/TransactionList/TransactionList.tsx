@@ -27,6 +27,7 @@ import {
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction, TransactionHybrid } from '~/src/types/ledger';
+import { RECO_DEFAULT_LEDGER } from '~/src/types/reco';
 import { SearchPolicies, SearchTargets } from '~/src/types/search';
 
 const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
@@ -48,6 +49,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   withPagination,
   paginationSize = 15,
   showMore = false,
+  sortedColumns,
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -56,13 +58,16 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
     accountId: string;
   }>();
 
-  const handleAction = (transaction: TransactionHybrid) =>
-    navigate(
-      getLedgerTransactionDetailsRoute(transaction.txid, transaction.ledger)
-    );
+  const handleAction = (transaction: TransactionHybrid) => {
+    // TODO maybe talk about that to backend. Might be dangerous. Temporary workaround
+    const ledger = transaction.ledger || RECO_DEFAULT_LEDGER;
+    navigate(getLedgerTransactionDetailsRoute(transaction.txid, ledger));
+  };
 
   const handleSourceDestinationAction = (id: string, ledger: string) => {
-    navigate(getLedgerAccountDetailsRoute(id, ledger));
+    // TODO maybe talk about that to backend. Might be dangerous. Temporary workaround
+    const currentLedger = ledger || RECO_DEFAULT_LEDGER;
+    navigate(getLedgerAccountDetailsRoute(id, currentLedger));
   };
 
   const handleShowMore = () =>
@@ -96,33 +101,37 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           {
             key: 'txid',
             label: t('pages.transactions.table.columnLabel.txid'),
-            sort: true,
+            sort: sortedColumns?.includes('txid') || false,
             width: 5,
           },
           {
             key: 'value',
             label: t('pages.transactions.table.columnLabel.value'),
             width: 5,
+            sort: sortedColumns?.includes('value') || false,
           },
           {
             key: 'source',
             label: t('pages.transactions.table.columnLabel.source'),
             width: 30,
+            sort: sortedColumns?.includes('source') || false,
           },
           {
             key: 'destination',
             label: t('pages.transactions.table.columnLabel.destination'),
             width: 30,
+            sort: sortedColumns?.includes('destination') || false,
           },
           {
             key: 'ledger',
             label: t('pages.transactions.table.columnLabel.ledger'),
             width: 5,
+            sort: sortedColumns?.includes('ledger') || false,
           },
           {
             key: 'timestamp',
             label: t('pages.transactions.table.columnLabel.date'),
-            sort: true,
+            sort: sortedColumns?.includes('date') || false,
             width: 5,
           },
         ]}
