@@ -97,6 +97,26 @@ export type LedgerStats = {
   accounts: number;
 };
 
+export type LedgerDetailedInfo = {
+  name: string;
+  storage: {
+    migrations: LedgerMigration[];
+    migration: LedgerMigration[]; // TODO remove once backend will fix typo
+  };
+};
+
+export type LedgerMigration = {
+  version: number;
+  date: Date;
+  name: string;
+  state: LedgerMigrations;
+};
+
+export enum LedgerMigrations {
+  DONE = 'DONE',
+  TO_DO = 'TO DO',
+}
+
 export type LedgerLog<T> = {
   id: number;
   type: LedgerTypes.SET_METADATA | LedgerTypes.NEW_TRANSACTION;

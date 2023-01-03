@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {
+  AccountBalance,
   AccountTree,
   Apps,
   CreditCard,
@@ -28,6 +29,7 @@ export const TRANSACTIONS_ROUTE = '/transactions';
 export const CONNECTORS_ROUTE = APPS_ROUTE;
 export const LEDGERS_ROUTE = '/ledgers';
 export const LEDGERS_LOGS_ROUTE = '/ledgers/:id/logs';
+export const LEDGER_ROUTE = '/ledgers/:id';
 
 export const getRoute = (uri: string, id?: number | string): string =>
   id !== undefined ? uri.replace(/:\w+/, id.toString(10)) : uri;
@@ -115,6 +117,7 @@ export const oAuthClients: RouterConfig = {
   path: [getRoute(OAUTH_CLIENTS_ROUTE)],
   icon: <Apps />,
 };
+
 export const webhooks: RouterConfig = {
   id: 'webhooks',
   label: 'navbar.title.webhooks',
@@ -129,7 +132,7 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
   },
   {
     label: 'sidebar.ledgers',
-    children: [transactions, accounts, ledgers],
+    children: [ledgers, transactions, accounts],
   },
   {
     label: 'sidebar.payments',

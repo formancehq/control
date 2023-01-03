@@ -111,6 +111,7 @@ export default function Index() {
       </>
     );
   };
+
   const onDeleteClient = async (id: string) => {
     try {
       const result = await api.deleteResource<unknown>(
