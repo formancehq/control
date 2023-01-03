@@ -1,18 +1,25 @@
 import * as React from 'react';
 
-import { AccountBalance, Done, HourglassTop } from '@mui/icons-material';
+import {
+  AccountBalance,
+  Done,
+  FormatListBulleted,
+  HourglassTop,
+} from '@mui/icons-material';
 import { Grid, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 
 import {
   Chip,
+  ColorVariants,
   Date,
+  LoadingButton,
   ObjectOf,
   Page,
   Row,
@@ -21,6 +28,7 @@ import {
   Txid,
 } from '@numaryhq/storybook';
 
+import { getRoute, LEDGERS_LOGS_ROUTE } from '~/src/components/Navbar/routes';
 import LedgerLogList from '~/src/components/Wrappers/Lists/LedgerLogList';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
@@ -70,8 +78,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       `${API_LEDGER}/_info`,
       'data'
     );
+    // TODO get only 5 first logs (use size params)
     const query = sanitizeQuery(request, QueryContexts.PARAMS);
-
     const url = `/ledger/${params.ledgerId}/log?${query}`;
     const logs = await api.getResource<
       Cursor<LedgerLog<Transaction | ObjectOf<any>>>
@@ -92,8 +100,9 @@ export default function Index() {
   const { ledgerId: id } = useParams<{
     ledgerId: string;
   }>();
+  const navigate = useNavigate();
 
-  const renderTextInfo = (key: string, label: string) => (
+  const renderTextInfo = (key: string, label: string, color: ColorVariants) => (
     <Grid container sx={{ marginBottom: 2 }}>
       <Grid item xs={2}>
         <Typography variant="bold">
@@ -101,19 +110,19 @@ export default function Index() {
         </Typography>
       </Grid>
       <Grid item xs={10}>
-        <Typography>{label}</Typography>
+        <Chip variant="square" label={label} color={color} />
       </Grid>
     </Grid>
   );
 
-  console.log(ledger);
-
   return (
     <Page id="ledger" title={id}>
       <>
+        {/* Stats section*/}
         <SectionWrapper title={t('pages.ledger.sections.stats.title')}>
           <Grid container>
             <Grid item xs={4}>
+              {/* Card */}
               <StatsCard
                 icon={<AccountBalance />}
                 variant="blue"
@@ -124,13 +133,34 @@ export default function Index() {
                 value2={`${ledger.stats.accounts}`}
               />
             </Grid>
+            {/* Ledger global info */}
             <Grid item xs={6}>
-              {renderTextInfo('version', ledger.info.version)}
-              {renderTextInfo('server', ledger.info.server)}
-              {renderTextInfo('storage', ledger.info.config.storage.driver)}
+              {renderTextInfo('version', ledger.info.version, 'green')}
+              {renderTextInfo('server', ledger.info.server, 'violet')}
+              {renderTextInfo(
+                'storage',
+                ledger.info.config.storage.driver,
+                'brown'
+              )}
             </Grid>
           </Grid>
         </SectionWrapper>
+        {/* Logs section */}
+        <SectionWrapper
+          title={t('pages.ledger.sections.logs.title')}
+          element={
+            <LoadingButton
+              id="show-more-logs"
+              onClick={() => navigate(getRoute(LEDGERS_LOGS_ROUTE, id))}
+              startIcon={<FormatListBulleted />}
+              variant="stroke"
+              content={t('pages.ledger.sections.logs.showMore')}
+            />
+          }
+        >
+          <LedgerLogList logs={ledger.logs} withPagination={false} />
+        </SectionWrapper>
+        {/* Data migrations section*/}
         <SectionWrapper title={t('pages.ledger.sections.migrations.title')}>
           <Table
             id="ledger-migration-list"
@@ -192,10 +222,6 @@ export default function Index() {
               />
             )}
           />
-        </SectionWrapper>
-
-        <SectionWrapper title={t('pages.ledger.sections.logs.title')}>
-          <LedgerLogList logs={ledger.logs} withPagination={false} />
         </SectionWrapper>
       </>
     </Page>

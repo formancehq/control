@@ -48,6 +48,7 @@ export default {
         sections: {
           logs: {
             title: 'Logs',
+            showMore: 'Show more',
           },
           stats: {
             title: 'Metrics',
@@ -70,6 +71,7 @@ export default {
           },
         },
         logs: {
+          title: 'Full logs',
           table: {
             columnLabel: {
               type: 'Type',
@@ -574,6 +576,7 @@ export default {
         },
         targets: {
           payments: 'Pay-in & Payout',
+          logs: 'Logs',
           ledgers: 'All',
           accounts: 'Accounts',
           transactions: 'Transactions',

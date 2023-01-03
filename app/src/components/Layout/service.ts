@@ -11,6 +11,7 @@ import {
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
   getRoute,
+  LEDGER_ROUTE,
   LEDGERS_ROUTE,
   OAUTH_CLIENTS_ROUTE,
   PAYMENTS_ROUTE,
@@ -63,9 +64,9 @@ const buildLedgerLogsBreadcrumbs = (
 
   return [
     bread,
-    { label: id },
+    { label: id, onClick: () => navigate(getRoute(LEDGER_ROUTE, id)) },
     {
-      label: 'logs',
+      label: i18n.t(`common.breadcrumbs.targets.logs`),
     },
   ];
 };

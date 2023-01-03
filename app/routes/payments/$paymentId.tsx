@@ -266,7 +266,6 @@ export default function PaymentDetails() {
               {dataItem(
                 t('pages.payment.processor'),
                 <ProviderPicture provider={payment.provider} />
-
               )}
               {dataItem(
                 t('pages.payment.status'),
@@ -274,7 +273,10 @@ export default function PaymentDetails() {
               )}
               {dataItem(
                 t('pages.payment.scheme'),
-                <Chip  label={lowerCaseAllWordsExceptFirstLetter(payment.scheme)} variant="square" />
+                <Chip
+                  label={lowerCaseAllWordsExceptFirstLetter(payment.scheme)}
+                  variant="square"
+                />
               )}
             </Box>
           </Grid>
@@ -302,43 +304,46 @@ export default function PaymentDetails() {
 
         {/* Events journals */}
         {payment.adjustments.length > 0 && (
-          <><SectionWrapper title={t('pages.payment.eventJournal.title')}>
           <>
-            {payment.adjustments.map(
-              (adjustments: AdjustmentsItem, index: number) => (
-                <div key={index}>
-                  {eventsJournalItem(
-                    t('pages.payment.eventJournal.netValueChange', {
-                      value1: payment.status,
-                      value2: adjustments.status,
-                    }),
-                    adjustments.date
-                  )}
-                  {eventsJournalItem(
-                    t('pages.payment.eventJournal.statusChange', {
-                      value1: payment.initialAmount,
-                      value2: adjustments.amount,
-                    }),
-                    adjustments.date
-                  )}
-                </div>
-              )
-            )}
+            <SectionWrapper title={t('pages.payment.eventJournal.title')}>
+              <>
+                {payment.adjustments.map(
+                  (adjustments: AdjustmentsItem, index: number) => (
+                    <div key={index}>
+                      {eventsJournalItem(
+                        t('pages.payment.eventJournal.netValueChange', {
+                          value1: payment.status,
+                          value2: adjustments.status,
+                        }),
+                        adjustments.date
+                      )}
+                      {eventsJournalItem(
+                        t('pages.payment.eventJournal.statusChange', {
+                          value1: payment.initialAmount,
+                          value2: adjustments.amount,
+                        }),
+                        adjustments.date
+                      )}
+                    </div>
+                  )
+                )}
+              </>
+            </SectionWrapper>
+            {Divider}
           </>
-        </SectionWrapper>
-        {Divider}</>
         )}
 
         {/* Reconciliation*/}
         {transactions.data.length > 0 && (
-          <><SectionWrapper title={t('pages.payment.reconciliation.title')}>
-          <TransactionList
-            transactions={transactions}
-            withPagination={false}
-
-          />
-        </SectionWrapper>
-        {Divider}</>
+          <>
+            <SectionWrapper title={t('pages.payment.reconciliation.title')}>
+              <TransactionList
+                transactions={transactions}
+                withPagination={false}
+              />
+            </SectionWrapper>
+            {Divider}
+          </>
         )}
 
         {/* Metadata */}
@@ -351,10 +356,8 @@ export default function PaymentDetails() {
             withHeader={false}
             items={[]}
             columns={[]}
-            renderItem={(item: any) =>
-              <Row item={item} keys={[]} />}
-            />
-
+            renderItem={(item: any) => <Row item={item} keys={[]} />}
+          />
         </SectionWrapper>
         {Divider}
         {/* Raw object */}
