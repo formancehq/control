@@ -47,13 +47,11 @@ export const meta: MetaFunction = () => ({
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(session);
-    const connectorsConfig = await (
-      await api
-    ).getResource<Connector[]>(`${API_PAYMENT}/connectors/configs`);
+    const connectorsConfig = await api.getResource<Connector[]>(
+      `${API_PAYMENT}/connectors/configs`
+    );
 
-    const payments = await (
-      await api
-    ).postResource<Cursor<Payment[]>>(
+    const payments = await api.postResource<Cursor<Payment[]>>(
       API_SEARCH,
       {
         ...sanitizeQuery(request),
