@@ -39,6 +39,7 @@ const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
           ...posting,
           postingId: index,
           ...omit(transaction, 'postings'),
+          ledger: transaction.ledger || RECO_DEFAULT_LEDGER, // Warning, talk about it to backend. Might be dangerous. Temporary fix
         }))
       )
     ),
