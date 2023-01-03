@@ -33,9 +33,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return handleResponse(await withSession(request, handleData));
 };
 
-export const LedgerList: FunctionComponent<{ variant?: 'light' | 'dark' }> = ({
-  variant = 'light',
-}) => {
+export const LedgerList: FunctionComponent = () => {
   const fetcher = useFetcher<string[] | null>();
   const { t } = useTranslation();
 
@@ -51,7 +49,6 @@ export const LedgerList: FunctionComponent<{ variant?: 'light' | 'dark' }> = ({
       placeholder={t('common.filters.ledgers')}
       type={Filters.LEDGERS}
       width={350}
-      variant={variant}
     />
   );
 };
