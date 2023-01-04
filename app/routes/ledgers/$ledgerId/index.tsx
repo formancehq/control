@@ -2,11 +2,12 @@ import * as React from 'react';
 
 import {
   AccountBalance,
+  Dns,
   Done,
   FormatListBulleted,
   HourglassTop,
 } from '@mui/icons-material';
-import { Grid, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -17,7 +18,6 @@ import invariant from 'tiny-invariant';
 
 import {
   Chip,
-  ColorVariants,
   Date,
   LoadingButton,
   ObjectOf,
@@ -102,48 +102,46 @@ export default function Index() {
   }>();
   const navigate = useNavigate();
 
-  const renderTextInfo = (key: string, label: string, color: ColorVariants) => (
-    <Grid container sx={{ marginBottom: 2 }}>
-      <Grid item xs={2}>
-        <Typography variant="bold">
-          {t(`pages.ledger.sections.info.${key}`)}
-        </Typography>
-      </Grid>
-      <Grid item xs={10}>
-        <Chip variant="square" label={label} color={color} />
-      </Grid>
-    </Grid>
-  );
-
   return (
     <Page id="ledger" title={id}>
       <>
-        {/* Stats section*/}
-        <SectionWrapper title={t('pages.ledger.sections.stats.title')}>
-          <Grid container>
-            <Grid item xs={4}>
-              {/* Card */}
+        {/* Info section*/}
+        <SectionWrapper>
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              rowGap: 1,
+            }}
+          >
+            <Box
+              sx={{
+                flexGrow: 2,
+              }}
+            >
               <StatsCard
-                icon={<AccountBalance />}
-                variant="blue"
-                title1={t('pages.overview.stats.transactions')}
-                title2={t('pages.overview.stats.accounts')}
-                chipValue={id}
-                value1={`${ledger.stats.transactions}`}
-                value2={`${ledger.stats.accounts}`}
+                sx={{ width: '100%' }}
+                icon={<Dns />}
+                type="light"
+                variant="violet"
+                title1="Server"
+                title2="Storage"
+                chipValue={`v. ${ledger.info.version}`}
+                value1={ledger.info.server}
+                value2={ledger.info.config.storage.driver}
               />
-            </Grid>
-            {/* Ledger global info */}
-            <Grid item xs={6}>
-              {renderTextInfo('version', ledger.info.version, 'green')}
-              {renderTextInfo('server', ledger.info.server, 'violet')}
-              {renderTextInfo(
-                'storage',
-                ledger.info.config.storage.driver,
-                'brown'
-              )}
-            </Grid>
-          </Grid>
+            </Box>
+
+            <StatsCard
+              icon={<AccountBalance />}
+              variant="blue"
+              title1={t('pages.overview.stats.transactions')}
+              title2={t('pages.overview.stats.accounts')}
+              chipValue={id}
+              value1={`${ledger.stats.transactions}`}
+              value2={`${ledger.stats.accounts}`}
+            />
+          </Box>
         </SectionWrapper>
         {/* Logs section */}
         <SectionWrapper
