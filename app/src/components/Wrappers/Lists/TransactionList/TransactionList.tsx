@@ -34,14 +34,22 @@ const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
   ({
     ...cursor,
     data: flatten(
-      get(cursor, 'data', []).map((transaction: Transaction) =>
-        get(transaction, 'postings', []).map((posting, index) => ({
-          ...posting,
-          postingId: index,
-          ...omit(transaction, 'postings'),
-          ledger: transaction.ledger || RECO_DEFAULT_LEDGER, // Warning, talk about it to backend. Might be dangerous. Temporary fix
-        }))
-      )
+      get(cursor, 'data', []).map((transaction: Transaction) => {
+        const postings = get(transaction, 'postings');
+        if (postings) {
+          return postings.map((posting, index) => ({
+            ...posting,
+            postingId: index,
+            ...omit(transaction, 'postings'),
+            ledger: transaction.ledger || RECO_DEFAULT_LEDGER, // Warning, talk about it to backend. Might be dangerous. Temporary fix
+          })) as unknown as Transaction[];
+        } else {
+          return {
+            ...transaction,
+            ledger: RECO_DEFAULT_LEDGER, // Warning, talk about it to backend. Might be dangerous. Temporary fix
+          };
+        }
+      })
     ),
   } as unknown as Cursor<Transaction>);
 
