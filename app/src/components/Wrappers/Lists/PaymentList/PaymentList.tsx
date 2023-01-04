@@ -29,9 +29,12 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({
         id={`show-${payment.id}`}
         onClick={() =>
           navigate(
-            `${getRoute(PAYMENT_ROUTE, payment.id)}?provider=${
+            `${getRoute(
+              PAYMENT_ROUTE,
+              payment.id
+            )}?provider=${lowerCaseAllWordsExceptFirstLetter(
               payment.provider
-            }&reference=${payment.reference}`
+            )}&reference=${payment.reference}`
           )
         }
         endIcon={<ArrowRight />}

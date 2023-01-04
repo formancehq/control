@@ -105,6 +105,6 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
   }
 
   throw new Error(
-    `Responded [${response?.status}] with text [${response?.statusText}]`
+    `Responded [${response?.status}] with text [${response?.statusText}] for [${response.url}]`
   );
 };
