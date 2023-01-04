@@ -39,6 +39,8 @@ export const loader: LoaderFunction = async ({ request }) => {
         ...query,
         target: SearchTargets.TRANSACTION,
         policy: query.policy || SearchPolicies.AND,
+        pageSize: 15,
+        size: 15, // TODO remove when backend is ready (NUM-1415)
         sort: query.sort || [
           {
             key: 'txid',

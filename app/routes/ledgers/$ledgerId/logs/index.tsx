@@ -31,6 +31,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const logs = await api.getResource<
       Cursor<LedgerLog<Transaction | ObjectOf<any>>>
     >(url, 'cursor');
+
     if (logs) {
       return logs;
     }
