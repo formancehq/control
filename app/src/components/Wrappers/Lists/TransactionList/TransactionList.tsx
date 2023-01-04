@@ -36,6 +36,7 @@ const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
     data: flatten(
       get(cursor, 'data', []).map((transaction: Transaction) => {
         const postings = get(transaction, 'postings');
+        console.log(postings);
         if (postings) {
           return postings.map((posting, index) => ({
             ...posting,
@@ -46,7 +47,7 @@ const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
         } else {
           return {
             ...transaction,
-            ledger: RECO_DEFAULT_LEDGER, // Warning, talk about it to backend. Might be dangerous. Temporary fix
+            ledger: transaction.ledger || RECO_DEFAULT_LEDGER, // Warning, talk about it to backend. Might be dangerous. Temporary fix
           };
         }
       })
