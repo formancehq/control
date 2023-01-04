@@ -57,6 +57,8 @@ export const loader: LoaderFunction = async ({ request }) => {
         ...(sanitizeQuery(request) as SearchBody),
         target: SearchTargets.PAYMENT,
         policy: SearchPolicies.AND,
+        pageSize: 15,
+        size: 15, // TODO remove when backend is ready (NUM-1415)
       },
       'cursor'
     );

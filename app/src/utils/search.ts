@@ -1,4 +1,4 @@
-import { identity, omit, pickBy, toNumber } from 'lodash';
+import { get, identity, omit, pickBy, toNumber } from 'lodash';
 
 import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
 
@@ -16,22 +16,35 @@ export const buildQuery = (
   const sort = searchParams.getAll('sort');
   const body = pickBy(
     {
-      size: searchParams.get('size') ? toNumber(searchParams.get('size')) : 15,
+      size: searchParams.get('size')
+        ? toNumber(searchParams.get('size'))
+        : undefined, // TODO remove when backend is ready (NUM-1415)
+      pageSize: searchParams.get('size')
+        ? toNumber(searchParams.get('size'))
+        : undefined,
+      page_size: searchParams.get('size')
+        ? toNumber(searchParams.get('size'))
+        : undefined, // TODO remove when backend is ready (NUM-1415)
       target: (searchParams.get('target') as SearchTargets) || undefined,
       policy: (searchParams.get('policy') as SearchPolicies) || undefined,
       cursor: searchParams.get('cursor') || undefined,
+      pagination_token: searchParams.get('cursor') || undefined, // TODO remove when backend is ready (NUM-1415)
       terms: terms.length > 0 ? terms : undefined,
       ledgers: ledgers.length > 0 ? ledgers : undefined,
       sort: sort.length > 0 ? sort : undefined,
     },
     identity
   ) as SearchBody;
-
   if (context === QueryContexts.PAYLOAD) {
     return body;
   }
 
-  return `cursor=${body.cursor}&size=${body.size}`;
+  let query = '';
+  Object.keys(body).forEach((key: string) => {
+    query = `${query}${query.length > 0 ? '&' : ''}${key}=${get(body, key)}`;
+  });
+
+  return query;
 };
 
 export const sanitizeQuery = (

@@ -48,7 +48,6 @@ import {
   buildCursor,
   lowerCaseAllWordsExceptFirstLetter,
 } from '~/src/utils/format';
-import { QueryContexts, sanitizeQuery } from '~/src/utils/search';
 
 type LedgerData = {
   stats: LedgerStats;
@@ -79,7 +78,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       'data'
     );
     // TODO get only 5 first logs (use size params)
-    const query = sanitizeQuery(request, QueryContexts.PARAMS);
+    // TODO remove when backend is ready (NUM-1415)
+    const query = 'pageSize=5&page_size=5';
+    // TODO uncomment when backend is ready (NUM-1415)
+    // const query = 'pageSize=5'
     const url = `/ledger/${params.ledgerId}/log?${query}`;
     const logs = await api.getResource<
       Cursor<LedgerLog<Transaction | ObjectOf<any>>>
@@ -103,37 +105,34 @@ export default function Index() {
   const navigate = useNavigate();
 
   return (
-    <Page id="ledger" title={id}>
+    <Page id="ledger">
       <>
         {/* Info section*/}
-        <SectionWrapper>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            rowGap: 1,
+          }}
+        >
+          <StatsCard
+            icon={<Dns />}
+            variant="yellow"
+            title1={t('pages.ledger.sections.info.server')}
+            title2={t('pages.ledger.sections.info.storage')}
+            chipValue={`v. ${ledger.info.version}`}
+            value1={ledger.info.server}
+            value2={ledger.info.config.storage.driver}
+          />
           <Box
             sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              rowGap: 1,
+              flexGrow: 2,
             }}
           >
-            <Box
-              sx={{
-                flexGrow: 2,
-              }}
-            >
-              <StatsCard
-                sx={{ width: '100%' }}
-                icon={<Dns />}
-                type="light"
-                variant="violet"
-                title1="Server"
-                title2="Storage"
-                chipValue={`v. ${ledger.info.version}`}
-                value1={ledger.info.server}
-                value2={ledger.info.config.storage.driver}
-              />
-            </Box>
-
             <StatsCard
+              sx={{ width: 'calc(100% - 92px)', ml: 3 }}
               icon={<AccountBalance />}
+              type="light"
               variant="blue"
               title1={t('pages.overview.stats.transactions')}
               title2={t('pages.overview.stats.accounts')}
@@ -142,7 +141,7 @@ export default function Index() {
               value2={`${ledger.stats.accounts}`}
             />
           </Box>
-        </SectionWrapper>
+        </Box>
         {/* Logs section */}
         <SectionWrapper
           title={t('pages.ledger.sections.logs.title')}

@@ -47,13 +47,11 @@ export default {
       ledger: {
         sections: {
           logs: {
-            title: 'Logs',
+            title: 'Last logs',
             showMore: 'Show more',
           },
-          stats: {
-            title: 'Metrics',
-          },
           info: {
+            title: 'Details',
             version: 'Version',
             storage: 'Storage driver',
             server: 'Server',
