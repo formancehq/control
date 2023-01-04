@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import { MetaFunction, Session } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { get } from 'lodash';
+import { get, omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
@@ -38,10 +38,10 @@ const normalizePostings = (
   const items = data.postings.map(
     (posting: Posting) =>
       ({
+        ...omit(data, ['postings']),
         ...posting,
         txid: data.txid,
         ledger, // TODO temporary. Use backend when ready
-        postings: data.postings,
       } as unknown as Transaction)
   );
 

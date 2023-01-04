@@ -215,7 +215,6 @@ export default function PaymentDetails() {
   const { payment, transactions } =
     useLoaderData<PaymentDetailData>() as unknown as PaymentDetailData;
   const { t } = useTranslation();
-
   const Divider = <DividerWithSpace pt="24px" mb="0px" />;
 
   return (
