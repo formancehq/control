@@ -6,7 +6,6 @@ import {
   Apps,
   CreditCard,
   Home,
-  Share,
   SwapHoriz,
   Webhook,
   Widgets,
@@ -53,75 +52,63 @@ export const getLedgerTransactionDetailsRoute = (
 export type RouterConfig = {
   id: any;
   label: string;
-  path: string | string[];
+  paths: string[];
   icon?: React.ReactNode;
 };
 
 export const overview: RouterConfig = {
   id: 'overview',
   label: 'navbar.title.overview',
-  path: [getRoute(OVERVIEW_ROUTE), ROOT_ROUTE],
+  paths: [OVERVIEW_ROUTE, ROOT_ROUTE],
   icon: <Home />,
 };
 
 export const payments: RouterConfig = {
   id: 'payments',
   label: 'navbar.title.payments',
-  path: getRoute(PAYMENTS_ROUTE),
+  paths: [PAYMENTS_ROUTE, PAYMENT_ROUTE],
   icon: <CreditCard />,
 };
 
 export const accounts: RouterConfig = {
   id: 'accounts',
   label: 'navbar.title.accounts',
-  path: getRoute(ACCOUNTS_ROUTE),
+  paths: [ACCOUNTS_ROUTE, ACCOUNT_ROUTE],
   icon: <AccountTree />,
 };
 
 export const ledgers: RouterConfig = {
   id: 'ledgers',
   label: 'navbar.title.ledgers',
-  path: getRoute(LEDGERS_ROUTE),
+  paths: [LEDGERS_ROUTE, LEDGER_ROUTE, LEDGERS_LOGS_ROUTE],
   icon: <AccountBalance />,
 };
 
 export const transactions: RouterConfig = {
   id: 'transactions',
   label: 'navbar.title.transactions',
-  path: getRoute(TRANSACTIONS_ROUTE),
+  paths: [TRANSACTIONS_ROUTE, TRANSACTION_ROUTE],
   icon: <SwapHoriz />,
-};
-
-export const connectors: RouterConfig = {
-  id: 'connectors',
-  label: 'navbar.title.connectors',
-  path: [
-    getRoute(CONNECTORS_ROUTE),
-    getRoute(APPS_ROUTE),
-    getRoute(OAUTH_CLIENTS_ROUTE),
-    getRoute(WEBHOOKS_ROUTE),
-  ],
-  icon: <Share />,
 };
 
 export const apps: RouterConfig = {
   id: 'apps',
   label: 'navbar.title.apps',
-  path: [getRoute(APPS_ROUTE)],
+  paths: [APPS_ROUTE, APP_ROUTE],
   icon: <Widgets />,
 };
 
 export const oAuthClients: RouterConfig = {
   id: 'oAuthClient',
   label: 'navbar.title.oAuthClients',
-  path: [getRoute(OAUTH_CLIENTS_ROUTE)],
+  paths: [OAUTH_CLIENTS_ROUTE, OAUTH_CLIENT_ROUTE],
   icon: <Apps />,
 };
 
 export const webhooks: RouterConfig = {
   id: 'webhooks',
   label: 'navbar.title.webhooks',
-  path: [getRoute(WEBHOOKS_ROUTE)],
+  paths: [WEBHOOKS_ROUTE, WEBHOOK_ROUTE],
   icon: <Webhook />,
 };
 
