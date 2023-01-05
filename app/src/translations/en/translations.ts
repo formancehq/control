@@ -47,7 +47,7 @@ export default {
       ledger: {
         sections: {
           logs: {
-            title: 'Last logs',
+            title: 'Last log entries',
             showMore: 'Show more',
           },
           info: {
@@ -57,7 +57,7 @@ export default {
             server: 'Server',
           },
           migrations: {
-            title: 'Data migrations',
+            title: 'Storage migrations',
             table: {
               columnLabel: {
                 name: 'Name',
@@ -69,7 +69,7 @@ export default {
           },
         },
         logs: {
-          title: 'Full logs',
+          title: 'All log entries',
           table: {
             columnLabel: {
               type: 'Type',

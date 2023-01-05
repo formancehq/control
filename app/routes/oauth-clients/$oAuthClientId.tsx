@@ -15,6 +15,7 @@ import invariant from 'tiny-invariant';
 import {
   ActionZone,
   Chip,
+  CopyPasteTooltip,
   LoadingButton,
   Page,
   Row,
@@ -202,7 +203,12 @@ export default function Index() {
                 </Typography>
               </Grid>
               <Grid item xs={10}>
-                <Chip variant="square" label={oAuthClient.id} />
+                <CopyPasteTooltip
+                  tooltipMessage={t('common.tooltip.copied')}
+                  value={oAuthClient.id}
+                >
+                  <Chip variant="square" label={oAuthClient.id} />
+                </CopyPasteTooltip>
               </Grid>
             </Grid>
             {/* Type */}
