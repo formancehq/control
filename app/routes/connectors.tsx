@@ -22,7 +22,6 @@ import { CreateForm as OAuthClientForm } from '~/routes/connectors/oauth-clients
 import { CreateForm as WebhookForm } from '~/routes/connectors/webhooks/CreateForm';
 import {
   APPS_ROUTE,
-  connectors as connectorsConfig,
   OAUTH_CLIENTS_ROUTE,
   WEBHOOKS_ROUTE,
 } from '~/src/components/Navbar/routes';
@@ -67,7 +66,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ComponentErrorBoundary
-      id={connectorsConfig.id}
+      id="connectors"
       title="pages.connectors.title"
       error={error}
     />
@@ -112,7 +111,7 @@ export default function Index() {
   const activeConfig = config.find((item) => item.active);
 
   return (
-    <Page id={connectorsConfig.id}>
+    <Page id="connectors">
       <Box>
         <Tabs config={config} action={activeConfig && activeConfig.action} />
         <Outlet />

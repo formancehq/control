@@ -3,8 +3,8 @@ import { FunctionComponent } from 'react';
 
 import { Box, Button, IconButton, Typography, useTheme } from '@mui/material';
 import { useLocation } from '@remix-run/react';
-import { isArray } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { matchPath } from 'react-router';
 
 import { SidebarProps } from '~/src/components/Layout/components/Sidebar/types';
 import { routerConfig } from '~/src/components/Navbar/routes';
@@ -14,6 +14,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
   const { palette } = useTheme();
   const location = useLocation();
   const { t } = useTranslation();
+
   const buttonSx = {
     width: resized ? 'auto' : 200,
     m: '4px 0 4px 0',
@@ -56,10 +57,16 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
               </Box>
             )}
 
-            {children.map(({ label, path, id, icon }) => {
-              const selected = isArray(path)
-                ? path.includes(location.pathname)
-                : path === location.pathname;
+            {children.map(({ label, paths, id, icon }) => {
+              let selected = false;
+              for (let i = 0; i < paths.length; i++) {
+                const match = matchPath(paths[i], location.pathname);
+                if (match) {
+                  console.log('passe');
+                  selected = true;
+                  break;
+                }
+              }
 
               const sx = {
                 ...buttonSx,
@@ -78,7 +85,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
                   }}
                 >
                   <LinkWrapper
-                    to={isArray(path) ? (path[0] as string) : (path as string)}
+                    to={paths[0]}
                     prefetch="intent"
                     key={id}
                     color="inherit"
