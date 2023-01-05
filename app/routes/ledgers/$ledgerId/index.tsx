@@ -120,7 +120,7 @@ export default function Index() {
             variant="yellow"
             title1={t('pages.ledger.sections.info.server')}
             title2={t('pages.ledger.sections.info.storage')}
-            chipValue={`v. ${ledger.info.version}`}
+            chipValue={ledger.info.version}
             value1={ledger.info.server}
             value2={ledger.info.config.storage.driver}
           />

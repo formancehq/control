@@ -62,7 +62,6 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
               for (let i = 0; i < paths.length; i++) {
                 const match = matchPath(paths[i], location.pathname);
                 if (match) {
-                  console.log('passe');
                   selected = true;
                   break;
                 }
