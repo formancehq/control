@@ -36,7 +36,6 @@ const normalize = (cursor: Cursor<Transaction>): Cursor<Transaction> =>
     data: flatten(
       get(cursor, 'data', []).map((transaction: Transaction) => {
         const postings = get(transaction, 'postings');
-        console.log(postings);
         if (postings) {
           return postings.map((posting, index) => ({
             ...posting,
