@@ -77,12 +77,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       `${API_LEDGER}/_info`,
       'data'
     );
-    // TODO get only 5 first logs (use size params)
-    // TODO remove when backend is ready (NUM-1415)
-    const query = 'pageSize=5&page_size=5';
-    // TODO uncomment when backend is ready (NUM-1415)
-    // const query = 'pageSize=5'
-    const url = `/ledger/${params.ledgerId}/log?${query}`;
+    const url = `/ledger/${params.ledgerId}/log?pageSize=5`;
     const logs = await api.getResource<
       Cursor<LedgerLog<Transaction | ObjectOf<any>>>
     >(url, 'cursor');

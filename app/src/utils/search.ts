@@ -16,19 +16,12 @@ export const buildQuery = (
   const sort = searchParams.getAll('sort');
   const body = pickBy(
     {
-      size: searchParams.get('size')
-        ? toNumber(searchParams.get('size'))
-        : undefined, // TODO remove when backend is ready (NUM-1415)
       pageSize: searchParams.get('size')
         ? toNumber(searchParams.get('size'))
         : undefined,
-      page_size: searchParams.get('size')
-        ? toNumber(searchParams.get('size'))
-        : undefined, // TODO remove when backend is ready (NUM-1415)
       target: (searchParams.get('target') as SearchTargets) || undefined,
       policy: (searchParams.get('policy') as SearchPolicies) || undefined,
       cursor: searchParams.get('cursor') || undefined,
-      pagination_token: searchParams.get('cursor') || undefined, // TODO remove when backend is ready (NUM-1415)
       terms: terms.length > 0 ? terms : undefined,
       ledgers: ledgers.length > 0 ? ledgers : undefined,
       sort: sort.length > 0 ? sort : undefined,
