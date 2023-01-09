@@ -10,7 +10,7 @@ import invariant from 'tiny-invariant';
 
 import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
 
-import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
+import { getLedgerAccountDetailsRoute } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
