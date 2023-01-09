@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
 
-import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import Table from '~/src/components/Wrappers/Table';
 import { OAuthClient } from '~/src/types/oauthClient';

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Page } from '@numaryhq/storybook';
 
-import { payments as paymentsConfig } from '~/src/components/Navbar/routes';
+import { payments as paymentsConfig } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';

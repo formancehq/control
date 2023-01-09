@@ -7,7 +7,7 @@ import { LoaderFunction } from '@remix-run/server-runtime';
 import { Page } from '@numaryhq/storybook';
 
 import { LedgerList } from '~/routes/ledgers/list';
-import { accounts as accountsConfig } from '~/src/components/Navbar/routes';
+import { accounts as accountsConfig } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';

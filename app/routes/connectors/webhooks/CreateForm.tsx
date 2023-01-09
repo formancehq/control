@@ -10,7 +10,7 @@ import * as yup from 'yup';
 
 import { SelectMultiple, TextField } from '@numaryhq/storybook';
 
-import { getRoute, WEBHOOK_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, WEBHOOK_ROUTE } from '~/src/components/Layout/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';

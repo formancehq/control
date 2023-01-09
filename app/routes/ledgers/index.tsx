@@ -15,8 +15,9 @@ import {
   getRoute,
   LEDGER_ROUTE,
   ledgers as ledgersConfig,
-} from '~/src/components/Navbar/routes';
+} from '~/src/components/Layout/routes';
 import Table from '~/src/components/Wrappers/Table';
+import { API_LEDGER } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 
@@ -29,7 +30,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(session);
     const ledgers = await api.getResource<string[]>(
-      '/ledger/_info',
+      `${API_LEDGER}/_info`,
       'data.config.storage.ledgers'
     );
     if (ledgers) {

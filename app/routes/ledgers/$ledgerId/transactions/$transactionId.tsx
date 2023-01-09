@@ -12,7 +12,7 @@ import invariant from 'tiny-invariant';
 import { Page, SectionWrapper, Txid } from '@numaryhq/storybook';
 
 import PostingsGraph from '~/src/components/Dataviz/PostingsGraph';
-import { getLedgerTransactionDetailsRoute } from '~/src/components/Navbar/routes';
+import { getLedgerTransactionDetailsRoute } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList/TransactionList';

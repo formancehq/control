@@ -33,7 +33,7 @@ import { useOpen } from './src/hooks/useOpen';
 import { LoadingButton, Snackbar, theme } from '@numaryhq/storybook';
 
 import Layout from '~/src/components/Layout';
-import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
 import {

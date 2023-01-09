@@ -21,7 +21,7 @@ import {
   TitleWithBar,
 } from '@numaryhq/storybook';
 
-import { CONNECTORS_ROUTE, overview } from '~/src/components/Navbar/routes';
+import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import { Cursor } from '~/src/types/generic';

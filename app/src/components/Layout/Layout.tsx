@@ -1,8 +1,18 @@
 import * as React from 'react';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
-import { Box, CircularProgress } from '@mui/material';
+import { Menu } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  ListItemIcon,
+  ListItemText,
+  Menu as MuiMenu,
+  MenuItem,
+} from '@mui/material';
 import { useNavigate, useSearchParams, useTransition } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
 import { useMatch, useParams } from 'react-router-dom';
 import {
   animated,
@@ -13,22 +23,40 @@ import { Breadcrumbs } from '@numaryhq/storybook';
 
 import Sidebar from '~/src/components/Layout/components/Sidebar';
 import Topbar from '~/src/components/Layout/components/Topbar';
+import { routerConfig } from '~/src/components/Layout/routes';
 import { breadcrumbsFactory } from '~/src/components/Layout/service';
 import { LayoutProps } from '~/src/components/Layout/types';
+import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
 
 const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   const transition = useTransition();
-  const [showMiniSidebar, setShowMiniSidebar] = React.useState(false);
+  const [showMiniSidebar, setShowMiniSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
   const params = useParams();
   const navigate = useNavigate();
   const match = (pattern: string): boolean => !!useMatch(pattern);
   const [searchParams] = useSearchParams();
   const links = breadcrumbsFactory(params, match, navigate, searchParams);
-
+  const { isMobile } = useSimpleMediaQuery();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const { t } = useTranslation();
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = (path: string) => {
+    setAnchorEl(null);
+    navigate(path);
+  };
   useEffect(() => {
-    const resizedSidebar = localStorage.getItem('resizedSidebar') || 'false';
-    setShowMiniSidebar(JSON.parse(resizedSidebar));
-  }, []);
+    if (isMobile) {
+      setShowSidebar(false);
+    } else {
+      const resizedSidebar = localStorage.getItem('resizedSidebar') || 'false';
+      setShowMiniSidebar(JSON.parse(resizedSidebar));
+      setShowSidebar(true);
+    }
+  }, [isMobile]);
 
   const handleMiniSidebar = () => {
     setShowMiniSidebar(!showMiniSidebar);
@@ -61,11 +89,59 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
           <animated.div style={{ height: '100%' }}>
             <Topbar resized={showMiniSidebar} onResize={handleMiniSidebar} />
             <Box id="layout" sx={{ minHeight: '100%', display: 'flex' }}>
-              <Sidebar width={sideBarWidth} resized={showMiniSidebar} />
+              {showSidebar && (
+                <Sidebar width={sideBarWidth} resized={showMiniSidebar} />
+              )}
               <Box
                 sx={{ width: { sm: `calc(100% - ${sideBarWidth}px)` } }}
                 mt={8}
               >
+                {!showSidebar && (
+                  <>
+                    <Button
+                      startIcon={<Menu />}
+                      id="responsive-burger"
+                      aria-controls={open ? 'basic-menu' : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? 'true' : undefined}
+                      onClick={handleClick}
+                      sx={{
+                        ml: 1,
+                        ':hover': {
+                          background: 'none',
+                        },
+                      }}
+                    />
+                    <MuiMenu
+                      id="basic-menu"
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      MenuListProps={{
+                        'aria-labelledby': 'responsive-burger',
+                      }}
+                      sx={{
+                        '& .MuiPaper-root': {
+                          width: '100%',
+                          boxShadow: 'none',
+                          border: 0,
+                        },
+                      }}
+                    >
+                      {routerConfig.map(({ children }) =>
+                        children.map(({ label, paths, id, icon }) => (
+                          <MenuItem
+                            key={id}
+                            onClick={() => handleClose(paths[0])}
+                          >
+                            <ListItemIcon>{icon}</ListItemIcon>
+                            <ListItemText>{t(label)}</ListItemText>
+                          </MenuItem>
+                        ))
+                      )}
+                    </MuiMenu>
+                  </>
+                )}
                 {links && <Breadcrumbs links={links} />}
                 {children}
               </Box>

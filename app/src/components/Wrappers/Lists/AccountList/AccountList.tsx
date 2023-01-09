@@ -12,7 +12,7 @@ import {
   SourceDestination,
 } from '@numaryhq/storybook';
 
-import { getLedgerAccountDetailsRoute } from '~/src/components/Navbar/routes';
+import { getLedgerAccountDetailsRoute } from '~/src/components/Layout/routes';
 import { AccountListProps } from '~/src/components/Wrappers/Lists/AccountList/types';
 import Table from '~/src/components/Wrappers/Table';
 import { Account } from '~/src/types/ledger';

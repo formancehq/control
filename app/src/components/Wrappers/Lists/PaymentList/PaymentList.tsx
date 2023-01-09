@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Amount, Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
 
-import { getRoute, PAYMENT_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, PAYMENT_ROUTE } from '~/src/components/Layout/routes';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
 
-import { APP_ROUTE, getRoute } from '~/src/components/Navbar/routes';
+import { APP_ROUTE, getRoute } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';

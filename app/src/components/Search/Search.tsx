@@ -24,7 +24,7 @@ import {
   PAYMENT_ROUTE,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
-} from '~/src/components/Navbar/routes';
+} from '~/src/components/Layout/routes';
 import {
   getSuggestions,
   suggestionsFactory,

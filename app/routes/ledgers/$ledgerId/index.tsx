@@ -28,7 +28,7 @@ import {
   Txid,
 } from '@numaryhq/storybook';
 
-import { getRoute, LEDGERS_LOGS_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, LEDGERS_LOGS_ROUTE } from '~/src/components/Layout/routes';
 import LedgerLogList from '~/src/components/Wrappers/Lists/LedgerLogList';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
