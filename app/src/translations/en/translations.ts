@@ -29,6 +29,7 @@ export default {
         transactions: 'Transactions',
         ledgers: 'Ledgers',
         payments: 'Payments',
+        wallets: 'Wallets',
         connectors: 'Connectors',
         apps: 'Apps',
         oAuthClients: 'OAuth Clients',
@@ -149,6 +150,16 @@ export default {
         },
         metadata: 'Metadata',
         rawObject: 'Raw Object',
+      },
+      wallets: {
+        title: 'Wallets',
+        table: {
+          columnLabel: {
+            id: 'Wallet ID',
+            name: 'Name',
+            createdAt: 'Created At',
+          },
+        },
       },
       payments: {
         title: 'Payments',
@@ -568,11 +579,13 @@ export default {
       },
       breadcrumbs: {
         categories: {
+          wallets: 'Wallets',
           payments: 'Payments',
           ledgers: 'Ledgers',
           configuration: 'Configuration',
         },
         targets: {
+          wallets: 'All',
           payments: 'Pay-in & Payout',
           logs: 'Logs',
           ledgers: 'All',

@@ -20,7 +20,7 @@ import {
   ShellViewer,
 } from '@numaryhq/storybook';
 
-import { APPS_ROUTE } from '~/src/components/Navbar/routes';
+import { APPS_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
 import Modal from '~/src/components/Wrappers/Modal/Modal';
 import Table from '~/src/components/Wrappers/Table/Table';

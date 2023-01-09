@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
 
-import { getRoute, WEBHOOK_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, WEBHOOK_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import Table from '~/src/components/Wrappers/Table';
 import WebhookStatus from '~/src/components/Wrappers/WebhookStatus';

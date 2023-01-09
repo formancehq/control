@@ -7,6 +7,7 @@ import {
   CreditCard,
   Home,
   SwapHoriz,
+  Wallet,
   Webhook,
   Widgets,
 } from '@mui/icons-material';
@@ -17,6 +18,8 @@ export const ACCOUNT_ROUTE = '/ledgers/:slug/accounts/:id';
 export const TRANSACTION_ROUTE = '/ledgers/:slug/transactions/:id';
 export const PAYMENTS_ROUTE = '/payments';
 export const PAYMENT_ROUTE = '/payments/:id';
+export const WALLETS_ROUTE = '/wallets';
+export const WALLET_ROUTE = '/wallets/:id';
 export const OAUTH_CLIENTS_ROUTE = '/connectors/oauth-clients';
 export const WEBHOOKS_ROUTE = '/connectors/webhooks';
 export const WEBHOOK_ROUTE = '/webhooks/:id';
@@ -68,6 +71,13 @@ export const payments: RouterConfig = {
   label: 'navbar.title.payments',
   paths: [PAYMENTS_ROUTE, PAYMENT_ROUTE],
   icon: <CreditCard />,
+};
+
+export const wallets: RouterConfig = {
+  id: 'wallets',
+  label: 'navbar.title.wallets',
+  paths: [WALLETS_ROUTE, WALLET_ROUTE],
+  icon: <Wallet />,
 };
 
 export const accounts: RouterConfig = {
@@ -123,7 +133,7 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
   },
   {
     label: 'sidebar.payments',
-    children: [payments],
+    children: [payments, wallets],
   },
   {
     label: 'sidebar.configuration',

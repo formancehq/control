@@ -23,7 +23,7 @@ import {
   SectionWrapper,
 } from '@numaryhq/storybook';
 
-import { getRoute, OAUTH_CLIENTS_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, OAUTH_CLIENTS_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';

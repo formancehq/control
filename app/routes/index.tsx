@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import type { MetaFunction } from '@remix-run/node';
 import { useNavigate } from 'react-router-dom';
 
-import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
 
 export const meta: MetaFunction = () => ({
   title: 'Home',

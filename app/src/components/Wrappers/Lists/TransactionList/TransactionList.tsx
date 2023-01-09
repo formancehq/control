@@ -23,7 +23,7 @@ import {
   getLedgerTransactionDetailsRoute,
   getRoute,
   TRANSACTIONS_ROUTE,
-} from '~/src/components/Navbar/routes';
+} from '~/src/components/Layout/routes';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction, TransactionHybrid } from '~/src/types/ledger';

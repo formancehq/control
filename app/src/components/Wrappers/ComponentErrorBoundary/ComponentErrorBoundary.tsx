@@ -9,7 +9,7 @@ import { ComponentErrorBoundaryProps } from './types';
 
 import { EmptyState, LoadingButton } from '@numaryhq/storybook';
 
-import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
 import { Errors } from '~/src/types/generic';
 
 const ComponentErrorBoundary: FunctionComponent<

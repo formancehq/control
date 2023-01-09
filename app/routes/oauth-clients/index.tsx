@@ -14,7 +14,7 @@ import * as yup from 'yup';
 
 import { LoadingButton, Row, TextArea, TextField } from '@numaryhq/storybook';
 
-import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Navbar/routes';
+import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Layout/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';

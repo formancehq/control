@@ -16,8 +16,9 @@ import {
   OAUTH_CLIENTS_ROUTE,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
+  WALLETS_ROUTE,
   WEBHOOKS_ROUTE,
-} from '~/src/components/Navbar/routes';
+} from '~/src/components/Layout/routes';
 import { ObjectOf } from '~/src/types/generic';
 
 export type State = {
@@ -201,14 +202,16 @@ export const breadcrumbsFactory = (
   const transactionsRoute = match(
     '/ledgers/:ledgerId/transactions/:transactionId'
   );
-  const paymentRoute = match('/payments/:paymentId');
+  const connectorsIndex = match('/connectors/:id');
   const oAuthClientRoute = match('/oauth-clients/:oAuthClientId');
   const webhookRoute = match('/webhooks/:webhookId');
   const appRoute = match('/apps/:appName');
   const accountsIndex = match('/accounts');
-  const connectorsIndex = match('/connectors/:id');
   const transactionsIndex = match('/transactions');
   const paymentsIndex = match('/payments');
+  const paymentRoute = match('/payments/:paymentId');
+  const walletsIndexRoute = match('/wallets');
+  const walletRoute = match('/wallets/:walletId');
   const ledgersIndex = match('/ledgers');
   const ledgerLogsRoute = match('/ledgers/:ledgerId/logs');
   const ledgerRoute = match('/ledgers/:ledgerId');
@@ -253,6 +256,17 @@ export const breadcrumbsFactory = (
   }
   if (ledgerRoute) {
     return buildSimpleDetailBreadcrumbs(navigate, params.ledgerId, 'ledgers');
+  }
+  if (walletRoute) {
+    return buildSimpleDetailBreadcrumbs(navigate, params.walletId, 'wallets');
+  }
+  if (walletsIndexRoute) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'wallets',
+      getRoute(WALLETS_ROUTE),
+      i18n.t('common.breadcrumbs.categories.wallets')
+    );
   }
   if (oAuthClientRoute) {
     return buildOAuthClientBreadcrumbs(navigate, params.oAuthClientId);

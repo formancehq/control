@@ -14,7 +14,7 @@ import {
   APP_ROUTE,
   APPS_ROUTE,
   getRoute,
-} from '~/src/components/Navbar/routes';
+} from '~/src/components/Layout/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import { useService } from '~/src/hooks/useService';
 import { Connector, ConnectorFormValues } from '~/src/types/connectorsConfig';

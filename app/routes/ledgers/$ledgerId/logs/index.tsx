@@ -13,6 +13,7 @@ import { ObjectOf, Page, SectionWrapper } from '@numaryhq/storybook';
 import LedgerLogList from '~/src/components/Wrappers/Lists/LedgerLogList';
 import { Cursor } from '~/src/types/generic';
 import { LedgerLog, Transaction } from '~/src/types/ledger';
+import { API_LEDGER } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { QueryContexts, sanitizeQuery } from '~/src/utils/search';
@@ -27,7 +28,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     invariant(params.ledgerId, 'Expected params.ledgerId');
     const api = await createApiClient(session);
     const query = sanitizeQuery(request, QueryContexts.PARAMS);
-    const url = `/ledger/${params.ledgerId}/log?${query}`;
+    const url = `${API_LEDGER}/${params.ledgerId}/log?${query}`;
     const logs = await api.getResource<
       Cursor<LedgerLog<Transaction | ObjectOf<any>>>
     >(url, 'cursor');

@@ -24,7 +24,7 @@ import {
   APPS_ROUTE,
   OAUTH_CLIENTS_ROUTE,
   WEBHOOKS_ROUTE,
-} from '~/src/components/Navbar/routes';
+} from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { Connector } from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';

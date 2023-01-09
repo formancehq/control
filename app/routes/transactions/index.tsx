@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Page } from '@numaryhq/storybook';
 
 import { LedgerList } from '~/routes/ledgers/list';
-import { transactions as transactionsConfig } from '~/src/components/Navbar/routes';
+import { transactions as transactionsConfig } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
