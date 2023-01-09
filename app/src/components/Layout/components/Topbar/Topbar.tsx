@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { FunctionComponent, useEffect } from 'react';
+import * as React from "react";
+import { FunctionComponent, useEffect } from "react";
 
-import { ArrowDropDown, MenuOpen, Person } from '@mui/icons-material';
+import { ArrowDropDown, MenuOpen, Person } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -10,22 +10,24 @@ import {
   MenuItem,
   Typography,
   useTheme,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
 
-import { TopbarProps } from '~/src/components/Layout/components/Topbar/types';
-import Search from '~/src/components/Search';
-import { useService } from '~/src/hooks/useService';
-import { CurrentUser } from '~/src/utils/api';
+import { TopbarProps } from "~/src/components/Layout/components/Topbar/types";
+import Search from "~/src/components/Search";
+import { useService } from "~/src/hooks/useService";
+import { CurrentUser } from "~/src/utils/api";
+import useSimpleMediaQuery from "~/src/hooks/useSimpleMediaQuery";
 
 const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
+  const { isMobile } = useSimpleMediaQuery();
   const { api, setCurrentUser, currentUser, metas } = useService();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-  const settings = [t('topbar.logout')];
+  const settings = [t("topbar.logout")];
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -43,20 +45,20 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const getCurrentUser = async () => {
     try {
       const user = await api.getResource<CurrentUser>(
-        `${metas.openIdConfig.userinfo_endpoint.split('api')[1]}`
+        `${metas.openIdConfig.userinfo_endpoint.split("api")[1]}`
       );
       if (user) {
         const pseudo =
-          user && user.email ? user.email.split('@')[0] : undefined;
+          user && user.email ? user.email.split("@")[0] : undefined;
 
         setCurrentUser({
           ...user,
-          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
+          avatarLetter: pseudo ? pseudo.split("")[0].toUpperCase() : undefined,
           pseudo,
         });
       }
     } catch (e) {
-      console.info('Current user could not be retrieved');
+      console.info("Current user could not be retrieved");
     }
   };
 
@@ -69,39 +71,41 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   return (
     <Box
       sx={{
-        minHeight: '40px',
-        position: 'fixed',
-        width: '100%',
-        p: '8px 0 8px 0',
-        borderRadius: '0 !important',
+        minHeight: "40px",
+        position: "fixed",
+        width: "100%",
+        p: "8px 0 8px 0",
+        borderRadius: "0 !important",
         background: palette.neutral[800],
         zIndex: 9999,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignSelf: 'center',
-        alignItems: 'center',
+        display: "flex",
+        justifyContent: "space-between",
+        alignSelf: "center",
+        alignItems: "center",
       }}
       id="topbar"
     >
-      <Box display="flex">
-        <IconButton
-          sx={{
-            transition: 'all 0.85s',
-            color: ({ palette }) => palette.neutral[500],
-            background: 'transparent',
-            ml: 2,
-            mr: 2,
-            ':hover': {
-              transform: `rotate(${resized ? '-180deg' : '180deg'})`,
-              color: ({ palette }) => palette.neutral[300],
-              transition: 'all 0.85s',
-              background: 'transparent',
-            },
-          }}
-          onClick={onResize}
-        >
-          <MenuOpen />
-        </IconButton>
+      <Box display="flex" ml={isMobile ? 3 : 0}>
+        {!isMobile && (
+          <IconButton
+            sx={{
+              transition: "all 0.85s",
+              color: ({ palette }) => palette.neutral[500],
+              background: "transparent",
+              ml: 2,
+              mr: 2,
+              ":hover": {
+                transform: `rotate(${resized ? "-180deg" : "180deg"})`,
+                color: ({ palette }) => palette.neutral[300],
+                transition: "all 0.85s",
+                background: "transparent",
+              },
+            }}
+            onClick={onResize}
+          >
+            <MenuOpen />
+          </IconButton>
+        )}
         <Search />
       </Box>
 
@@ -113,8 +117,8 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
               sx={{
                 width: 24,
                 height: 24,
-                padding: '1px',
-                borderRadius: '4px',
+                padding: "1px",
+                borderRadius: "4px",
                 bgcolor: palette.red.bright,
               }}
             >
@@ -132,9 +136,9 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
           </IconButton>
           <MuiMenu
             sx={{
-              mt: '45px',
+              mt: "45px",
               ul: {
-                padding: '6px',
+                padding: "6px",
                 margin: 0,
                 background: palette.neutral[800],
                 color: palette.neutral[0],
@@ -142,19 +146,19 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
             }}
             PaperProps={{
               sx: {
-                boxShadow: 'none',
+                boxShadow: "none",
               },
             }}
             id="menu-appbar"
             anchorEl={anchorElUser}
             anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             keepMounted
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
@@ -164,7 +168,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
                 key={setting}
                 onClick={handleLogout}
                 sx={{
-                  ':hover': {
+                  ":hover": {
                     background: palette.neutral[700],
                   },
                 }}
