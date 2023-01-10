@@ -1,39 +1,19 @@
 import React, { FunctionComponent } from 'react';
 
-import { ArrowRight } from '@mui/icons-material';
-import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  Chip,
-  LoadingButton,
-  Row,
-  SourceDestination,
-} from '@numaryhq/storybook';
+import { Chip, Row, SourceDestination } from '@numaryhq/storybook';
 
 import { getLedgerAccountDetailsRoute } from '~/src/components/Layout/routes';
 import { AccountListProps } from '~/src/components/Wrappers/Lists/AccountList/types';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import { Account } from '~/src/types/ledger';
 
 const AccountList: FunctionComponent<AccountListProps> = ({ accounts }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  const renderRowActions = (account: Account) => (
-    <Box key={account.address} component="span">
-      <LoadingButton
-        id={`show-${account.address}`}
-        onClick={() =>
-          navigate(
-            getLedgerAccountDetailsRoute(account.address, account.ledger)
-          )
-        }
-        endIcon={<ArrowRight />}
-      />
-    </Box>
-  );
 
   const handleAction = (account: Account) =>
     navigate(getLedgerAccountDetailsRoute(account.address, account.ledger));
@@ -72,7 +52,12 @@ const AccountList: FunctionComponent<AccountListProps> = ({ accounts }) => {
             />,
           ]}
           item={account}
-          renderActions={() => renderRowActions(account)}
+          renderActions={() => (
+            <ShowListAction
+              id={account.address}
+              onClick={() => handleAction(account)}
+            />
+          )}
         />
       )}
     />

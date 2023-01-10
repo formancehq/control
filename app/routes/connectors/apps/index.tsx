@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { ArrowRight } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
@@ -8,10 +7,11 @@ import { useLoaderData, useNavigate } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
 
-import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
+import { Chip, Row } from '@numaryhq/storybook';
 
 import { APP_ROUTE, getRoute } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Connector } from '~/src/types/connectorsConfig';
@@ -48,17 +48,6 @@ export default function Index() {
   const connectorsData = useLoaderData<Connector[]>();
   const navigate = useNavigate();
 
-  const renderRowActions = (connector: Connector) => (
-    <LoadingButton
-      id={`show-${connector.provider}`}
-      onClick={() =>
-        navigate(getRoute(APP_ROUTE, connector.provider.toLowerCase()))
-      }
-      endIcon={<ArrowRight />}
-      key={connector.provider}
-    />
-  );
-
   return (
     <Box mt={2}>
       <Table
@@ -82,7 +71,16 @@ export default function Index() {
           <Row
             key={index}
             item={connectorsData}
-            renderActions={() => renderRowActions(connector)}
+            renderActions={() => (
+              <ShowListAction
+                id={connector.provider}
+                onClick={() =>
+                  navigate(
+                    getRoute(APP_ROUTE, connector.provider.toLowerCase())
+                  )
+                }
+              />
+            )}
             keys={[
               <ProviderPicture key={index} provider={connector.provider} />,
               <Chip

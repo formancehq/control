@@ -24,7 +24,7 @@ const ShowListAction: FunctionComponent<ShowListActionProps> = ({
           if (onClick) {
             onClick();
           } else {
-            navigate(getRoute(route, id));
+            if (route) navigate(getRoute(route, id));
           }
         }}
         endIcon={<ArrowRight />}

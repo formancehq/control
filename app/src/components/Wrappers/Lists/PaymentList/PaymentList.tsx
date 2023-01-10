@@ -1,13 +1,13 @@
 import React, { FunctionComponent } from 'react';
 
-import { ArrowRight } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { Amount, Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
+import { Amount, Chip, Date, Row } from '@numaryhq/storybook';
 
 import { getRoute, PAYMENT_ROUTE } from '~/src/components/Layout/routes';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';
@@ -22,25 +22,6 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  const renderRowActions = (payment: Payment) => (
-    <Box component="span" key={payment.id}>
-      <LoadingButton
-        id={`show-${payment.id}`}
-        onClick={() =>
-          navigate(
-            `${getRoute(
-              PAYMENT_ROUTE,
-              payment.id
-            )}?provider=${lowerCaseAllWordsExceptFirstLetter(
-              payment.provider
-            )}&reference=${payment.reference}`
-          )
-        }
-        endIcon={<ArrowRight />}
-      />
-    </Box>
-  );
 
   return (
     <Table
@@ -107,7 +88,21 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({
             <Date key={index} timestamp={payment.createdAt} />,
           ]}
           item={payment}
-          renderActions={() => renderRowActions(payment)}
+          renderActions={() => (
+            <ShowListAction
+              id={payment.id}
+              onClick={() =>
+                navigate(
+                  `${getRoute(
+                    PAYMENT_ROUTE,
+                    payment.id
+                  )}?provider=${lowerCaseAllWordsExceptFirstLetter(
+                    payment.provider
+                  )}&reference=${payment.reference}`
+                )
+              }
+            />
+          )}
         />
       )}
     />

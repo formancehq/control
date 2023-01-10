@@ -141,6 +141,7 @@ export default function Index() {
           <TransactionList
             transactions={transaction.postings}
             withPagination={false}
+            withAction={false}
           />
         </SectionWrapper>
         {/* Graph Section */}
