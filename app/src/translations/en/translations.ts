@@ -169,6 +169,14 @@ export default {
           },
           holds: {
             title: 'Holds',
+            table: {
+              columnLabel: {
+                id: 'Hold ID',
+                asset: 'Asset',
+                destination: 'Destination',
+                createdAt: 'Created At',
+              },
+            },
           },
           transactions: {
             title: 'Transactions',
