@@ -1,21 +1,18 @@
 import * as React from 'react';
 
-import { ArrowRight } from '@mui/icons-material';
-import { Box } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { LoadingButton, Page, Row } from '@numaryhq/storybook';
+import { Page, Row } from '@numaryhq/storybook';
 
 import {
-  getRoute,
   LEDGER_ROUTE,
   ledgers as ledgersConfig,
 } from '~/src/components/Layout/routes';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import { API_LEDGER } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -46,17 +43,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const { t } = useTranslation();
   const ledgers = useLoaderData<string[]>();
-  const navigate = useNavigate();
-
-  const renderRowActions = (name: string) => (
-    <Box component="span" key={name}>
-      <LoadingButton
-        id={`show-${name}`}
-        onClick={() => navigate(getRoute(LEDGER_ROUTE, name))}
-        endIcon={<ArrowRight />}
-      />
-    </Box>
-  );
 
   return (
     <Page id={ledgersConfig.id}>
@@ -76,7 +62,9 @@ export default function Index() {
             key={index}
             keys={['name']}
             item={ledger}
-            renderActions={() => renderRowActions(ledger.name)}
+            renderActions={() => (
+              <ShowListAction id={ledger.name} route={LEDGER_ROUTE} />
+            )}
           />
         )}
       />

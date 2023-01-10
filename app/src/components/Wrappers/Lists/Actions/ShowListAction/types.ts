@@ -1,5 +1,5 @@
 export type ShowListActionProps = {
-  route: string;
-  id: string;
+  route?: string;
+  id: string | number;
   onClick?: () => void;
 };

@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { ArrowRight, Share } from '@mui/icons-material';
+import { Share } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { Chip, Date, LoadingButton, Row } from '@numaryhq/storybook';
+import { Chip, Date, Row } from '@numaryhq/storybook';
 
-import { getRoute, WEBHOOK_ROUTE } from '~/src/components/Layout/routes';
+import { WEBHOOK_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import WebhookStatus from '~/src/components/Wrappers/WebhookStatus';
 import { Cursor } from '~/src/types/generic';
@@ -54,16 +54,6 @@ export default function Index() {
   const { t } = useTranslation();
   const cursor = useLoaderData() as unknown as Cursor<Webhook>;
   const [webhooks, setWebhooks] = useState<Webhook[]>(cursor.data);
-  const navigate = useNavigate();
-
-  const renderRowActions = (webhook: Webhook) => (
-    <LoadingButton
-      id={`show-${webhook.id}`}
-      onClick={() => navigate(getRoute(WEBHOOK_ROUTE, webhook.id))}
-      endIcon={<ArrowRight />}
-      sx={{ float: 'right' }}
-    />
-  );
 
   return (
     <Box mt={2}>
@@ -145,7 +135,9 @@ export default function Index() {
               <Date key={index} timestamp={webhook.createdAt} />,
             ]}
             item={webhook}
-            renderActions={() => renderRowActions(webhook)}
+            renderActions={() => (
+              <ShowListAction id={webhook.id} route={WEBHOOK_ROUTE} />
+            )}
           />
         )}
       />

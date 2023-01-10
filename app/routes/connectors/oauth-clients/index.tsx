@@ -1,18 +1,17 @@
 import * as React from 'react';
 
-import { ArrowRight } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { Chip, LoadingButton, Row } from '@numaryhq/storybook';
+import { Chip, Row } from '@numaryhq/storybook';
 
-import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Layout/routes';
+import { OAUTH_CLIENT_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import { OAuthClient } from '~/src/types/oauthClient';
 import { API_AUTH } from '~/src/utils/api';
@@ -53,22 +52,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const { t } = useTranslation();
   const oAuthClients = useLoaderData() as OAuthClient[];
-  const navigate = useNavigate();
-
-  const renderRowActions = (oauthClient: OAuthClient) => (
-    <Box
-      component="span"
-      key={oauthClient.id}
-      display="inline-flex"
-      sx={{ float: 'right' }}
-    >
-      <LoadingButton
-        id={`show-${oauthClient.id}`}
-        onClick={() => navigate(getRoute(OAUTH_CLIENT_ROUTE, oauthClient.id))}
-        endIcon={<ArrowRight />}
-      />
-    </Box>
-  );
 
   return (
     <Box mt={2}>
@@ -112,7 +95,9 @@ export default function Index() {
               'description',
             ]}
             item={oAuthClient}
-            renderActions={() => renderRowActions(oAuthClient)}
+            renderActions={() => (
+              <ShowListAction id={oAuthClient.id} route={OAUTH_CLIENT_ROUTE} />
+            )}
           />
         )}
       />

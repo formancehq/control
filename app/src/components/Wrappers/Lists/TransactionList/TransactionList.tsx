@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react';
 
-import { ArrowRight } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { flatten, get, head, omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +23,7 @@ import {
   getRoute,
   TRANSACTIONS_ROUTE,
 } from '~/src/components/Layout/routes';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction, TransactionHybrid } from '~/src/types/ledger';
@@ -59,6 +59,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   paginationSize = 15,
   showMore = false,
   sortedColumns,
+  withAction = true,
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -89,23 +90,13 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
       }&policy=${SearchPolicies.OR}&size=15`
     );
 
-  const renderRowActions = (transaction: TransactionHybrid) => (
-    <Box key={transaction.txid} component="span">
-      <LoadingButton
-        id={`show-${transaction.txid}`}
-        onClick={() => handleAction(transaction)}
-        endIcon={<ArrowRight />}
-      />
-    </Box>
-  );
-
   return (
     <>
       <Table
         withPagination={withPagination}
         paginationSize={paginationSize}
         items={transactionsNormalized}
-        action
+        action={withAction}
         columns={[
           {
             key: 'txid',
@@ -159,6 +150,17 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
             first.source === transaction.source &&
             first.txid === transaction.txid;
 
+          const restProps = {
+            renderActions: () => (
+              <ShowListAction
+                onClick={() => handleAction(transaction)}
+                id={transaction.txid}
+              />
+            ),
+          };
+
+          const props = withAction ? restProps : {};
+
           return (
             <Row
               key={index}
@@ -207,7 +209,7 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
                 />,
               ]}
               item={transaction}
-              renderActions={() => renderRowActions(transaction)}
+              {...props}
             />
           );
         }}
