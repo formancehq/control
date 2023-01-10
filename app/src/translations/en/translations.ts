@@ -161,6 +161,23 @@ export default {
           },
         },
       },
+      wallet: {
+        title: 'Wallet',
+        sections: {
+          balances: {
+            title: 'Balances',
+          },
+          holds: {
+            title: 'Holds',
+          },
+          transactions: {
+            title: 'Transactions',
+          },
+          metadata: {
+            title: 'Metadata',
+          },
+        },
+      },
       payments: {
         title: 'Payments',
         filters: {

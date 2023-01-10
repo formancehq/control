@@ -8,7 +8,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Chip, CopyPasteTooltip, Date, Page, Row } from '@numaryhq/storybook';
 
-import { wallets as walletsConfig } from '~/src/components/Layout/routes';
+import {
+  WALLET_ROUTE,
+  wallets as walletsConfig,
+} from '~/src/components/Layout/routes';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
 import { Wallet } from '~/src/types/wallet';
@@ -42,23 +46,12 @@ export default function Index() {
   const { t } = useTranslation();
   const wallets = useLoaderData<string[]>();
 
-  // TODO uncomment when details page is ready
-  // const renderRowActions = (id: string) => (
-  //   <Box component="span" key={id}>
-  //     <LoadingButton
-  //       id={`show-${name}`}
-  //       onClick={() => navigate(getRoute(WALLET_ROUTE, id))}
-  //       endIcon={<ArrowRight />}
-  //     />
-  //   </Box>
-  // );
-
   return (
     <Page id={walletsConfig.id}>
       <Table
         id="wallet-list"
         items={wallets}
-        // action={true} // TODO uncomment when details page is ready
+        action={true}
         columns={[
           {
             key: 'id',
@@ -91,7 +84,9 @@ export default function Index() {
               <Date key={index} timestamp={wallet.createdAt} />,
             ]}
             item={wallet}
-            // renderActions={() => renderRowActions(wallet.id)} // TODO uncomment when details page is ready
+            renderActions={() => (
+              <ShowListAction route={WALLET_ROUTE} id={wallet.id} />
+            )}
           />
         )}
       />

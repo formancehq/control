@@ -29,6 +29,7 @@ import {
 } from '@numaryhq/storybook';
 
 import { getRoute, LEDGERS_LOGS_ROUTE } from '~/src/components/Layout/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import LedgerLogList from '~/src/components/Wrappers/Lists/LedgerLogList';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
@@ -60,6 +61,17 @@ export const meta: MetaFunction = () => ({
   title: 'Ledger',
   description: 'Show a ledger',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <ComponentErrorBoundary
+      id="ledger"
+      title="pages.ledger.title"
+      error={error}
+      showAction={false}
+    />
+  );
+}
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
