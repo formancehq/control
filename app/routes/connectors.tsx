@@ -46,8 +46,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         `${API_PAYMENT}/connectors`,
         'data'
       );
+
       const configuration = await api.getResource<Connector[]>(
-        `${API_PAYMENT}/connectors/configs`
+        `${API_PAYMENT}/connectors/configs`,
+        'data'
       );
 
       if (connectors && configuration) {
@@ -78,6 +80,7 @@ export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
   const connectorsData = useLoaderData<CreateFormProps>();
+  console.log(connectorsData);
   const handleActive = (path: string) => location.pathname.includes(path);
   const config = [
     {
