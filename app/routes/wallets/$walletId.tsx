@@ -79,7 +79,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         if (detailedBalance) {
           let a = '';
           Object.keys(detailedBalance.assets).forEach((key: string) => {
-            console.log(key);
             a = `${a}${key} ${detailedBalance.assets[key]} `;
           });
 
@@ -134,7 +133,7 @@ export default function Index() {
           }}
         >
           <Typography variant="h1" pr={1}>
-            {data.wallet.name}
+            {data.wallet.name || t('pages.wallet.title')}
           </Typography>
           <CopyPasteTooltip
             tooltipMessage={t('common.tooltip.copied')}
