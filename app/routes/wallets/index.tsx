@@ -5,10 +5,12 @@ import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { Chip, CopyPasteTooltip, Date, Page, Row } from '@numaryhq/storybook';
 
 import {
+  getRoute,
   WALLET_ROUTE,
   wallets as walletsConfig,
 } from '~/src/components/Layout/routes';
@@ -45,6 +47,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const { t } = useTranslation();
   const wallets = useLoaderData<string[]>();
+  const navigate = useNavigate();
 
   return (
     <Page id={walletsConfig.id}>
@@ -85,7 +88,14 @@ export default function Index() {
             ]}
             item={wallet}
             renderActions={() => (
-              <ShowListAction route={WALLET_ROUTE} id={wallet.id} />
+              <ShowListAction
+                id={wallet.id}
+                onClick={() =>
+                  navigate(
+                    `${getRoute(WALLET_ROUTE, wallet.id)}?name=${wallet.name}`
+                  )
+                }
+              />
             )}
           />
         )}
