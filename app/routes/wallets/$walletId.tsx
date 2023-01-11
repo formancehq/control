@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -71,13 +72,19 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       const balances = [];
 
       for (const balance of rawBalances) {
-        const detailedBalance = await (
-          await createApiClient(session)
-        ).getResource<WalletBalance[]>(
+        const detailedBalance = await api.getResource<WalletDetailedBalance>(
           `${API_WALLET}/wallets/${params.walletId}/balances/${balance.name}`,
-          'cursor.data'
+          'data'
         );
-        balances.push(detailedBalance);
+        if (detailedBalance) {
+          let a = '';
+          Object.keys(detailedBalance.assets).forEach((key: string) => {
+            console.log(key);
+            a = `${a}${key} ${detailedBalance.assets[key]} `;
+          });
+
+          balances.push({ ...detailedBalance, formattedAssets: a });
+        }
       }
 
       return {
@@ -117,23 +124,86 @@ export default function Index() {
     useLoaderData<WalletDetailsData>() as unknown as WalletDetailsData;
 
   return (
-    <Page id="wallet" title={data.wallet.name}>
+    <Page
+      id="wallet"
+      title={
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="h1" pr={1}>
+            {data.wallet.name}
+          </Typography>
+          <CopyPasteTooltip
+            tooltipMessage={t('common.tooltip.copied')}
+            value={data.wallet.id}
+          >
+            <Chip label={data.wallet.id} variant="square" />
+          </CopyPasteTooltip>
+        </Box>
+      }
+    >
       <>
         <SectionWrapper title={t('pages.wallet.sections.balances.title')}>
-          {/* TODO ajust table with data from balances */}
+          {/* TODO adjust table with data from balances */}
           <Table
             withHeader={false}
-            items={[]}
+            withPagination={false}
+            items={data.balances}
             action
-            columns={[]}
-            renderItem={(balance: WalletDetailedBalance, index) => (
-              <Row key={index} keys={[]} item={balance} />
+            columns={[
+              {
+                key: 'name',
+                label: '',
+                width: 30,
+              },
+              {
+                key: 'type',
+                label: '',
+                width: 30,
+              },
+              {
+                key: 'assets',
+                label: '',
+                width: 60,
+              },
+            ]}
+            renderItem={(
+              balance: WalletDetailedBalance & { formattedAssets: string }, // TODO temporary
+              index
+            ) => (
+              <Row
+                key={index}
+                keys={[
+                  <Chip
+                    label={balance.name}
+                    key={index}
+                    variant="square"
+                    color="blue"
+                  />,
+                  <Chip
+                    key={index}
+                    variant="square"
+                    label={
+                      balance.name === 'main'
+                        ? 'primary balance'
+                        : 'secondary balance'
+                    }
+                    color={balance.name === 'main' ? 'green' : undefined}
+                  />,
+                  'formattedAssets',
+                ]}
+                item={balance}
+              />
             )}
           />
         </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.holds.title')}>
           <Table
             items={data.holds}
+            withPagination={false}
             action
             columns={[
               {

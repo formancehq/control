@@ -74,11 +74,12 @@ const buildLedgerLogsBreadcrumbs = (
 const buildSimpleDetailBreadcrumbs = (
   navigate: NavigateFunction,
   id: string,
-  category: string
+  category: string,
+  path: string
 ): BreadcrumbsLink[] => {
   const bread = {
     label: i18n.t(`common.breadcrumbs.categories.${category}`),
-    onClick: () => navigate(getRoute(LEDGERS_ROUTE)),
+    onClick: () => navigate(path),
   };
 
   return [bread, { label: id }];
@@ -192,6 +193,7 @@ const buildLedgerBreadcrumbs = (
   },
 ];
 
+// TODO improve this shit, make it "smart"
 export const breadcrumbsFactory = (
   params: ObjectOf<any>,
   match: (pattern: string) => boolean,
@@ -255,10 +257,22 @@ export const breadcrumbsFactory = (
     return buildLedgerLogsBreadcrumbs(navigate, params.ledgerId);
   }
   if (ledgerRoute) {
-    return buildSimpleDetailBreadcrumbs(navigate, params.ledgerId, 'ledgers');
+    return buildSimpleDetailBreadcrumbs(
+      navigate,
+      params.ledgerId,
+      'ledgers',
+      LEDGERS_ROUTE
+    );
   }
   if (walletRoute) {
-    return buildSimpleDetailBreadcrumbs(navigate, params.walletId, 'wallets');
+    const walletName = urlSearchParams.get('name') || params.walletId;
+
+    return buildSimpleDetailBreadcrumbs(
+      navigate,
+      walletName,
+      'wallets',
+      WALLETS_ROUTE
+    );
   }
   if (walletsIndexRoute) {
     return buildIndexBreadcrumbs(
