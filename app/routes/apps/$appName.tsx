@@ -23,13 +23,14 @@ import {
 import { APPS_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
 import Modal from '~/src/components/Wrappers/Modal/Modal';
-import Table from '~/src/components/Wrappers/Table/Table';
+import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
 import { Connector, ConnectorTask } from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
+import { QueryContexts, sanitizeQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
   title: 'App details',
@@ -51,13 +52,16 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
     invariant(params.appName, 'Expected params.appName');
     const api = await createApiClient(session);
+    const query = sanitizeQuery(request, QueryContexts.PARAMS);
     const tasks = await api.getResource<ConnectorTask[]>(
-      `${API_PAYMENT}/connectors/${params.appName}/tasks`
+      `${API_PAYMENT}/connectors/${params.appName}/tasks?${query}`,
+      'cursor'
     );
     const connectors = await api.getResource<Connector[]>(
       `${API_PAYMENT}/connectors`,
       'data'
     );
+    console.log(connectors);
 
     const connector = connectors
       ? connectors.find(
@@ -231,7 +235,6 @@ export default function Index() {
             id="task-list"
             items={tasks}
             action
-            withPagination={false}
             columns={[
               {
                 key: 'status',

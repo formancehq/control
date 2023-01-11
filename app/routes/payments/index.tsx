@@ -48,7 +48,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(session);
     const connectorsConfig = await api.getResource<Connector[]>(
-      `${API_PAYMENT}/connectors/configs`
+      `${API_PAYMENT}/connectors/configs`,
+      'data'
     );
 
     const payments = await api.postResource<Cursor<Payment[]>>(
