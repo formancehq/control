@@ -168,7 +168,7 @@ export default {
             title: 'Balances',
           },
           holds: {
-            title: 'Holds',
+            title: 'Last holds',
             table: {
               columnLabel: {
                 id: 'Hold ID',
@@ -179,7 +179,7 @@ export default {
             },
           },
           transactions: {
-            title: 'Transactions',
+            title: 'Last transactions',
           },
           metadata: {
             title: 'Metadata',
