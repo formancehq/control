@@ -26,12 +26,12 @@ import Modal from '~/src/components/Wrappers/Modal/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
 import { Connector, ConnectorTask } from '~/src/types/connectorsConfig';
+import { TaskStatuses } from '~/src/types/payment';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 import { QueryContexts, sanitizeQuery } from '~/src/utils/search';
-import { TaskStatuses } from '~/src/types/payment';
 
 export const meta: MetaFunction = () => ({
   title: 'App details',
@@ -265,11 +265,13 @@ export default function Index() {
                 keys={[
                   <Chip
                     key={index}
-                    color={task.status === TaskStatuses.ACTIVE ? 'green' : 'red'}
+                    color={
+                      task.status === TaskStatuses.ACTIVE ? 'green' : 'red'
+                    }
                     label={
                       `${task.status}`.toLowerCase()
-                        // ? t('common.status.active')
-                        // : t('common.status.inactive')
+                      // ? t('common.status.active')
+                      // : t('common.status.inactive')
                     }
                     variant="square"
                   />,

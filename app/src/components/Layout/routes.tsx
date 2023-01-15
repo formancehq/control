@@ -116,7 +116,7 @@ export const reconciliation: RouterConfig = {
   id: 'reconciliation',
   label: 'navbar.title.reconciliation',
   paths: [RECON_ROUTE],
-  icon: <InsertLink/>,
+  icon: <InsertLink />,
 };
 
 export const apps: RouterConfig = {

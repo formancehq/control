@@ -338,7 +338,7 @@ export default {
         },
         dialog: {
           connectTitle: 'Connect new app',
-        }
+        },
       },
       apps: {
         title: 'App',
@@ -559,7 +559,8 @@ export default {
       boundaries: {
         errorState: {
           error: {
-            title: 'The requested behavior and the app\'s willingness to deliver it could not be reconciled.',
+            title:
+              "The requested behavior and the app's willingness to deliver it could not be reconciled.",
             description:
               'You can try again by refreshing your browser. If the error is still persisting, please feel free to ask for help to our support team.',
             button: 'Refresh!',
@@ -585,7 +586,7 @@ export default {
             button: 'Go back home',
           },
         },
-        title: "That's an error"
+        title: "That's an error",
       },
       soon: 'Soon!',
       title: 'Formance',
