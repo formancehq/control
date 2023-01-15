@@ -2,10 +2,12 @@ import React from 'react';
 
 import {
   AccountBalance,
+  AccountBalanceWallet,
   AccountTree,
   Apps,
   CreditCard,
   Home,
+  InsertLink,
   SwapHoriz,
   Wallet,
   Webhook,
@@ -17,6 +19,7 @@ export const OVERVIEW_ROUTE = '/overview';
 export const ACCOUNT_ROUTE = '/ledgers/:slug/accounts/:id';
 export const TRANSACTION_ROUTE = '/ledgers/:slug/transactions/:id';
 export const PAYMENTS_ROUTE = '/payments';
+export const PAYMENTS_ACCOUNTS_ROUTE = '/payments/accounts';
 export const PAYMENT_ROUTE = '/payments/:id';
 export const WALLETS_ROUTE = '/wallets';
 export const WALLET_ROUTE = '/wallets/:id';
@@ -32,6 +35,7 @@ export const CONNECTORS_ROUTE = APPS_ROUTE;
 export const LEDGERS_ROUTE = '/ledgers';
 export const LEDGERS_LOGS_ROUTE = '/ledgers/:id/logs';
 export const LEDGER_ROUTE = '/ledgers/:id';
+export const RECON_ROUTE = '/operations/reconciliation';
 
 export const getRoute = (uri: string, id?: number | string): string =>
   id !== undefined ? uri.replace(/:\w+/, id.toString(10)) : uri;
@@ -73,6 +77,13 @@ export const payments: RouterConfig = {
   icon: <CreditCard />,
 };
 
+export const paymentsAccounts: RouterConfig = {
+  id: 'paymentsAccounts',
+  label: 'navbar.title.paymentsAccounts',
+  paths: [PAYMENTS_ACCOUNTS_ROUTE],
+  icon: <AccountBalanceWallet />,
+};
+
 export const wallets: RouterConfig = {
   id: 'wallets',
   label: 'navbar.title.wallets',
@@ -99,6 +110,13 @@ export const transactions: RouterConfig = {
   label: 'navbar.title.transactions',
   paths: [TRANSACTIONS_ROUTE, TRANSACTION_ROUTE],
   icon: <SwapHoriz />,
+};
+
+export const reconciliation: RouterConfig = {
+  id: 'reconciliation',
+  label: 'navbar.title.reconciliation',
+  paths: [RECON_ROUTE],
+  icon: <InsertLink/>,
 };
 
 export const apps: RouterConfig = {
@@ -133,7 +151,11 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
   },
   {
     label: 'sidebar.payments',
-    children: [payments, wallets],
+    children: [payments, paymentsAccounts, wallets],
+  },
+  {
+    label: 'sidebar.operations',
+    children: [reconciliation],
   },
   {
     label: 'sidebar.configuration',

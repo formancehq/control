@@ -127,21 +127,29 @@ const renderError = (
           background: ({ palette }) => palette.neutral[0],
         }}
       >
-        <Typography variant="large3x" mb={3}>
+        <Typography variant="large2x" mb={0}>
           {t('common.boundaries.title')}
         </Typography>
-        <Typography variant="h2" mt={3}>
+        <Typography variant="h2" mt={1}>
           {message || t('common.boundaries.errorState.error.title')}
         </Typography>
-        <Typography variant="body2" mt={3}>
+        <Box sx={{
+          mt: 4,
+          p: 4,
+          borderRadius: 2,
+          color: ({ palette }) => palette.neutral[0],
+          backgroundColor: ({ palette }) => palette.neutral[900],
+        }}>
+          <Typography variant="body2">
           {description || t('common.boundaries.errorState.error.description')}
         </Typography>
+        </Box>
         <Box sx={{ display: 'flex' }}>
           <LoadingButton
             id="go-back-home"
-            content="Go back home"
-            variant="primary"
-            startIcon={<Home />}
+            content="Back to main page"
+            variant="stroke"
+            // startIcon={<Home />}
             onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
             sx={{ mt: 5, mr: 1 }}
           />

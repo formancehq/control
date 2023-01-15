@@ -17,15 +17,16 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
 
   const buttonSx = {
     width: resized ? 'auto' : 200,
-    m: '4px 0 4px 0',
-    p: '10px',
+    // m: '4px 0 4px 0',
+    m: '2px',
+    p: '8px',
     color: palette.neutral[600],
     display: 'flex',
     borderRadius: '6px',
     textTransform: 'none',
     justifyContent: resized ? 'center' : 'start',
     ':hover': {
-      p: '10px',
+      p: '8px',
       color: palette.neutral[700],
     },
   };
@@ -40,11 +41,15 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
         transition: 'all 0.25s',
       }}
     >
-      <Box mt={resized ? 6 : 9} sx={{ position: 'fixed', ml: resized ? 2 : 0 }}>
+      <Box mt={resized ? 6 : 9} sx={{
+        ml: resized ? 2 : 0,
+        position: 'fixed',
+        height: '100%',
+      }}>
         {routerConfig.map(({ label: groupLabel, children }, index) => (
-          <Box key={index} sx={{ marginTop: resized ? '24px' : 'initial' }}>
+          <Box key={index} sx={{ marginTop: resized ? '24px' : '0px' }}>
             {groupLabel && !resized && (
-              <Box mt={index === 1 ? 1 : 3} p={1} ml={3}>
+              <Box mt={index === 1 ? 1 : 1} p={1} ml={3}>
                 <Typography
                   variant="caption"
                   sx={{

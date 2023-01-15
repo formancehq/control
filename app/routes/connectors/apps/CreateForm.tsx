@@ -135,7 +135,7 @@ export const CreateForm: FunctionComponent<CreateFormProps> = ({
       modal={{
         id: 'create-apps-modal',
         PaperProps: { sx: { minWidth: '500px' } },
-        title: t('common.dialog.createTitle'),
+        title: t('pages.connectors.dialog.connectTitle'),
         actions: {
           cancel: {
             onClick: async () => {

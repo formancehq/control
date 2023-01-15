@@ -31,6 +31,7 @@ import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 import { QueryContexts, sanitizeQuery } from '~/src/utils/search';
+import { TaskStatuses } from '~/src/types/payment';
 
 export const meta: MetaFunction = () => ({
   title: 'App details',
@@ -264,11 +265,11 @@ export default function Index() {
                 keys={[
                   <Chip
                     key={index}
-                    color={task.status ? 'green' : 'red'}
+                    color={task.status === TaskStatuses.ACTIVE ? 'green' : 'red'}
                     label={
-                      task.status
-                        ? t('common.status.active')
-                        : t('common.status.inactive')
+                      `${task.status}`.toLowerCase()
+                        // ? t('common.status.active')
+                        // : t('common.status.inactive')
                     }
                     variant="square"
                   />,
