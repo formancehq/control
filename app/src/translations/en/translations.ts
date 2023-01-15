@@ -3,6 +3,8 @@ export default {
     sidebar: {
       payments: 'Payments',
       ledgers: 'Ledgers',
+      operations: 'Operations',
+      connectors: 'Connectors',
       configuration: 'Configuration',
     },
     topbar: {
@@ -29,8 +31,9 @@ export default {
         transactions: 'Transactions',
         ledgers: 'Ledgers',
         payments: 'Payments',
+        paymentsAccounts: 'Accounts',
         wallets: 'Wallets',
-        connectors: 'Connectors',
+        reconciliation: 'Reconciliation',
         apps: 'Apps',
         oAuthClients: 'OAuth Clients',
         webhooks: 'Webhooks',
@@ -98,7 +101,7 @@ export default {
           },
         },
         subtitle: 'We hope all is well and you have a great day',
-        hello: 'Hello !',
+        hello: 'Hello!',
         setUp: {
           sectionTitle: 'Set-up',
           connexion: {
@@ -317,7 +320,7 @@ export default {
           apps: {
             title: 'Apps',
             pageButton: {
-              actionLabel: 'Add an App',
+              actionLabel: 'Connect new app',
             },
           },
           webhooks: {
@@ -329,10 +332,13 @@ export default {
           oAuthClients: {
             title: 'OAuth Clients',
             pageButton: {
-              actionLabel: 'Add an Oauth Client',
+              actionLabel: 'New OAuth Client',
             },
           },
         },
+        dialog: {
+          connectTitle: 'Connect new app',
+        }
       },
       apps: {
         title: 'App',
@@ -353,7 +359,7 @@ export default {
       app: {
         sections: {
           dangerZone: {
-            title: 'Manage',
+            title: 'Manage connector',
             delete: {
               title: 'Delete connector instance',
               button: 'Delete',
@@ -451,7 +457,7 @@ export default {
             name: {
               label: 'Name',
               errors: {
-                required: 'Oauth client name is required',
+                required: 'OAuth client name is required',
               },
             },
             description: {
@@ -553,10 +559,10 @@ export default {
       boundaries: {
         errorState: {
           error: {
-            title: 'Well, this is unexpected. Sorry',
+            title: 'The requested behavior and the app\'s willingness to deliver it could not be reconciled.',
             description:
               'You can try again by refreshing your browser. If the error is still persisting, please feel free to ask for help to our support team.',
-            button: 'Refresh !',
+            button: 'Refresh!',
           },
           serviceDown: {
             title: 'Hm, we are experiencing technical difficulties.',
@@ -565,12 +571,12 @@ export default {
           },
           notFound: {
             title: '',
-            description: 'Hm, no results found',
+            description: 'Requested data could not be found',
             button: 'Go back home',
           },
           unauthorized: {
             title: 'Looks like you do not have required permission!',
-            description: 'Checkout with your admin !',
+            description: 'Checkout with your admin!',
             button: 'Go back home',
           },
           forbidden: {
@@ -579,7 +585,7 @@ export default {
             button: 'Go back home',
           },
         },
-        title: 'Uh oh!',
+        title: "That's an error"
       },
       soon: 'Soon!',
       title: 'Formance',

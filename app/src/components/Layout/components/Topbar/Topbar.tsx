@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect } from 'react';
 
-import { ArrowDropDown, MenuOpen, Person } from '@mui/icons-material';
+import { ArrowDropDown, Home, MenuOpen, Person } from '@mui/icons-material';
 import {
   Avatar,
   Box,
+  Chip,
   IconButton,
   Menu as MuiMenu,
   MenuItem,
@@ -24,6 +25,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
   const { api, setCurrentUser, currentUser, metas } = useService();
+  console.log('currentUser', currentUser);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -110,73 +112,88 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
       </Box>
 
       {currentUser && (
-        <Box mr={1}>
-          <IconButton sx={{ p: 0 }}>
-            <Avatar
-              alt="User Avatar"
-              sx={{
-                width: 24,
-                height: 24,
-                padding: '1px',
-                borderRadius: '4px',
-                bgcolor: palette.red.bright,
-              }}
-            >
-              {currentUser.avatarLetter ? (
-                <Typography variant="bold">
-                  {currentUser.avatarLetter}
-                </Typography>
-              ) : (
-                <Person />
-              )}
-            </Avatar>
-          </IconButton>
-          <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <ArrowDropDown sx={{ color: palette.neutral[500] }} />
-          </IconButton>
-          <MuiMenu
-            sx={{
-              mt: '45px',
-              ul: {
-                padding: '6px',
-                margin: 0,
-                background: palette.neutral[800],
-                color: palette.neutral[0],
-              },
-            }}
-            PaperProps={{
-              sx: {
-                boxShadow: 'none',
-              },
-            }}
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-          >
-            {settings.map((setting) => (
-              <MenuItem
-                key={setting}
-                onClick={handleLogout}
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          mr: 1,
+        }}>
+          <Box>
+            <Typography variant="bold" sx={{
+              color: palette.neutral[500],
+              p: '4px 6px',
+              border: '1px solid',
+              borderRadius: 2,
+              mr: 2,
+            }}>eu-west-1</Typography>
+          </Box>
+          <Box>
+            <IconButton sx={{ p: 0 }}>
+              <Avatar
+                alt="User Avatar"
                 sx={{
-                  ':hover': {
-                    background: palette.neutral[700],
-                  },
+                  width: 24,
+                  height: 24,
+                  padding: '1px',
+                  borderRadius: '4px',
+                  bgcolor: palette.neutral[700],
                 }}
               >
-                <Typography textAlign="center">{setting}</Typography>
-              </MenuItem>
-            ))}
-          </MuiMenu>
+                {currentUser.avatarLetter ? (
+                  <Typography variant="bold">
+                    {currentUser.avatarLetter}
+                  </Typography>
+                ) : (
+                  <Person />
+                )}
+              </Avatar>
+            </IconButton>
+            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <ArrowDropDown sx={{ color: palette.neutral[500] }} />
+            </IconButton>
+            <MuiMenu
+              sx={{
+                mt: '45px',
+                ul: {
+                  padding: '6px',
+                  margin: 0,
+                  background: palette.neutral[800],
+                  color: palette.neutral[0],
+                },
+              }}
+              PaperProps={{
+                sx: {
+                  boxShadow: 'none',
+                },
+              }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem
+                  key={setting}
+                  onClick={handleLogout}
+                  sx={{
+                    ':hover': {
+                      background: palette.neutral[700],
+                    },
+                  }}
+                >
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))}
+            </MuiMenu>
+          </Box>
         </Box>
       )}
     </Box>

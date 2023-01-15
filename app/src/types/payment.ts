@@ -33,6 +33,22 @@ export type Payment = {
   raw: ObjectOf<any>;
 };
 
+export type Account = {
+  id: string;
+  type: string;
+  provider: string;
+  reference: string;
+  createdAt: Date;
+};
+
+export enum TaskStatuses {
+  STOPPED = 'STOPPED',
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  TERMINATED = 'TERMINATED',
+  FAILED = 'FAILED',
+}
+
 export type PaymentDetail = Payment & {
   adjustments: Array<AdjustmentsItem>;
 };

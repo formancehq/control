@@ -150,7 +150,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <Box display="flex" alignItems="center">
+              {/* <Box display="flex" alignItems="center">
                 <Avatar
                   sx={{
                     backgroundColor: ({ palette }) => palette.neutral[800],
@@ -172,7 +172,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                     {t('pages.overview.subtitle')}
                   </Typography>
                 </Box>
-              </Box>
+              </Box> */}
             </Box>
           )}
           {/*  STATUS */}

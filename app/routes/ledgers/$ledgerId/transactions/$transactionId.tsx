@@ -122,12 +122,19 @@ export default function Index() {
     <Page
       id="transaction"
       title={
-        <Box component="span" display="flex" alignItems="baseline">
-          <Typography variant="h1">{t('pages.transaction.title')}</Typography>
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}>
+          <Box>
+            <Typography variant="h1">{t('pages.transaction.title')}</Typography>
+          </Box>
           <Box
             sx={{ '& .MuiTypography-money': { fontSize: 24 } }}
             mt="4px"
-            ml={1}
+            ml='auto'
           >
             {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
             <Txid id={parseInt(id!)} />
