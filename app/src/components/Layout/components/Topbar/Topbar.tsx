@@ -112,19 +112,26 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
       </Box>
 
       {currentUser && (
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          mr: 1,
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            mr: 1,
+          }}
+        >
           <Box>
-            <Typography variant="bold" sx={{
-              color: palette.neutral[500],
-              p: '4px 6px',
-              border: '1px solid',
-              borderRadius: 2,
-              mr: 2,
-            }}>eu-west-1</Typography>
+            <Typography
+              variant="bold"
+              sx={{
+                color: palette.neutral[500],
+                p: '4px 6px',
+                border: '1px solid',
+                borderRadius: 2,
+                mr: 2,
+              }}
+            >
+              eu-west-1
+            </Typography>
           </Box>
           <Box>
             <IconButton sx={{ p: 0 }}>

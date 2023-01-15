@@ -133,16 +133,18 @@ const renderError = (
         <Typography variant="h2" mt={1}>
           {message || t('common.boundaries.errorState.error.title')}
         </Typography>
-        <Box sx={{
-          mt: 4,
-          p: 4,
-          borderRadius: 2,
-          color: ({ palette }) => palette.neutral[0],
-          backgroundColor: ({ palette }) => palette.neutral[900],
-        }}>
+        <Box
+          sx={{
+            mt: 4,
+            p: 4,
+            borderRadius: 2,
+            color: ({ palette }) => palette.neutral[0],
+            backgroundColor: ({ palette }) => palette.neutral[900],
+          }}
+        >
           <Typography variant="body2">
-          {description || t('common.boundaries.errorState.error.description')}
-        </Typography>
+            {description || t('common.boundaries.errorState.error.description')}
+          </Typography>
         </Box>
         <Box sx={{ display: 'flex' }}>
           <LoadingButton
