@@ -1,14 +1,16 @@
 import * as React from 'react';
 
+import { Chip, Typography } from '@mui/material';
 import { Session } from '@remix-run/node';
 import { LoaderFunction, useLoaderData } from 'remix';
 
 import { Page, Row } from '@numaryhq/storybook';
 
 import { paymentsAccounts } from '~/src/components/Layout/routes';
+import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
-import { Account } from '~/src/types/payment';
+import { Account, AccountTypes } from '~/src/types/payment';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -33,35 +35,42 @@ export default function Index() {
       <Table
         id="payments-accounts-list"
         items={accounts}
-        action={true}
+        action={false}
         withPagination={false}
         columns={[
-          {
-            label: 'ID',
-            key: 'id',
-            width: 10,
-          },
+          // {
+          //   label: 'ID',
+          //   key: 'id',
+          //   width: 10,
+          // },
           {
             label: 'Provider',
             key: 'provider',
-            width: 1,
-          },
-          {
-            label: 'Type',
-            key: 'type',
-            width: 1,
           },
           {
             label: 'Reference',
             key: 'reference',
-            width: 10,
+          },
+          {
+            label: 'Type',
+            key: 'type',
+          },
+          {
+            label: 'Indexed At',
+            key: 'indexedAt',
           },
         ]}
-        renderItem={(item: Account, index: number) => (
+        renderItem={(account: Account, index: number) => (
           <Row
             key={index}
-            keys={['id', 'provider', 'type', 'reference']}
-            item={item}
+            keys={[
+              // 'id',
+              <ProviderPicture provider={account.provider || 'Generic'} />,
+              'reference',
+              <Chip label={account.type} variant="square" />,
+              <Typography color="textSecondary">{`${account.createdAt}`}</Typography>,
+            ]}
+            item={account}
           />
         )}
       ></Table>

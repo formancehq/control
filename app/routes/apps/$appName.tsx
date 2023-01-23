@@ -23,6 +23,7 @@ import {
 import { APPS_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
 import Modal from '~/src/components/Wrappers/Modal/Modal';
+import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
 import { Connector, ConnectorTask } from '~/src/types/connectorsConfig';
@@ -144,7 +145,19 @@ export default function Index() {
   return (
     <Page
       id="app-details"
-      title={lowerCaseAllWordsExceptFirstLetter(connector.provider)}
+      title={
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <ProviderPicture provider={connector.provider} text={false} />
+          <Typography variant="h1" component="h1" sx={{ ml: 2 }}>
+            {lowerCaseAllWordsExceptFirstLetter(connector.provider)}
+          </Typography>
+        </Box>
+      }
     >
       <>
         {/* Danger zone */}
@@ -185,6 +198,7 @@ export default function Index() {
                       title: t('common.dialog.deleteTitle'),
                       actions: {
                         save: {
+                          // @ts-ignore
                           variant: 'error',
                           label: t('common.dialog.confirmButton'),
                           onClick: () => onDelete(connector.provider),
@@ -216,6 +230,7 @@ export default function Index() {
                       title: t('common.dialog.resetTitle'),
                       actions: {
                         save: {
+                          // @ts-ignore
                           variant: 'error',
                           label: t('common.dialog.confirmButton'),
                           onClick: () => onReset(connector.provider),
@@ -266,7 +281,7 @@ export default function Index() {
                   <Chip
                     key={index}
                     color={
-                      task.status === TaskStatuses.ACTIVE ? 'green' : 'red'
+                      task.status === TaskStatuses.ACTIVE ? 'green' : 'yellow'
                     }
                     label={
                       `${task.status}`.toLowerCase()

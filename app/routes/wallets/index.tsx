@@ -90,11 +90,7 @@ export default function Index() {
             renderActions={() => (
               <ShowListAction
                 id={wallet.id}
-                onClick={() =>
-                  navigate(
-                    `${getRoute(WALLET_ROUTE, wallet.id)}?name=${wallet.name}`
-                  )
-                }
+                onClick={() => navigate(`${getRoute(WALLET_ROUTE, wallet.id)}`)}
               />
             )}
           />

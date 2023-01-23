@@ -5,7 +5,22 @@ import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
 import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
 import type { LoaderFunction, MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import axios from 'axios';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  scales,
+  PointElement,
+  LineElement,
+} from 'chart.js';
 import { get, take } from 'lodash';
+import { Bar, Line, Pie } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -28,9 +43,23 @@ import { Cursor } from '~/src/types/generic';
 import { Account, LedgerInfo, LedgerStats } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
+import { ChartData, toBarChart } from '~/src/utils/aggregations/aggregations';
+import { ledgerTransactions } from '~/src/utils/aggregations/ledgerTransactions';
 import { API_LEDGER, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  PointElement,
+  LineElement
+);
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -47,6 +76,7 @@ type OverviewData = {
   accounts: Cursor<Account> | undefined;
   payments: Cursor<Payment> | undefined;
   ledgers: string[] | [];
+  chart?: ChartData;
 };
 
 const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
@@ -72,6 +102,7 @@ const getData = async (ledgersList: string[], api: ApiClient) => {
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(session);
+    const local = await createApiClient(session, 'http://localhost:8080');
     const payments = await api.postResource<Cursor<Payment>>(
       '/search',
       {
@@ -95,10 +126,20 @@ export const loader: LoaderFunction = async ({ request }) => {
       'data.config.storage.ledgers'
     );
 
+    const res: any = await api.postResource('/search', {
+      raw: ledgerTransactions(),
+    });
+
+    const data = res.aggregations['history'];
+    console.log(data);
+
+    const chart = toBarChart(data);
+
     return {
       accounts: accounts,
       payments: payments,
       ledgers: ledgersList,
+      chart,
     };
   }
 
@@ -144,244 +185,113 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
     <>
       <Page id={overview.id}>
         <>
-          {currentUser && currentUser.pseudo && (
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              {/* <Box display="flex" alignItems="center">
-                <Avatar
-                  sx={{
-                    backgroundColor: ({ palette }) => palette.neutral[800],
-                    width: 52,
-                    height: 52,
-                    borderRadius: '4px',
-                  }}
-                >
-                  <Person fontSize="large" />
-                </Avatar>
-                <Box display="flex-column" p={2} alignItems="center">
-                  <Typography variant="headline">
-                    {`${t('pages.overview.hello')} ${currentUser.pseudo} 👋`}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{ color: ({ palette }) => palette.neutral[400] }}
-                  >
-                    {t('pages.overview.subtitle')}
-                  </Typography>
-                </Box>
-              </Box> */}
-            </Box>
-          )}
-          {/*  STATUS */}
-          <Box mt={5}>
+          <Typography variant="h1" sx={{ mb: 4 }}>
+            <span>Overview</span>
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+            }}
+          >
             <Box
               sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                '& .MuiBox-root': {
-                  marginBottom: '0px',
-                },
+                borderRadius: '6px',
+                border: '1px solid rgb(239, 241, 246)',
+                height: '300px',
+                flex: 1,
+                p: 2,
               }}
             >
-              <TitleWithBar title={t('pages.overview.status')} />
+              <Bar
+                options={{
+                  font: {
+                    family: 'Roboto Mono',
+                  },
+                  plugins: {
+                    tooltip: {
+                      // enabled: false,
+                    },
+                    legend: {
+                      position: 'bottom',
+                      // should do nothing
+                      onClick: () => {},
+                      labels: {
+                        useBorderRadius: true,
+                        borderRadius: 4,
+                      },
+                    },
+                  },
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      stacked: true,
+                      grid: {
+                        color: 'rgb(239, 241, 246)',
+                      },
+                    },
+                    y: {
+                      stacked: true,
+                      grid: {
+                        color: 'rgb(239, 241, 246)',
+                      },
+                    },
+                  },
+                }}
+                data={{
+                  labels: data?.chart?.labels,
+                  datasets: data?.chart?.datasets as any,
+                }}
+              />
             </Box>
+            {/* <Box sx={{
+              borderRadius: '6px',
+              border: '1px solid rgb(239, 241, 246)',
+              height: '300px',
+              flex: 1,
+              p: 2,
+            }}>
+              <Line
+                options={{
 
-            <Box
-              mt={3}
-              display="flex"
-              flexWrap="wrap"
-              data-testid="stats-card"
-              justifyContent="flex-start"
-              gap="26px"
-            >
-              {loading && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    width: '100%',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '276px',
-                  }}
-                >
-                  <CircularProgress size={30} color="secondary" />
-                </Box>
-              )}
-
-              {/* TODO Add Transition Between loading state and empty/not empty state */}
-              {loadingTransition((props, ledgersLength) =>
-                ledgersLength > 0 ? (
-                  stats.map((ledger: Ledger, index: number) => (
-                    <animated.div key={index} style={props}>
-                      <Box>
-                        <StatsCard
-                          key={index}
-                          icon={<AccountBalance />}
-                          variant={ledger.color as any}
-                          title1={t('pages.overview.stats.transactions')}
-                          title2={t('pages.overview.stats.accounts')}
-                          chipValue={ledger.slug}
-                          value1={`${get(ledger, 'stats.transactions', '0')}`}
-                          value2={`${get(ledger, 'stats.accounts', '0')}`}
-                        />
-                      </Box>
-                    </animated.div>
-                  ))
-                ) : (
-                  <animated.div style={props}>
-                    <Box
-                      mr={3}
-                      onClick={() => navigate(CONNECTORS_ROUTE)}
-                      sx={{
-                        ':hover': {
-                          opacity: 0.3,
-                          cursor: 'pointer',
-                        },
-                      }}
-                    >
-                      <StatsCard
-                        icon={<AccountBalance />}
-                        variant="violet"
-                        title1={t('pages.overview.stats.transactions')}
-                        title2={t('pages.overview.stats.accounts')}
-                        chipValue="get-started"
-                        value1="0"
-                        value2="0"
-                      />
-                    </Box>
-                  </animated.div>
-                )
-              )}
-            </Box>
+                }}
+                data={{
+                  labels: [
+                    '6:00pm',
+                    '5:00pm',
+                    '4:00pm',
+                    '3:00pm',
+                    '2:00pm',
+                    '1:00pm',
+                  ],
+                  datasets: [
+                    {
+                      label: 'main-ledger',
+                      data: [
+                        124,
+                        1101,
+                        327,
+                        532,
+                        123,
+                        981,
+                      ],
+                    },
+                    {
+                      label: 'secondary-ledger',
+                      data: [
+                        124,
+                        327,
+                        532,
+                        123,
+                        981,
+                        1622,
+                      ],
+                    },
+                  ],
+                }}/>
+            </Box> */}
           </Box>
         </>
       </Page>
-
-      {/* TASKS */}
-      <Page
-        title={<TitleWithBar title={t('pages.overview.tasks.title')} />}
-        id="tasks"
-      >
-        <Box
-          mt="26px"
-          display="flex"
-          flexWrap="wrap"
-          data-testid="tasks"
-          justifyContent="flex-start"
-          gap="26px"
-        >
-          <ActionCard
-            title={t('pages.overview.tasks.tuto.title')}
-            description={t('pages.overview.tasks.tuto.description')}
-            width="400px"
-          >
-            <Link
-              id="tasks-tuto"
-              href="https://docs.formance.com/oss/ledger/get-started/hello-world"
-              underline="none"
-              target="_blank"
-              rel="noopener"
-            >
-              <LoadingButton
-                id="task-tuto-button"
-                variant="dark"
-                content={t('pages.overview.tasks.tuto.buttonText')}
-                sx={{ mt: '12px' }}
-                startIcon={<NorthEast />}
-              />
-            </Link>
-          </ActionCard>
-          <ActionCard
-            title={t('pages.overview.tasks.useCaseLib.title')}
-            description={t('pages.overview.tasks.useCaseLib.description')}
-            width="400px"
-          >
-            <Link
-              href="https://www.formance.com/use-cases-library"
-              underline="none"
-              target="_blank"
-              rel="noopener"
-            >
-              <LoadingButton
-                id="task-use-case-libButton"
-                variant="dark"
-                content={t('pages.overview.tasks.useCaseLib.buttonText')}
-                sx={{ mt: '12px' }}
-                startIcon={<NorthEast />}
-              />
-            </Link>
-          </ActionCard>
-        </Box>
-      </Page>
-
-      {/* SET-UP */}
-      {shouldDisplaySetup && (
-        <Page
-          title={
-            <TitleWithBar title={t('pages.overview.setUp.sectionTitle')} />
-          }
-          id="setup"
-        >
-          <Box
-            mt="26px"
-            display="flex"
-            flexWrap="wrap"
-            data-testid="set-up"
-            justifyContent="flex-start"
-            gap="26px"
-          >
-            {payments === 0 && (
-              <ActionCard
-                title={t('pages.overview.setUp.connexion.title')}
-                description={t('pages.overview.setUp.connexion.description')}
-                width="400px"
-              >
-                <Link
-                  id="setup-payments"
-                  href="https://docs.formance.com/oss/payments/reference/api"
-                  underline="none"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  <LoadingButton
-                    id="setup-payments-button"
-                    variant="dark"
-                    content={t('pages.overview.setUp.connexion.buttonText')}
-                    sx={{ mt: '12px' }}
-                    startIcon={<NorthEast />}
-                  />
-                </Link>
-              </ActionCard>
-            )}
-            {accounts === 0 && (
-              <ActionCard
-                title={t('pages.overview.setUp.ledger.title')}
-                description={t('pages.overview.setUp.ledger.description')}
-                width="400px"
-              >
-                <Link
-                  id="setup-ledger"
-                  href="https://docs.formance.com/oss/ledger/reference/api"
-                  underline="none"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  <LoadingButton
-                    id="setup-ledger-button"
-                    variant="dark"
-                    content={t('pages.overview.setUp.ledger.buttonText')}
-                    sx={{ mt: '12px' }}
-                    startIcon={<NorthEast />}
-                  />
-                </Link>
-              </ActionCard>
-            )}
-          </Box>
-        </Page>
-      )}
     </>
   );
 };

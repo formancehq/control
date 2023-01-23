@@ -20,11 +20,17 @@ export enum PaymentStatuses {
   OTHER = 'OTHER',
 }
 
+export enum PaymentSchemes {
+  SEPA_CREDIT = 'sepa credit',
+  SEPA_DEBIT = 'sepa debit',
+  MASTERCARD = 'mastercard',
+}
+
 export type Payment = {
   id: string;
   provider: string;
   reference: string;
-  scheme: string;
+  scheme: PaymentSchemes;
   type: PaymentTypes;
   status: PaymentStatuses;
   initialAmount: number;
@@ -35,11 +41,17 @@ export type Payment = {
 
 export type Account = {
   id: string;
-  type: string;
+  type: AccountTypes;
   provider: string;
   reference: string;
   createdAt: Date;
 };
+
+export enum AccountTypes {
+  SOURCE = 'SOURCE',
+  TARGET = 'TARGET',
+  UNKNOWN = 'UNKNOWN',
+}
 
 export enum TaskStatuses {
   STOPPED = 'STOPPED',
