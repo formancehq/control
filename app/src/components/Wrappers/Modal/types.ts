@@ -1,6 +1,7 @@
 import { ReactElement } from 'react';
 
 import {
+  ButtonVariants,
   LoadingButtonProps,
   ModalActionsProps,
   ModalProps as SbModalProps,
@@ -13,11 +14,13 @@ export type ModalProps = {
       cancel?: {
         label?: string;
         onClick?: () => Promise<any>;
+        variant?: ButtonVariants;
       };
       save?: Omit<ModalActionsProps, 'label' | 'onClick'> & {
         disabled?: boolean;
         label?: string;
         onClick?: () => Promise<any>;
+        variant?: ButtonVariants;
       };
     };
   };

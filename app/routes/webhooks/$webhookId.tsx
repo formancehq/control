@@ -270,7 +270,6 @@ export default function Index() {
                       title: t('common.dialog.deleteTitle'),
                       actions: {
                         save: {
-                          // @ts-ignore
                           variant: 'error',
                           label: t('common.dialog.confirmButton'),
                           onClick: () => onDelete(webhook.id, webhook.endpoint),

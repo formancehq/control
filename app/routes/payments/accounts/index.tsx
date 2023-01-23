@@ -1,16 +1,16 @@
 import * as React from 'react';
 
-import { Chip, Typography } from '@mui/material';
+import { Chip } from '@mui/material';
 import { Session } from '@remix-run/node';
 import { LoaderFunction, useLoaderData } from 'remix';
 
-import { Page, Row } from '@numaryhq/storybook';
+import { Date, Page, Row } from '@numaryhq/storybook';
 
 import { paymentsAccounts } from '~/src/components/Layout/routes';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
-import { Account, AccountTypes } from '~/src/types/payment';
+import { Account } from '~/src/types/payment';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -65,10 +65,13 @@ export default function Index() {
             key={index}
             keys={[
               // 'id',
-              <ProviderPicture provider={account.provider || 'Generic'} />,
+              <ProviderPicture
+                key={index}
+                provider={account.provider || 'Generic'}
+              />,
               'reference',
-              <Chip label={account.type} variant="square" />,
-              <Typography color="textSecondary">{`${account.createdAt}`}</Typography>,
+              <Chip key={index} label={account.type} variant="square" />,
+              <Date key={index} timestamp={account.createdAt} />,
             ]}
             item={account}
           />
