@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { camelCase, get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +22,7 @@ const ComponentErrorBoundary: FunctionComponent<
   const actionMap = {
     [Errors.NOT_FOUND]: () => navigate(getRoute(OVERVIEW_ROUTE)),
     [Errors.SERVICE_DOWN]: () => window.location.reload(),
-    [Errors.ERROR]: () => navigate(getRoute(OVERVIEW_ROUTE)),
+    [Errors.ERROR]: () => window.location.reload(),
     [Errors.UNAUTHORIZED]: () => navigate(getRoute(OVERVIEW_ROUTE)),
     [Errors.FORBIDDEN]: () => navigate(getRoute(OVERVIEW_ROUTE)),
   };
@@ -32,13 +32,20 @@ const ComponentErrorBoundary: FunctionComponent<
 
   return (
     <Box mt={1}>
-      <EmptyState
-        title={t(`common.boundaries.errorState.${translation}.title`)}
-        description={t(
-          `common.boundaries.errorState.${translation}.description`
-        )}
-      >
+      <EmptyState title={t('common.boundaries.title')}>
         <>
+          <Box
+            sx={{
+              p: 4,
+              borderRadius: 2,
+              color: ({ palette }) => palette.neutral[0],
+              backgroundColor: ({ palette }) => palette.neutral[900],
+            }}
+          >
+            <Typography variant="body2">
+              {t(`common.boundaries.errorState.${translation}.description`)}
+            </Typography>
+          </Box>
           {showAction && (
             <Box mt={3}>
               <LoadingButton
@@ -46,7 +53,7 @@ const ComponentErrorBoundary: FunctionComponent<
                 content={t(
                   `common.boundaries.errorState.${translation}.button`
                 )}
-                variant="primary"
+                variant="stroke"
                 onClick={() => action()}
               />
             </Box>

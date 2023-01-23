@@ -14,11 +14,11 @@ import {
   LEDGER_ROUTE,
   LEDGERS_ROUTE,
   OAUTH_CLIENTS_ROUTE,
+  PAYMENTS_ACCOUNTS_ROUTE,
   PAYMENTS_ROUTE,
   TRANSACTIONS_ROUTE,
   WALLETS_ROUTE,
   WEBHOOKS_ROUTE,
-  PAYMENTS_ACCOUNTS_ROUTE,
 } from '~/src/components/Layout/routes';
 import { ObjectOf } from '~/src/types/generic';
 
@@ -178,9 +178,11 @@ const buildLedgerBreadcrumbs = (
 ): BreadcrumbsLink[] => [
   {
     label: i18n.t(`common.breadcrumbs.targets.ledgers`),
+    onClick: () => navigate(LEDGERS_ROUTE),
   },
   {
     label: ledgerId,
+    onClick: () => navigate(getRoute(LEDGER_ROUTE, ledgerId)),
   },
   {
     label: i18n.t(`common.breadcrumbs.targets.${target}`),
@@ -202,15 +204,15 @@ export const breadcrumbsFactory = (
   urlSearchParams: URLSearchParams
 ): BreadcrumbsLink[] | undefined => {
   const accountsRoute = match('/ledgers/:ledgerId/accounts/:accountId');
+  const accountsIndex = match('/accounts');
   const transactionsRoute = match(
     '/ledgers/:ledgerId/transactions/:transactionId'
   );
+  const transactionsIndex = match('/transactions');
   const connectorsIndex = match('/connectors/:id');
   const oAuthClientRoute = match('/oauth-clients/:oAuthClientId');
   const webhookRoute = match('/webhooks/:webhookId');
   const appRoute = match('/apps/:appName');
-  const accountsIndex = match('/accounts');
-  const transactionsIndex = match('/transactions');
   const paymentsIndex = match('/payments');
   const paymentsAccountsIndex = match('/payments/accounts');
   const paymentRoute = match('/payments/:paymentId');

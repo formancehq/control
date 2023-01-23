@@ -40,7 +40,7 @@ import { Cursor } from '~/src/types/generic';
 import { Account, LedgerInfo, LedgerStats } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
 import { SearchTargets } from '~/src/types/search';
-import { API_LEDGER, ApiClient } from '~/src/utils/api';
+import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 
@@ -110,7 +110,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     // );
 
     const payments = await api.postResource<Cursor<Payment>>(
-      '/search',
+      API_SEARCH,
       {
         target: SearchTargets.PAYMENT,
         size: 1,
@@ -119,7 +119,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     const accounts = await api.postResource<Cursor<Account>>(
-      '/search',
+      API_SEARCH,
       {
         target: SearchTargets.ACCOUNT,
         size: 1,
@@ -128,7 +128,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     const ledgersList = await api.getResource<LedgerInfo>(
-      `/${API_LEDGER}/_info`,
+      `${API_LEDGER}/_info`,
       'data.config.storage.ledgers'
     );
     // TODO uncomment when overview is ready to show some charts
@@ -187,7 +187,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
 
   return (
     <>
-      <Page id={overview.id} sx={{ mb: 4 }} title={t('pages.overview.title')}>
+      <Page id={overview.id}>
         <>
           {/* TODO uncomment when overview is ready to show chart */}
           {/* TODO chart should be a storybook component */}

@@ -7,7 +7,11 @@ import { useTranslation } from 'react-i18next';
 import { matchPath } from 'react-router';
 
 import { SidebarProps } from '~/src/components/Layout/components/Sidebar/types';
-import { routerConfig } from '~/src/components/Layout/routes';
+import {
+  PAYMENTS_ACCOUNTS_ROUTE,
+  PAYMENTS_ROUTE,
+  routerConfig,
+} from '~/src/components/Layout/routes';
 import LinkWrapper from '~/src/components/Wrappers/LinkWrapper';
 
 const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
@@ -17,7 +21,6 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
 
   const buttonSx = {
     width: resized ? 'auto' : 200,
-    // m: '4px 0 4px 0',
     m: '2px',
     p: '8px',
     color: palette.neutral[600],
@@ -65,13 +68,30 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
               </Box>
             )}
 
-            {children.map(({ label, paths, id, icon }) => {
+            {children.map(({ label, paths, id, icon, strict }) => {
               let selected = false;
               for (let i = 0; i < paths.length; i++) {
-                const match = matchPath(paths[i], location.pathname);
-                if (match) {
+                if (paths[i] === location.pathname) {
                   selected = true;
                   break;
+                } else {
+                  // TODO find a better way to avoid router to be confused between /payments/accounts and /payments/somePaymentId
+                  // Ugly exception
+                  if (
+                    location.pathname === PAYMENTS_ACCOUNTS_ROUTE &&
+                    paths[i] === PAYMENTS_ROUTE
+                  ) {
+                    selected = false;
+                    break;
+                    // end exception
+                  } else {
+                    const match = matchPath(paths[i], location.pathname);
+
+                    if (match && !strict) {
+                      selected = true;
+                      break;
+                    }
+                  }
                 }
               }
 

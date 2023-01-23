@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Lock, LockOpenOutlined, LockOutlined } from '@mui/icons-material';
+import { LockOpenOutlined, LockOutlined } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
@@ -65,17 +65,17 @@ export default function Index() {
           {
             key: 'name',
             label: t('pages.oAuthClients.table.columnLabel.name'),
-            width: 5,
+            width: 20,
           },
           {
             key: 'public',
             label: t('pages.oAuthClients.table.columnLabel.public'),
-            width: 15,
+            width: 10,
           },
           {
             key: 'description',
             label: t('pages.oAuthClients.table.columnLabel.description'),
-            width: 80,
+            width: 70,
           },
         ]}
         renderItem={(oAuthClient: OAuthClient, index: number) => (

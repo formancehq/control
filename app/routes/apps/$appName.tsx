@@ -63,7 +63,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       `${API_PAYMENT}/connectors`,
       'data'
     );
-    console.log(connectors);
 
     const connector = connectors
       ? connectors.find(

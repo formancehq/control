@@ -58,18 +58,22 @@ export default function Index() {
           {
             label: t('pages.paymentsAccounts.table.columnLabel.provider'),
             key: 'provider',
+            width: 20,
           },
           {
             label: t('pages.paymentsAccounts.table.columnLabel.reference'),
             key: 'reference',
+            width: 40,
           },
           {
             label: t('pages.paymentsAccounts.table.columnLabel.type'),
             key: 'type',
+            width: 25,
           },
           {
             label: t('pages.paymentsAccounts.table.columnLabel.indexedAt'),
             key: 'indexedAt',
+            width: 15,
           },
         ]}
         renderItem={(account: Account, index: number) => (

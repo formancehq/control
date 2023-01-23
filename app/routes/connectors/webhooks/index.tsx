@@ -66,7 +66,7 @@ export default function Index() {
           {
             key: 'endpoint',
             label: t('pages.webhooks.table.columnLabel.endpoint'),
-            width: 20,
+            width: 15,
           },
           {
             key: 'eventTypes',
@@ -81,7 +81,7 @@ export default function Index() {
           {
             key: 'createdAt',
             label: t('pages.webhooks.table.columnLabel.createdAt'),
-            width: 10,
+            width: 15,
           },
         ]}
         renderItem={(webhook: Webhook, index: number) => (

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ReactElement, useEffect, useState } from 'react';
 
 import { withEmotionCache } from '@emotion/react';
-import { Home, Logout } from '@mui/icons-material';
+import { Logout } from '@mui/icons-material';
 import {
   Backdrop,
   Box,
@@ -151,7 +151,6 @@ const renderError = (
             id="go-back-home"
             content="Back to main page"
             variant="stroke"
-            // startIcon={<Home />}
             onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
             sx={{ mt: 5, mr: 1 }}
           />

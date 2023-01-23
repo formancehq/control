@@ -80,7 +80,6 @@ export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
   const connectorsData = useLoaderData<CreateFormProps>();
-  console.log(connectorsData);
   const handleActive = (path: string) => location.pathname.includes(path);
   const config = [
     {
