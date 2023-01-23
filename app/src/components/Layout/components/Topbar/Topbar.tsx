@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect } from 'react';
 
-import { ArrowDropDown, Home, MenuOpen, Person } from '@mui/icons-material';
+import { ArrowDropDown, MenuOpen, Person } from '@mui/icons-material';
 import {
   Avatar,
   Box,
-  Chip,
   IconButton,
   Menu as MuiMenu,
   MenuItem,
@@ -25,7 +24,6 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
   const { api, setCurrentUser, currentUser, metas } = useService();
-  console.log('currentUser', currentUser);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -119,20 +117,21 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
             mr: 1,
           }}
         >
-          <Box>
-            <Typography
-              variant="bold"
-              sx={{
-                color: palette.neutral[500],
-                p: '4px 6px',
-                border: '1px solid',
-                borderRadius: 2,
-                mr: 2,
-              }}
-            >
-              eu-west-1
-            </Typography>
-          </Box>
+          {/* TODO uncomment when zone are ready */}
+          {/*<Box>*/}
+          {/*  <Typography*/}
+          {/*    variant="bold"*/}
+          {/*    sx={{*/}
+          {/*      color: palette.neutral[500],*/}
+          {/*      p: '4px 6px',*/}
+          {/*      border: '1px solid',*/}
+          {/*      borderRadius: 2,*/}
+          {/*      mr: 2,*/}
+          {/*    }}*/}
+          {/*  >*/}
+          {/*    eu-west-1*/}
+          {/*  </Typography>*/}
+          {/*</Box>*/}
           <Box>
             <IconButton sx={{ p: 0 }}>
               <Avatar

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ReactElement } from 'react';
 
 import {
   Timeline,
@@ -87,6 +88,22 @@ export default function PaymentDetails() {
     useLoaderData<PaymentDetailData>() as unknown as PaymentDetailData;
   const { t } = useTranslation();
 
+  const renderTableItem = (
+    key: string,
+    index: number,
+    children: ReactElement
+  ) => (
+    <Box component="span" key={index}>
+      <Typography
+        color="textSecondary"
+        sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+      >
+        {t(`pages.payments.table.columnLabel.${key}`)}
+      </Typography>
+      {children}
+    </Box>
+  );
+
   return (
     <Page id="payment" title="">
       <>
@@ -117,6 +134,7 @@ export default function PaymentDetails() {
             </Typography>
           </Box>
         </Box>
+        {/* Details */}
         <Box>
           <Table
             id="details"
@@ -124,140 +142,52 @@ export default function PaymentDetails() {
             withHeader={false}
             key={`${payment.id}.details`}
             items={[payment]}
-            columns={[
-              {
-                key: 'type',
-                label: 'Type',
-              },
-              {
-                key: 'scheme',
-                label: 'Scheme',
-              },
-              // {
-              //   key: 'provider',
-              //   label: '',
-              // },
-              // {
-              //   key: 'reference',
-              //   label: '',
-              // },
-              {
-                key: 'net',
-                label: 'Net Amount',
-              },
-              {
-                key: 'initial',
-                label: 'Initial Amount',
-              },
-            ]}
+            columns={[]}
             renderItem={(payment: Payment, index: number) => (
               <Row
                 item={payment}
+                key={index}
                 keys={[
-                  // 'provider',
-                  <Box component="span" key={index}>
-                    <Typography
-                      color="textSecondary"
-                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
-                    >
-                      Direction
-                    </Typography>
-                    <PayInChips type={payment.type} />
-                  </Box>,
-                  <Box component="span" key={index}>
-                    <Typography
-                      color="textSecondary"
-                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
-                    >
-                      Scheme
-                    </Typography>
-                    <PaymentSchemeChip scheme={payment.scheme} />
-                  </Box>,
-                  // 'reference',
-                  <Box component="span" key={index}>
-                    <Typography
-                      color="textSecondary"
-                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
-                    >
-                      Net Amount
-                    </Typography>
+                  renderTableItem(
+                    'direction',
+                    index,
+                    <PayInChips key={index} type={payment.type} />
+                  ),
+                  renderTableItem(
+                    'scheme',
+                    index,
+                    <PaymentSchemeChip key={index} scheme={payment.scheme} />
+                  ),
+                  renderTableItem(
+                    'netAmount',
+                    index,
                     <Amount
+                      key={index}
                       amount={payment.initialAmount}
                       asset={payment.asset}
                     />
-                  </Box>,
-                  <Box component="span" key={index}>
-                    <Typography
-                      color="textSecondary"
-                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
-                    >
-                      Initial Amount
-                    </Typography>
+                  ),
+                  renderTableItem(
+                    'initialAmount',
+                    index,
                     <Amount
+                      key={index}
                       amount={payment.initialAmount}
                       asset={payment.asset}
                     />
-                  </Box>,
+                  ),
                 ]}
               />
             )}
           />
         </Box>
-        {/* Description2 */}
-        {/* <Grid container spacing="26px">
-          <Grid item xs={6}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'start',
-                p: '15px',
-              }}
-            >
-              {dataItem(
-                t('pages.payment.type'),
-                <PayInChips type={payment.type} />
-              )}
-              {dataItem(
-                t('pages.payment.processor'),
-                <ProviderPicture provider={payment.provider} />
-              )}
-              {dataItem(
-                t('pages.payment.status'),
-                <PaymentStatusChip status={payment.status} />
-              )}
-              {dataItem(
-                t('pages.payment.scheme'),
-                <PaymentSchemeChip scheme={payment.scheme} />
-              )}
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                p: '15px',
-              }}
-            >
-              {dataItem(
-                t('pages.payment.netValue'),
-                <Amount amount={payment.initialAmount} asset={payment.asset} />
-              )}
-              {dataItem(
-                t('pages.payment.initialAmount'),
-                <Amount amount={payment.initialAmount} asset={payment.asset} />
-              )}
-            </Box>
-          </Grid>
-        </Grid> */}
-
+        {/* Journal */}
         <SectionWrapper title={t('pages.payment.eventJournal.title')}>
           <>
             <Box
               sx={{
                 borderRadius: '6px',
-                border: '1px solid rgb(239, 241, 246)',
+                border: ({ palette }) => `1px solid ${palette.neutral[100]}`,
               }}
             >
               <Timeline
@@ -288,7 +218,9 @@ export default function PaymentDetails() {
                   </TimelineSeparator>
                   <TimelineContent>
                     <Box>
-                      <Typography>Payment created</Typography>
+                      <Typography>
+                        {t('pages.payment.eventJournal.timelineCreated')}
+                      </Typography>
                       <Typography color="textSecondary">{`${payment.createdAt}`}</Typography>
                     </Box>
                   </TimelineContent>
@@ -297,11 +229,10 @@ export default function PaymentDetails() {
             </Box>
           </>
         </SectionWrapper>
-
+        {/* Reconciliation */}
         <SectionWrapper title={t('pages.payment.reconciliation.title')}>
           <TransactionList transactions={transactions} withPagination={false} />
         </SectionWrapper>
-
         {/* Metadata */}
         {/* TODO replace this when Metadata is done */}
         <SectionWrapper title={t('pages.payment.metadata')}>
@@ -346,7 +277,7 @@ export default function PaymentDetails() {
               },
             ]}
             renderItem={(item: { key: string; value: any }) => (
-              <Row keys={['key', 'value']} item={item} />
+              <Row keys={['key', 'value']} item={item} key={item.key} />
             )}
           />
         </SectionWrapper>

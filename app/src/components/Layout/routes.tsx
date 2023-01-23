@@ -6,7 +6,6 @@ import {
   AccountTree,
   Apps,
   CreditCard,
-  CrisisAlert,
   Home,
   InsertLink,
   SwapHoriz,
@@ -72,13 +71,6 @@ export const overview: RouterConfig = {
   icon: <Home />,
 };
 
-export const payments: RouterConfig = {
-  id: 'payments',
-  label: 'navbar.title.payments',
-  paths: [PAYMENTS_ROUTE, PAYMENT_ROUTE],
-  icon: <CreditCard />,
-};
-
 export const paymentsAccounts: RouterConfig = {
   id: 'paymentsAccounts',
   label: 'navbar.title.paymentsAccounts',
@@ -100,13 +92,6 @@ export const accounts: RouterConfig = {
   icon: <AccountTree />,
 };
 
-export const ledgers: RouterConfig = {
-  id: 'ledgers',
-  label: 'navbar.title.ledgers',
-  paths: [LEDGERS_ROUTE, LEDGER_ROUTE, LEDGERS_LOGS_ROUTE],
-  icon: <AccountBalance />,
-};
-
 export const transactions: RouterConfig = {
   id: 'transactions',
   label: 'navbar.title.transactions',
@@ -121,12 +106,13 @@ export const reconciliation: RouterConfig = {
   icon: <InsertLink />,
 };
 
-export const monitoring: RouterConfig = {
-  id: 'monitoring',
-  label: 'navbar.title.monitoring',
-  paths: [MONITORING_ROUTE],
-  icon: <CrisisAlert />,
-};
+// TODO uncomment when monitoring is ready
+// export const monitoring: RouterConfig = {
+//   id: 'monitoring',
+//   label: 'navbar.title.monitoring',
+//   paths: [MONITORING_ROUTE],
+//   icon: <CrisisAlert />,
+// };
 
 export const apps: RouterConfig = {
   id: 'apps',
@@ -149,6 +135,25 @@ export const webhooks: RouterConfig = {
   icon: <Webhook />,
 };
 
+export const payments: RouterConfig = {
+  id: 'payments',
+  label: 'navbar.title.payments',
+  paths: [
+    PAYMENTS_ROUTE,
+    PAYMENT_ROUTE,
+    ...paymentsAccounts.paths,
+    ...wallets.paths,
+  ],
+  icon: <CreditCard />,
+};
+
+export const ledgers: RouterConfig = {
+  id: 'ledgers',
+  label: 'navbar.title.ledgers',
+  paths: [LEDGERS_ROUTE, LEDGER_ROUTE, LEDGERS_LOGS_ROUTE],
+  icon: <AccountBalance />,
+};
+
 export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
   {
     label: undefined,
@@ -162,10 +167,11 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
     label: 'sidebar.payments',
     children: [payments, paymentsAccounts, wallets],
   },
-  {
-    label: 'sidebar.operations',
-    children: [reconciliation],
-  },
+  // TODO uncomment when reco is ready
+  // {
+  //   label: 'sidebar.operations',
+  //   children: [reconciliation],
+  // },
   {
     label: 'sidebar.configuration',
     children: [apps, oAuthClients, webhooks],

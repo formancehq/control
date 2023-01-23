@@ -1,22 +1,25 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 
-import { Box, Button, Typography } from '@mui/material';
-import { LoaderFunction } from '@remix-run/node';
+import { Box, Button, useTheme } from '@mui/material';
+import { LoaderFunction, MetaFunction } from '@remix-run/node';
 import {
-  Chart as ChartJS,
   ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
   Title,
+  Tooltip,
 } from 'chart.js';
 import { Bar, Pie } from 'react-chartjs-2';
 import { useLoaderData } from 'remix';
 
 import { Page } from '@numaryhq/storybook';
 
+import { reconciliation as reconciliationConfig } from '~/src/components/Layout/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import { Cursor } from '~/src/types/generic';
 import { Payment } from '~/src/types/payment';
@@ -36,11 +39,26 @@ ChartJS.register(
   Title
 );
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const res = await withSession(request, async (session) => {
-    const api = await createApiClient(session);
+export const meta: MetaFunction = () => ({
+  title: 'Reconciliation',
+  description: 'Show reco',
+});
 
-    const payments = await api.postResource<Cursor<Payment[]>>(
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <ComponentErrorBoundary
+      id={reconciliationConfig.id}
+      title="pages.reconciliation.title"
+      error={error}
+    />
+  );
+}
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const res = await withSession(request, async (session) =>
+    (
+      await createApiClient(session)
+    ).postResource<Cursor<Payment[]>>(
       API_SEARCH,
       {
         ...(sanitizeQuery(request) as SearchBody),
@@ -49,16 +67,20 @@ export const loader: LoaderFunction = async ({ request }) => {
         pageSize: 15,
       },
       'cursor'
-    );
-
-    return payments;
-  });
+    )
+  );
 
   return handleResponse(res);
 };
 
 export default function Index() {
   const payments = useLoaderData<Payment[]>() as unknown as Payment[];
+  const { palette } = useTheme();
+
+  // TODO remove this error once reco is ready to be released
+  useEffect(() => {
+    throw 'Not ready yet !';
+  }, []);
 
   return (
     <Page id="reconciliation">
@@ -91,7 +113,7 @@ export default function Index() {
           <Box
             sx={{
               borderRadius: '6px',
-              border: '1px solid rgb(239, 241, 246)',
+              border: ({ palette }) => `1px solid ${palette.neutral[100]}`,
               flex: 1,
               p: 2,
             }}
@@ -112,9 +134,9 @@ export default function Index() {
                     data: [7, 2],
                     backgroundColor: [
                       // soft green
-                      'hsl(140, 100%, 80%)',
+                      palette.green.light,
                       // soft red
-                      'hsl(350, 90%, 70%)',
+                      palette.red.light,
                     ],
                     hoverOffset: 4,
                   },
@@ -125,7 +147,7 @@ export default function Index() {
           <Box
             sx={{
               borderRadius: '6px',
-              border: '1px solid rgb(239, 241, 246)',
+              border: ({ palette }) => `1px solid ${palette.neutral[100]}`,
               flex: 2,
               p: 2,
             }}
@@ -140,12 +162,12 @@ export default function Index() {
                   {
                     label: 'Reconciled',
                     data: [1, 2, 3, 4, 5, 6],
-                    backgroundColor: 'hsl(140, 100%, 90%)',
+                    backgroundColor: palette.green.light,
                   },
                   {
                     label: 'Unreconciled',
                     data: [6, 5, 4, 3, 2, 1],
-                    backgroundColor: 'hsl(350, 90%, 80%)',
+                    backgroundColor: palette.red.light,
                   },
                 ],
               }}
