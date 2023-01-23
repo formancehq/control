@@ -1,12 +1,14 @@
 import * as React from 'react';
 
 import { Chip } from '@mui/material';
-import { Session } from '@remix-run/node';
+import { MetaFunction, Session } from '@remix-run/node';
+import { useTranslation } from 'react-i18next';
 import { LoaderFunction, useLoaderData } from 'remix';
 
 import { Date, Page, Row } from '@numaryhq/storybook';
 
-import { paymentsAccounts } from '~/src/components/Layout/routes';
+import { paymentsAccounts as paymentsAccountsConfig } from '~/src/components/Layout/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
@@ -15,13 +17,27 @@ import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 
+export const meta: MetaFunction = () => ({
+  title: 'Payments accounts',
+  description: 'Show a list',
+});
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <ComponentErrorBoundary
+      id={paymentsAccountsConfig.id}
+      title="pages.paymentsAccounts.title"
+      error={error}
+    />
+  );
+}
+
 export const loader: LoaderFunction = async ({ request }) => {
   const res = await withSession(request, async (session: Session) => {
     const api = await createApiClient(session);
     const url = `${API_PAYMENT}/accounts`;
-    const res = await api.getResource<Cursor<Account>>(url, 'cursor');
 
-    return res?.data;
+    return await api.getResource<Cursor<Account>>(url, 'cursor.data');
   });
 
   return handleResponse(res);
@@ -29,34 +45,30 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   const accounts = useLoaderData<Account[]>();
+  const { t } = useTranslation();
 
   return (
-    <Page id={paymentsAccounts.id}>
+    <Page id={paymentsAccountsConfig.id}>
       <Table
         id="payments-accounts-list"
         items={accounts}
         action={false}
         withPagination={false}
         columns={[
-          // {
-          //   label: 'ID',
-          //   key: 'id',
-          //   width: 10,
-          // },
           {
-            label: 'Provider',
+            label: t('pages.paymentsAccounts.table.columnLabel.provider'),
             key: 'provider',
           },
           {
-            label: 'Reference',
+            label: t('pages.paymentsAccounts.table.columnLabel.reference'),
             key: 'reference',
           },
           {
-            label: 'Type',
+            label: t('pages.paymentsAccounts.table.columnLabel.type'),
             key: 'type',
           },
           {
-            label: 'Indexed At',
+            label: t('pages.paymentsAccounts.table.columnLabel.indexedAt'),
             key: 'indexedAt',
           },
         ]}
@@ -64,7 +76,6 @@ export default function Index() {
           <Row
             key={index}
             keys={[
-              // 'id',
               <ProviderPicture
                 key={index}
                 provider={account.provider || 'Generic'}

@@ -102,12 +102,12 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
             key: 'txid',
             label: t('pages.transactions.table.columnLabel.txid'),
             sort: sortedColumns?.includes('txid') || false,
-            width: 5,
+            width: 10,
           },
           {
             key: 'value',
             label: t('pages.transactions.table.columnLabel.value'),
-            width: 5,
+            width: 10,
             sort: sortedColumns?.includes('value') || false,
           },
           {
@@ -125,14 +125,14 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
           {
             key: 'ledger',
             label: t('pages.transactions.table.columnLabel.ledger'),
-            width: 5,
+            width: 10,
             sort: sortedColumns?.includes('ledger') || false,
           },
           {
             key: 'timestamp',
             label: t('pages.transactions.table.columnLabel.date'),
             sort: sortedColumns?.includes('date') || false,
-            width: 5,
+            width: 10,
           },
         ]}
         renderItem={(

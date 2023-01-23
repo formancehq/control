@@ -4,12 +4,13 @@ import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { Amount, Chip, Date, Row } from '@numaryhq/storybook';
+import { Amount, Date, Row } from '@numaryhq/storybook';
 
 import { getRoute, PAYMENT_ROUTE } from '~/src/components/Layout/routes';
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
+import { PaymentSchemeChip } from '~/src/components/Wrappers/PaymentSchemeChip/PaymentSchemeChip';
 import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
@@ -74,11 +75,7 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({
             <PayInChips key={index} type={payment.type} />,
             <ProviderPicture key={index} provider={payment.provider} />,
             <PaymentStatusChip key={index} status={payment.status} />,
-            <Chip
-              key={index}
-              label={lowerCaseAllWordsExceptFirstLetter(payment.scheme)}
-              variant="square"
-            />,
+            <PaymentSchemeChip key={index} scheme={payment.scheme} />,
             <Typography key={index}>{payment.reference}</Typography>,
             <Amount
               asset={payment.asset}

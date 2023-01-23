@@ -145,8 +145,7 @@ export default {
         refoundedAmount: 'Refounded Amount',
         eventJournal: {
           title: 'Events journal',
-          netValueChange: 'Net value changed from {{value1}} to {{value2}}',
-          statusChange: 'Status changed from {{value1}} to {{value2}}',
+          timelineCreated: 'Payment created',
         },
         reconciliation: {
           title: 'Reconciliation',
@@ -167,6 +166,17 @@ export default {
             id: 'Wallet ID',
             name: 'Name',
             createdAt: 'Created At',
+          },
+        },
+      },
+      paymentsAccounts: {
+        title: 'Payments accounts',
+        table: {
+          columnLabel: {
+            provider: 'Provider',
+            reference: 'Reference',
+            type: 'Type',
+            indexedAt: 'Indexed At',
           },
         },
       },
@@ -221,6 +231,9 @@ export default {
             value: 'Value',
             reference: 'Reference',
             scheme: 'Scheme',
+            netAmount: 'Net amount',
+            direction: 'Direction',
+            initialAmount: 'Initial amount',
             date: 'Date',
           },
         },
@@ -319,6 +332,9 @@ export default {
         metadata: {
           title: 'Metadata',
         },
+      },
+      reconciliation: {
+        title: 'Reconciliation',
       },
       connectors: {
         title: 'Connectors',
