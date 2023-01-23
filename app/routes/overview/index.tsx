@@ -1,42 +1,27 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect, useState } from 'react';
 
-import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
-import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type { LoaderFunction, MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import axios from 'axios';
 import {
-  Chart as ChartJS,
   ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
   BarElement,
-  Title,
-  scales,
-  PointElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
   LineElement,
+  PointElement,
+  Title,
+  Tooltip,
 } from 'chart.js';
-import { get, take } from 'lodash';
-import { Bar, Line, Pie } from 'react-chartjs-2';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import {
-  animated,
-  useTransition as useAnimationTransition,
-} from 'react-spring';
+import { get, noop, take } from 'lodash';
+import { Bar } from 'react-chartjs-2';
 
-import {
-  ActionCard,
-  LoadingButton,
-  Page,
-  StatsCard,
-  TitleWithBar,
-} from '@numaryhq/storybook';
+import { Page } from '@numaryhq/storybook';
 
-import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
+import { overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import { Cursor } from '~/src/types/generic';
@@ -102,7 +87,6 @@ const getData = async (ledgersList: string[], api: ApiClient) => {
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(session);
-    const local = await createApiClient(session, 'http://localhost:8080');
     const payments = await api.postResource<Cursor<Payment>>(
       '/search',
       {
@@ -153,23 +137,11 @@ export default function Index() {
 }
 
 const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
-  const { t } = useTranslation();
-  const [stats, setStats] = useState<Ledger[]>([]);
-  const { currentUser } = useService();
+  const [_stats, setStats] = useState<Ledger[]>([]);
   const { api } = useService();
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
-  const accounts = get(data, 'accounts.total.value', 0) as number;
-  const payments = get(data, 'payments.total.value', 0) as number;
   const ledgers = get(data, 'ledgers', []);
-  const shouldDisplaySetup = payments === 0 || accounts === 0;
-  const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, _load, stopLoading] = useOpen(true);
-  const loadingTransition = useAnimationTransition(ledgers.length, {
-    from: { opacity: 0 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-  });
+  const [_loading, _load, stopLoading] = useOpen(true);
 
   useEffect(() => {
     (async () => {
@@ -214,7 +186,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                     legend: {
                       position: 'bottom',
                       // should do nothing
-                      onClick: () => {},
+                      onClick: noop,
                       labels: {
                         useBorderRadius: true,
                         borderRadius: 4,

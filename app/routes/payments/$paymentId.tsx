@@ -1,9 +1,5 @@
-import type { ReactElement } from 'react';
 import * as React from 'react';
 
-import { Flare } from '@mui/icons-material';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import StopIcon from '@mui/icons-material/Stop';
 import {
   Timeline,
   TimelineConnector,
@@ -13,7 +9,7 @@ import {
   timelineItemClasses,
   TimelineSeparator,
 } from '@mui/lab';
-import { Box, Divider, Grid, Tooltip, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
@@ -22,15 +18,10 @@ import invariant from 'tiny-invariant';
 
 import {
   Amount,
-  Chip,
-  Date,
-  DividerWithSpace,
   JsonViewer,
-  LoadingButton,
   Page,
   Row,
   SectionWrapper,
-  theme,
 } from '@numaryhq/storybook';
 
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
@@ -42,13 +33,11 @@ import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
-import { AdjustmentsItem, Payment, PaymentDetail } from '~/src/types/payment';
+import { Payment, PaymentDetail } from '~/src/types/payment';
 import { RECO_DEFAULT_LEDGER, RECO_METADATA_PATH_KEY } from '~/src/types/reco';
 import { API_LEDGER, API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { copyTokenToClipboard } from '~/src/utils/clipboard';
-import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 export const meta: MetaFunction = () => ({
   title: 'Payment',
@@ -88,135 +77,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   return handleResponse(await withSession(request, handleData));
 };
 
-const boxWithCopyToClipboard = (
-  title: string,
-  id: string,
-  color: string,
-  tooltipTitle: string
-) => {
-  const [open, setOpen] = React.useState(false);
-  const copyToClipBoard = async () => {
-    handleOpen();
-    await copyTokenToClipboard(id);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        p: '15px',
-        borderRadius: '6px',
-        justifyContent: 'space-between',
-        backgroundColor: color,
-      }}
-    >
-      <Typography variant="bold">{title}</Typography>
-      <Tooltip title={id}>
-        <Typography noWrap sx={{ maxWidth: '250px' }}>
-          {id}
-        </Typography>
-      </Tooltip>
-      <Tooltip open={open} onClose={handleClose} title={tooltipTitle}>
-        <Box component="span">
-          <LoadingButton
-            id="copyToClipboardWrapper"
-            variant="transparent"
-            sx={{
-              minWidth: 0,
-              height: 0,
-              p: 0,
-            }}
-            startIcon={<ContentCopy color="action" onClick={copyToClipBoard} />}
-          />
-        </Box>
-      </Tooltip>
-    </Box>
-  );
-};
-
-const eventsJournalItem = (eventTitle: string, date: string) => (
-  <Box
-    sx={{
-      display: 'flex',
-      width: '100%',
-      padding: '5px 0 5px 0',
-      justifyContent: 'space-between',
-    }}
-  >
-    <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
-      <StopIcon sx={{ color: theme.palette.grey[500] }} />
-      {eventTitle}
-    </Typography>
-    <Typography
-      variant="footNote"
-      sx={{ display: 'flex', alignItems: 'center' }}
-    >
-      <Divider sx={{ width: '200px', marginRight: '20px' }} />
-      <Date timestamp={date} format="M/D/YYYY" />
-    </Typography>
-  </Box>
-);
-
-const dataItem = (title: string, children: ReactElement) => (
-  <Box
-    sx={{
-      display: 'flex',
-      padding: '5px 0 5px 0',
-      minHeight: '30px',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    }}
-  >
-    <Typography variant="bold">{title}:</Typography>
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        width: '300px',
-        justifyContent: 'flex-start',
-      }}
-    >
-      <Typography
-        variant="footNote"
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-        }}
-      >
-        {children}
-      </Typography>
-    </Box>
-  </Box>
-);
-
-const titleHeader = (title: string, date: Date) => (
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'baseline',
-    }}
-  >
-    <Typography variant="h1" pr={1}>
-      {title}
-    </Typography>
-    <Date
-      timestamp={date}
-      format="M/D/YYYY"
-      color={theme.palette.neutral[600]}
-    />
-  </Box>
-);
-
 interface PaymentDetailData {
   payment: PaymentDetail;
   transactions: Cursor<Transaction>;
@@ -226,7 +86,6 @@ export default function PaymentDetails() {
   const { payment, transactions } =
     useLoaderData<PaymentDetailData>() as unknown as PaymentDetailData;
   const { t } = useTranslation();
-  const Divider = <DividerWithSpace pt="24px" mb="0px" />;
 
   return (
     <Page id="payment" title="">
@@ -291,12 +150,12 @@ export default function PaymentDetails() {
                 label: 'Initial Amount',
               },
             ]}
-            renderItem={(payment: Payment) => (
+            renderItem={(payment: Payment, index: number) => (
               <Row
                 item={payment}
                 keys={[
                   // 'provider',
-                  <Box>
+                  <Box component="span" key={index}>
                     <Typography
                       color="textSecondary"
                       sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
@@ -305,7 +164,7 @@ export default function PaymentDetails() {
                     </Typography>
                     <PayInChips type={payment.type} />
                   </Box>,
-                  <Box>
+                  <Box component="span" key={index}>
                     <Typography
                       color="textSecondary"
                       sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
@@ -315,7 +174,7 @@ export default function PaymentDetails() {
                     <PaymentSchemeChip scheme={payment.scheme} />
                   </Box>,
                   // 'reference',
-                  <Box>
+                  <Box component="span" key={index}>
                     <Typography
                       color="textSecondary"
                       sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
@@ -327,7 +186,7 @@ export default function PaymentDetails() {
                       asset={payment.asset}
                     />
                   </Box>,
-                  <Box>
+                  <Box component="span" key={index}>
                     <Typography
                       color="textSecondary"
                       sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
@@ -434,9 +293,6 @@ export default function PaymentDetails() {
                     </Box>
                   </TimelineContent>
                 </TimelineItem>
-                {payment.adjustments.map(
-                  (adjustments: AdjustmentsItem, index: number) => null
-                )}
               </Timeline>
             </Box>
           </>

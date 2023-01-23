@@ -165,7 +165,6 @@ export default function Index() {
           title: t('common.dialog.deleteTitle'),
           actions: {
             save: {
-              // @ts-ignore
               variant: 'error',
               label: t('common.dialog.confirmButton'),
               onClick: () => onDeleteSecret(secret.id),
@@ -352,7 +351,6 @@ export default function Index() {
                       title: t('common.dialog.deleteTitle'),
                       actions: {
                         save: {
-                          // @ts-ignore
                           variant: 'error',
                           label: t('common.dialog.confirmButton'),
                           onClick: () => onDeleteClient(oAuthClient.id),
