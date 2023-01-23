@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { Add, Delete } from '@mui/icons-material';
+import {
+  Add,
+  Delete,
+  LockOpenOutlined,
+  LockOutlined,
+} from '@mui/icons-material';
 import { Alert, Box, Grid, Typography, useTheme } from '@mui/material';
 import { ColorVariants } from '@numaryhq/storybook/dist/cjs/types/types';
 import type { MetaFunction, Session } from '@remix-run/node';
@@ -160,6 +165,7 @@ export default function Index() {
           title: t('common.dialog.deleteTitle'),
           actions: {
             save: {
+              // @ts-ignore
               variant: 'error',
               label: t('common.dialog.confirmButton'),
               onClick: () => onDeleteSecret(secret.id),
@@ -220,6 +226,13 @@ export default function Index() {
               </Grid>
               <Grid item xs={10}>
                 <Chip
+                  icon={
+                    !oAuthClient.public ? (
+                      <LockOutlined />
+                    ) : (
+                      <LockOpenOutlined />
+                    )
+                  }
                   label={t(
                     `pages.oAuthClients.table.rows.${
                       oAuthClient.public ? 'public' : 'private'
@@ -339,6 +352,7 @@ export default function Index() {
                       title: t('common.dialog.deleteTitle'),
                       actions: {
                         save: {
+                          // @ts-ignore
                           variant: 'error',
                           label: t('common.dialog.confirmButton'),
                           onClick: () => onDeleteClient(oAuthClient.id),

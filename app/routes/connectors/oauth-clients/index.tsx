@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { Lock, LockOpenOutlined, LockOutlined } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
@@ -84,6 +85,9 @@ export default function Index() {
               'name',
               <Chip
                 key={index}
+                icon={
+                  !oAuthClient.public ? <LockOutlined /> : <LockOpenOutlined />
+                }
                 label={t(
                   `pages.oAuthClients.table.rows.${
                     oAuthClient.public ? 'public' : 'private'

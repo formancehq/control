@@ -34,6 +34,7 @@ export default {
         paymentsAccounts: 'Accounts',
         wallets: 'Wallets',
         reconciliation: 'Reconciliation',
+        monitoring: 'Monitoring',
         apps: 'Apps',
         oAuthClients: 'OAuth Clients',
         webhooks: 'Webhooks',
@@ -151,6 +152,11 @@ export default {
           title: 'Reconciliation',
           subTitle: 'Attached ledger transactions found',
         },
+        details: {
+          title: 'Details',
+          id: 'Internal Formance ID',
+          reference: 'Provider reference',
+        },
         metadata: 'Metadata',
         rawObject: 'Raw Object',
       },
@@ -165,8 +171,15 @@ export default {
         },
       },
       wallet: {
-        title: 'Wallet',
+        title: 'Standard Managed Wallet',
         sections: {
+          details: {
+            title: 'Details',
+            walletId: 'Wallet ID',
+            walletName: 'Wallet name',
+            noName: 'Not provided',
+            createdAt: 'Creation date',
+          },
           balances: {
             title: 'Balances',
           },
@@ -326,13 +339,13 @@ export default {
           webhooks: {
             title: 'Webhooks',
             pageButton: {
-              actionLabel: 'Add a Webhook',
+              actionLabel: 'Add a webhook',
             },
           },
           oAuthClients: {
             title: 'OAuth Clients',
             pageButton: {
-              actionLabel: 'New OAuth Client',
+              actionLabel: 'New OAuth client',
             },
           },
         },
@@ -411,11 +424,11 @@ export default {
             },
           },
           dangerZone: {
-            title: 'Manage',
+            title: 'Manage client',
             delete: {
-              title: 'Delete OAuth Client',
+              title: 'Delete OAuth client',
               description:
-                "This action will definitely delete your OAuth Client. You won't be able to use your secret for machine to machine treatments.",
+                'This action will delete this client permanently, and any current usage will stop functioning.',
             },
           },
           secrets: {
@@ -461,7 +474,8 @@ export default {
               },
             },
             description: {
-              placeholder: 'Write a quick description',
+              placeholder:
+                'Optional description of how this client will be used',
             },
             redirectUri: {
               label: 'Redirect URI',
@@ -484,11 +498,11 @@ export default {
             updatedAt: 'Updated at',
           },
           dangerZone: {
-            title: 'Manage',
+            title: 'Manage webhook',
             delete: {
               title: 'Delete webhook',
               description:
-                'This action will definitely delete your webhook config and will no longer work.',
+                'This action will permanently delete this webhook config; this endpoint will no longer receive events.',
             },
           },
           secrets: {
@@ -560,7 +574,7 @@ export default {
         errorState: {
           error: {
             title:
-              "The requested behavior and the app's willingness to deliver it could not be reconciled.",
+              "The requested behavior, and the app's willingness to deliver it, could not be reconciled.",
             description:
               'You can try again by refreshing your browser. If the error is still persisting, please feel free to ask for help to our support team.',
             button: 'Refresh!',
@@ -607,7 +621,7 @@ export default {
         },
       },
       tooltip: {
-        copied: 'Copied! ✔️',
+        copied: 'Copied!',
       },
       breadcrumbs: {
         categories: {
@@ -617,10 +631,11 @@ export default {
           configuration: 'Configuration',
         },
         targets: {
-          wallets: 'All',
-          payments: 'Pay-in & Payout',
+          wallets: 'All wallets',
+          payments: 'All payments',
+          paymentsAccounts: 'All accounts',
           logs: 'Logs',
-          ledgers: 'All',
+          ledgers: 'All ledgers',
           accounts: 'Accounts',
           transactions: 'Transactions',
           oAuthClients: 'OAuth Clients',
@@ -654,6 +669,7 @@ export default {
         confirmButton: 'Confirm',
         messages: {
           warning: 'Are you absolutely sure?',
+          confirmDelete: 'Are you sure you want to delete {{item}}?',
         },
       },
       forms: {

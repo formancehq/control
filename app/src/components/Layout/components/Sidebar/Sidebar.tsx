@@ -52,7 +52,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
         {routerConfig.map(({ label: groupLabel, children }, index) => (
           <Box key={index} sx={{ marginTop: resized ? '24px' : '0px' }}>
             {groupLabel && !resized && (
-              <Box mt={index === 1 ? 1 : 1} p={1} ml={3}>
+              <Box mt={index === 1 ? 1 : 2} p={1} ml={3}>
                 <Typography
                   variant="caption"
                   sx={{

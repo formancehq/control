@@ -1,5 +1,7 @@
 import { get, identity, omit, pickBy, toNumber } from 'lodash';
 
+import { ledgerTransactions } from './aggregations/ledgerTransactions';
+
 import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
 
 export enum QueryContexts {

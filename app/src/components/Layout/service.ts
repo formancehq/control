@@ -18,6 +18,7 @@ import {
   TRANSACTIONS_ROUTE,
   WALLETS_ROUTE,
   WEBHOOKS_ROUTE,
+  PAYMENTS_ACCOUNTS_ROUTE,
 } from '~/src/components/Layout/routes';
 import { ObjectOf } from '~/src/types/generic';
 
@@ -211,6 +212,7 @@ export const breadcrumbsFactory = (
   const accountsIndex = match('/accounts');
   const transactionsIndex = match('/transactions');
   const paymentsIndex = match('/payments');
+  const paymentsAccountsIndex = match('/payments/accounts');
   const paymentRoute = match('/payments/:paymentId');
   const walletsIndexRoute = match('/wallets');
   const walletRoute = match('/wallets/:walletId');
@@ -250,12 +252,23 @@ export const breadcrumbsFactory = (
     );
   }
 
+  if (paymentsAccountsIndex) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'paymentsAccounts',
+      getRoute(PAYMENTS_ACCOUNTS_ROUTE),
+      i18n.t('common.breadcrumbs.categories.payments')
+    );
+  }
+
   if (paymentRoute) {
     return buildPaymentBreadcrumbs(navigate, params.paymentId, urlSearchParams);
   }
+
   if (ledgerLogsRoute) {
     return buildLedgerLogsBreadcrumbs(navigate, params.ledgerId);
   }
+
   if (ledgerRoute) {
     return buildSimpleDetailBreadcrumbs(
       navigate,
@@ -264,8 +277,9 @@ export const breadcrumbsFactory = (
       LEDGERS_ROUTE
     );
   }
+
   if (walletRoute) {
-    const walletName = urlSearchParams.get('name') || params.walletId;
+    const walletName = params.walletId;
 
     return buildSimpleDetailBreadcrumbs(
       navigate,
@@ -274,6 +288,7 @@ export const breadcrumbsFactory = (
       WALLETS_ROUTE
     );
   }
+
   if (walletsIndexRoute) {
     return buildIndexBreadcrumbs(
       navigate,
@@ -282,12 +297,15 @@ export const breadcrumbsFactory = (
       i18n.t('common.breadcrumbs.categories.wallets')
     );
   }
+
   if (oAuthClientRoute) {
     return buildOAuthClientBreadcrumbs(navigate, params.oAuthClientId);
   }
+
   if (webhookRoute) {
     return buildWebhookBreadcrumbs(navigate, params.webhookId);
   }
+
   if (appRoute) {
     return buildAppBreadcrumbs(navigate, params.appName);
   }
@@ -316,6 +334,15 @@ export const breadcrumbsFactory = (
       'connectors',
       getRoute(CONNECTORS_ROUTE),
       i18n.t('common.breadcrumbs.categories.configuration')
+    );
+  }
+
+  if (paymentsAccountsIndex) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'paymentsAccounts',
+      getRoute(PAYMENTS_ACCOUNTS_ROUTE),
+      i18n.t('common.breadcrumbs.categories.payments')
     );
   }
 

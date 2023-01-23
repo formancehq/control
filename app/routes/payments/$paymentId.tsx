@@ -1,8 +1,18 @@
 import type { ReactElement } from 'react';
 import * as React from 'react';
 
+import { Flare } from '@mui/icons-material';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import StopIcon from '@mui/icons-material/Stop';
+import {
+  Timeline,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineItem,
+  timelineItemClasses,
+  TimelineSeparator,
+} from '@mui/lab';
 import { Box, Divider, Grid, Tooltip, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -26,12 +36,13 @@ import {
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
+import { PaymentSchemeChip } from '~/src/components/Wrappers/PaymentSchemeChip/PaymentSchemeChip';
 import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
-import { AdjustmentsItem, PaymentDetail } from '~/src/types/payment';
+import { AdjustmentsItem, Payment, PaymentDetail } from '~/src/types/payment';
 import { RECO_DEFAULT_LEDGER, RECO_METADATA_PATH_KEY } from '~/src/types/reco';
 import { API_LEDGER, API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -218,37 +229,123 @@ export default function PaymentDetails() {
   const Divider = <DividerWithSpace pt="24px" mb="0px" />;
 
   return (
-    <Page
-      id="payment"
-      title={titleHeader(t('pages.payment.title'), payment.createdAt)}
-    >
+    <Page id="payment" title="">
       <>
-        <Grid container spacing="26px" sx={{ mt: 0 }}>
-          <Grid item xs={6}>
-            {boxWithCopyToClipboard(
-              t('pages.payment.id'),
-              payment.id,
-              theme.palette.blue.light,
-              t('pages.payment.copyToClipboardTooltip', {
-                value: 'id',
-              })
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            mb: 2,
+            width: '100%',
+          }}
+        >
+          <ProviderPicture provider={payment.provider} text={false} />
+          <Typography variant="h1" pr={1}>
+            {t('pages.payment.title')}
+          </Typography>
+          <PaymentStatusChip status={payment.status} />
+          <Box
+            sx={{
+              ml: 'auto',
+            }}
+          >
+            <Typography
+              color="textSecondary"
+              sx={{ display: 'flex', alignItems: 'center' }}
+            >
+              {payment.id}
+            </Typography>
+          </Box>
+        </Box>
+        <Box>
+          <Table
+            id="details"
+            withPagination={false}
+            withHeader={false}
+            key={`${payment.id}.details`}
+            items={[payment]}
+            columns={[
+              {
+                key: 'type',
+                label: 'Type',
+              },
+              {
+                key: 'scheme',
+                label: 'Scheme',
+              },
+              // {
+              //   key: 'provider',
+              //   label: '',
+              // },
+              // {
+              //   key: 'reference',
+              //   label: '',
+              // },
+              {
+                key: 'net',
+                label: 'Net Amount',
+              },
+              {
+                key: 'initial',
+                label: 'Initial Amount',
+              },
+            ]}
+            renderItem={(payment: Payment) => (
+              <Row
+                item={payment}
+                keys={[
+                  // 'provider',
+                  <Box>
+                    <Typography
+                      color="textSecondary"
+                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    >
+                      Direction
+                    </Typography>
+                    <PayInChips type={payment.type} />
+                  </Box>,
+                  <Box>
+                    <Typography
+                      color="textSecondary"
+                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    >
+                      Scheme
+                    </Typography>
+                    <PaymentSchemeChip scheme={payment.scheme} />
+                  </Box>,
+                  // 'reference',
+                  <Box>
+                    <Typography
+                      color="textSecondary"
+                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    >
+                      Net Amount
+                    </Typography>
+                    <Amount
+                      amount={payment.initialAmount}
+                      asset={payment.asset}
+                    />
+                  </Box>,
+                  <Box>
+                    <Typography
+                      color="textSecondary"
+                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    >
+                      Initial Amount
+                    </Typography>
+                    <Amount
+                      amount={payment.initialAmount}
+                      asset={payment.asset}
+                    />
+                  </Box>,
+                ]}
+              />
             )}
-          </Grid>
-          <Grid item xs={6}>
-            {boxWithCopyToClipboard(
-              t('pages.payment.reference'),
-              payment.reference,
-              theme.palette.violet.light,
-              t('pages.payment.copyToClipboardTooltip', {
-                value: 'reference',
-              })
-            )}
-          </Grid>
-        </Grid>
-        {Divider}
-
+          />
+        </Box>
         {/* Description2 */}
-        <Grid container spacing="26px">
+        {/* <Grid container spacing="26px">
           <Grid item xs={6}>
             <Box
               sx={{
@@ -272,10 +369,7 @@ export default function PaymentDetails() {
               )}
               {dataItem(
                 t('pages.payment.scheme'),
-                <Chip
-                  label={lowerCaseAllWordsExceptFirstLetter(payment.scheme)}
-                  variant="square"
-                />
+                <PaymentSchemeChip scheme={payment.scheme} />
               )}
             </Box>
           </Grid>
@@ -297,53 +391,60 @@ export default function PaymentDetails() {
               )}
             </Box>
           </Grid>
-        </Grid>
+        </Grid> */}
 
-        {Divider}
-
-        {/* Events journals */}
-        {payment.adjustments.length > 0 && (
+        <SectionWrapper title={t('pages.payment.eventJournal.title')}>
           <>
-            <SectionWrapper title={t('pages.payment.eventJournal.title')}>
-              <>
+            <Box
+              sx={{
+                borderRadius: '6px',
+                border: '1px solid rgb(239, 241, 246)',
+              }}
+            >
+              <Timeline
+                sx={{
+                  [`& .${timelineItemClasses.root}:before`]: {
+                    flex: 0,
+                    padding: 0,
+                  },
+                }}
+              >
+                <TimelineItem>
+                  <TimelineSeparator>
+                    <TimelineConnector
+                      sx={{
+                        opacity: 0.2,
+                      }}
+                    />
+                    <TimelineDot
+                      sx={{
+                        boxShadow: 'none',
+                      }}
+                    />
+                    <TimelineConnector
+                      sx={{
+                        opacity: 0.2,
+                      }}
+                    />
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    <Box>
+                      <Typography>Payment created</Typography>
+                      <Typography color="textSecondary">{`${payment.createdAt}`}</Typography>
+                    </Box>
+                  </TimelineContent>
+                </TimelineItem>
                 {payment.adjustments.map(
-                  (adjustments: AdjustmentsItem, index: number) => (
-                    <div key={index}>
-                      {eventsJournalItem(
-                        t('pages.payment.eventJournal.netValueChange', {
-                          value1: payment.status,
-                          value2: adjustments.status,
-                        }),
-                        adjustments.date
-                      )}
-                      {eventsJournalItem(
-                        t('pages.payment.eventJournal.statusChange', {
-                          value1: payment.initialAmount,
-                          value2: adjustments.amount,
-                        }),
-                        adjustments.date
-                      )}
-                    </div>
-                  )
+                  (adjustments: AdjustmentsItem, index: number) => null
                 )}
-              </>
-            </SectionWrapper>
-            {Divider}
+              </Timeline>
+            </Box>
           </>
-        )}
+        </SectionWrapper>
 
-        {/* Reconciliation*/}
-        {transactions.data.length > 0 && (
-          <>
-            <SectionWrapper title={t('pages.payment.reconciliation.title')}>
-              <TransactionList
-                transactions={transactions}
-                withPagination={false}
-              />
-            </SectionWrapper>
-            {Divider}
-          </>
-        )}
+        <SectionWrapper title={t('pages.payment.reconciliation.title')}>
+          <TransactionList transactions={transactions} withPagination={false} />
+        </SectionWrapper>
 
         {/* Metadata */}
         {/* TODO replace this when Metadata is done */}
@@ -358,10 +459,40 @@ export default function PaymentDetails() {
             renderItem={(item: any) => <Row item={item} keys={[]} />}
           />
         </SectionWrapper>
-        {Divider}
         {/* Raw object */}
         <SectionWrapper title={t('pages.payment.rawObject')}>
           <JsonViewer jsonData={payment.raw} />
+        </SectionWrapper>
+        <SectionWrapper title={t('pages.payment.details.title')}>
+          <Table
+            withHeader={false}
+            withPagination={false}
+            items={[
+              {
+                key: t('pages.payment.details.id'),
+                value: payment.id,
+              },
+              {
+                key: t('pages.payment.details.reference'),
+                value: payment.reference,
+              },
+            ]}
+            columns={[
+              {
+                key: 'key',
+                label: '',
+                width: 30,
+              },
+              {
+                key: 'value',
+                label: '',
+                width: 30,
+              },
+            ]}
+            renderItem={(item: { key: string; value: any }) => (
+              <Row keys={['key', 'value']} item={item} />
+            )}
+          />
         </SectionWrapper>
       </>
     </Page>

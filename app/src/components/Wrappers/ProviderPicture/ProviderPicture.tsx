@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 
 import { Box, Typography } from '@mui/material';
 import { get } from 'lodash';
+import { boolean, string } from 'yup/lib/locale';
 
 import { ProviderPictureProps } from './types';
 
@@ -10,12 +11,15 @@ import { providersMap } from '~/src/utils/providersMap';
 
 const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
   provider,
+  text,
 }) => {
   const logoAttr = get(
     providersMap,
     provider.toLowerCase(),
     providersMap.default
   );
+
+  if (text === undefined) text = true;
 
   return (
     <Box component="span" display="flex" alignItems="center">
@@ -29,9 +33,11 @@ const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
       >
         {logoAttr && <img src={logoAttr.path} alt={provider} />}
       </Box>
-      <Typography ml={1}>
-        {lowerCaseAllWordsExceptFirstLetter(provider)}
-      </Typography>
+      {text && (
+        <Typography ml={1}>
+          {lowerCaseAllWordsExceptFirstLetter(provider)}
+        </Typography>
+      )}
     </Box>
   );
 };

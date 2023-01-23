@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { Wallet as WalletIcon } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
@@ -49,27 +50,43 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
     invariant(params.walletId, 'Expected params.walletId');
     const api = await createApiClient(session);
-    const wallet = await api.getResource<Wallet>(
-      `${API_WALLET}/wallets/${params.walletId}`,
-      'data'
-    );
-    const holds = await api.getResource<WalletHold[]>(
-      `${API_WALLET}/holds/?walletID${params.walletId}`,
-      'cursor.data'
-    );
-    const transactions = await api.getResource<Cursor<Transaction>>(
-      `${API_WALLET}/transactions/?wallet_id${params.walletId}`,
-      'cursor'
-    );
-    const rawBalances = await (
-      await createApiClient(session)
-    ).getResource<WalletBalance[]>(
-      `${API_WALLET}/wallets/${params.walletId}/balances`,
-      'cursor.data'
-    );
+
+    const p = {
+      wallet: api.getResource<Wallet>(
+        `${API_WALLET}/wallets/${params.walletId}`,
+        'data'
+      ),
+      holds: api.getResource<WalletHold[]>(
+        `${API_WALLET}/holds/?walletID=${params.walletId}`,
+        'cursor.data'
+      ),
+      transactions: api.getResource<Cursor<Transaction>>(
+        `${API_WALLET}/transactions?walletID=${params.walletId}`,
+        'cursor'
+      ),
+      rawBalances: await api.getResource<WalletBalance[]>(
+        `${API_WALLET}/wallets/${params.walletId}/balances`,
+        'cursor.data'
+      ),
+    };
+
+    const wallet = await p.wallet;
+    const holds = await p.holds;
+    const transactions = await p.transactions;
+    const rawBalances = await p.rawBalances;
 
     if (wallet && rawBalances && transactions && holds) {
       const balances = [];
+      const p: {
+        [key: string]: any;
+      } = {};
+
+      for (const balance of rawBalances) {
+        p[balance.name] = api.getResource<WalletDetailedBalance>(
+          `${API_WALLET}/wallets/${params.walletId}/balances/${balance.name}`,
+          'data'
+        );
+      }
 
       for (const balance of rawBalances) {
         const detailedBalance = await api.getResource<WalletDetailedBalance>(
@@ -88,7 +105,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
       return {
         wallet,
-        balances,
+        balances: balances.sort((a, b) => {
+          // balance named 'main' should be first
+          if (a.name === 'main') {
+            return -1;
+          } else {
+            return 0;
+          }
+        }),
         holds,
         transactions: {
           ...transactions,
@@ -132,19 +156,72 @@ export default function Index() {
             alignItems: 'center',
           }}
         >
-          <Typography variant="h1" pr={1}>
-            {data.wallet.name || t('pages.wallet.title')}
-          </Typography>
-          <CopyPasteTooltip
-            tooltipMessage={t('common.tooltip.copied')}
-            value={data.wallet.id}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              p: 1,
+              width: 32,
+              height: 32,
+              mr: 2,
+              backgroundColor: (theme) => theme.palette.neutral[100],
+              borderRadius: 1,
+            }}
           >
-            <Chip label={data.wallet.id} variant="square" />
-          </CopyPasteTooltip>
+            <WalletIcon
+              sx={{
+                opacity: 0.4,
+              }}
+              fontSize="small"
+            />
+          </Box>
+          <Typography variant="h1" pr={1}>
+            {t('pages.wallet.title')}
+          </Typography>
         </Box>
       }
     >
       <>
+        <SectionWrapper title={t('pages.wallet.sections.details.title')}>
+          <Table
+            withHeader={false}
+            withPagination={false}
+            items={[
+              {
+                key: t('pages.wallet.sections.details.walletId'),
+                value: data.wallet.id,
+              },
+              {
+                key: t('pages.wallet.sections.details.walletName'),
+                value: data.wallet.name || (
+                  <Typography color="textSecondary">
+                    {t('pages.wallet.sections.details.noName')}
+                  </Typography>
+                ),
+              },
+              {
+                key: t('pages.wallet.sections.details.createdAt'),
+                value: data.wallet.createdAt,
+              },
+            ]}
+            columns={[
+              {
+                key: 'key',
+                label: '',
+                width: 30,
+              },
+              {
+                key: 'value',
+                label: '',
+                width: 30,
+              },
+            ]}
+            renderItem={(item: { key: string; value: any }) => (
+              <Row keys={['key', 'value']} item={item} />
+            )}
+          />
+        </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.balances.title')}>
           {/* TODO adjust table with data from balances */}
           <Table
@@ -185,11 +262,7 @@ export default function Index() {
                   <Chip
                     key={index}
                     variant="square"
-                    label={
-                      balance.name === 'main'
-                        ? 'primary balance'
-                        : 'secondary balance'
-                    }
+                    label={balance.name === 'main' ? 'primary' : 'secondary'}
                     color={balance.name === 'main' ? 'green' : undefined}
                   />,
                   'formattedAssets',

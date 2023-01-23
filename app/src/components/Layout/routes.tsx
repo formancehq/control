@@ -6,6 +6,7 @@ import {
   AccountTree,
   Apps,
   CreditCard,
+  CrisisAlert,
   Home,
   InsertLink,
   SwapHoriz,
@@ -36,6 +37,7 @@ export const LEDGERS_ROUTE = '/ledgers';
 export const LEDGERS_LOGS_ROUTE = '/ledgers/:id/logs';
 export const LEDGER_ROUTE = '/ledgers/:id';
 export const RECON_ROUTE = '/operations/reconciliation';
+export const MONITORING_ROUTE = '/monitoring';
 
 export const getRoute = (uri: string, id?: number | string): string =>
   id !== undefined ? uri.replace(/:\w+/, id.toString(10)) : uri;
@@ -117,6 +119,13 @@ export const reconciliation: RouterConfig = {
   label: 'navbar.title.reconciliation',
   paths: [RECON_ROUTE],
   icon: <InsertLink />,
+};
+
+export const monitoring: RouterConfig = {
+  id: 'monitoring',
+  label: 'navbar.title.monitoring',
+  paths: [MONITORING_ROUTE],
+  icon: <CrisisAlert />,
 };
 
 export const apps: RouterConfig = {
