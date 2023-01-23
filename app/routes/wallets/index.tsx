@@ -14,6 +14,7 @@ import {
   WALLET_ROUTE,
   wallets as walletsConfig,
 } from '~/src/components/Layout/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
@@ -27,6 +28,16 @@ export const meta: MetaFunction = () => ({
   title: 'Ledgers',
   description: 'List',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <ComponentErrorBoundary
+      id={walletsConfig.id}
+      title="pages.wallets.title"
+      error={error}
+    />
+  );
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
