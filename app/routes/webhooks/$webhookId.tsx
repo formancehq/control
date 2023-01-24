@@ -22,8 +22,13 @@ import {
   SectionWrapper,
 } from '@numaryhq/storybook';
 
-import { getRoute, WEBHOOKS_ROUTE } from '~/src/components/Layout/routes';
+import {
+  getRoute,
+  webhooks,
+  WEBHOOKS_ROUTE,
+} from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import WebhookStatus from '~/src/components/Wrappers/WebhookStatus';
@@ -146,7 +151,10 @@ export default function Index() {
   );
 
   return (
-    <Page id="webhook">
+    <Page
+      id="webhook"
+      title={<IconTitlePage icon={webhooks.icon} title={webhook.endpoint} />}
+    >
       <>
         <SectionWrapper title={t('pages.webhook.sections.details.title')}>
           <>

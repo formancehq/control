@@ -10,6 +10,8 @@ import invariant from 'tiny-invariant';
 
 import { ObjectOf, Page, SectionWrapper } from '@numaryhq/storybook';
 
+import { ledgers } from '~/src/components/Layout/routes';
+import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import LedgerLogList from '~/src/components/Wrappers/Lists/LedgerLogList';
 import { Cursor } from '~/src/types/generic';
 import { LedgerLog, Transaction } from '~/src/types/ledger';
@@ -53,7 +55,10 @@ export default function Index() {
   }>();
 
   return (
-    <Page id="ledgerLogs" title={id}>
+    <Page
+      id="ledgerLogs"
+      title={<IconTitlePage icon={ledgers.icon} title={id!} />}
+    >
       <SectionWrapper title={t('pages.ledger.logs.title')}>
         <LedgerLogList logs={logs} />
       </SectionWrapper>

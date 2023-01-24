@@ -10,8 +10,12 @@ import invariant from 'tiny-invariant';
 
 import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
 
-import { getLedgerAccountDetailsRoute } from '~/src/components/Layout/routes';
+import {
+  accounts,
+  getLedgerAccountDetailsRoute,
+} from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import Table from '~/src/components/Wrappers/Table';
@@ -123,7 +127,10 @@ export default function Index() {
   );
 
   return (
-    <Page id="account" title={id}>
+    <Page
+      id="account"
+      title={<IconTitlePage icon={accounts.icon} title={id!} />}
+    >
       <>
         <Box display="flex" justifyContent="space-between" mb={3}>
           {/* Balances Section */}

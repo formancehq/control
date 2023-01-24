@@ -89,7 +89,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       `${API_LEDGER}/_info`,
       'data'
     );
-    const url = `/ledger/${params.ledgerId}/log?pageSize=5`;
+    const url = `${API_LEDGER}/${params.ledgerId}/log?pageSize=5`;
     const logs = await api.getResource<
       Cursor<LedgerLog<Transaction | ObjectOf<any>>>
     >(url, 'cursor');
