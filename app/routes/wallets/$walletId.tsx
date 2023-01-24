@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Wallet as WalletIcon } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -20,6 +20,7 @@ import {
 } from '@numaryhq/storybook';
 
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
@@ -105,7 +106,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
       return {
         wallet,
-        balances: balances.sort((a, b) => {
+        balances: balances.sort((a) => {
           // balance named 'main' should be first
           if (a.name === 'main') {
             return -1;
@@ -150,36 +151,7 @@ export default function Index() {
     <Page
       id="wallet"
       title={
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              p: 1,
-              width: 32,
-              height: 32,
-              mr: 2,
-              backgroundColor: (theme) => theme.palette.neutral[100],
-              borderRadius: 1,
-            }}
-          >
-            <WalletIcon
-              sx={{
-                opacity: 0.4,
-              }}
-              fontSize="small"
-            />
-          </Box>
-          <Typography variant="h1" pr={1}>
-            {t('pages.wallet.title')}
-          </Typography>
-        </Box>
+        <IconTitlePage icon={<WalletIcon />} title={t('pages.wallet.title')} />
       }
     >
       <>

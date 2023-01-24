@@ -28,8 +28,13 @@ import {
   SectionWrapper,
 } from '@numaryhq/storybook';
 
-import { getRoute, OAUTH_CLIENTS_ROUTE } from '~/src/components/Layout/routes';
+import {
+  getRoute,
+  OAUTH_CLIENTS_ROUTE,
+  oAuthClients,
+} from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
@@ -196,7 +201,12 @@ export default function Index() {
   };
 
   return (
-    <Page id="oAuthClient" title={oAuthClient.name}>
+    <Page
+      id="oAuthClient"
+      title={
+        <IconTitlePage icon={oAuthClients.icon} title={oAuthClient.name} />
+      }
+    >
       <>
         <SectionWrapper title={t('pages.oAuthClient.sections.details.title')}>
           <>

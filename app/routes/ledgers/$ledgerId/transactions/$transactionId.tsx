@@ -12,8 +12,12 @@ import invariant from 'tiny-invariant';
 import { Page, SectionWrapper, Txid } from '@numaryhq/storybook';
 
 import PostingsGraph from '~/src/components/Dataviz/PostingsGraph';
-import { getLedgerTransactionDetailsRoute } from '~/src/components/Layout/routes';
+import {
+  getLedgerTransactionDetailsRoute,
+  transactions,
+} from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
@@ -122,26 +126,30 @@ export default function Index() {
     <Page
       id="transaction"
       title={
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'baseline',
-            justifyContent: 'space-between',
-            width: '100%',
-          }}
-        >
-          <Box>
-            <Typography variant="h1">{t('pages.transaction.title')}</Typography>
-          </Box>
+        <IconTitlePage icon={transactions.icon}>
           <Box
-            sx={{ '& .MuiTypography-money': { fontSize: 24 } }}
-            mt="4px"
-            ml="auto"
+            sx={{
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}
           >
-            {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-            <Txid id={parseInt(id!)} />
+            <Box>
+              <Typography variant="h1">
+                {t('pages.transaction.title')}
+              </Typography>
+            </Box>
+            <Box
+              sx={{ '& .MuiTypography-money': { fontSize: 24 } }}
+              mt="4px"
+              ml="auto"
+            >
+              {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+              <Txid id={parseInt(id!)} />
+            </Box>
           </Box>
-        </Box>
+        </IconTitlePage>
       }
     >
       <>

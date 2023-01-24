@@ -44,12 +44,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     const api = await createApiClient(session);
     const query = sanitizeQuery(request, QueryContexts.PARAMS);
     const url = `${API_WALLET}/wallets?${query}`;
-    const wallets = await api.getResource<Cursor<Wallet>>(url, 'cursor');
-    if (wallets) {
-      return wallets;
-    }
 
-    return null;
+    return await api.getResource<Cursor<Wallet>>(url, 'cursor');
   }
 
   return handleResponse(await withSession(request, handleData));
