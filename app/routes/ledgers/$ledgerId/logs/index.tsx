@@ -1,29 +1,29 @@
-import * as React from "react";
+import * as React from 'react';
 
-import type { MetaFunction } from "@remix-run/node";
-import { Session } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import { LoaderFunction } from "@remix-run/server-runtime";
-import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
-import invariant from "tiny-invariant";
+import type { MetaFunction } from '@remix-run/node';
+import { Session } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import { LoaderFunction } from '@remix-run/server-runtime';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+import invariant from 'tiny-invariant';
 
-import { ObjectOf, Page, SectionWrapper } from "@numaryhq/storybook";
+import { ObjectOf, Page, SectionWrapper } from '@numaryhq/storybook';
 
-import { ledgers } from "~/src/components/Layout/routes";
-import IconTitlePage from "~/src/components/Wrappers/IconTitlePage";
-import LedgerLogList from "~/src/components/Wrappers/Lists/LedgerLogList";
-import { Cursor } from "~/src/types/generic";
-import { LedgerLog, Transaction } from "~/src/types/ledger";
-import { API_LEDGER } from "~/src/utils/api";
-import { createApiClient } from "~/src/utils/api.server";
-import { handleResponse, withSession } from "~/src/utils/auth.server";
-import { QueryContexts, sanitizeQuery } from "~/src/utils/search";
-import ComponentErrorBoundary from "~/src/components/Wrappers/ComponentErrorBoundary";
+import { ledgers } from '~/src/components/Layout/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
+import LedgerLogList from '~/src/components/Wrappers/Lists/LedgerLogList';
+import { Cursor } from '~/src/types/generic';
+import { LedgerLog, Transaction } from '~/src/types/ledger';
+import { API_LEDGER } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { QueryContexts, sanitizeQuery } from '~/src/utils/search';
 
 export const meta: MetaFunction = () => ({
-  title: "Ledger logs",
-  description: "List",
+  title: 'Ledger logs',
+  description: 'List',
 });
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -39,14 +39,14 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
-    invariant(params.ledgerId, "Expected params.ledgerId");
+    invariant(params.ledgerId, 'Expected params.ledgerId');
     const api = await createApiClient(session);
     const query = sanitizeQuery(request, QueryContexts.PARAMS);
     console.log(query);
     const url = `${API_LEDGER}/${params.ledgerId}/log?${query}`;
     const logs = await api.getResource<
       Cursor<LedgerLog<Transaction | ObjectOf<any>>>
-    >(url, "cursor");
+    >(url, 'cursor');
 
     if (logs) {
       return logs;
@@ -72,7 +72,7 @@ export default function Index() {
       id="ledgerLogs"
       title={<IconTitlePage icon={ledgers.icon} title={id!} />}
     >
-      <SectionWrapper title={t("pages.ledger.logs.title")}>
+      <SectionWrapper title={t('pages.ledger.logs.title')}>
         <LedgerLogList logs={logs} />
       </SectionWrapper>
     </Page>
