@@ -9,9 +9,10 @@ import { TextField } from '@numaryhq/storybook';
 
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import { TextProps } from '~/src/components/Wrappers/Table/Filters/Text/types';
+import { formatTableId } from '~/src/utils/format';
 import { buildQuery, resetCursor } from '~/src/utils/search';
 
-const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
+const Text: FunctionComponent<TextProps> = ({ placeholder, name, idList }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   return (
@@ -27,21 +28,24 @@ const Text: FunctionComponent<TextProps> = ({ placeholder, name }) => {
         placeholder={placeholder}
         name={Filters.TERMS}
         onKeyDown={(e: any) => {
+          const key = formatTableId(idList);
           const value = e.target.value;
           if (e.keyCode === 13 && value && !isEmpty(value)) {
             const formattedValue = `${name}=${value}`;
             let query = buildQuery(searchParams) as any;
             query = resetCursor(query);
             const regex = `${name}=`;
-            const index = query.terms
-              ? query.terms.findIndex((val: string) => val.match(regex))
+            const index = query[`${key}terms`]
+              ? query[`${key}terms`].findIndex((val: string) =>
+                  val.match(regex)
+                )
               : -1;
             if (index === -1) {
-              query.terms = query.terms
-                ? [...query.terms, formattedValue]
+              query[`${key}terms`] = query[`${key}terms`]
+                ? [...query[`${key}terms`], formattedValue]
                 : [formattedValue];
             } else {
-              query.terms[index] = formattedValue;
+              query[`${key}terms`][index] = formattedValue;
             }
             setSearchParams(query as URLSearchParamsInit);
           }

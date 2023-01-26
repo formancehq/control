@@ -23,3 +23,5 @@ export const buildCursor = <T>(items: T[]): Cursor<T> => ({
   previous: '',
   next: '',
 });
+
+export const formatTableId = (id?: string): string => (id ? `${id}_` : '');

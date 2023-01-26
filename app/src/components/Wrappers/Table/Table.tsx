@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 
 import { Box } from '@mui/material';
-import { useSearchParams } from '@remix-run/react';
+import { useLocation, useSearchParams } from '@remix-run/react';
 import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -11,17 +11,22 @@ import SelectedTags from '~/src/components/Wrappers/Table/Filters/SelectedTags/S
 import { TableProps } from '~/src/components/Wrappers/Table/types';
 import { useTableFilters } from '~/src/hooks/useTableFilters';
 import { TableConfig } from '~/src/types/generic';
+import { formatTableId } from '~/src/utils/format';
 import { buildQuery } from '~/src/utils/search';
 
 const Table: FunctionComponent<TableProps> = ({
   action = false,
   columns,
+  id,
   ...props
 }) => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+
   const { filters } = useTableFilters();
-  const all = searchParams.getAll('sort');
+  const key = formatTableId(id);
+  const all = searchParams.getAll(`${key}sort`);
   const columnsSortedConfig = [
     ...columns.map((column) => {
       const found = all.find(
@@ -33,15 +38,17 @@ const Table: FunctionComponent<TableProps> = ({
         sort: column.sort
           ? {
               onSort: (key: string, order: 'desc' | 'asc') => {
-                const query = buildQuery(searchParams) as any;
-
-                if (query.sort) {
-                  query.sort = query.sort.filter(
+                const query = buildQuery(searchParams, undefined, key) as any;
+                if (query[`${key}sort`]) {
+                  query[`${key}sort`] = query[`${key}sort`].filter(
                     (s: string) => s !== `${key}:asc` && s !== `${key}:desc`
                   );
-                  query.sort = [...query.sort, `${key}:${order}`];
+                  query[`${key}sort`] = [
+                    ...query[`${key}sort`],
+                    `${key}:${order}`,
+                  ];
                 } else {
-                  query.sort = [`${key}:${order}`];
+                  query[`${key}sort`] = [`${key}:${order}`];
                 }
                 setSearchParams(query);
               },
@@ -63,8 +70,9 @@ const Table: FunctionComponent<TableProps> = ({
     : columnsSortedConfig;
 
   const paginate = (cursor: string) => {
-    const query = buildQuery(searchParams) as any;
-    const params = { ...query, cursor } as any;
+    const urlParams = new URLSearchParams(location.search);
+    const query = Object.fromEntries(urlParams);
+    const params = { ...query, [`${key}cursor`]: cursor } as any;
     setSearchParams(params);
   };
 

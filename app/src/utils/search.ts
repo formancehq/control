@@ -1,42 +1,62 @@
 import { get, identity, omit, pickBy, toNumber } from 'lodash';
 
-import { ledgerTransactions } from './aggregations/ledgerTransactions';
-
 import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
+import { formatTableId } from '~/src/utils/format';
 
 export enum QueryContexts {
   PAYLOAD = 'payload',
   PARAMS = 'params',
 }
 
+// TODO new multi list feature should test filters and sorting
+
 export const buildQuery = (
   searchParams: URLSearchParams,
-  context: QueryContexts.PARAMS | QueryContexts.PAYLOAD = QueryContexts.PAYLOAD
+  context: QueryContexts.PARAMS | QueryContexts.PAYLOAD = QueryContexts.PAYLOAD,
+  id?: string,
+  sanitize = false
 ): SearchBody | string => {
-  const terms = searchParams.getAll('terms');
-  const ledgers = searchParams.getAll('ledgers');
-  const sort = searchParams.getAll('sort');
+  const key = formatTableId(id);
+
+  const terms = searchParams.getAll(`${key}terms`);
+  const ledgers = searchParams.getAll(`${key}ledgers`);
+  const sort = searchParams.getAll(`${key}sort`);
+
   const body = pickBy(
     {
-      pageSize: searchParams.get('size')
-        ? toNumber(searchParams.get('size'))
+      [`${key}pageSize`]: searchParams.get(`${key}size`)
+        ? toNumber(searchParams.get(`${key}size`))
         : undefined,
-      target: (searchParams.get('target') as SearchTargets) || undefined,
-      policy: (searchParams.get('policy') as SearchPolicies) || undefined,
-      cursor: searchParams.get('cursor') || undefined,
-      terms: terms.length > 0 ? terms : undefined,
-      ledgers: ledgers.length > 0 ? ledgers : undefined,
-      sort: sort.length > 0 ? sort : undefined,
+      [`${key}target`]:
+        (searchParams.get(`${key}target`) as SearchTargets) || undefined,
+      [`${key}policy`]:
+        (searchParams.get(`${key}policy`) as SearchPolicies) || undefined,
+      [`${key}cursor`]: searchParams.get(`${key}cursor`) || undefined,
+      [`${key}terms`]: terms.length > 0 ? terms : undefined,
+      [`${key}ledgers`]: ledgers.length > 0 ? ledgers : undefined,
+      [`${key}sort`]: sort.length > 0 ? sort : undefined,
     },
     identity
   ) as SearchBody;
   if (context === QueryContexts.PAYLOAD) {
+    if (sanitize) {
+      return Object.keys(body).reduce((acc: any, key: any) => {
+        const k = key.split('_')[1];
+
+        return { ...acc, [k]: get(body, key) };
+      }, {});
+    }
+
     return body;
   }
 
   let query = '';
-  Object.keys(body).forEach((key: string) => {
-    query = `${query}${query.length > 0 ? '&' : ''}${key}=${get(body, key)}`;
+  Object.keys(body).forEach((k: string) => {
+    let key = k;
+    if (sanitize) {
+      key = key.split('_')[1];
+    }
+    query = `${query}${query.length > 0 ? '&' : ''}${key}=${get(body, k)}`;
   });
 
   return query;
@@ -44,18 +64,19 @@ export const buildQuery = (
 
 export const sanitizeQuery = (
   request: Request,
-  context: QueryContexts.PARAMS | QueryContexts.PAYLOAD = QueryContexts.PAYLOAD
+  context: QueryContexts.PARAMS | QueryContexts.PAYLOAD = QueryContexts.PAYLOAD,
+  id?: string | undefined
 ): SearchBody | string => {
   const url = new URL(request.url);
-  const query = buildQuery(url.searchParams, context);
-
+  const key = formatTableId(id);
+  const query = buildQuery(url.searchParams, context, id, true);
   if (typeof query !== 'string') {
-    const { sort } = query;
-
     return {
       ...query,
-      sort: sort
-        ? sort.map((s: string) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ['sort']: query[`${key}sort`]
+        ? [`${key}sort`].map((s: string) => {
             const split = s.split(':');
 
             return { key: split[0], order: split[1] };
