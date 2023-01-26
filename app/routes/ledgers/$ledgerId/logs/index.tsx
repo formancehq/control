@@ -42,7 +42,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     invariant(params.ledgerId, 'Expected params.ledgerId');
     const api = await createApiClient(session);
     const query = sanitizeQuery(request, QueryContexts.PARAMS);
-    const url = `${API_LEDGER}/${params.ledgerId}/log?${query}`;
+    const url = `${API_LEDGER}/${params.ledgerId}/logs?${query}`;
     const logs = await api.getResource<
       Cursor<LedgerLog<Transaction | ObjectOf<any>>>
     >(url, 'cursor');
