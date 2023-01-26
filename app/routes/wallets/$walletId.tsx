@@ -34,6 +34,10 @@ import {
 import { API_WALLET } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { QueryContexts, sanitizeQuery } from '~/src/utils/search';
+
+const TRANSACTION_LIST_ID = 'transactions';
+const HOLD_LIST_ID = 'holds';
 
 type WalletDetailsData = {
   wallet: Wallet;
@@ -57,12 +61,21 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         `${API_WALLET}/wallets/${params.walletId}`,
         'data'
       ),
+
       holds: api.getResource<WalletHold[]>(
-        `${API_WALLET}/holds/?walletID=${params.walletId}`,
-        'cursor.data'
+        `${API_WALLET}/holds?${sanitizeQuery(
+          request,
+          QueryContexts.PARAMS,
+          HOLD_LIST_ID
+        )}&walletID=${params.walletId}&pageSize=2`,
+        'cursor'
       ),
       transactions: api.getResource<Cursor<Transaction>>(
-        `${API_WALLET}/transactions?walletID=${params.walletId}`,
+        `${API_WALLET}/transactions?${sanitizeQuery(
+          request,
+          QueryContexts.PARAMS,
+          TRANSACTION_LIST_ID
+        )}&walletID=${params.walletId}&pageSize=2`,
         'cursor'
       ),
       rawBalances: await api.getResource<WalletBalance[]>(
@@ -246,8 +259,8 @@ export default function Index() {
         </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.holds.title')}>
           <Table
+            id={HOLD_LIST_ID}
             items={data.holds}
-            withPagination={false}
             action
             columns={[
               {
@@ -306,7 +319,7 @@ export default function Index() {
         </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.transactions.title')}>
           <TransactionList
-            withPagination={false}
+            id={TRANSACTION_LIST_ID}
             transactions={data.transactions as unknown as Cursor<Transaction>}
           />
         </SectionWrapper>

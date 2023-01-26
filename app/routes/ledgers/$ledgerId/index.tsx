@@ -168,7 +168,7 @@ export default function Index() {
         <SectionWrapper title={t('pages.ledger.sections.migrations.title')}>
           <Table
             id="ledger-migration-list"
-            items={buildCursor(ledger.details.storage.migration)} // TODO use migrations once backend fix typo
+            items={buildCursor(ledger.details.storage.migrations)}
             action={true}
             withPagination={false}
             columns={[
