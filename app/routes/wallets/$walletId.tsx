@@ -23,6 +23,7 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Table from '~/src/components/Wrappers/Table';
+import { TableContext } from '~/src/contexts/table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
 import {
@@ -66,7 +67,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         `${API_WALLET}/holds?${sanitizeQuery(
           request,
           QueryContexts.PARAMS,
-          HOLD_LIST_ID
+          HOLD_LIST_ID,
+          true
         )}&walletID=${params.walletId}&pageSize=2`,
         'cursor'
       ),
@@ -74,7 +76,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         `${API_WALLET}/transactions?${sanitizeQuery(
           request,
           QueryContexts.PARAMS,
-          TRANSACTION_LIST_ID
+          TRANSACTION_LIST_ID,
+          true
         )}&walletID=${params.walletId}&pageSize=2`,
         'cursor'
       ),
@@ -208,7 +211,6 @@ export default function Index() {
           />
         </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.balances.title')}>
-          {/* TODO adjust table with data from balances */}
           <Table
             withHeader={false}
             withPagination={false}
@@ -258,70 +260,75 @@ export default function Index() {
           />
         </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.holds.title')}>
-          <Table
-            id={HOLD_LIST_ID}
-            items={data.holds}
-            action
-            columns={[
-              {
-                key: 'id',
-                label: t('pages.wallet.sections.holds.table.columnLabel.id'),
-                width: 40,
-              },
-              {
-                key: 'asset',
-                label: t('pages.wallet.sections.holds.table.columnLabel.asset'),
-                width: 40,
-              },
-              {
-                key: 'destination',
-                label: t(
-                  'pages.wallet.sections.holds.table.columnLabel.destination'
-                ),
-                width: 40,
-              },
-              {
-                key: 'createdAt',
-                label: t(
-                  'pages.wallet.sections.holds.table.columnLabel.createdAt'
-                ),
-                width: 40,
-              },
-            ]}
-            renderItem={(hold: WalletHold, index) => (
-              <Row
-                key={index}
-                keys={[
-                  <CopyPasteTooltip
-                    key={index}
-                    tooltipMessage={t('common.tooltip.copied')}
-                    value={hold.id}
-                  >
-                    <Chip key={index} label={hold.id} variant="square" />
-                  </CopyPasteTooltip>,
-                  <Chip
-                    key={index}
-                    label={hold.asset}
-                    variant="square"
-                    color="blue"
-                  />,
-                  <Chip
-                    key={index}
-                    label={hold.destination.identifier}
-                    variant="square"
-                  />,
-                  <Date key={index} timestamp={hold.createdAt} />,
-                ]}
-                item={hold}
-              />
-            )}
-          />
+          <TableContext.Provider value={{ id: HOLD_LIST_ID }}>
+            <Table
+              items={data.holds}
+              action
+              columns={[
+                {
+                  key: 'id',
+                  label: t('pages.wallet.sections.holds.table.columnLabel.id'),
+                  width: 40,
+                },
+                {
+                  key: 'asset',
+                  label: t(
+                    'pages.wallet.sections.holds.table.columnLabel.asset'
+                  ),
+                  width: 40,
+                },
+                {
+                  key: 'destination',
+                  label: t(
+                    'pages.wallet.sections.holds.table.columnLabel.destination'
+                  ),
+                  width: 40,
+                },
+                {
+                  key: 'createdAt',
+                  label: t(
+                    'pages.wallet.sections.holds.table.columnLabel.createdAt'
+                  ),
+                  width: 40,
+                },
+              ]}
+              renderItem={(hold: WalletHold, index) => (
+                <Row
+                  key={index}
+                  keys={[
+                    <CopyPasteTooltip
+                      key={index}
+                      tooltipMessage={t('common.tooltip.copied')}
+                      value={hold.id}
+                    >
+                      <Chip key={index} label={hold.id} variant="square" />
+                    </CopyPasteTooltip>,
+                    <Chip
+                      key={index}
+                      label={hold.asset}
+                      variant="square"
+                      color="blue"
+                    />,
+                    <Chip
+                      key={index}
+                      label={hold.destination.identifier}
+                      variant="square"
+                    />,
+                    <Date key={index} timestamp={hold.createdAt} />,
+                  ]}
+                  item={hold}
+                />
+              )}
+            />
+          </TableContext.Provider>
         </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.transactions.title')}>
-          <TransactionList
-            id={TRANSACTION_LIST_ID}
-            transactions={data.transactions as unknown as Cursor<Transaction>}
-          />
+          <TableContext.Provider value={{ id: TRANSACTION_LIST_ID }}>
+            <TransactionList
+              withPagination
+              transactions={data.transactions as unknown as Cursor<Transaction>}
+            />
+          </TableContext.Provider>
         </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.metadata.title')}>
           <JsonViewer jsonData={data.wallet.metadata} />

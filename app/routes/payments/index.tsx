@@ -14,7 +14,7 @@ import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Select from '~/src/components/Wrappers/Table/Filters/Select';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
-import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { TableContext } from '~/src/contexts/table';
 import { Connector } from '~/src/types/connectorsConfig';
 import { Cursor } from '~/src/types/generic';
 import { Payment, PaymentStatuses, PaymentTypes } from '~/src/types/payment';
@@ -51,7 +51,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       `${API_PAYMENT}/connectors/configs`,
       'data'
     );
-
     const payments = await api.postResource<Cursor<Payment[]>>(
       API_SEARCH,
       {
@@ -92,7 +91,7 @@ export default function Index() {
 
   return (
     <Page id={paymentsConfig.id}>
-      <TableFiltersContext.Provider
+      <TableContext.Provider
         value={{
           filters: [
             {
@@ -155,7 +154,7 @@ export default function Index() {
           </FiltersBar>
           <PaymentList payments={payments} />
         </Form>
-      </TableFiltersContext.Provider>
+      </TableContext.Provider>
     </Page>
   );
 }

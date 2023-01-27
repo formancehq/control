@@ -12,7 +12,7 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
-import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { TableContext } from '~/src/contexts/table';
 import { Cursor } from '~/src/types/generic';
 import { Account } from '~/src/types/ledger';
 import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
@@ -66,7 +66,7 @@ export default function Index() {
 
   return (
     <Page id={accountsConfig.id}>
-      <TableFiltersContext.Provider
+      <TableContext.Provider
         value={{
           filters: [{ field: 'ledgers', name: Filters.LEDGERS }],
         }}
@@ -77,7 +77,7 @@ export default function Index() {
           </FiltersBar>
           <AccountList accounts={accounts as Cursor<Account>} />
         </Form>
-      </TableFiltersContext.Provider>
+      </TableContext.Provider>
     </Page>
   );
 }

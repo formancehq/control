@@ -5,11 +5,11 @@ import { useLocation, useSearchParams } from '@remix-run/react';
 import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { Table as SbTable } from '@numaryhq/storybook';
+import { Column, Table as SbTable } from '@numaryhq/storybook';
 
 import SelectedTags from '~/src/components/Wrappers/Table/Filters/SelectedTags/SelectedTags';
 import { TableProps } from '~/src/components/Wrappers/Table/types';
-import { useTableFilters } from '~/src/hooks/useTableFilters';
+import { useTable } from '~/src/hooks/useTable';
 import { TableConfig } from '~/src/types/generic';
 import { formatTableId } from '~/src/utils/format';
 import { buildQuery } from '~/src/utils/search';
@@ -17,14 +17,13 @@ import { buildQuery } from '~/src/utils/search';
 const Table: FunctionComponent<TableProps> = ({
   action = false,
   columns,
-  id,
   ...props
 }) => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
 
-  const { filters } = useTableFilters();
+  const { filters, id } = useTable();
   const key = formatTableId(id);
   const all = searchParams.getAll(`${key}sort`);
   const columnsSortedConfig = [
@@ -34,21 +33,21 @@ const Table: FunctionComponent<TableProps> = ({
       );
 
       return {
-        ...omit(column, ['sort']),
+        ...omit(column, [`${key}sort`]),
         sort: column.sort
           ? {
-              onSort: (key: string, order: 'desc' | 'asc') => {
+              onSort: (k: string, order: 'desc' | 'asc') => {
                 const query = buildQuery(searchParams, undefined, key) as any;
                 if (query[`${key}sort`]) {
                   query[`${key}sort`] = query[`${key}sort`].filter(
-                    (s: string) => s !== `${key}:asc` && s !== `${key}:desc`
+                    (s: string) => s !== `${k}:asc` && s !== `${k}:desc`
                   );
                   query[`${key}sort`] = [
                     ...query[`${key}sort`],
-                    `${key}:${order}`,
+                    `${k}:${order}`,
                   ];
                 } else {
-                  query[`${key}sort`] = [`${key}:${order}`];
+                  query[`${key}sort`] = [`${k}:${order}`];
                 }
                 setSearchParams(query);
               },
@@ -115,7 +114,7 @@ const Table: FunctionComponent<TableProps> = ({
       }}
       onNext={onNext}
       onPrevious={onPrevious}
-      columns={columnsConfig}
+      columns={columnsConfig as Column[]}
     />
   );
 };
