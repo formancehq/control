@@ -10,5 +10,4 @@ export type TableProps = Omit<
 > & {
   columns: Column[];
   action?: boolean;
-  id?: string;
 };

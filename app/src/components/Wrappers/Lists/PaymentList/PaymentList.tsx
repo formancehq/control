@@ -26,7 +26,6 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({
 
   return (
     <Table
-      id="payments-list"
       items={payments}
       withPagination={withPagination}
       action

@@ -8,5 +8,4 @@ export type TransactionListProps = {
   showMore?: boolean;
   withAction?: boolean;
   sortedColumns?: string[];
-  id?: string;
 };

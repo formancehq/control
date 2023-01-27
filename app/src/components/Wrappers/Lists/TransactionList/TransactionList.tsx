@@ -60,7 +60,6 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   showMore = false,
   sortedColumns,
   withAction = true,
-  id,
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -94,7 +93,6 @@ const TransactionList: FunctionComponent<TransactionListProps> = ({
   return (
     <>
       <Table
-        id={id}
         withPagination={withPagination}
         paginationSize={paginationSize}
         items={transactionsNormalized}

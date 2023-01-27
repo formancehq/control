@@ -14,7 +14,7 @@ export const buildQuery = (
   searchParams: URLSearchParams,
   context: QueryContexts.PARAMS | QueryContexts.PAYLOAD = QueryContexts.PAYLOAD,
   id?: string,
-  sanitize = false
+  deserialize = false
 ): SearchBody | string => {
   const key = formatTableId(id);
 
@@ -39,7 +39,7 @@ export const buildQuery = (
     identity
   ) as SearchBody;
   if (context === QueryContexts.PAYLOAD) {
-    if (sanitize) {
+    if (deserialize) {
       return Object.keys(body).reduce((acc: any, key: any) => {
         const k = key.split('_')[1];
 
@@ -53,7 +53,7 @@ export const buildQuery = (
   let query = '';
   Object.keys(body).forEach((k: string) => {
     let key = k;
-    if (sanitize) {
+    if (deserialize) {
       key = key.split('_')[1];
     }
     query = `${query}${query.length > 0 ? '&' : ''}${key}=${get(body, k)}`;
@@ -65,18 +65,19 @@ export const buildQuery = (
 export const sanitizeQuery = (
   request: Request,
   context: QueryContexts.PARAMS | QueryContexts.PAYLOAD = QueryContexts.PAYLOAD,
-  id?: string | undefined
+  id?: string | undefined,
+  deserialize = false
 ): SearchBody | string => {
   const url = new URL(request.url);
   const key = formatTableId(id);
-  const query = buildQuery(url.searchParams, context, id, true);
+  const query = buildQuery(url.searchParams, context, id, deserialize);
   if (typeof query !== 'string') {
     return {
       ...query,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      ['sort']: query[`${key}sort`]
-        ? [`${key}sort`].map((s: string) => {
+      sort: query[`${key}sort`]
+        ? get(query, `${key}sort`, []).map((s: string) => {
             const split = s.split(':');
 
             return { key: split[0], order: split[1] };
@@ -88,5 +89,8 @@ export const sanitizeQuery = (
   return query as string;
 };
 
-export const resetCursor = (query: SearchBody): SearchBody =>
-  omit(query, ['cursor']);
+export const resetCursor = (query: SearchBody, id?: string): SearchBody => {
+  const key = formatTableId(id);
+
+  return omit(query, [`${key}cursor`]);
+};

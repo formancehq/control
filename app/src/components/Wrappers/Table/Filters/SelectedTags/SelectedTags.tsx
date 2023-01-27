@@ -11,7 +11,7 @@ import { Chip } from '@numaryhq/storybook';
 import { Filters, getFieldValue } from '../filters';
 
 import { SelectedTagsProps } from '~/src/components/Wrappers/Table/Filters/SelectedTags/types';
-import { useTableFilters } from '~/src/hooks/useTableFilters';
+import { useTable } from '~/src/hooks/useTable';
 import { buildQuery, resetCursor } from '~/src/utils/search';
 
 const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
@@ -20,13 +20,13 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const all = searchParams.getAll(name);
-  const { filters } = useTableFilters();
+  const { filters, id } = useTable();
   const chips = all.filter((item) =>
     name === Filters.TERMS ? first(item.split('=')) === field : item
   );
   const onDelete = (item: string) => {
     let query = buildQuery(searchParams) as any;
-    query = resetCursor(query);
+    query = resetCursor(query, id);
     query.terms = query.terms
       ? query.terms.filter((val: string) => val !== item)
       : [];
@@ -40,7 +40,8 @@ const SelectedTags: FunctionComponent<SelectedTagsProps> = ({
     <>
       {chips.length > 0 &&
         chips.map((item: string, index: number) => {
-          const filterConfig = filters.find((filter) => filter.field === field);
+          const filterConfig =
+            filters && filters.find((filter) => filter.field === field);
 
           return (
             <Box mt={1} component="span" key={index}>

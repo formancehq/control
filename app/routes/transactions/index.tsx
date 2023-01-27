@@ -14,7 +14,7 @@ import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
-import { TableFiltersContext } from '~/src/contexts/tableFilters';
+import { TableContext } from '~/src/contexts/table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
 import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
@@ -79,7 +79,7 @@ export default function Index() {
 
   return (
     <Page id={transactionsConfig.id}>
-      <TableFiltersContext.Provider
+      <TableContext.Provider
         value={{
           filters: [
             { field: 'ledgers', name: Filters.LEDGERS },
@@ -117,7 +117,7 @@ export default function Index() {
             sortedColumns={['txid', 'date']}
           />
         </Form>
-      </TableFiltersContext.Provider>
+      </TableContext.Provider>
     </Page>
   );
 }
