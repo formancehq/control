@@ -21,6 +21,8 @@ CMD ["yarn", "run", "start"]
 FROM node:16-slim as app
 WORKDIR /app
 ENV NODE_ENV=production
+ARG VERSION
+ENV VERSION=${VERSION}
 ADD . .
 ENV DEBUG=1
 CMD ["yarn", "run", "start"]
