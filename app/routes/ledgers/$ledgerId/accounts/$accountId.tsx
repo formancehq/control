@@ -85,6 +85,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
           `source=${params.accountId}`,
         ],
         target: SearchTargets.TRANSACTION,
+        ledgers: [params.ledgerId],
       },
       'cursor'
     );
