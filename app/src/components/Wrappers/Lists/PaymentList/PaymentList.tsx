@@ -11,8 +11,12 @@ import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListActi
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import { PaymentSchemeChip } from '~/src/components/Wrappers/PaymentSchemeChip/PaymentSchemeChip';
-import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import StatusChip from '~/src/components/Wrappers/StatusChip';
+import {
+  paymentColorMap,
+  paymentIconMap,
+} from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import { Payment } from '~/src/types/payment';
 import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
@@ -73,7 +77,12 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({
           keys={[
             <PayInChips key={index} type={payment.type} />,
             <ProviderPicture key={index} provider={payment.provider} />,
-            <PaymentStatusChip key={index} status={payment.status} />,
+            <StatusChip
+              key={index}
+              status={payment.status}
+              iconMap={paymentIconMap}
+              colorMap={paymentColorMap}
+            />,
             <PaymentSchemeChip key={index} scheme={payment.scheme} />,
             <Typography key={index}>{payment.reference}</Typography>,
             <Amount

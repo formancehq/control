@@ -11,7 +11,6 @@ import invariant from 'tiny-invariant';
 
 import {
   ActionZone,
-  Chip,
   Date,
   JsonViewer,
   Page,
@@ -24,10 +23,20 @@ import { APPS_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
 import Modal from '~/src/components/Wrappers/Modal/Modal';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import StatusChip from '~/src/components/Wrappers/StatusChip';
+import {
+  appColorMap,
+  appIconMap,
+  appTaskColorMap,
+  appTaskIconMap,
+} from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
-import { Connector, ConnectorTask } from '~/src/types/connectorsConfig';
-import { TaskStatuses } from '~/src/types/payment';
+import {
+  Connector,
+  ConnectorStatuses,
+  ConnectorTask,
+} from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -163,15 +172,11 @@ export default function Index() {
         <SectionWrapper
           title={t('pages.app.sections.dangerZone.title')}
           element={
-            <Chip
-              variant="square"
-              // TODO uncomment when backend is ready (https://linear.app/formance/issue/NUM-1374/payments-connectors-always-enabled)
-              // color={connector.disabled ? 'red' : 'green'}
-              // label={t(
-              //   `common.status.${connector.disabled ? 'inactive' : 'active'}`
-              // )}
-              label={t('common.status.active')}
-              color="green"
+            // TODO uncomment when backend is ready (https://linear.app/formance/issue/NUM-1374/payments-connectors-always-enabled)
+            <StatusChip
+              iconMap={appIconMap}
+              colorMap={appColorMap}
+              status={ConnectorStatuses.ACTIVE} // hardcoded for now
             />
           }
         >
@@ -275,17 +280,11 @@ export default function Index() {
                 key={index}
                 item={task}
                 keys={[
-                  <Chip
+                  <StatusChip
                     key={index}
-                    color={
-                      task.status === TaskStatuses.ACTIVE ? 'green' : 'yellow'
-                    }
-                    label={
-                      `${task.status}`.toLowerCase()
-                      // ? t('common.status.active')
-                      // : t('common.status.inactive')
-                    }
-                    variant="square"
+                    iconMap={appTaskIconMap}
+                    colorMap={appTaskColorMap}
+                    status={task.status}
                   />,
                   <Box component="span" key={index}>
                     {task.error ? (
