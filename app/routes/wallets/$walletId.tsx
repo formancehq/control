@@ -69,7 +69,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           QueryContexts.PARAMS,
           HOLD_LIST_ID,
           true
-        )}&walletID=${params.walletId}&pageSize=2`,
+        )}&walletID=${params.walletId}&pageSize=10`,
         'cursor'
       ),
       transactions: api.getResource<Cursor<Transaction>>(
@@ -78,7 +78,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           QueryContexts.PARAMS,
           TRANSACTION_LIST_ID,
           true
-        )}&walletID=${params.walletId}&pageSize=2`,
+        )}&walletID=${params.walletId}&pageSize=10`,
         'cursor'
       ),
       rawBalances: await api.getResource<WalletBalance[]>(
