@@ -29,8 +29,12 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import PayInChips from '~/src/components/Wrappers/PayInChips';
 import { PaymentSchemeChip } from '~/src/components/Wrappers/PaymentSchemeChip/PaymentSchemeChip';
-import PaymentStatusChip from '~/src/components/Wrappers/PaymentStatusChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import StatusChip from '~/src/components/Wrappers/StatusChip';
+import {
+  paymentColorMap,
+  paymentIconMap,
+} from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
@@ -120,7 +124,11 @@ export default function PaymentDetails() {
           <Typography variant="h1" pr={1}>
             {t('pages.payment.title')}
           </Typography>
-          <PaymentStatusChip status={payment.status} />
+          <StatusChip
+            status={payment.status}
+            iconMap={paymentIconMap}
+            colorMap={paymentColorMap}
+          />
           <Box
             sx={{
               ml: 'auto',

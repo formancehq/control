@@ -53,14 +53,6 @@ export enum AccountTypes {
   UNKNOWN = 'UNKNOWN',
 }
 
-export enum TaskStatuses {
-  STOPPED = 'STOPPED',
-  PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
-  TERMINATED = 'TERMINATED',
-  FAILED = 'FAILED',
-}
-
 export type PaymentDetail = Payment & {
   adjustments: Array<AdjustmentsItem>;
 };

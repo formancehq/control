@@ -27,3 +27,15 @@ export type ConnectorTask = {
   state?: string;
   id: string;
 };
+
+export enum TaskStatuses {
+  STOPPED = 'STOPPED',
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  TERMINATED = 'TERMINATED',
+  FAILED = 'FAILED',
+}
+export enum ConnectorStatuses {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
