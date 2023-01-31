@@ -27,6 +27,8 @@ OTEL_TRACES=0
 OTEL_TRACES_EXPORTER=zipkin
 OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT=http://localhost:9411/api/v2/spans
 UNSECURE_COOKIES=1
+// from ci
+VERSION=develop
 ```
 
 ```sh
