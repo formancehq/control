@@ -2,21 +2,16 @@ import * as React from 'react';
 import { FunctionComponent, useEffect, useState } from 'react';
 
 import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
-import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  CircularProgress,
+  Link,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import type { LoaderFunction, MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import {
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-} from 'chart.js';
 import { get, take } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -33,6 +28,8 @@ import {
   TitleWithBar,
 } from '@numaryhq/storybook';
 
+import Line from '~/src/components/Dataviz/Charts/Line';
+import { buildLinePayloadQuery } from '~/src/components/Dataviz/Charts/Line/utils';
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
@@ -43,18 +40,6 @@ import { SearchTargets } from '~/src/types/search';
 import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  PointElement,
-  LineElement
-);
 
 export const meta: MetaFunction = () => ({
   title: 'Overview',
@@ -67,10 +52,21 @@ export function ErrorBoundary() {
 
 type Ledger = { slug: string; stats: number; color: string };
 
-const colors = ['brown', 'red', 'yellow', 'default', 'violet', 'green', 'blue'];
+const colors = [
+  'brown',
+  'red',
+  'yellow',
+  'default',
+  'violet',
+  'green',
+  'blue',
+  'neutral[400]',
+  'neutral[600]',
+];
 
 const getData = async (ledgersList: string[], api: ApiClient) => {
   const ledgers = [] as any;
+  const charts = [] as any;
   const firstThreeLedgers = take(ledgersList, 3);
   for (const ledger of firstThreeLedgers) {
     const stats = await api.getResource<LedgerStats>(
@@ -84,7 +80,22 @@ const getData = async (ledgersList: string[], api: ApiClient) => {
     });
   }
 
-  return ledgers;
+  for (const ledger of ledgersList) {
+    const transactionChart = await api.postResource(
+      API_SEARCH,
+      {
+        raw: buildLinePayloadQuery(
+          'indexed.timestamp',
+          SearchTargets.TRANSACTION,
+          ledger
+        ),
+      },
+      'aggregations.line.buckets'
+    );
+    charts.push(transactionChart);
+  }
+
+  return { ledgers, charts };
 };
 
 type OverviewData = {
@@ -100,14 +111,6 @@ type OverviewData = {
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(session);
-    // TODO uncomment when overview is ready to show some charts
-    // const chart: any = await api.postResource(
-    //   API_SEARCH,
-    //   {
-    //     raw: ledgerTransactions(),
-    //   },
-    //   "aggregations.history"
-    // );
 
     const payments = await api.postResource<Cursor<Payment>>(
       API_SEARCH,
@@ -131,13 +134,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       `${API_LEDGER}/_info`,
       'data.config.storage.ledgers'
     );
-    // TODO uncomment when overview is ready to show some charts
-    // return {
-    //   accounts,
-    //   payments,
-    //   ledgers: ledgersList,
-    //   chart: chart ? toBarChart(chart) : undefined,
-    // };
 
     return {
       accounts,
@@ -158,7 +154,10 @@ export default function Index() {
 
 const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
   const { t } = useTranslation();
-  const [stats, setStats] = useState<Ledger[]>([]);
+  const [stats, setStats] = useState<{ ledgers: Ledger[]; charts: any }>({
+    ledgers: [],
+    charts: [],
+  });
   const { currentUser } = useService();
   const { api } = useService();
   // TODO check if the back send us back a serialized value so we don't have to use get anymore
@@ -169,6 +168,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
   const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, _load, stopLoading] = useOpen(true);
+  const { palette } = useTheme();
   const loadingTransition = useAnimationTransition(ledgers.length, {
     from: { opacity: 0 },
     enter: { opacity: 1 },
@@ -185,59 +185,12 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
     })();
   }, []);
 
+  console.log(stats);
+
   return (
     <>
       <Page id={overview.id}>
         <>
-          {/* TODO uncomment when overview is ready to show chart */}
-          {/* TODO chart should be a storybook component */}
-          {/* Charts */}
-          {/*<Box*/}
-          {/*  sx={{*/}
-          {/*    borderRadius: "6px",*/}
-          {/*    border: ({ palette }) => `1px solid ${palette.neutral[100]}`,*/}
-          {/*    height: "300px",*/}
-          {/*    flex: 1,*/}
-          {/*    p: 2,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Bar*/}
-          {/*    options={{*/}
-          {/*      font: {*/}
-          {/*        family: "Roboto Mono",*/}
-          {/*      },*/}
-          {/*      plugins: {*/}
-          {/*        tooltip: {},*/}
-          {/*        legend: {*/}
-          {/*          position: "bottom",*/}
-          {/*          labels: {*/}
-          {/*            useBorderRadius: true,*/}
-          {/*            borderRadius: 4,*/}
-          {/*          },*/}
-          {/*        },*/}
-          {/*      },*/}
-          {/*      maintainAspectRatio: false,*/}
-          {/*      scales: {*/}
-          {/*        x: {*/}
-          {/*          stacked: true,*/}
-          {/*          grid: {*/}
-          {/*            color: palette.neutral[100],*/}
-          {/*          },*/}
-          {/*        },*/}
-          {/*        y: {*/}
-          {/*          stacked: true,*/}
-          {/*          grid: {*/}
-          {/*            color: palette.neutral[100],*/}
-          {/*          },*/}
-          {/*        },*/}
-          {/*      },*/}
-          {/*    }}*/}
-          {/*    data={{*/}
-          {/*      labels: data?.chart?.labels || [],*/}
-          {/*      datasets: data?.chart?.datasets || [],*/}
-          {/*    }}*/}
-          {/*  />*/}
-          {/*</Box>*/}
           {currentUser && currentUser.pseudo && (
             <Box
               display="flex"
@@ -269,6 +222,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
               </Box>
             </Box>
           )}
+          {/* CHARTS */}
+          <Line data={{} as any} />
           {/*  STATUS */}
           <Box mt={5}>
             <Box
@@ -308,7 +263,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
               {/* TODO Add Transition Between loading state and empty/not empty state */}
               {loadingTransition((props, ledgersLength) =>
                 ledgersLength > 0 ? (
-                  stats.map((ledger: Ledger, index: number) => (
+                  stats.ledgers.map((ledger: Ledger, index: number) => (
                     <animated.div key={index} style={props}>
                       <Box>
                         <StatsCard
