@@ -131,13 +131,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           }
         }),
         holds,
-        transactions: {
-          ...transactions,
-          data: transactions.data.map((transaction) => ({
-            ...transaction,
-            ledger: 'wallets-002', // TODO remove hardcoded ledger when NUM 1427 is done
-          })),
-        },
+        transactions,
       };
     }
 
