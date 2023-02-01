@@ -51,3 +51,9 @@ export type PaymentSuggestions = Suggestion<{
   asset: string;
   amount: number;
 }>;
+
+export type Bucket = {
+  doc_count: number;
+  key_as_string: string;
+  key: number;
+};
