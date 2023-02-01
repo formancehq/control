@@ -1,8 +1,6 @@
 import { ChartDataset } from 'chart.js';
 import _ from 'lodash';
 
-import { ledgerTransactions } from './ledgerTransactions';
-
 type BucketData = {
   key_as_string?: string;
   key: number | string;
@@ -27,7 +25,6 @@ export const toBarChart = (data: AggregationData): ChartData => {
     return date.toLocaleDateString();
   });
   const series: string[] = [];
-
   _(data.buckets)
     .map((bucket) => bucket.split?.buckets.map((split) => `${split.key}`))
     .flatten()
@@ -58,6 +55,7 @@ export const toBarChart = (data: AggregationData): ChartData => {
     backgroundColor: colors[series.indexOf(e)].replace('1)', '1)'),
     borderRadius: 6,
   }));
+  console.log({ labels, datasets });
 
   return {
     labels,
