@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 
-import { Box, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -25,8 +25,7 @@ ChartJS.register(
   Legend
 );
 
-const Line: FunctionComponent<LineProps> = () => {
-  const { palette } = useTheme();
+const Line: FunctionComponent<LineProps> = ({ data }) => {
   const options = {
     responsive: true,
     plugins: {
@@ -39,28 +38,15 @@ const Line: FunctionComponent<LineProps> = () => {
     },
   };
 
-  const labels = ['January', 'February', 'March'];
-
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: 'Dataset 1',
-        data: [12, 22, 66],
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: palette.neutral[0],
-      },
-      {
-        label: 'Dataset 2',
-        data: [55, 15, 78],
-        borderColor: 'rgb(53, 162, 235)',
-        backgroundColor: palette.neutral[0],
-      },
-    ],
-  };
-
   return (
-    <Box>
+    <Box
+      sx={{
+        p: 2,
+        mr: 2,
+        borderRadius: '6px',
+        border: ({ palette }) => `1px solid ${palette.neutral[200]}`,
+      }}
+    >
       <ChLine options={options} data={data} />
     </Box>
   );

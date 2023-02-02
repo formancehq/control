@@ -1,70 +1,90 @@
-import { theme } from '@numaryhq/storybook';
+import dayjs from 'dayjs';
+import { compact, flatten, omit, sortedUniq } from 'lodash';
 
-import { Bucket, SearchTargets } from '~/src/types/search';
+import { ChartDataset, LineChart } from '~/src/types/chart';
+import { SearchTargets } from '~/src/types/search';
 
 export const buildLinePayloadQuery = (
   dateFieldName: string,
   target: SearchTargets,
-  ledger: string
-) => ({
-  aggs: {
-    line: {
-      date_histogram: {
-        field: 'indexed.timestamp',
-        fixed_interval: '3h',
-        time_zone: 'Europe/Paris',
-        min_doc_count: 1,
+  ledger?: string,
+  interval = '1h'
+) => {
+  const filters = [
+    // {
+    //   range: {
+    //     [dateFieldName]: {
+    //       gte: "now-1d/d",
+    //       lte: "now/d",
+    //     },
+    //   },
+    // },
+    {
+      match_phrase: {
+        kind: target,
       },
     },
-  },
-  size: 0,
-  stored_fields: ['*'],
-  docvalue_fields: [
-    {
-      field: dateFieldName,
-      format: 'date_time',
+  ];
+
+  if (ledger) {
+    filters.push({
+      match_phrase: {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        ledger: ledger,
+      },
+    });
+  }
+
+  const payload = {
+    aggs: {
+      line: {
+        date_histogram: {
+          field: dateFieldName,
+          calendar_interval: '1h',
+          time_zone: 'Europe/Paris',
+          min_doc_count: 1,
+        },
+      },
     },
-  ],
-  query: {
-    bool: {
-      filter: [
-        {
-          range: {
-            [dateFieldName]: {
-              gte: 'now-1d/d',
-              lte: 'now/d',
-            },
-          },
-        },
-        {
-          match_phrase: {
-            kind: target,
-          },
-        },
-        {
-          match_phrase: {
-            ledger: ledger,
-          },
-        },
-      ],
+    size: 0,
+    stored_fields: ['*'],
+    docvalue_fields: [
+      {
+        field: dateFieldName,
+        format: 'date_time',
+      },
+    ],
+    query: {
+      bool: {
+        filter: filters,
+      },
     },
-  },
-});
+  };
 
-export const getDataset = (buckets: Bucket[], ledger: string) => {
-  let dataset = {};
-  buckets.forEach((bucket, i) => {
-    const hue = 140 + (i * 200) / buckets.length;
-    const saturation = 60 + (i * 30) / buckets.length;
-    const lightness = 40 + (i * 50) / buckets.length;
-
-    dataset = {
-      label: ledger,
-      data: buckets.map((bucket) => bucket.doc_count),
-      borderColor: `hsla(${hue}, ${saturation}%, ${lightness}%, 1)`,
-      backgroundColor: theme.palette.neutral[0],
-    };
-  });
-
-  return dataset;
+  return payload;
 };
+
+export const buildLineLabels = (datasets: any): string[] => {
+  const labels = sortedUniq(
+    flatten(compact(datasets.map((dataset: ChartDataset) => dataset.labels)))
+  );
+  const uniqLabels = labels.filter(
+    (item, index) => labels.indexOf(item) === index
+  ) as string[];
+
+  return uniqLabels.map((item: Date | string) =>
+    dayjs(item).format('ddd D MMM')
+  );
+};
+
+export const buildLineChart = (labels: string[], datasets: any): LineChart => ({
+  labels,
+  datasets: compact(
+    datasets.map((dataset: ChartDataset) => {
+      if (dataset && dataset.data) {
+        return omit(dataset, ['labels']);
+      }
+    })
+  ),
+});
