@@ -6,19 +6,15 @@ import {
   Avatar,
   Box,
   CircularProgress,
+  Grid,
   Link,
   Typography,
-  useTheme,
 } from '@mui/material';
 import type { LoaderFunction, MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { get, take } from 'lodash';
+import { get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import {
-  animated,
-  useTransition as useAnimationTransition,
-} from 'react-spring';
 
 import {
   ActionCard,
@@ -29,14 +25,21 @@ import {
 } from '@numaryhq/storybook';
 
 import Line from '~/src/components/Dataviz/Charts/Line';
-import { buildLinePayloadQuery } from '~/src/components/Dataviz/Charts/Line/utils';
+import {
+  buildLineChart,
+  buildLineLabels,
+  buildLinePayloadQuery,
+} from '~/src/components/Dataviz/Charts/Line/utils';
+import { buildDataset } from '~/src/components/Dataviz/Charts/utils';
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
+import i18n from '~/src/translations';
+import { LineChart } from '~/src/types/chart';
 import { Cursor } from '~/src/types/generic';
-import { Account, LedgerInfo, LedgerStats } from '~/src/types/ledger';
+import { Account, LedgerInfo } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
-import { SearchTargets } from '~/src/types/search';
+import { Bucket, SearchTargets } from '~/src/types/search';
 import { API_LEDGER, API_SEARCH, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -50,38 +53,13 @@ export function ErrorBoundary() {
   return <Overview />;
 }
 
-type Ledger = { slug: string; stats: number; color: string };
-
-const colors = [
-  'brown',
-  'red',
-  'yellow',
-  'default',
-  'violet',
-  'green',
-  'blue',
-  'neutral[400]',
-  'neutral[600]',
-];
-
-const getData = async (ledgersList: string[], api: ApiClient) => {
-  const ledgers = [] as any;
-  const charts = [] as any;
-  const firstThreeLedgers = take(ledgersList, 3);
-  for (const ledger of firstThreeLedgers) {
-    const stats = await api.getResource<LedgerStats>(
-      `${API_LEDGER}/${ledger}/stats`,
-      'data'
-    );
-    ledgers.push({
-      slug: ledger,
-      stats,
-      color: colors[Math.floor(Math.random() * colors.length)],
-    });
-  }
-
+const getTransactionLedgerChartData = async (
+  ledgersList: string[],
+  api: ApiClient
+) => {
+  const datasets = [];
   for (const ledger of ledgersList) {
-    const transactionChart = await api.postResource(
+    const chart = await api.postResource<Bucket[]>(
       API_SEARCH,
       {
         raw: buildLinePayloadQuery(
@@ -92,26 +70,44 @@ const getData = async (ledgersList: string[], api: ApiClient) => {
       },
       'aggregations.line.buckets'
     );
-    charts.push(transactionChart);
+    if (chart) {
+      datasets.push(buildDataset(chart, ledger));
+    }
   }
 
-  return { ledgers, charts };
+  return buildLineChart(buildLineLabels(datasets), datasets);
+};
+
+const getPaymentChartData = async (api: ApiClient) => {
+  const chart = await api.postResource<Bucket[]>(
+    API_SEARCH,
+    {
+      raw: buildLinePayloadQuery(
+        'indexed.createdAt',
+        SearchTargets.PAYMENT,
+        undefined,
+        '1d'
+      ),
+    },
+    'aggregations.line.buckets'
+  );
+
+  if (chart) {
+    const dataset = buildDataset(chart, i18n.t('pages.payment.title'));
+
+    return buildLineChart(buildLineLabels([dataset]), [dataset]);
+  }
 };
 
 type OverviewData = {
   accounts?: Cursor<Account>;
   payments?: Cursor<Payment>;
-  ledgers?: string[];
-  chart?: {
-    labels: string[];
-    datasets: any[];
-  };
+  charts: LineChart;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(session);
-
     const payments = await api.postResource<Cursor<Payment>>(
       API_SEARCH,
       {
@@ -120,7 +116,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
       'cursor'
     );
-
     const accounts = await api.postResource<Cursor<Account>>(
       API_SEARCH,
       {
@@ -129,7 +124,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
       'cursor'
     );
-
     const ledgersList = await api.getResource<LedgerInfo>(
       `${API_LEDGER}/_info`,
       'data.config.storage.ledgers'
@@ -139,7 +133,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       accounts,
       payments,
       ledgers: ledgersList,
-      chart: undefined,
     };
   }
 
@@ -154,38 +147,39 @@ export default function Index() {
 
 const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
   const { t } = useTranslation();
-  const [stats, setStats] = useState<{ ledgers: Ledger[]; charts: any }>({
-    ledgers: [],
-    charts: [],
+  const [charts, setCharts] = useState<{
+    transaction: LineChart;
+    payment: LineChart;
+  }>({
+    transaction: {
+      labels: [],
+      datasets: [],
+    },
+    payment: { labels: [], datasets: [] },
   });
   const { currentUser } = useService();
   const { api } = useService();
-  // TODO check if the back send us back a serialized value so we don't have to use get anymore
   const accounts = get(data, 'accounts.total.value', 0) as number;
   const payments = get(data, 'payments.total.value', 0) as number;
   const ledgers = get(data, 'ledgers', []);
   const shouldDisplaySetup = payments === 0 || accounts === 0;
   const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, _load, stopLoading] = useOpen(true);
-  const { palette } = useTheme();
-  const loadingTransition = useAnimationTransition(ledgers.length, {
-    from: { opacity: 0 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-  });
 
   useEffect(() => {
     (async () => {
-      const results = await getData(ledgers, api);
-      if (results) {
-        setStats(results);
+      const transactionChart = await getTransactionLedgerChartData(
+        ledgers,
+        api
+      );
+      const paymentChart = await getPaymentChartData(api);
+      if (transactionChart && paymentChart) {
+        setCharts({ payment: paymentChart, transaction: transactionChart });
       }
+
       stopLoading();
     })();
   }, []);
-
-  console.log(stats);
 
   return (
     <>
@@ -222,8 +216,6 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
               </Box>
             </Box>
           )}
-          {/* CHARTS */}
-          <Line data={{} as any} />
           {/*  STATUS */}
           <Box mt={5}>
             <Box
@@ -237,16 +229,33 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
             >
               <TitleWithBar title={t('pages.overview.status')} />
             </Box>
+            {/* No data*/}
+            {ledgers.length === 0 && (
+              <Box
+                mr={3}
+                onClick={() => navigate(CONNECTORS_ROUTE)}
+                sx={{
+                  ':hover': {
+                    opacity: 0.3,
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <StatsCard
+                  icon={<AccountBalance />}
+                  variant="violet"
+                  title1={t('pages.overview.stats.transactions')}
+                  title2={t('pages.overview.stats.accounts')}
+                  chipValue="get-started"
+                  value1="0"
+                  value2="0"
+                />
+              </Box>
+            )}
 
-            <Box
-              mt={3}
-              display="flex"
-              flexWrap="wrap"
-              data-testid="stats-card"
-              justifyContent="flex-start"
-              gap="26px"
-            >
-              {loading && (
+            {/* CHARTS */}
+            <Box mt={3}>
+              {loading ? (
                 <Box
                   sx={{
                     display: 'flex',
@@ -258,51 +267,15 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                 >
                   <CircularProgress size={30} color="secondary" />
                 </Box>
-              )}
-
-              {/* TODO Add Transition Between loading state and empty/not empty state */}
-              {loadingTransition((props, ledgersLength) =>
-                ledgersLength > 0 ? (
-                  stats.ledgers.map((ledger: Ledger, index: number) => (
-                    <animated.div key={index} style={props}>
-                      <Box>
-                        <StatsCard
-                          key={index}
-                          icon={<AccountBalance />}
-                          variant={ledger.color as any}
-                          title1={t('pages.overview.stats.transactions')}
-                          title2={t('pages.overview.stats.accounts')}
-                          chipValue={ledger.slug}
-                          value1={`${get(ledger, 'stats.transactions', '0')}`}
-                          value2={`${get(ledger, 'stats.accounts', '0')}`}
-                        />
-                      </Box>
-                    </animated.div>
-                  ))
-                ) : (
-                  <animated.div style={props}>
-                    <Box
-                      mr={3}
-                      onClick={() => navigate(CONNECTORS_ROUTE)}
-                      sx={{
-                        ':hover': {
-                          opacity: 0.3,
-                          cursor: 'pointer',
-                        },
-                      }}
-                    >
-                      <StatsCard
-                        icon={<AccountBalance />}
-                        variant="violet"
-                        title1={t('pages.overview.stats.transactions')}
-                        title2={t('pages.overview.stats.accounts')}
-                        chipValue="get-started"
-                        value1="0"
-                        value2="0"
-                      />
-                    </Box>
-                  </animated.div>
-                )
+              ) : (
+                <Grid container>
+                  <Grid item xs={6}>
+                    <Line data={charts.payment} />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Line data={charts.transaction} />
+                  </Grid>
+                </Grid>
               )}
             </Box>
           </Box>
@@ -433,3 +406,5 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
     </>
   );
 };
+
+// c02b029c14982de103e768ed85351ce592773048;
