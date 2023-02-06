@@ -57,3 +57,6 @@ export type Bucket = {
   key_as_string: string;
   key: number;
 };
+
+export type FilterMatchPhrase = { match_phrase: { [a: string]: string } };
+export type FilterTerms = { terms: { [a: string]: string | string[] } };
