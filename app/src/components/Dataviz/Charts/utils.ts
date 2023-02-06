@@ -1,7 +1,21 @@
 import { ObjectOf, theme } from '@numaryhq/storybook';
 
 import { ChartDataset } from '~/src/types/chart';
-import { Bucket } from '~/src/types/search';
+import { Bucket, FilterMatchPhrase, FilterTerms } from '~/src/types/search';
+
+export const buildQueryPayloadFilters = (
+  filters: { key: string; value: string }[]
+): FilterMatchPhrase[] =>
+  filters.map((filter) => ({
+    match_phrase: { [filter.key]: filter.value },
+  }));
+
+export const buildQueryPayloadShouldTerms = (
+  shouldArr: { key: string; value: string | string[] }[]
+): FilterTerms[] =>
+  shouldArr.map((should) => ({
+    terms: { [should.key]: should.value },
+  }));
 
 export const buildDataset = (
   buckets: Bucket[],

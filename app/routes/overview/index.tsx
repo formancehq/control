@@ -30,7 +30,10 @@ import {
   buildLineLabels,
   buildLinePayloadQuery,
 } from '~/src/components/Dataviz/Charts/Line/utils';
-import { buildDataset } from '~/src/components/Dataviz/Charts/utils';
+import {
+  buildDataset,
+  buildQueryPayloadFilters,
+} from '~/src/components/Dataviz/Charts/utils';
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
@@ -65,7 +68,7 @@ const getTransactionLedgerChartData = async (
         raw: buildLinePayloadQuery(
           'indexed.timestamp',
           SearchTargets.TRANSACTION,
-          ledger
+          buildQueryPayloadFilters([{ key: 'ledger', value: ledger }])
         ),
       },
       'aggregations.line.buckets'
@@ -85,6 +88,7 @@ const getPaymentChartData = async (api: ApiClient) => {
       raw: buildLinePayloadQuery(
         'indexed.createdAt',
         SearchTargets.PAYMENT,
+        undefined,
         undefined,
         '1d'
       ),

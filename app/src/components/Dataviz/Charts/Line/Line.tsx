@@ -26,6 +26,10 @@ ChartJS.register(
 );
 
 const Line: FunctionComponent<LineProps> = ({ data }) => {
+  if (data.datasets.length === 0 && data.labels.length === 0) {
+    return null;
+  }
+
   const options = {
     responsive: true,
     plugins: {
