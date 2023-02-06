@@ -2,12 +2,17 @@ import dayjs from 'dayjs';
 import { compact, flatten, omit, sortedUniq } from 'lodash';
 
 import { ChartDataset, LineChart } from '~/src/types/chart';
-import { SearchTargets } from '~/src/types/search';
+import {
+  FilterMatchPhrase,
+  FilterTerms,
+  SearchTargets,
+} from '~/src/types/search';
 
 export const buildLinePayloadQuery = (
   dateFieldName: string,
   target: SearchTargets,
-  ledger?: string,
+  optFilters: FilterMatchPhrase[] = [],
+  optShould: FilterTerms[] = [],
   interval = '1h'
 ) => {
   const filters = [
@@ -24,24 +29,15 @@ export const buildLinePayloadQuery = (
         kind: target,
       },
     },
+    ...optFilters,
   ];
-
-  if (ledger) {
-    filters.push({
-      match_phrase: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        ledger: ledger,
-      },
-    });
-  }
 
   const payload = {
     aggs: {
       line: {
         date_histogram: {
           field: dateFieldName,
-          calendar_interval: '1h',
+          calendar_interval: interval,
           time_zone: 'Europe/Paris',
           min_doc_count: 1,
         },
@@ -58,6 +54,7 @@ export const buildLinePayloadQuery = (
     query: {
       bool: {
         filter: filters,
+        should: optShould,
       },
     },
   };

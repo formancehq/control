@@ -10,6 +10,17 @@ import invariant from 'tiny-invariant';
 
 import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
 
+import Line from '~/src/components/Dataviz/Charts/Line';
+import {
+  buildLineChart,
+  buildLineLabels,
+  buildLinePayloadQuery,
+} from '~/src/components/Dataviz/Charts/Line/utils';
+import {
+  buildDataset,
+  buildQueryPayloadFilters,
+  buildQueryPayloadShouldTerms,
+} from '~/src/components/Dataviz/Charts/utils';
 import {
   accounts,
   getLedgerAccountDetailsRoute,
@@ -19,6 +30,7 @@ import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import Table from '~/src/components/Wrappers/Table';
+import { LineChart } from '~/src/types/chart';
 import { Cursor } from '~/src/types/generic';
 import {
   Account,
@@ -28,7 +40,7 @@ import {
   Transaction,
   Volume,
 } from '~/src/types/ledger';
-import { SearchPolicies, SearchTargets } from '~/src/types/search';
+import { Bucket, SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_LEDGER, API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -90,13 +102,30 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       'cursor'
     );
 
-    if (account)
-      return {
-        account: normalizeBalance(account),
-        transactions,
-      };
+    const chart = await api.postResource<Bucket[]>(
+      API_SEARCH,
+      {
+        raw: buildLinePayloadQuery(
+          'indexed.timestamp',
+          SearchTargets.TRANSACTION,
+          buildQueryPayloadFilters([{ key: 'ledger', value: params.ledgerId }]),
+          buildQueryPayloadShouldTerms([
+            { key: 'indexed.source', value: [params.accountId] },
+            { key: 'indexed.destination', value: [params.accountId] },
+          ]),
+          '1d'
+        ),
+      },
+      'aggregations.line.buckets'
+    );
 
-    return null;
+    const dataset = buildDataset(chart!, params.ledgerId);
+
+    return {
+      account: account ? normalizeBalance(account) : undefined,
+      transactions,
+      chart: buildLineChart(buildLineLabels([dataset]), [dataset]),
+    };
   }
 
   return handleResponse(await withSession(request, handleData));
@@ -106,6 +135,7 @@ export default function Index() {
   const loaderData = useLoaderData<{
     account: AccountHybrid;
     transactions: Cursor<Transaction>;
+    chart: LineChart;
   }>();
   const { accountId: id, ledgerId } = useParams<{
     accountId: string;
@@ -171,9 +201,6 @@ export default function Index() {
                   />
                 )}
               </SectionWrapper>
-            </Grid>
-
-            <Grid item xs={6}>
               <SectionWrapper title={t('pages.account.volumes.title')}>
                 {account.volumes && (
                   <Table
@@ -212,6 +239,11 @@ export default function Index() {
                     )}
                   />
                 )}
+              </SectionWrapper>
+            </Grid>
+            <Grid item xs={6} mt={4}>
+              <SectionWrapper>
+                <Line data={loaderData.chart} />
               </SectionWrapper>
             </Grid>
           </Grid>
