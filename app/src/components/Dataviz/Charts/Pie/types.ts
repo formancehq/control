@@ -1,5 +1,5 @@
 import { Chart } from '~/src/types/chart';
 
-export type LineProps = {
+export type PieProps = {
   data: Chart;
 };

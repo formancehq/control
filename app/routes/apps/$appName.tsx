@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { Delete, RestartAlt, Visibility } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
-import { pickBy } from 'lodash';
+import { flatten, pickBy } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { LoaderFunction, useLoaderData } from 'remix';
@@ -19,6 +19,21 @@ import {
   ShellViewer,
 } from '@numaryhq/storybook';
 
+import Line from '~/src/components/Dataviz/Charts/Line';
+import {
+  buildLineChart,
+  buildLineChartDataset,
+  buildLineLabels,
+} from '~/src/components/Dataviz/Charts/Line/utils';
+import Pie from '~/src/components/Dataviz/Charts/Pie';
+import {
+  buildPieChart,
+  buildPieChartDataset,
+} from '~/src/components/Dataviz/Charts/Pie/utils';
+import {
+  buildPayloadQuery,
+  buildQueryPayloadMatchPhrase,
+} from '~/src/components/Dataviz/Charts/utils';
 import { APPS_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
 import Modal from '~/src/components/Wrappers/Modal/Modal';
@@ -32,12 +47,16 @@ import {
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
+import i18n from '~/src/translations';
+import { Chart } from '~/src/types/chart';
 import {
   Connector,
   ConnectorStatuses,
   ConnectorTask,
 } from '~/src/types/connectorsConfig';
-import { API_PAYMENT } from '~/src/utils/api';
+import { PaymentTypes } from '~/src/types/payment';
+import { Bucket, SearchTargets } from '~/src/types/search';
+import { API_PAYMENT, API_SEARCH, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
@@ -59,11 +78,44 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
+const getDataChart = async (
+  api: ApiClient,
+  provider: string,
+  type: PaymentTypes
+) =>
+  await api.postResource<Bucket[]>(
+    API_SEARCH,
+    {
+      raw: buildPayloadQuery(
+        'indexed.createdAt',
+        SearchTargets.PAYMENT,
+        buildQueryPayloadMatchPhrase([{ key: 'indexed.type', value: type }]),
+        undefined,
+        [
+          ...buildQueryPayloadMatchPhrase([
+            { key: 'indexed.provider', value: provider },
+          ]),
+          {
+            range: {
+              'indexed.createdAt': {
+                gte: 'now-1y/y',
+                lt: 'now/y',
+              },
+            },
+          },
+        ],
+        '1y'
+      ),
+    },
+    'aggregations.line.buckets'
+  );
+
 export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
     invariant(params.appName, 'Expected params.appName');
     const api = await createApiClient(session);
     const query = sanitizeQuery(request, QueryContexts.PARAMS);
+    const provider = params.appName?.toUpperCase();
     const tasks = await api.getResource<ConnectorTask[]>(
       `${API_PAYMENT}/connectors/${params.appName}/tasks?${query}`,
       'cursor'
@@ -75,15 +127,50 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
     const connector = connectors
       ? connectors.find(
-          (connector: Connector) =>
-            connector.provider === params.appName?.toUpperCase()
+          (connector: Connector) => connector.provider === provider
         )
       : {};
+
+    const payoutChart = await getDataChart(api, provider, PaymentTypes.PAY_OUT);
+    const payinChart = await getDataChart(api, provider, PaymentTypes.PAY_IN);
+
+    const datasetPie = buildPieChartDataset(
+      flatten([payoutChart!, payinChart!]),
+      'payments'
+    );
+
+    const paymentLineChart = await api.postResource<Bucket[]>(
+      API_SEARCH,
+      {
+        raw: buildPayloadQuery(
+          'indexed.createdAt',
+          SearchTargets.PAYMENT,
+          undefined,
+          undefined,
+          buildQueryPayloadMatchPhrase([
+            { key: 'indexed.provider', value: provider },
+          ]),
+          '1d'
+        ),
+      },
+      'aggregations.line.buckets'
+    );
+    const datasetLine = buildLineChartDataset(
+      paymentLineChart!,
+      i18n.t('pages.payment.title')
+    );
 
     if (tasks) {
       return {
         tasks,
         connector,
+        chart: {
+          pie: buildPieChart(
+            [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT],
+            datasetPie
+          ),
+          line: buildLineChart(buildLineLabels([datasetLine]), [datasetLine]),
+        },
       };
     }
 
@@ -114,13 +201,13 @@ const renderConfirmModalContent = (
 
 export default function Index() {
   const { t } = useTranslation();
-  const { tasks, connector } = useLoaderData<{
+  const { tasks, connector, chart } = useLoaderData<{
     tasks: any;
     connector: Connector;
+    chart: { pie: Chart; line: Chart };
   }>();
   const navigate = useNavigate();
   const { api, snackbar } = useService();
-
   const onDelete = async (name: string) => {
     try {
       const result = await api.deleteResource<unknown>(
@@ -168,6 +255,17 @@ export default function Index() {
       }
     >
       <>
+        <SectionWrapper>
+          <Grid container spacing="26px">
+            <Grid item xs={4}>
+              <Pie data={chart.pie} />
+            </Grid>
+            <Grid item xs={8}>
+              <Line data={chart.line} />
+            </Grid>
+          </Grid>
+        </SectionWrapper>
+
         {/* Danger zone */}
         <SectionWrapper
           title={t('pages.app.sections.dangerZone.title')}

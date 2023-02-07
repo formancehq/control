@@ -15,6 +15,8 @@ import { Line as ChLine } from 'react-chartjs-2';
 
 import { LineProps } from './types';
 
+import { getChartOptions } from '~/src/components/Dataviz/Charts/utils';
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,28 +32,20 @@ const Line: FunctionComponent<LineProps> = ({ data }) => {
     return null;
   }
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-      },
-      title: {
-        display: false,
-      },
-    },
-  };
-
   return (
     <Box
       sx={{
         p: 2,
         mr: 2,
+        height: 300,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         borderRadius: '6px',
         border: ({ palette }) => `1px solid ${palette.neutral[200]}`,
       }}
     >
-      <ChLine options={options} data={data} />
+      <ChLine options={getChartOptions()} data={data} />
     </Box>
   );
 };
