@@ -7,7 +7,7 @@ export type ChartDataset = {
   labels: string[] | Date[];
 };
 
-export type LineChart = {
+export type Chart = {
   labels: string[];
   datasets: Omit<ChartDataset, 'labels'>[];
 };

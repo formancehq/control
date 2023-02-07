@@ -1,40 +1,83 @@
-import { ObjectOf, theme } from '@numaryhq/storybook';
+import { BooleanConfig, SearchTargets } from '~/src/types/search';
 
-import { ChartDataset } from '~/src/types/chart';
-import { Bucket, FilterMatchPhrase, FilterTerms } from '~/src/types/search';
-
-export const buildQueryPayloadFilters = (
+export const buildQueryPayloadMatchPhrase = (
   filters: { key: string; value: string }[]
-): FilterMatchPhrase[] =>
+): BooleanConfig[] =>
   filters.map((filter) => ({
     match_phrase: { [filter.key]: filter.value },
   }));
 
-export const buildQueryPayloadShouldTerms = (
+export const buildQueryPayloadTerms = (
   shouldArr: { key: string; value: string | string[] }[]
-): FilterTerms[] =>
+): BooleanConfig[] =>
   shouldArr.map((should) => ({
     terms: { [should.key]: should.value },
   }));
 
-export const buildDataset = (
-  buckets: Bucket[],
-  label?: string
-): ChartDataset | ObjectOf<any> => {
-  let dataset = {};
-  buckets.forEach((bucket, i) => {
-    const hue = 140 + (i * 200) / buckets.length;
-    const saturation = 60 + (i * 30) / buckets.length;
-    const lightness = 40 + (i * 50) / buckets.length;
+export const getChartOptions = () => ({
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'bottom' as const,
+    },
+    title: {
+      display: false,
+    },
+  },
+});
 
-    dataset = {
-      label,
-      data: buckets.map((bucket) => bucket.doc_count),
-      borderColor: `hsla(${hue}, ${saturation}%, ${lightness}%, 1)`,
-      backgroundColor: theme.palette.neutral[0],
-      labels: buckets.map((bucket) => bucket.key_as_string),
-    };
-  });
+export const buildPayloadQuery = (
+  dateFieldName: string,
+  target: SearchTargets,
+  optFilters: BooleanConfig[] = [],
+  optShould: BooleanConfig[] = [],
+  optMust: BooleanConfig[] = [],
+  interval = '1h'
+) => {
+  const filters = [
+    // {
+    //   range: {
+    //     [dateFieldName]: {
+    //       gte: "now-1d/d",
+    //       lte: "now/d",
+    //     },
+    //   },
+    // },
+    {
+      match_phrase: {
+        kind: target,
+      },
+    },
+    ...optFilters,
+  ];
 
-  return dataset;
+  const payload = {
+    aggs: {
+      line: {
+        date_histogram: {
+          field: dateFieldName,
+          calendar_interval: interval,
+          time_zone: 'Europe/Paris',
+          min_doc_count: 1,
+        },
+      },
+    },
+    size: 0,
+    stored_fields: ['*'],
+    docvalue_fields: [
+      {
+        field: dateFieldName,
+        format: 'date_time',
+      },
+    ],
+    query: {
+      bool: {
+        filter: filters,
+        should: optShould,
+        must: optMust,
+      },
+    },
+  };
+
+  return payload;
 };

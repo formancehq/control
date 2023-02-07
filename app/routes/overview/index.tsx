@@ -27,18 +27,18 @@ import {
 import Line from '~/src/components/Dataviz/Charts/Line';
 import {
   buildLineChart,
+  buildLineChartDataset,
   buildLineLabels,
-  buildLinePayloadQuery,
 } from '~/src/components/Dataviz/Charts/Line/utils';
 import {
-  buildDataset,
-  buildQueryPayloadFilters,
+  buildPayloadQuery,
+  buildQueryPayloadMatchPhrase,
 } from '~/src/components/Dataviz/Charts/utils';
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
-import { LineChart } from '~/src/types/chart';
+import { Chart } from '~/src/types/chart';
 import { Cursor } from '~/src/types/generic';
 import { Account, LedgerInfo } from '~/src/types/ledger';
 import { Payment } from '~/src/types/payment';
@@ -65,16 +65,16 @@ const getTransactionLedgerChartData = async (
     const chart = await api.postResource<Bucket[]>(
       API_SEARCH,
       {
-        raw: buildLinePayloadQuery(
+        raw: buildPayloadQuery(
           'indexed.timestamp',
           SearchTargets.TRANSACTION,
-          buildQueryPayloadFilters([{ key: 'ledger', value: ledger }])
+          buildQueryPayloadMatchPhrase([{ key: 'ledger', value: ledger }])
         ),
       },
       'aggregations.line.buckets'
     );
     if (chart) {
-      datasets.push(buildDataset(chart, ledger));
+      datasets.push(buildLineChartDataset(chart, ledger));
     }
   }
 
@@ -85,9 +85,10 @@ const getPaymentChartData = async (api: ApiClient) => {
   const chart = await api.postResource<Bucket[]>(
     API_SEARCH,
     {
-      raw: buildLinePayloadQuery(
+      raw: buildPayloadQuery(
         'indexed.createdAt',
         SearchTargets.PAYMENT,
+        undefined,
         undefined,
         undefined,
         '1d'
@@ -97,7 +98,7 @@ const getPaymentChartData = async (api: ApiClient) => {
   );
 
   if (chart) {
-    const dataset = buildDataset(chart, i18n.t('pages.payment.title'));
+    const dataset = buildLineChartDataset(chart, i18n.t('pages.payment.title'));
 
     return buildLineChart(buildLineLabels([dataset]), [dataset]);
   }
@@ -106,7 +107,7 @@ const getPaymentChartData = async (api: ApiClient) => {
 type OverviewData = {
   accounts?: Cursor<Account>;
   payments?: Cursor<Payment>;
-  charts: LineChart;
+  charts: Chart;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -152,8 +153,8 @@ export default function Index() {
 const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
   const { t } = useTranslation();
   const [charts, setCharts] = useState<{
-    transaction: LineChart;
-    payment: LineChart;
+    transaction: Chart;
+    payment: Chart;
   }>({
     transaction: {
       labels: [],

@@ -13,13 +13,13 @@ import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
 import Line from '~/src/components/Dataviz/Charts/Line';
 import {
   buildLineChart,
+  buildLineChartDataset,
   buildLineLabels,
-  buildLinePayloadQuery,
 } from '~/src/components/Dataviz/Charts/Line/utils';
 import {
-  buildDataset,
-  buildQueryPayloadFilters,
-  buildQueryPayloadShouldTerms,
+  buildPayloadQuery,
+  buildQueryPayloadMatchPhrase,
+  buildQueryPayloadTerms,
 } from '~/src/components/Dataviz/Charts/utils';
 import {
   accounts,
@@ -30,7 +30,7 @@ import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import Table from '~/src/components/Wrappers/Table';
-import { LineChart } from '~/src/types/chart';
+import { Chart } from '~/src/types/chart';
 import { Cursor } from '~/src/types/generic';
 import {
   Account,
@@ -105,21 +105,24 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     const chart = await api.postResource<Bucket[]>(
       API_SEARCH,
       {
-        raw: buildLinePayloadQuery(
+        raw: buildPayloadQuery(
           'indexed.timestamp',
           SearchTargets.TRANSACTION,
-          buildQueryPayloadFilters([{ key: 'ledger', value: params.ledgerId }]),
-          buildQueryPayloadShouldTerms([
+          buildQueryPayloadMatchPhrase([
+            { key: 'ledger', value: params.ledgerId },
+          ]),
+          buildQueryPayloadTerms([
             { key: 'indexed.source', value: [params.accountId] },
             { key: 'indexed.destination', value: [params.accountId] },
           ]),
+          undefined,
           '1d'
         ),
       },
       'aggregations.line.buckets'
     );
 
-    const dataset = buildDataset(chart!, params.ledgerId);
+    const dataset = buildLineChartDataset(chart!, params.ledgerId);
 
     return {
       account: account ? normalizeBalance(account) : undefined,
@@ -135,7 +138,7 @@ export default function Index() {
   const loaderData = useLoaderData<{
     account: AccountHybrid;
     transactions: Cursor<Transaction>;
-    chart: LineChart;
+    chart: Chart;
   }>();
   const { accountId: id, ledgerId } = useParams<{
     accountId: string;

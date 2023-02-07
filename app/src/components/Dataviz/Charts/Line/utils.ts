@@ -1,66 +1,10 @@
 import dayjs from 'dayjs';
 import { compact, flatten, omit, sortedUniq } from 'lodash';
 
-import { ChartDataset, LineChart } from '~/src/types/chart';
-import {
-  FilterMatchPhrase,
-  FilterTerms,
-  SearchTargets,
-} from '~/src/types/search';
+import { ObjectOf, theme } from '@numaryhq/storybook';
 
-export const buildLinePayloadQuery = (
-  dateFieldName: string,
-  target: SearchTargets,
-  optFilters: FilterMatchPhrase[] = [],
-  optShould: FilterTerms[] = [],
-  interval = '1h'
-) => {
-  const filters = [
-    // {
-    //   range: {
-    //     [dateFieldName]: {
-    //       gte: "now-1d/d",
-    //       lte: "now/d",
-    //     },
-    //   },
-    // },
-    {
-      match_phrase: {
-        kind: target,
-      },
-    },
-    ...optFilters,
-  ];
-
-  const payload = {
-    aggs: {
-      line: {
-        date_histogram: {
-          field: dateFieldName,
-          calendar_interval: interval,
-          time_zone: 'Europe/Paris',
-          min_doc_count: 1,
-        },
-      },
-    },
-    size: 0,
-    stored_fields: ['*'],
-    docvalue_fields: [
-      {
-        field: dateFieldName,
-        format: 'date_time',
-      },
-    ],
-    query: {
-      bool: {
-        filter: filters,
-        should: optShould,
-      },
-    },
-  };
-
-  return payload;
-};
+import { Chart, ChartDataset } from '~/src/types/chart';
+import { Bucket } from '~/src/types/search';
 
 export const buildLineLabels = (datasets: any): string[] => {
   const labels = sortedUniq(
@@ -75,7 +19,7 @@ export const buildLineLabels = (datasets: any): string[] => {
   );
 };
 
-export const buildLineChart = (labels: string[], datasets: any): LineChart => ({
+export const buildLineChart = (labels: string[], datasets: any): Chart => ({
   labels,
   datasets: compact(
     datasets.map((dataset: ChartDataset) => {
@@ -85,3 +29,25 @@ export const buildLineChart = (labels: string[], datasets: any): LineChart => ({
     })
   ),
 });
+
+export const buildLineChartDataset = (
+  buckets: Bucket[],
+  label?: string
+): ChartDataset | ObjectOf<any> => {
+  let dataset = {};
+  buckets.forEach((bucket, i) => {
+    const hue = 140 + (i * 200) / buckets.length;
+    const saturation = 60 + (i * 30) / buckets.length;
+    const lightness = 40 + (i * 50) / buckets.length;
+
+    dataset = {
+      label,
+      data: buckets.map((bucket) => bucket.doc_count),
+      borderColor: `hsla(${hue}, ${saturation}%, ${lightness}%, 1)`,
+      backgroundColor: theme.palette.neutral[0],
+      labels: buckets.map((bucket) => bucket.key_as_string),
+    };
+  });
+
+  return dataset;
+};
