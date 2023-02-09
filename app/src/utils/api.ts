@@ -56,6 +56,7 @@ export type CurrentUser = {
   email_verified: boolean;
   avatarLetter: string | undefined;
   pseudo: string | undefined;
+  zone: string;
 };
 
 export type Authentication = {
