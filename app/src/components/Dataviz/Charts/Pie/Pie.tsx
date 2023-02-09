@@ -10,7 +10,7 @@ import { getChartOptions } from '~/src/components/Dataviz/Charts/utils';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const Pie: FunctionComponent<PieProps> = ({ data }) => {
+const Pie: FunctionComponent<PieProps> = ({ data, options }) => {
   if (data.datasets.length === 0 && data.labels.length === 0) {
     return null;
   }
@@ -28,7 +28,7 @@ const Pie: FunctionComponent<PieProps> = ({ data }) => {
         border: ({ palette }) => `1px solid ${palette.neutral[200]}`,
       }}
     >
-      <ChPie options={getChartOptions()} data={data} />
+      <ChPie options={getChartOptions(options)} data={data} />
     </Box>
   );
 };

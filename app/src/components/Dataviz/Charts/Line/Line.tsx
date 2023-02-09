@@ -27,7 +27,7 @@ ChartJS.register(
   Legend
 );
 
-const Line: FunctionComponent<LineProps> = ({ data }) => {
+const Line: FunctionComponent<LineProps> = ({ data, options }) => {
   if (data.datasets.length === 0 && data.labels.length === 0) {
     return null;
   }
@@ -45,7 +45,7 @@ const Line: FunctionComponent<LineProps> = ({ data }) => {
         border: ({ palette }) => `1px solid ${palette.neutral[200]}`,
       }}
     >
-      <ChLine options={getChartOptions()} data={data} />
+      <ChLine options={getChartOptions(options)} data={data} />
     </Box>
   );
 };

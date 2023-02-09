@@ -44,6 +44,7 @@ import { Bucket, SearchPolicies, SearchTargets } from '~/src/types/search';
 import { API_LEDGER, API_SEARCH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 const normalizeBalance = (account: Account): AccountHybrid => ({
   balances: account.balances
@@ -114,12 +115,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
           buildQueryPayloadTerms([
             { key: 'indexed.source', value: [params.accountId] },
             { key: 'indexed.destination', value: [params.accountId] },
-          ]),
-          undefined,
-          '1d'
+          ])
         ),
       },
-      'aggregations.line.buckets'
+      'aggregations.chart.buckets'
     );
 
     const dataset = buildLineChartDataset(chart!, params.ledgerId);
@@ -127,7 +126,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return {
       account: account ? normalizeBalance(account) : undefined,
       transactions,
-      chart: buildLineChart(buildLineLabels([dataset]), [dataset]),
+      chart: buildLineChart(buildLineLabels([dataset], 'LT'), [dataset]),
     };
   }
 
@@ -246,7 +245,22 @@ export default function Index() {
             </Grid>
             <Grid item xs={6} mt={4}>
               <SectionWrapper>
-                <Line data={loaderData.chart} />
+                <Line
+                  data={loaderData.chart}
+                  options={{
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                      title: {
+                        display: true,
+                        text: t('pages.account.charts.transaction', {
+                          account: lowerCaseAllWordsExceptFirstLetter(id!),
+                        }),
+                      },
+                    },
+                  }}
+                />
               </SectionWrapper>
             </Grid>
           </Grid>

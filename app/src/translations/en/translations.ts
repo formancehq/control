@@ -255,7 +255,7 @@ export default {
       account: {
         title: 'Account',
         charts: {
-          transaction: '{{account}} transactions (last 24 hours)',
+          transaction: '{{account}} transactions (last 24h)',
         },
         table: {
           columnLabel: {

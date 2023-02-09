@@ -9,3 +9,4 @@ node_modules
 /playwright-report/
 /playwright/.cache/
 .vscode
+/app/src/components/Dataviz/Charts/mock.ts

@@ -1,3 +1,8 @@
+import { ChartOptions } from 'chart.js';
+import { get } from 'lodash';
+
+import { theme } from '@numaryhq/storybook';
+
 import { BooleanConfig, SearchTargets } from '~/src/types/search';
 
 export const buildQueryPayloadMatchPhrase = (
@@ -14,16 +19,9 @@ export const buildQueryPayloadTerms = (
     terms: { [should.key]: should.value },
   }));
 
-export const getChartOptions = () => ({
+export const getChartOptions = (options?: ChartOptions): ChartOptions => ({
   responsive: true,
-  plugins: {
-    legend: {
-      position: 'bottom' as const,
-    },
-    title: {
-      display: false,
-    },
-  },
+  ...options,
 });
 
 export const buildPayloadQuery = (
@@ -35,14 +33,6 @@ export const buildPayloadQuery = (
   interval = '1h'
 ) => {
   const filters = [
-    // {
-    //   range: {
-    //     [dateFieldName]: {
-    //       gte: "now-1d/d",
-    //       lte: "now/d",
-    //     },
-    //   },
-    // },
     {
       match_phrase: {
         kind: target,
@@ -53,7 +43,7 @@ export const buildPayloadQuery = (
 
   const payload = {
     aggs: {
-      line: {
+      chart: {
         date_histogram: {
           field: dateFieldName,
           calendar_interval: interval,
@@ -81,3 +71,27 @@ export const buildPayloadQuery = (
 
   return payload;
 };
+
+export const buildRange = (field: string, gte = 'now-1d/d', lte = 'now/d') => ({
+  range: {
+    [field]: {
+      gte,
+      lte,
+    },
+  },
+});
+
+const colors = ['red', 'brown', 'yellow', 'primary', 'violet', 'green', 'blue'];
+const contrast = ['bright', 'normal', 'darker'];
+
+export const getRandomColor = (): string =>
+  colors[Math.floor(Math.random() * colors.length)];
+
+export const getPaletteRandomColor = (): string =>
+  get(get(theme.palette, getRandomColor()), getRandomContrast());
+
+export const getRandomContrast = (): 'bright' | 'normal' | 'darker' =>
+  contrast[Math.floor(Math.random() * contrast.length)] as
+    | 'bright'
+    | 'normal'
+    | 'darker';

@@ -33,6 +33,7 @@ import {
 import {
   buildPayloadQuery,
   buildQueryPayloadMatchPhrase,
+  buildRange,
 } from '~/src/components/Dataviz/Charts/utils';
 import { APPS_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
@@ -78,7 +79,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-const getDataChart = async (
+const getDataPieChart = async (
   api: ApiClient,
   provider: string,
   type: PaymentTypes
@@ -95,19 +96,11 @@ const getDataChart = async (
           ...buildQueryPayloadMatchPhrase([
             { key: 'indexed.provider', value: provider },
           ]),
-          {
-            range: {
-              'indexed.createdAt': {
-                gte: 'now-1y/y',
-                lt: 'now/y',
-              },
-            },
-          },
         ],
-        '1y'
+        '7d'
       ),
     },
-    'aggregations.line.buckets'
+    'aggregations.chart.buckets'
   );
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -131,13 +124,15 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         )
       : {};
 
-    const payoutChart = await getDataChart(api, provider, PaymentTypes.PAY_OUT);
-    const payinChart = await getDataChart(api, provider, PaymentTypes.PAY_IN);
+    const charts = [];
+    for (const type of Object.values(PaymentTypes)) {
+      const data = await getDataPieChart(api, provider, type);
+      if (data) {
+        charts.push(data);
+      }
+    }
 
-    const datasetPie = buildPieChartDataset(
-      flatten([payoutChart!, payinChart!]),
-      'payments'
-    );
+    const datasetPie = buildPieChartDataset(flatten(charts));
 
     const paymentLineChart = await api.postResource<Bucket[]>(
       API_SEARCH,
@@ -147,13 +142,15 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           SearchTargets.PAYMENT,
           undefined,
           undefined,
-          buildQueryPayloadMatchPhrase([
-            { key: 'indexed.provider', value: provider },
-          ]),
-          '1d'
+          [
+            ...buildQueryPayloadMatchPhrase([
+              { key: 'indexed.provider', value: provider },
+            ]),
+            buildRange('indexed.createdAt'),
+          ]
         ),
       },
-      'aggregations.line.buckets'
+      'aggregations.chart.buckets'
     );
     const datasetLine = buildLineChartDataset(
       paymentLineChart!,
@@ -169,7 +166,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
             [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT],
             datasetPie
           ),
-          line: buildLineChart(buildLineLabels([datasetLine]), [datasetLine]),
+          line: buildLineChart(buildLineLabels([datasetLine], 'LT'), [
+            datasetLine,
+          ]),
         },
       };
     }
@@ -208,6 +207,7 @@ export default function Index() {
   }>();
   const navigate = useNavigate();
   const { api, snackbar } = useService();
+  const provider = lowerCaseAllWordsExceptFirstLetter(connector.provider);
   const onDelete = async (name: string) => {
     try {
       const result = await api.deleteResource<unknown>(
@@ -249,7 +249,7 @@ export default function Index() {
         >
           <ProviderPicture provider={connector.provider} text={false} />
           <Typography variant="h1" component="h1" sx={{ ml: 2 }}>
-            {lowerCaseAllWordsExceptFirstLetter(connector.provider)}
+            {provider}
           </Typography>
         </Box>
       }
@@ -258,10 +258,37 @@ export default function Index() {
         <SectionWrapper>
           <Grid container spacing="26px">
             <Grid item xs={4}>
-              <Pie data={chart.pie} />
+              <Pie
+                data={chart.pie}
+                options={{
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: t('pages.app.sections.charts.payment', {
+                        provider,
+                      }),
+                    },
+                  },
+                }}
+              />
             </Grid>
             <Grid item xs={8}>
-              <Line data={chart.line} />
+              <Line
+                data={chart.line}
+                options={{
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                    title: {
+                      display: true,
+                      text: t('pages.app.sections.charts.transaction', {
+                        provider,
+                      }),
+                    },
+                  },
+                }}
+              />
             </Grid>
           </Grid>
         </SectionWrapper>

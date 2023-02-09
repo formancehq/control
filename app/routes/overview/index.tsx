@@ -33,11 +33,11 @@ import {
 import {
   buildPayloadQuery,
   buildQueryPayloadMatchPhrase,
+  buildRange,
 } from '~/src/components/Dataviz/Charts/utils';
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
-import i18n from '~/src/translations';
 import { Chart } from '~/src/types/chart';
 import { Cursor } from '~/src/types/generic';
 import { Account, LedgerInfo } from '~/src/types/ledger';
@@ -68,17 +68,19 @@ const getTransactionLedgerChartData = async (
         raw: buildPayloadQuery(
           'indexed.timestamp',
           SearchTargets.TRANSACTION,
-          buildQueryPayloadMatchPhrase([{ key: 'ledger', value: ledger }])
+          buildQueryPayloadMatchPhrase([{ key: 'ledger', value: ledger }]),
+          undefined,
+          [buildRange('indexed.timestamp')]
         ),
       },
-      'aggregations.line.buckets'
+      'aggregations.chart.buckets'
     );
     if (chart) {
       datasets.push(buildLineChartDataset(chart, ledger));
     }
   }
 
-  return buildLineChart(buildLineLabels(datasets), datasets);
+  return buildLineChart(buildLineLabels(datasets, 'LT'), datasets);
 };
 
 const getPaymentChartData = async (api: ApiClient) => {
@@ -90,17 +92,16 @@ const getPaymentChartData = async (api: ApiClient) => {
         SearchTargets.PAYMENT,
         undefined,
         undefined,
-        undefined,
-        '1d'
+        [buildRange('indexed.createdAt')]
       ),
     },
-    'aggregations.line.buckets'
+    'aggregations.chart.buckets'
   );
 
   if (chart) {
-    const dataset = buildLineChartDataset(chart, i18n.t('pages.payment.title'));
+    const dataset = buildLineChartDataset(chart);
 
-    return buildLineChart(buildLineLabels([dataset]), [dataset]);
+    return buildLineChart(buildLineLabels([dataset], 'LT'), [dataset]);
   }
 };
 
@@ -275,10 +276,33 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
               ) : (
                 <Grid container>
                   <Grid item xs={6}>
-                    <Line data={charts.payment} />
+                    <Line
+                      data={charts.payment}
+                      options={{
+                        plugins: {
+                          legend: {
+                            display: false,
+                          },
+                          title: {
+                            display: true,
+                            text: t('pages.overview.charts.payment'),
+                          },
+                        },
+                      }}
+                    />
                   </Grid>
                   <Grid item xs={6}>
-                    <Line data={charts.transaction} />
+                    <Line
+                      data={charts.transaction}
+                      options={{
+                        plugins: {
+                          title: {
+                            display: true,
+                            text: t('pages.overview.charts.transaction'),
+                          },
+                        },
+                      }}
+                    />
                   </Grid>
                 </Grid>
               )}
