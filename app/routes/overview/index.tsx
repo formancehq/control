@@ -25,12 +25,11 @@ import {
 } from '@numaryhq/storybook';
 
 import Line from '~/src/components/Dataviz/Charts/Line';
+import { buildLineChartDataset } from '~/src/components/Dataviz/Charts/Line/utils';
 import {
-  buildLineChart,
-  buildLineChartDataset,
-  buildLineLabels,
-} from '~/src/components/Dataviz/Charts/Line/utils';
-import {
+  buildChart,
+  buildDateHistogramAggs,
+  buildLabels,
   buildPayloadQuery,
   buildQueryPayloadMatchPhrase,
   buildRange,
@@ -67,6 +66,7 @@ const getTransactionLedgerChartData = async (
       {
         raw: buildPayloadQuery(
           'indexed.timestamp',
+          buildDateHistogramAggs('indexed.timestamp'),
           SearchTargets.TRANSACTION,
           buildQueryPayloadMatchPhrase([{ key: 'ledger', value: ledger }]),
           undefined,
@@ -80,7 +80,7 @@ const getTransactionLedgerChartData = async (
     }
   }
 
-  return buildLineChart(buildLineLabels(datasets, 'LT'), datasets);
+  return buildChart(buildLabels(datasets), datasets);
 };
 
 const getPaymentChartData = async (api: ApiClient) => {
@@ -89,6 +89,7 @@ const getPaymentChartData = async (api: ApiClient) => {
     {
       raw: buildPayloadQuery(
         'indexed.createdAt',
+        buildDateHistogramAggs('indexed.createdAt'),
         SearchTargets.PAYMENT,
         undefined,
         undefined,
@@ -101,7 +102,7 @@ const getPaymentChartData = async (api: ApiClient) => {
   if (chart) {
     const dataset = buildLineChartDataset(chart);
 
-    return buildLineChart(buildLineLabels([dataset], 'LT'), [dataset]);
+    return buildChart(buildLabels([dataset], 'LT'), [dataset]);
   }
 };
 

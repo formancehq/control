@@ -1,8 +1,10 @@
 import { ChartOptions } from 'chart.js';
-import { get } from 'lodash';
+import dayjs from 'dayjs';
+import { compact, flatten, get, omit, sortedUniq } from 'lodash';
 
-import { theme } from '@numaryhq/storybook';
+import { ObjectOf, theme } from '@numaryhq/storybook';
 
+import { Chart, ChartDataset } from '~/src/types/chart';
 import { BooleanConfig, SearchTargets } from '~/src/types/search';
 
 export const buildQueryPayloadMatchPhrase = (
@@ -24,13 +26,32 @@ export const getChartOptions = (options?: ChartOptions): ChartOptions => ({
   ...options,
 });
 
+export const buildDateHistogramAggs = (field: string, interval = '1h') => ({
+  date_histogram: {
+    field: field,
+    calendar_interval: interval,
+    time_zone: 'Europe/Paris',
+    min_doc_count: 1,
+  },
+});
+
+export const buildTermsAggs = (field: string) => ({
+  terms: {
+    field,
+    order: {
+      _count: 'desc',
+    },
+    size: 5,
+  },
+});
+
 export const buildPayloadQuery = (
   dateFieldName: string,
+  aggs: ObjectOf<any>,
   target: SearchTargets,
   optFilters: BooleanConfig[] = [],
   optShould: BooleanConfig[] = [],
-  optMust: BooleanConfig[] = [],
-  interval = '1h'
+  optMust: BooleanConfig[] = []
 ) => {
   const filters = [
     {
@@ -41,16 +62,9 @@ export const buildPayloadQuery = (
     ...optFilters,
   ];
 
-  const payload = {
+  return {
     aggs: {
-      chart: {
-        date_histogram: {
-          field: dateFieldName,
-          calendar_interval: interval,
-          time_zone: 'Europe/Paris',
-          min_doc_count: 1,
-        },
-      },
+      chart: aggs,
     },
     size: 0,
     stored_fields: ['*'],
@@ -68,8 +82,6 @@ export const buildPayloadQuery = (
       },
     },
   };
-
-  return payload;
 };
 
 export const buildRange = (field: string, gte = 'now-1d/d', lte = 'now/d') => ({
@@ -95,3 +107,38 @@ export const getRandomContrast = (): 'bright' | 'normal' | 'darker' =>
     | 'bright'
     | 'normal'
     | 'darker';
+
+export const buildChart = (
+  labels: (string | Date)[],
+  datasets: any
+): Chart => ({
+  labels,
+  datasets: compact(
+    datasets.map((dataset: ChartDataset) => {
+      if (dataset && dataset.data) {
+        return omit(dataset, ['labels']);
+      }
+    })
+  ),
+});
+
+export const buildLabels = (
+  datasets: any,
+  dateFormat = 'ddd D MMM'
+): (string | Date)[] => {
+  const labels = sortedUniq(
+    flatten(compact(datasets.map((dataset: ChartDataset) => dataset.labels)))
+  );
+  const uniqLabels = labels.filter(
+    (item, index) => labels.indexOf(item) === index
+  ) as string[];
+
+  return uniqLabels.map((item: Date | string) => {
+    const date = dayjs(item);
+    if (date.isValid()) {
+      return date.format(dateFormat);
+    }
+
+    return item;
+  });
+};

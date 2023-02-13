@@ -11,12 +11,11 @@ import invariant from 'tiny-invariant';
 import { Page, Row, SectionWrapper } from '@numaryhq/storybook';
 
 import Line from '~/src/components/Dataviz/Charts/Line';
+import { buildLineChartDataset } from '~/src/components/Dataviz/Charts/Line/utils';
 import {
-  buildLineChart,
-  buildLineChartDataset,
-  buildLineLabels,
-} from '~/src/components/Dataviz/Charts/Line/utils';
-import {
+  buildChart,
+  buildDateHistogramAggs,
+  buildLabels,
   buildPayloadQuery,
   buildQueryPayloadMatchPhrase,
   buildQueryPayloadTerms,
@@ -108,6 +107,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       {
         raw: buildPayloadQuery(
           'indexed.timestamp',
+          buildDateHistogramAggs('indexed.timestamp'),
           SearchTargets.TRANSACTION,
           buildQueryPayloadMatchPhrase([
             { key: 'ledger', value: params.ledgerId },
@@ -126,7 +126,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return {
       account: account ? normalizeBalance(account) : undefined,
       transactions,
-      chart: buildLineChart(buildLineLabels([dataset], 'LT'), [dataset]),
+      chart: buildChart(buildLabels([dataset], 'LT'), [dataset]),
     };
   }
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { Delete, RestartAlt, Visibility } from '@mui/icons-material';
 import { Box, Grid, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
-import { flatten, pickBy } from 'lodash';
+import { pickBy } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { LoaderFunction, useLoaderData } from 'remix';
@@ -20,20 +20,17 @@ import {
 } from '@numaryhq/storybook';
 
 import Line from '~/src/components/Dataviz/Charts/Line';
-import {
-  buildLineChart,
-  buildLineChartDataset,
-  buildLineLabels,
-} from '~/src/components/Dataviz/Charts/Line/utils';
+import { buildLineChartDataset } from '~/src/components/Dataviz/Charts/Line/utils';
 import Pie from '~/src/components/Dataviz/Charts/Pie';
+import { buildPieChartDataset } from '~/src/components/Dataviz/Charts/Pie/utils';
 import {
-  buildPieChart,
-  buildPieChartDataset,
-} from '~/src/components/Dataviz/Charts/Pie/utils';
-import {
+  buildChart,
+  buildDateHistogramAggs,
+  buildLabels,
   buildPayloadQuery,
   buildQueryPayloadMatchPhrase,
   buildRange,
+  buildTermsAggs,
 } from '~/src/components/Dataviz/Charts/utils';
 import { APPS_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary/ComponentErrorBoundary';
@@ -55,7 +52,6 @@ import {
   ConnectorStatuses,
   ConnectorTask,
 } from '~/src/types/connectorsConfig';
-import { PaymentTypes } from '~/src/types/payment';
 import { Bucket, SearchTargets } from '~/src/types/search';
 import { API_PAYMENT, API_SEARCH, ApiClient } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -79,25 +75,22 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-const getDataPieChart = async (
-  api: ApiClient,
-  provider: string,
-  type: PaymentTypes
-) =>
+const getDataPieChart = async (api: ApiClient, provider: string) =>
   await api.postResource<Bucket[]>(
     API_SEARCH,
     {
       raw: buildPayloadQuery(
         'indexed.createdAt',
+        buildTermsAggs('indexed.type'),
         SearchTargets.PAYMENT,
-        buildQueryPayloadMatchPhrase([{ key: 'indexed.type', value: type }]),
+        undefined,
         undefined,
         [
           ...buildQueryPayloadMatchPhrase([
             { key: 'indexed.provider', value: provider },
           ]),
-        ],
-        '7d'
+          buildRange('indexed.createdAt', 'now-7d/d'),
+        ]
       ),
     },
     'aggregations.chart.buckets'
@@ -124,21 +117,15 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         )
       : {};
 
-    const charts = [];
-    for (const type of Object.values(PaymentTypes)) {
-      const data = await getDataPieChart(api, provider, type);
-      if (data) {
-        charts.push(data);
-      }
-    }
+    const chartPieData = await getDataPieChart(api, provider);
+    const datasetPie = buildPieChartDataset(chartPieData!);
 
-    const datasetPie = buildPieChartDataset(flatten(charts));
-
-    const paymentLineChart = await api.postResource<Bucket[]>(
+    const chartLineData = await api.postResource<Bucket[]>(
       API_SEARCH,
       {
         raw: buildPayloadQuery(
           'indexed.createdAt',
+          buildDateHistogramAggs('indexed.createdAt'),
           SearchTargets.PAYMENT,
           undefined,
           undefined,
@@ -153,7 +140,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       'aggregations.chart.buckets'
     );
     const datasetLine = buildLineChartDataset(
-      paymentLineChart!,
+      chartLineData!,
       i18n.t('pages.payment.title')
     );
 
@@ -162,13 +149,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         tasks,
         connector,
         chart: {
-          pie: buildPieChart(
-            [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT],
-            datasetPie
-          ),
-          line: buildLineChart(buildLineLabels([datasetLine], 'LT'), [
-            datasetLine,
-          ]),
+          pie: buildChart(buildLabels([datasetPie]), [datasetPie]),
+          line: buildChart(buildLabels([datasetLine], 'LT'), [datasetLine]),
         },
       };
     }
