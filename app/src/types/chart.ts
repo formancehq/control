@@ -8,6 +8,6 @@ export type ChartDataset = {
 };
 
 export type Chart = {
-  labels: string[];
+  labels: (Date | string)[];
   datasets: Omit<ChartDataset, 'labels'>[];
 };
