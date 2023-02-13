@@ -11,7 +11,7 @@ import { getChartOptions } from '~/src/components/Dataviz/Charts/utils';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Pie: FunctionComponent<PieProps> = ({ data, options }) => {
-  if (data.datasets.length === 0 && data.labels.length === 0) {
+  if (data.datasets.length === 0 || data.labels.length === 0) {
     return null;
   }
 
