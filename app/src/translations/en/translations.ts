@@ -9,6 +9,10 @@ export default {
     },
     topbar: {
       logout: 'Logout',
+      help: {
+        slack: 'Join our Slack',
+        docs: 'Read the docs',
+      },
       search: {
         title: 'Search anything',
         suggestions: {
@@ -88,6 +92,10 @@ export default {
       overview: {
         title: 'Overview',
         status: 'Status',
+        charts: {
+          transaction: 'Transactions per ledger (last 24 hours)',
+          payment: 'Payments (last 24 hours)',
+        },
         tasks: {
           title: 'Tasks',
           tuto: {
@@ -246,6 +254,9 @@ export default {
       },
       account: {
         title: 'Account',
+        charts: {
+          transaction: '{{account}} transactions (last 24 hours)',
+        },
         table: {
           columnLabel: {
             balance: {
@@ -387,6 +398,10 @@ export default {
       },
       app: {
         sections: {
+          charts: {
+            transaction: '{{provider}} payments (last 24 hours)',
+            payment: '{{provider}} type (last 7 days)',
+          },
           dangerZone: {
             title: 'Manage connector',
             delete: {

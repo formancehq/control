@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { FunctionComponent, useEffect } from 'react';
 
-import { ArrowDropDown, MenuOpen, Person } from '@mui/icons-material';
+import {
+  ArrowDropDown,
+  HelpOutline,
+  MenuOpen,
+  Person,
+} from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -27,14 +32,37 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const [anchorElHelp, setAnchorElHelp] = React.useState<null | HTMLElement>(
+    null
+  );
   const settings = [t('topbar.logout')];
+  const helps = [
+    {
+      label: t('topbar.help.slack'),
+      onClick: () => window.open('https://formance-community.slack.com'),
+    },
+    {
+      label: t('topbar.help.docs'),
+      onClick: () => window.open('https://docs.formance.com/'),
+    },
+  ];
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
+    setAnchorElHelp(null);
   };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleOpenHelpMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElHelp(event.currentTarget);
+    setAnchorElUser(null);
+  };
+
+  const handleCloseHelpMenu = () => {
+    setAnchorElHelp(null);
   };
 
   const handleLogout = async () => {
@@ -108,52 +136,19 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         )}
         <Search />
       </Box>
-
-      {currentUser && (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            mr: 1,
-          }}
-        >
-          {/* TODO uncomment when zone are ready */}
-          {/*<Box>*/}
-          {/*  <Typography*/}
-          {/*    variant="bold"*/}
-          {/*    sx={{*/}
-          {/*      color: palette.neutral[500],*/}
-          {/*      p: '4px 6px',*/}
-          {/*      border: '1px solid',*/}
-          {/*      borderRadius: 2,*/}
-          {/*      mr: 2,*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    eu-west-1*/}
-          {/*  </Typography>*/}
-          {/*</Box>*/}
-          <Box>
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              mr: 1,
+            }}
+          >
             <IconButton sx={{ p: 0 }}>
-              <Avatar
-                alt="User Avatar"
-                sx={{
-                  width: 24,
-                  height: 24,
-                  padding: '1px',
-                  borderRadius: '4px',
-                  bgcolor: palette.neutral[700],
-                }}
-              >
-                {currentUser.avatarLetter ? (
-                  <Typography variant="bold">
-                    {currentUser.avatarLetter}
-                  </Typography>
-                ) : (
-                  <Person />
-                )}
-              </Avatar>
+              <HelpOutline color="secondary" />
             </IconButton>
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+            <IconButton onClick={handleOpenHelpMenu} sx={{ p: 0 }}>
               <ArrowDropDown sx={{ color: palette.neutral[500] }} />
             </IconButton>
             <MuiMenu
@@ -171,8 +166,8 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
                   boxShadow: 'none',
                 },
               }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
+              id="menu-help"
+              anchorEl={anchorElHelp}
               anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
@@ -182,26 +177,119 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
                 vertical: 'top',
                 horizontal: 'right',
               }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              open={Boolean(anchorElHelp)}
+              onClose={handleCloseHelpMenu}
             >
-              {settings.map((setting) => (
+              {helps.map(({ onClick, label }) => (
                 <MenuItem
-                  key={setting}
-                  onClick={handleLogout}
+                  key={label}
+                  onClick={onClick}
                   sx={{
                     ':hover': {
                       background: palette.neutral[700],
                     },
                   }}
                 >
-                  <Typography textAlign="center">{setting}</Typography>
+                  <Typography textAlign="center">{label}</Typography>
                 </MenuItem>
               ))}
             </MuiMenu>
           </Box>
         </Box>
-      )}
+        {currentUser && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              mr: 1,
+            }}
+          >
+            {/* TODO uncomment when zone are ready */}
+            {/*<Box>*/}
+            {/*  <Typography*/}
+            {/*    variant="bold"*/}
+            {/*    sx={{*/}
+            {/*      color: palette.neutral[500],*/}
+            {/*      p: '4px 6px',*/}
+            {/*      border: '1px solid',*/}
+            {/*      borderRadius: 2,*/}
+            {/*      mr: 2,*/}
+            {/*    }}*/}
+            {/*  >*/}
+            {/*    eu-west-1*/}
+            {/*  </Typography>*/}
+            {/*</Box>*/}
+            <Box>
+              <IconButton sx={{ p: 0 }}>
+                <Avatar
+                  alt="User Avatar"
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    padding: '1px',
+                    borderRadius: '4px',
+                    bgcolor: palette.neutral[700],
+                  }}
+                >
+                  {currentUser.avatarLetter ? (
+                    <Typography variant="bold">
+                      {currentUser.avatarLetter}
+                    </Typography>
+                  ) : (
+                    <Person />
+                  )}
+                </Avatar>
+              </IconButton>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <ArrowDropDown sx={{ color: palette.neutral[500] }} />
+              </IconButton>
+              <MuiMenu
+                sx={{
+                  mt: '45px',
+                  ul: {
+                    padding: '6px',
+                    margin: 0,
+                    background: palette.neutral[800],
+                    color: palette.neutral[0],
+                  },
+                }}
+                PaperProps={{
+                  sx: {
+                    boxShadow: 'none',
+                  },
+                }}
+                id="menu-user"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem
+                    key={setting}
+                    onClick={handleLogout}
+                    sx={{
+                      ':hover': {
+                        background: palette.neutral[700],
+                      },
+                    }}
+                  >
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </MuiMenu>
+            </Box>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };
