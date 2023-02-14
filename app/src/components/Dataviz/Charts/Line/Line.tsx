@@ -36,7 +36,6 @@ const Line: FunctionComponent<LineProps> = ({ data, options }) => {
     <Box
       sx={{
         p: 2,
-        mr: 2,
         height: 300,
         display: 'flex',
         justifyContent: 'center',

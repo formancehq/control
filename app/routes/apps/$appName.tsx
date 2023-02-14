@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Delete, RestartAlt, Visibility } from '@mui/icons-material';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { pickBy } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
@@ -238,8 +238,8 @@ export default function Index() {
     >
       <>
         <SectionWrapper>
-          <Grid container spacing="26px">
-            <Grid item xs={4}>
+          <Box sx={{ display: 'flex' }}>
+            <Box sx={{ width: '60%', mr: 3 }}>
               <Pie
                 data={chart.pie}
                 options={{
@@ -253,8 +253,8 @@ export default function Index() {
                   },
                 }}
               />
-            </Grid>
-            <Grid item xs={8}>
+            </Box>
+            <Box sx={{ width: '100%' }}>
               <Line
                 data={chart.line}
                 options={{
@@ -271,8 +271,8 @@ export default function Index() {
                   },
                 }}
               />
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </SectionWrapper>
 
         {/* Danger zone */}
