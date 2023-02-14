@@ -2,14 +2,7 @@ import * as React from 'react';
 import { FunctionComponent, useEffect, useState } from 'react';
 
 import { AccountBalance, NorthEast, Person } from '@mui/icons-material';
-import {
-  Avatar,
-  Box,
-  CircularProgress,
-  Grid,
-  Link,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, CircularProgress, Link, Typography } from '@mui/material';
 import type { LoaderFunction, MetaFunction, Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { get } from 'lodash';
@@ -275,8 +268,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                   <CircularProgress size={30} color="secondary" />
                 </Box>
               ) : (
-                <Grid container>
-                  <Grid item xs={6}>
+                <Box sx={{ display: 'flex' }}>
+                  <Box sx={{ width: '100%', mr: 3 }}>
                     <Line
                       data={charts.payment}
                       options={{
@@ -291,8 +284,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                         },
                       }}
                     />
-                  </Grid>
-                  <Grid item xs={6}>
+                  </Box>
+                  <Box sx={{ width: '100%' }}>
                     <Line
                       data={charts.transaction}
                       options={{
@@ -304,8 +297,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                         },
                       }}
                     />
-                  </Grid>
-                </Grid>
+                  </Box>
+                </Box>
               )}
             </Box>
           </Box>

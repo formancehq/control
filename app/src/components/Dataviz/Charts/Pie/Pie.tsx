@@ -22,7 +22,6 @@ const Pie: FunctionComponent<PieProps> = ({ data, options }) => {
         justifyContent: 'center',
         alignItems: 'center',
         p: 2,
-        mr: 2,
         height: 300,
         borderRadius: '6px',
         border: ({ palette }) => `1px solid ${palette.neutral[200]}`,
