@@ -73,7 +73,7 @@ const getTransactionLedgerChartData = async (
     }
   }
 
-  return buildChart(buildLabels(datasets), datasets);
+  return buildChart(buildLabels(datasets, 'LT'), datasets);
 };
 
 const getPaymentChartData = async (api: ApiClient) => {
