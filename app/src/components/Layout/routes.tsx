@@ -42,6 +42,7 @@ export const CONNECTORS_ROUTE = APPS_ROUTE;
 export const RECON_ROUTE = '/operations/reconciliation';
 // TODO uncomment when monitoring is ready
 // export const MONITORING_ROUTE = "/monitoring";
+export const STATUS_ROUTE = '/status';
 
 export const getRoute = (uri: string, id?: number | string): string =>
   id !== undefined ? uri.replace(/:\w+/, id.toString(10)) : uri;

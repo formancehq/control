@@ -13,6 +13,7 @@ export type ServiceContext = {
   metas: {
     origin: string;
     openIdConfig: OpenIdConfiguration;
+    api: string;
   };
   snackbar: SnackbarSetter;
 };

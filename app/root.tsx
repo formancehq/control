@@ -88,6 +88,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         metas: {
           origin: REDIRECT_URI,
           openIdConfig,
+          api: process.env.API_URL,
         },
         currentUser: {
           scp: payload ? payload.scp : [],

@@ -16,6 +16,7 @@ import {
   OAUTH_CLIENTS_ROUTE,
   PAYMENTS_ACCOUNTS_ROUTE,
   PAYMENTS_ROUTE,
+  STATUS_ROUTE,
   TRANSACTIONS_ROUTE,
   WALLETS_ROUTE,
   WEBHOOKS_ROUTE,
@@ -221,6 +222,7 @@ export const breadcrumbsFactory = (
   const ledgersIndex = match('/ledgers');
   const ledgerLogsRoute = match('/ledgers/:ledgerId/logs');
   const ledgerRoute = match('/ledgers/:ledgerId');
+  const statusRoute = match('/status');
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
@@ -363,6 +365,15 @@ export const breadcrumbsFactory = (
       'ledgers',
       getRoute(LEDGERS_ROUTE),
       i18n.t('common.breadcrumbs.categories.ledgers')
+    );
+  }
+
+  if (statusRoute) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'status',
+      getRoute(STATUS_ROUTE),
+      i18n.t('common.breadcrumbs.categories.status')
     );
   }
 
