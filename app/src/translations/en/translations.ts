@@ -89,6 +89,27 @@ export default {
           },
         },
       },
+      status: {
+        sections: {
+          details: {
+            title: 'Details',
+            id: 'ID',
+            api: 'APIs url',
+          },
+        },
+        health: {
+          up: 'Running',
+          down: 'Down',
+        },
+        table: {
+          columnLabel: {
+            name: 'Name',
+            url: 'URL',
+            version: 'Version',
+            status: 'Status',
+          },
+        },
+      },
       overview: {
         title: 'Overview',
         status: 'Activity',
@@ -664,6 +685,7 @@ export default {
           payments: 'Payments',
           ledgers: 'Ledgers',
           configuration: 'Configuration',
+          status: 'Status',
         },
         targets: {
           wallets: 'All wallets',
@@ -677,6 +699,7 @@ export default {
           webhooks: 'Webhooks',
           apps: 'Apps',
           connectors: 'Connectors',
+          status: 'All components',
         },
       },
       search: {

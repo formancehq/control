@@ -4,6 +4,7 @@ import { FunctionComponent, useEffect } from 'react';
 import {
   ArrowDropDown,
   HelpOutline,
+  InfoOutlined,
   MenuOpen,
   Person,
 } from '@mui/icons-material';
@@ -17,8 +18,10 @@ import {
   useTheme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { TopbarProps } from '~/src/components/Layout/components/Topbar/types';
+import { STATUS_ROUTE } from '~/src/components/Layout/routes';
 import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
 import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
@@ -28,6 +31,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
+  const navigate = useNavigate();
   const { api, setCurrentUser, currentUser, metas } = useService();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -136,8 +140,31 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         )}
         <Search />
       </Box>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ display: 'flex' }}>
+          {/* TODO uncomment when zone is ready: https://linear.app/formance/issue/NUM-1516/gateway-expose-region-in-versions */}
+          {/*<Box>*/}
+          {/*  <Typography*/}
+          {/*    variant="bold"*/}
+          {/*    sx={{*/}
+          {/*      color: palette.neutral[500],*/}
+          {/*      p: "4px 6px",*/}
+          {/*      border: "1px solid",*/}
+          {/*      borderRadius: 2,*/}
+          {/*      mr: 2,*/}
+          {/*    }}*/}
+          {/*  >*/}
+          {/*    eu-west-1*/}
+          {/*  </Typography>*/}
+          {/*</Box>*/}
+          <Box>
+            <IconButton
+              sx={{ mr: 1, p: 0 }}
+              onClick={() => navigate(STATUS_ROUTE)}
+            >
+              <InfoOutlined color="secondary" />
+            </IconButton>
+          </Box>
           <Box
             sx={{
               display: 'flex',
@@ -204,21 +231,6 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
               mr: 1,
             }}
           >
-            {/* TODO uncomment when zone are ready */}
-            {/*<Box>*/}
-            {/*  <Typography*/}
-            {/*    variant="bold"*/}
-            {/*    sx={{*/}
-            {/*      color: palette.neutral[500],*/}
-            {/*      p: '4px 6px',*/}
-            {/*      border: '1px solid',*/}
-            {/*      borderRadius: 2,*/}
-            {/*      mr: 2,*/}
-            {/*    }}*/}
-            {/*  >*/}
-            {/*    eu-west-1*/}
-            {/*  </Typography>*/}
-            {/*</Box>*/}
             <Box>
               <IconButton sx={{ p: 0 }}>
                 <Avatar
