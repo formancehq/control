@@ -58,4 +58,9 @@ export type Bucket = {
   key: number;
 };
 
+export type ChartBucket = Bucket & {
+  color?: string;
+  backgroundColor?: string;
+};
+
 export type BooleanConfig = { [b: string]: { [a: string]: any } };

@@ -30,7 +30,11 @@ type PaymentsData = {
   providers: string[];
 };
 
-const paymentTypes = [PaymentTypes.PAY_IN, PaymentTypes.PAY_OUT];
+const paymentTypes = [
+  PaymentTypes.PAY_IN,
+  PaymentTypes.PAY_OUT,
+  PaymentTypes.TRANSFER,
+];
 
 const paymentStatus = [
   PaymentStatuses.PENDING,

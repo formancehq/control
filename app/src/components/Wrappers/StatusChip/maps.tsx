@@ -3,15 +3,18 @@ import React from 'react';
 import {
   Block,
   Done,
+  East,
   ErrorOutline,
   HourglassTop,
   LoopOutlined,
   MoreHoriz,
+  NorthEast,
   PauseCircle,
+  SouthEast,
 } from '@mui/icons-material';
 
 import { ConnectorStatuses, TaskStatuses } from '~/src/types/connectorsConfig';
-import { PaymentStatuses } from '~/src/types/payment';
+import { PaymentStatuses, PaymentTypes } from '~/src/types/payment';
 
 export const paymentIconMap = {
   [PaymentStatuses.FAILED]: <ErrorOutline />,
@@ -19,6 +22,20 @@ export const paymentIconMap = {
   [PaymentStatuses.PENDING]: <HourglassTop />,
   [PaymentStatuses.CANCELLED]: <Block />,
   [PaymentStatuses.OTHER]: <MoreHoriz />,
+};
+
+export const paymentTypeColorMap = {
+  [PaymentTypes.PAY_OUT]: 'neutral[200]',
+  [PaymentTypes.PAY_IN]: 'blue',
+  [PaymentTypes.TRANSFER]: 'brown',
+  [PaymentTypes.OTHER]: 'secondary',
+};
+
+export const paymentTypeIconMap = {
+  [PaymentTypes.PAY_OUT]: <NorthEast />,
+  [PaymentTypes.PAY_IN]: <SouthEast />,
+  [PaymentTypes.TRANSFER]: <East />,
+  [PaymentTypes.OTHER]: <MoreHoriz />,
 };
 
 export const paymentColorMap = {

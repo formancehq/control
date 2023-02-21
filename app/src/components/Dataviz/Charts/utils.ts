@@ -93,8 +93,8 @@ export const buildRange = (field: string, gte = 'now-1d/d', lte = 'now/d') => ({
   },
 });
 
-const colors = ['red', 'brown', 'yellow', 'primary', 'violet', 'green', 'blue'];
-const contrast = ['bright', 'normal', 'darker'];
+const colors = ['brown', 'yellow', 'primary', 'violet', 'green', 'blue'];
+const contrast = ['bright', 'darker'];
 
 export const getRandomColor = (): string =>
   colors[Math.floor(Math.random() * colors.length)];

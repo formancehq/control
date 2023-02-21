@@ -29,8 +29,12 @@ import {
   getSuggestions,
   suggestionsFactory,
 } from '~/src/components/Search/service';
-import PayInChips from '~/src/components/Wrappers/PayInChips';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import StatusChip from '~/src/components/Wrappers/StatusChip';
+import {
+  paymentTypeColorMap,
+  paymentTypeIconMap,
+} from '~/src/components/Wrappers/StatusChip/maps';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
 import {
@@ -342,7 +346,12 @@ const Search: FunctionComponent = () => {
         >
           <Grid item xs={3}>
             {target === SearchTargets.PAYMENT ? (
-              <PayInChips key={index} type={item.type} />
+              <StatusChip
+                key={index}
+                status={item.type}
+                iconMap={paymentTypeIconMap}
+                colorMap={paymentTypeColorMap}
+              />
             ) : (
               <Chip
                 label={data.targetLabel}
