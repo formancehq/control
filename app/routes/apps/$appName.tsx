@@ -3,7 +3,7 @@ import React from 'react';
 import { Delete, RestartAlt, Visibility } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
-import { pickBy } from 'lodash';
+import { get, pickBy } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { LoaderFunction, useLoaderData } from 'remix';
@@ -42,6 +42,7 @@ import {
   appIconMap,
   appTaskColorMap,
   appTaskIconMap,
+  paymentTypeColorMap,
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
@@ -118,7 +119,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       : {};
 
     const chartPieData = await getDataPieChart(api, provider);
-    const datasetPie = buildPieChartDataset(chartPieData!);
+    const datasetPie = buildPieChartDataset(
+      chartPieData!.map((data: Bucket) => ({
+        ...data,
+        backgroundColor: get(paymentTypeColorMap, data.key),
+      })),
+      undefined,
+      false
+    );
 
     const chartLineData = await api.postResource<Bucket[]>(
       API_SEARCH,
@@ -187,6 +195,10 @@ export default function Index() {
     connector: Connector;
     chart: { pie: Chart; line: Chart };
   }>();
+  console.log(chart);
+  const displayCharts =
+    chart.line.labels.length > 0 || chart.pie.labels.length > 0;
+
   const navigate = useNavigate();
   const { api, snackbar } = useService();
   const provider = lowerCaseAllWordsExceptFirstLetter(connector.provider);
@@ -237,44 +249,55 @@ export default function Index() {
       }
     >
       <>
-        <SectionWrapper>
-          <Box sx={{ display: 'flex' }}>
-            <Box sx={{ width: '60%', mr: 3 }}>
-              <Pie
-                data={chart.pie}
-                options={{
-                  plugins: {
-                    title: {
-                      display: true,
-                      text: t('pages.app.sections.charts.payment', {
-                        provider,
-                      }),
-                    },
-                  },
-                }}
-              />
+        {/* Charts */}
+        {displayCharts && (
+          <SectionWrapper>
+            <Box sx={{ display: 'flex' }}>
+              {chart.pie.labels.length > 0 && (
+                <Box
+                  sx={{
+                    width: chart.line.labels.length === 0 ? '100%' : '60%',
+                    mr: 3,
+                  }}
+                >
+                  <Pie
+                    data={chart.pie}
+                    options={{
+                      plugins: {
+                        title: {
+                          display: true,
+                          text: t('pages.app.sections.charts.payment', {
+                            provider,
+                          }),
+                        },
+                      },
+                    }}
+                  />
+                </Box>
+              )}
+              {chart.line.labels.length > 0 && (
+                <Box sx={{ width: '100%' }}>
+                  <Line
+                    data={chart.line}
+                    options={{
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                        title: {
+                          display: true,
+                          text: t('pages.app.sections.charts.transaction', {
+                            provider,
+                          }),
+                        },
+                      },
+                    }}
+                  />
+                </Box>
+              )}
             </Box>
-            <Box sx={{ width: '100%' }}>
-              <Line
-                data={chart.line}
-                options={{
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                    title: {
-                      display: true,
-                      text: t('pages.app.sections.charts.transaction', {
-                        provider,
-                      }),
-                    },
-                  },
-                }}
-              />
-            </Box>
-          </Box>
-        </SectionWrapper>
-
+          </SectionWrapper>
+        )}
         {/* Danger zone */}
         <SectionWrapper
           title={t('pages.app.sections.dangerZone.title')}

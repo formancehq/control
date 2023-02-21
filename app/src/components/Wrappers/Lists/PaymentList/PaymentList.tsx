@@ -9,13 +9,14 @@ import { Amount, Date, Row } from '@numaryhq/storybook';
 import { getRoute, PAYMENT_ROUTE } from '~/src/components/Layout/routes';
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import { PaymentListProps } from '~/src/components/Wrappers/Lists/PaymentList/types';
-import PayInChips from '~/src/components/Wrappers/PayInChips';
 import { PaymentSchemeChip } from '~/src/components/Wrappers/PaymentSchemeChip/PaymentSchemeChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import StatusChip from '~/src/components/Wrappers/StatusChip';
 import {
   paymentColorMap,
   paymentIconMap,
+  paymentTypeColorMap,
+  paymentTypeIconMap,
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import { Payment } from '~/src/types/payment';
@@ -75,7 +76,12 @@ const PaymentList: FunctionComponent<PaymentListProps> = ({
         <Row
           key={index}
           keys={[
-            <PayInChips key={index} type={payment.type} />,
+            <StatusChip
+              key={index}
+              status={payment.type}
+              iconMap={paymentTypeIconMap}
+              colorMap={paymentTypeColorMap}
+            />,
             <ProviderPicture key={index} provider={payment.provider} />,
             <StatusChip
               key={index}

@@ -27,13 +27,14 @@ import {
 
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
-import PayInChips from '~/src/components/Wrappers/PayInChips';
 import { PaymentSchemeChip } from '~/src/components/Wrappers/PaymentSchemeChip/PaymentSchemeChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import StatusChip from '~/src/components/Wrappers/StatusChip';
 import {
   paymentColorMap,
   paymentIconMap,
+  paymentTypeColorMap,
+  paymentTypeIconMap,
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import { Cursor } from '~/src/types/generic';
@@ -159,7 +160,12 @@ export default function PaymentDetails() {
                   renderTableItem(
                     'direction',
                     index,
-                    <PayInChips key={index} type={payment.type} />
+                    <StatusChip
+                      key={index}
+                      status={payment.type}
+                      iconMap={paymentTypeIconMap}
+                      colorMap={paymentTypeColorMap}
+                    />
                   ),
                   renderTableItem(
                     'scheme',

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Box, Grid, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
@@ -165,105 +165,102 @@ export default function Index() {
       title={<IconTitlePage icon={accounts.icon} title={id!} />}
     >
       <>
-        <Box display="flex" justifyContent="space-between" mb={3}>
-          {/* Balances Section */}
-          <Grid container spacing="26px">
-            <Grid item xs={6}>
-              <SectionWrapper title={t('pages.account.balances.title')}>
-                {account.balances && (
-                  <Table
-                    withPagination={false}
-                    items={account.balances}
-                    columns={[
-                      {
-                        key: 'balance.asset',
-                        label: t(
-                          'pages.account.table.columnLabel.balance.asset'
-                        ),
-                      },
-                      {
-                        key: 'balance.value',
-                        label: t(
-                          'pages.account.table.columnLabel.balance.value'
-                        ),
-                        width: 20,
-                      },
-                    ]}
-                    renderItem={(balance: Balance, index) => (
-                      <Row
-                        key={index}
-                        keys={[
-                          'asset',
-                          () =>
-                            renderValue(balance.value, palette.default.normal),
-                        ]}
-                        item={balance}
-                      />
-                    )}
-                  />
-                )}
-              </SectionWrapper>
-              <SectionWrapper title={t('pages.account.volumes.title')}>
-                {account.volumes && (
-                  <Table
-                    withPagination={false}
-                    items={account.volumes}
-                    columns={[
-                      {
-                        key: 'volume.asset',
-                        label: t(
-                          'pages.account.table.columnLabel.volume.asset'
-                        ),
-                      },
-                      {
-                        key: 'volume.received',
-                        label: t(
-                          'pages.account.table.columnLabel.volume.received'
-                        ),
-                      },
-                      {
-                        key: 'volume.sent',
-                        label: t('pages.account.table.columnLabel.volume.sent'),
-                        width: 20,
-                      },
-                    ]}
-                    renderItem={(volume: Volume, index) => (
-                      <Row
-                        key={index}
-                        keys={[
-                          'asset',
-                          () =>
-                            renderValue(volume.received, palette.blue.darker),
-                          () => renderValue(volume.sent, palette.red.darker),
-                        ]}
-                        item={volume}
-                      />
-                    )}
-                  />
-                )}
-              </SectionWrapper>
-            </Grid>
-            <Grid item xs={6} mt={4}>
-              <SectionWrapper>
-                <Line
-                  data={loaderData.chart}
-                  options={{
-                    plugins: {
-                      legend: {
-                        display: false,
-                      },
-                      title: {
-                        display: true,
-                        text: t('pages.account.charts.transaction', {
-                          account: lowerCaseAllWordsExceptFirstLetter(id!),
-                        }),
-                      },
+        {/* Chart */}
+        {loaderData.chart.labels.length > 0 && (
+          <Box sx={{ width: '100%' }}>
+            <SectionWrapper>
+              <Line
+                data={loaderData.chart}
+                options={{
+                  plugins: {
+                    legend: {
+                      display: false,
                     },
-                  }}
+                    title: {
+                      display: true,
+                      text: t('pages.account.charts.transaction', {
+                        account: lowerCaseAllWordsExceptFirstLetter(id!),
+                      }),
+                    },
+                  },
+                }}
+              />
+            </SectionWrapper>
+          </Box>
+        )}
+        <Box display="flex" gap="26px">
+          {/* Balances Section */}
+          <Box sx={{ width: '50%' }}>
+            <SectionWrapper title={t('pages.account.balances.title')}>
+              {account.balances && (
+                <Table
+                  withPagination={false}
+                  items={account.balances}
+                  columns={[
+                    {
+                      key: 'balance.asset',
+                      label: t('pages.account.table.columnLabel.balance.asset'),
+                    },
+                    {
+                      key: 'balance.value',
+                      label: t('pages.account.table.columnLabel.balance.value'),
+                      width: 20,
+                    },
+                  ]}
+                  renderItem={(balance: Balance, index) => (
+                    <Row
+                      key={index}
+                      keys={[
+                        'asset',
+                        () =>
+                          renderValue(balance.value, palette.default.normal),
+                      ]}
+                      item={balance}
+                    />
+                  )}
                 />
-              </SectionWrapper>
-            </Grid>
-          </Grid>
+              )}
+            </SectionWrapper>
+          </Box>
+          {/* Volumes Section */}
+          <Box sx={{ width: '50%' }}>
+            <SectionWrapper title={t('pages.account.volumes.title')}>
+              {account.volumes && (
+                <Table
+                  withPagination={false}
+                  items={account.volumes}
+                  columns={[
+                    {
+                      key: 'volume.asset',
+                      label: t('pages.account.table.columnLabel.volume.asset'),
+                    },
+                    {
+                      key: 'volume.received',
+                      label: t(
+                        'pages.account.table.columnLabel.volume.received'
+                      ),
+                    },
+                    {
+                      key: 'volume.sent',
+                      label: t('pages.account.table.columnLabel.volume.sent'),
+                      width: 20,
+                    },
+                  ]}
+                  renderItem={(volume: Volume, index) => (
+                    <Row
+                      key={index}
+                      keys={[
+                        'asset',
+                        () => renderValue(volume.received, palette.blue.darker),
+                        () => renderValue(volume.sent, palette.red.darker),
+                      ]}
+                      item={volume}
+                    />
+                  )}
+                />
+              )}
+            </SectionWrapper>
+          </Box>
         </Box>
         {/* Transactions Section */}
         <SectionWrapper title={t('pages.account.transactions.title')}>
