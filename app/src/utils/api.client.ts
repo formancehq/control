@@ -3,6 +3,12 @@ import { get } from 'lodash';
 import { ApiClient, logger, Methods, toJson } from '~/src/utils/api';
 
 export class ReactApiClient implements ApiClient {
+  private baseUrl: string | undefined;
+
+  setBaseUrl(url: string) {
+    this.baseUrl = url;
+  }
+
   getResource<T>(
     params: string,
     path?: string | undefined
@@ -45,6 +51,7 @@ export class ReactApiClient implements ApiClient {
         path,
         method,
         body,
+        baseUrl: this.baseUrl,
       }),
     })
       .then(async (response) => {

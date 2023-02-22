@@ -25,6 +25,7 @@ export enum Methods {
 }
 
 export interface ApiClient {
+  setBaseUrl?: (url: string) => void;
   postResource: <T>(
     params: string,
     body: any,

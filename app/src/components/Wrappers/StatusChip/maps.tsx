@@ -14,6 +14,7 @@ import {
 } from '@mui/icons-material';
 
 import { ConnectorStatuses, TaskStatuses } from '~/src/types/connectorsConfig';
+import { GatewayServiceStatus } from '~/src/types/gateway';
 import { PaymentStatuses, PaymentTypes } from '~/src/types/payment';
 
 export const paymentIconMap = {
@@ -68,4 +69,13 @@ export const appIconMap = {
 export const appColorMap = {
   [ConnectorStatuses.ACTIVE]: 'green',
   [ConnectorStatuses.INACTIVE]: 'red',
+};
+
+export const gatewayServicesIconMap = {
+  [GatewayServiceStatus.UP]: <Done />,
+  [GatewayServiceStatus.DOWN]: <ErrorOutline />,
+};
+export const gatewayServicesColorMap = {
+  [GatewayServiceStatus.UP]: 'green',
+  [GatewayServiceStatus.DOWN]: 'red',
 };
