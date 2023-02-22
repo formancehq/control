@@ -7,7 +7,7 @@ import { withSession } from '~/src/utils/auth.server';
 export const action: ActionFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const body = await request.json();
-    const apiClient = await createApiClient(session);
+    const apiClient = await createApiClient(session, body.baseUrl);
 
     let ret;
 

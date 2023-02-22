@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import {
   Chip,
   CopyPasteTooltip,
-  ObjectOf,
   Page,
   Row,
   SectionWrapper,
@@ -17,8 +16,18 @@ import {
 
 import { accounts as accountsConfig } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import StatusChip from '~/src/components/Wrappers/StatusChip';
+import {
+  gatewayServicesColorMap,
+  gatewayServicesIconMap,
+} from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import { useService } from '~/src/hooks/useService';
+import {
+  Gateway,
+  GatewayServiceStatus,
+  GatewayVersion,
+} from '~/src/types/gateway';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
@@ -32,7 +41,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     return await (
       await createApiClient(session, process.env.API_URL)
-    ).getResource<ObjectOf<string>[]>('/versions', 'versions');
+    ).getResource<Gateway>('/versions');
   }
 
   return handleResponse(await withSession(request, handleData));
@@ -49,11 +58,10 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export default function Index() {
-  const versions = useLoaderData<ObjectOf<string>[]>();
+  const gateway = useLoaderData<Gateway>();
   const { t } = useTranslation();
   const { metas } = useService();
   const id = metas.api.split('.')[0].split('//')[1];
-  console.log(id);
 
   return (
     <Page id="status">
@@ -96,7 +104,7 @@ export default function Index() {
         </SectionWrapper>
         <SectionWrapper>
           <Table
-            items={versions}
+            items={gateway.versions}
             withPagination={false}
             action
             columns={[
@@ -116,7 +124,7 @@ export default function Index() {
                 width: 40,
               },
             ]}
-            renderItem={(item, index) => (
+            renderItem={(item: GatewayVersion, index) => (
               <Row
                 key={index}
                 keys={[
@@ -133,7 +141,16 @@ export default function Index() {
                     key={index}
                     label={`${metas.api}/api/${item.name}`}
                     variant="square"
-                    color="violet"
+                  />,
+                  <StatusChip
+                    key={index}
+                    iconMap={gatewayServicesIconMap}
+                    colorMap={gatewayServicesColorMap}
+                    status={
+                      item.health
+                        ? GatewayServiceStatus.UP
+                        : GatewayServiceStatus.DOWN
+                    }
                   />,
                 ]}
                 item={item}

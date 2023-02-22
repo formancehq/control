@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
 import {
   ArrowDropDown,
@@ -26,12 +26,14 @@ import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
 import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
 import { CurrentUser } from '~/src/utils/api';
+import { ReactApiClient } from '~/src/utils/api.client';
 
 const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
   const navigate = useNavigate();
+  const [region, setRegion] = useState<string>();
   const { api, setCurrentUser, currentUser, metas } = useService();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -96,6 +98,12 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
 
   useEffect(() => {
     (async () => {
+      const client = new ReactApiClient();
+      client.setBaseUrl && client.setBaseUrl(metas.api);
+      const region = await client.getResource<string>('/versions', 'region');
+      if (region) {
+        setRegion(region);
+      }
       await getCurrentUser();
     })();
   }, []);
@@ -142,21 +150,22 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ display: 'flex' }}>
-          {/* TODO uncomment when zone is ready: https://linear.app/formance/issue/NUM-1516/gateway-expose-region-in-versions */}
-          {/*<Box>*/}
-          {/*  <Typography*/}
-          {/*    variant="bold"*/}
-          {/*    sx={{*/}
-          {/*      color: palette.neutral[500],*/}
-          {/*      p: "4px 6px",*/}
-          {/*      border: "1px solid",*/}
-          {/*      borderRadius: 2,*/}
-          {/*      mr: 2,*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    eu-west-1*/}
-          {/*  </Typography>*/}
-          {/*</Box>*/}
+          {region && (
+            <Box>
+              <Typography
+                variant="bold"
+                sx={{
+                  color: palette.neutral[500],
+                  p: '4px 6px',
+                  border: '1px solid',
+                  borderRadius: 2,
+                  mr: 2,
+                }}
+              >
+                {region}
+              </Typography>
+            </Box>
+          )}
           <Box>
             <IconButton
               sx={{ mr: 1, p: 0 }}
