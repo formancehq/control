@@ -93,7 +93,11 @@ export const buildPayloadQuery = (
   };
 };
 
-export const buildRange = (field: string, gte = 'now-1d/d', lte = 'now/d') => ({
+export const buildRange = (
+  field: string,
+  gte = 'now-12h/h',
+  lte = 'now/h'
+) => ({
   range: {
     [field]: {
       gte,
