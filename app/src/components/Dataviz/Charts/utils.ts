@@ -23,6 +23,15 @@ export const buildQueryPayloadTerms = (
 
 export const getChartOptions = (options?: ChartOptions): ChartOptions => ({
   responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    title: {
+      display: false,
+    },
+  },
   ...options,
 });
 
