@@ -6,6 +6,7 @@ import {
   AccountTree,
   Apps,
   CreditCard,
+  Dns,
   Home,
   InsertLink,
   SwapHoriz,
@@ -138,6 +139,13 @@ export const webhooks: RouterConfig = {
   icon: <Webhook />,
 };
 
+export const status: RouterConfig = {
+  id: 'status',
+  label: 'navbar.title.status',
+  paths: [STATUS_ROUTE],
+  icon: <Dns />,
+};
+
 // Operations
 // TODO uncomment when reco is ready
 export const reconciliation: RouterConfig = {
@@ -175,6 +183,6 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
   // },
   {
     label: 'sidebar.configuration',
-    children: [apps, oAuthClients, webhooks],
+    children: [apps, oAuthClients, webhooks, status],
   },
 ];

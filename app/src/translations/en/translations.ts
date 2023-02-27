@@ -42,6 +42,7 @@ export default {
         apps: 'Apps',
         oAuthClients: 'OAuth Clients',
         webhooks: 'Webhooks',
+        status: 'Instance',
       },
     },
     pages: {
@@ -93,18 +94,15 @@ export default {
         sections: {
           details: {
             title: 'Details',
-            id: 'ID',
-            api: 'APIs url',
+            id: 'Stack ID',
+            api: 'Base Stack Endpoint',
           },
         },
-        health: {
-          up: 'Running',
-          down: 'Down',
-        },
+        latest: 'latest',
         table: {
           columnLabel: {
-            name: 'Name',
-            url: 'URL',
+            name: 'Service name',
+            url: 'Base API URL',
             version: 'Version',
             status: 'Status',
           },
@@ -694,7 +692,7 @@ export default {
           payments: 'Payments',
           ledgers: 'Ledgers',
           configuration: 'Configuration',
-          status: 'Status',
+          status: 'Instance',
         },
         targets: {
           wallets: 'All wallets',
@@ -708,7 +706,7 @@ export default {
           webhooks: 'Webhooks',
           apps: 'Apps',
           connectors: 'Connectors',
-          status: 'All components',
+          status: 'Status',
         },
       },
       search: {
