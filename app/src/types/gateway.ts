@@ -10,6 +10,6 @@ export type Gateway = {
 };
 
 export enum GatewayServiceStatus {
-  UP = 'UP',
-  DOWN = 'DOWN',
+  UP = 'HEALTHY',
+  DOWN = 'UNHEALTHY',
 }

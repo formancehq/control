@@ -133,7 +133,11 @@ export default function Index() {
                   </Typography>,
                   <Chip
                     key={index}
-                    label={item.version}
+                    label={
+                      item.version === 'unknown'
+                        ? t('pages.status.latest')
+                        : item.version
+                    }
                     variant="square"
                     color="blue"
                   />,
