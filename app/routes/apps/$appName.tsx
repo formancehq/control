@@ -195,10 +195,6 @@ export default function Index() {
     connector: Connector;
     chart: { pie: Chart; line: Chart };
   }>();
-  console.log(chart);
-  const displayCharts =
-    chart.line.labels.length > 0 || chart.pie.labels.length > 0;
-
   const navigate = useNavigate();
   const { api, snackbar } = useService();
   const provider = lowerCaseAllWordsExceptFirstLetter(connector.provider);
@@ -250,54 +246,35 @@ export default function Index() {
     >
       <>
         {/* Charts */}
-        {displayCharts && (
-          <SectionWrapper>
-            <Box sx={{ display: 'flex' }}>
-              {chart.pie.labels.length > 0 && (
-                <Box
-                  sx={{
-                    width: chart.line.labels.length === 0 ? '100%' : '60%',
-                    mr: 3,
-                  }}
-                >
-                  <Pie
-                    data={chart.pie}
-                    options={{
-                      plugins: {
-                        title: {
-                          display: true,
-                          text: t('pages.app.sections.charts.payment', {
-                            provider,
-                          }),
-                        },
-                      },
-                    }}
-                  />
-                </Box>
-              )}
-              {chart.line.labels.length > 0 && (
-                <Box sx={{ width: '100%' }}>
-                  <Line
-                    data={chart.line}
-                    options={{
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                        title: {
-                          display: true,
-                          text: t('pages.app.sections.charts.transaction', {
-                            provider,
-                          }),
-                        },
-                      },
-                    }}
-                  />
-                </Box>
-              )}
-            </Box>
-          </SectionWrapper>
-        )}
+        <Box sx={{ display: 'flex' }} gap="26px">
+          <Box
+            sx={{
+              width: '30%',
+            }}
+          >
+            <Pie
+              data={chart.pie}
+              options={{
+                plugins: {
+                  legend: {
+                    display: true,
+                  },
+                },
+              }}
+              title={t('pages.app.sections.charts.payment', {
+                provider,
+              })}
+            />
+          </Box>
+          <Box sx={{ width: 'calc(70% - 26px)' }}>
+            <Line
+              title={t('pages.app.sections.charts.transaction', {
+                provider,
+              })}
+              data={chart.line}
+            />
+          </Box>
+        </Box>
         {/* Danger zone */}
         <SectionWrapper
           title={t('pages.app.sections.dangerZone.title')}

@@ -91,7 +91,7 @@ export default {
       },
       overview: {
         title: 'Overview',
-        status: 'Status',
+        status: 'Activity',
         charts: {
           transaction: 'Transactions per ledger (last 24 hours)',
           payment: 'Payments (last 24 hours)',
@@ -636,6 +636,7 @@ export default {
       soon: 'Soon!',
       title: 'Formance',
       noResults: 'No results',
+      noActivity: 'No activity found',
       table: {
         actionColumnLabel: 'Actions',
         metadata: {

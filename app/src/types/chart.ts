@@ -1,8 +1,11 @@
 export type ChartDataset = {
-  label: string;
+  label?: string;
+  hoverBorderColor?: string;
   data: number[];
+  borderWidth?: number;
   fill?: boolean;
-  borderColor: string;
+  borderColor?: string | string[];
+  backgroundColor?: string | string[];
   tension?: number;
   labels: string[] | Date[];
 };

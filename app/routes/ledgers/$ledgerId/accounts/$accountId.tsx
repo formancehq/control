@@ -166,28 +166,12 @@ export default function Index() {
     >
       <>
         {/* Chart */}
-        {loaderData.chart.labels.length > 0 && (
-          <Box sx={{ width: '100%' }}>
-            <SectionWrapper>
-              <Line
-                data={loaderData.chart}
-                options={{
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                    title: {
-                      display: true,
-                      text: t('pages.account.charts.transaction', {
-                        account: lowerCaseAllWordsExceptFirstLetter(id!),
-                      }),
-                    },
-                  },
-                }}
-              />
-            </SectionWrapper>
-          </Box>
-        )}
+        <Line
+          data={loaderData.chart}
+          title={t('pages.account.charts.transaction', {
+            account: lowerCaseAllWordsExceptFirstLetter(id!),
+          })}
+        />
         <Box display="flex" gap="26px">
           {/* Balances Section */}
           <Box sx={{ width: '50%' }}>
