@@ -29,7 +29,7 @@ import {
   buildPayloadQuery,
   buildQueryPayloadMatchPhrase,
   buildRange,
-  getRandomColor,
+  buildTermsAggs,
 } from '~/src/components/Dataviz/Charts/utils';
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
@@ -54,15 +54,17 @@ export function ErrorBoundary() {
 const getLedgersStats = async (ledgersList: string[], api: ApiClient) => {
   const ledgers = [] as any;
   const firstThreeLedgers = take(ledgersList, 3);
-  for (const ledger of firstThreeLedgers) {
+  const colorMap = ['yellow', 'violet', 'blue'];
+
+  for (let i = 0; i < firstThreeLedgers.length; i++) {
     const stats = await api.getResource<LedgerStats>(
-      `${API_LEDGER}/${ledger}/stats`,
+      `${API_LEDGER}/${firstThreeLedgers[i]}/stats`,
       'data'
     );
     ledgers.push({
-      slug: ledger,
+      slug: firstThreeLedgers[i],
       stats,
-      color: getRandomColor(),
+      color: colorMap[i],
     });
   }
 
@@ -74,38 +76,51 @@ const getTransactionLedgerChartData = async (
   api: ApiClient
 ) => {
   const datasets = [];
-  for (let i = 0; i < ledgersList.length; i++) {
-    const chart = await api.postResource<Bucket[]>(
-      API_SEARCH,
-      {
-        raw: buildPayloadQuery(
-          'indexed.timestamp',
-          buildDateHistogramAggs('indexed.timestamp'),
-          SearchTargets.TRANSACTION,
-          buildQueryPayloadMatchPhrase([
-            { key: 'ledger', value: ledgersList[i] },
-          ]),
-          undefined,
-          [buildRange('indexed.timestamp')]
-        ),
-      },
-      'aggregations.chart.buckets'
-    );
-    if (chart) {
-      datasets.push(
-        buildLineChartDataset(
-          chart,
-          ledgersList[i],
-          handleMultilineColor(ledgersList, i)
-        )
+  const counts = await api.postResource<Bucket[]>(
+    API_SEARCH,
+    {
+      raw: buildPayloadQuery(
+        'indexed.timestamp',
+        buildTermsAggs('ledger'),
+        SearchTargets.TRANSACTION
+      ),
+    },
+    'aggregations.chart.buckets'
+  );
+  if (counts && counts.length > 0) {
+    const big3 = take(
+      counts!.sort((a, b) => a.doc_count - b.doc_count),
+      3
+    ).map((bucket: Bucket) => bucket.key) as unknown as string[];
+
+    for (let i = 0; i < big3.length; i++) {
+      const chart = await api.postResource<Bucket[]>(
+        API_SEARCH,
+        {
+          raw: buildPayloadQuery(
+            'indexed.timestamp',
+            buildDateHistogramAggs('indexed.timestamp'),
+            SearchTargets.TRANSACTION,
+            buildQueryPayloadMatchPhrase([{ key: 'ledger', value: big3[i] }]),
+            undefined,
+            [buildRange('indexed.timestamp')]
+          ),
+        },
+        'aggregations.chart.buckets'
       );
+      if (chart) {
+        datasets.push(
+          buildLineChartDataset(
+            chart,
+            ledgersList[i],
+            handleMultilineColor(ledgersList, i)
+          )
+        );
+      }
     }
+
+    return buildChart(buildLabels(datasets, 'LT'), datasets);
   }
-
-  const d = buildChart(buildLabels(datasets, 'LT'), datasets);
-  console.log(d);
-
-  return d;
 };
 
 const getPaymentChartData = async (api: ApiClient) => {
@@ -316,25 +331,39 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
               ) : (
                 <>
                   <Box sx={{ display: 'flex' }} gap="26px">
-                    <Box sx={{ width: '50%' }}>
-                      <Line
-                        title={t('pages.overview.charts.transaction')}
-                        data={transactionChart}
-                        options={{
-                          plugins: {
-                            legend: {
-                              display: true,
-                            },
-                          },
+                    {transactionChart.labels.length > 0 && (
+                      <Box
+                        sx={{
+                          width:
+                            paymentChart.labels.length > 0 ? '50%' : '100%',
                         }}
-                      />
-                    </Box>
-                    <Box sx={{ width: '50%' }}>
-                      <Line
-                        title={t('pages.overview.charts.payment')}
-                        data={paymentChart}
-                      />
-                    </Box>
+                      >
+                        <Line
+                          title={t('pages.overview.charts.transaction')}
+                          data={transactionChart}
+                          options={{
+                            plugins: {
+                              legend: {
+                                display: true,
+                              },
+                            },
+                          }}
+                        />
+                      </Box>
+                    )}
+                    {paymentChart.labels.length > 0 && (
+                      <Box
+                        sx={{
+                          width:
+                            transactionChart.labels.length > 0 ? '50%' : '100%',
+                        }}
+                      >
+                        <Line
+                          title={t('pages.overview.charts.payment')}
+                          data={paymentChart}
+                        />
+                      </Box>
+                    )}
                   </Box>
                   <Box sx={{ display: 'flex' }}>
                     <Box
