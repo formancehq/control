@@ -146,12 +146,21 @@ export const buildLabels = (
     (item, index) => labels.indexOf(item) === index
   ) as string[];
 
-  return uniqLabels.map((item: Date | string) => {
-    const date = dayjs(item);
-    if (date.isValid()) {
-      return date.format(dateFormat);
-    }
+  return uniqLabels
+    .map((item: Date | string) => {
+      const date = dayjs(item);
+      if (date.isValid()) {
+        return date.format(dateFormat);
+      }
 
-    return item;
-  });
+      return item;
+    })
+    .sort((a, b) => {
+      if (typeof a === 'string' && typeof b === 'string') {
+        return dayjs(a) < dayjs(b) ? 1 : -1;
+      }
+
+      return a < b ? 1 : -1;
+    })
+    .reverse();
 };

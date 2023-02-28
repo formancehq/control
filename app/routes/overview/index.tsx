@@ -89,7 +89,7 @@ const getTransactionLedgerChartData = async (
   );
   if (counts && counts.length > 0) {
     const big3 = take(
-      counts!.sort((a, b) => a.doc_count - b.doc_count),
+      counts!.sort((a, b) => b.doc_count - a.doc_count),
       3
     ).map((bucket: Bucket) => bucket.key) as unknown as string[];
 
@@ -103,7 +103,7 @@ const getTransactionLedgerChartData = async (
             SearchTargets.TRANSACTION,
             buildQueryPayloadMatchPhrase([{ key: 'ledger', value: big3[i] }]),
             undefined,
-            [buildRange('indexed.timestamp')]
+            [buildRange('indexed.timestamp', 'now-1d/d', 'now/d')]
           ),
         },
         'aggregations.chart.buckets'
@@ -119,7 +119,7 @@ const getTransactionLedgerChartData = async (
       }
     }
 
-    return buildChart(buildLabels(datasets, 'LT'), datasets);
+    return buildChart(buildLabels(datasets, 'l LT'), datasets);
   }
 };
 
