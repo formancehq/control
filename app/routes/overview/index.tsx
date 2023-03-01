@@ -119,7 +119,7 @@ const getTransactionLedgerChartData = async (
       }
     }
 
-    return buildChart(buildLabels(datasets, 'l LT'), datasets);
+    return buildChart(buildLabels(datasets, 'dd LT'), datasets);
   }
 };
 
