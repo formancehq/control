@@ -60,7 +60,8 @@ export const buildPayloadQuery = (
   target: SearchTargets,
   optFilters: BooleanConfig[] = [],
   optShould: BooleanConfig[] = [],
-  optMust: BooleanConfig[] = []
+  optMust: BooleanConfig[] = [],
+  queryOpt?: ObjectOf<any>
 ) => {
   const filters = [
     {
@@ -88,6 +89,7 @@ export const buildPayloadQuery = (
         filter: filters,
         should: optShould,
         must: optMust,
+        ...queryOpt,
       },
     },
   };
