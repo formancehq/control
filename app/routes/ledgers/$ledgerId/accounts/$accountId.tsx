@@ -115,7 +115,9 @@ export const loader: LoaderFunction = async ({ params, request }) => {
           buildQueryPayloadTerms([
             { key: 'indexed.source', value: [params.accountId] },
             { key: 'indexed.destination', value: [params.accountId] },
-          ])
+          ]),
+          undefined,
+          { minimum_should_match: 1 }
         ),
       },
       'aggregations.chart.buckets'
