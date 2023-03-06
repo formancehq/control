@@ -1,34 +1,15 @@
-import dayjs from 'dayjs';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { get } from 'lodash';
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 
-import { ObjectOf, theme } from '@numaryhq/storybook';
-
-import { getPaletteRandomColor } from '~/src/components/Dataviz/Charts/utils';
-import { ChartDataset } from '~/src/types/chart';
-import { Bucket } from '~/src/types/search';
+import { ObjectOf, theme } from "@numaryhq/storybook";
+import { ChartDataset } from "~/src/types/chart";
+import { Bucket } from "~/src/types/search";
 
 dayjs.extend(localizedFormat);
 
-export const handleMultilineColor = (list: string[], index: number) => {
-  const colorMap = [
-    'yellow.bright',
-    'violet.bright',
-    'blue.bright',
-    'brown.bright',
-  ];
-  const colorSecondaryMap = [
-    ...colorMap,
-    'yellow.light',
-    'violet.light',
-    'blue.light',
-    'brown.light',
-  ];
-  if (list.length > 8) {
-    return getPaletteRandomColor();
-  }
-
-  return get(theme.palette, colorSecondaryMap[index]);
+export const top3color = (index: number) => {
+  const colorMap = ["yellow", "violet", "blue"];
+  return colorMap[index];
 };
 
 export const buildLineChartDataset = (
