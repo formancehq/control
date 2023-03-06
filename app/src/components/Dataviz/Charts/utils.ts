@@ -149,6 +149,9 @@ export const buildLabels = (
   ) as string[];
 
   return uniqLabels
+
+    .sort((a, b) => (dayjs(a) < dayjs(b) ? 1 : -1))
+    .reverse()
     .map((item: Date | string) => {
       const date = dayjs(item);
       if (date.isValid()) {
@@ -156,13 +159,5 @@ export const buildLabels = (
       }
 
       return item;
-    })
-    .sort((a, b) => {
-      if (typeof a === 'string' && typeof b === 'string') {
-        return dayjs(a) < dayjs(b) ? 1 : -1;
-      }
-
-      return a < b ? 1 : -1;
-    })
-    .reverse();
+    });
 };
