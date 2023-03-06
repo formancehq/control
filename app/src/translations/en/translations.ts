@@ -93,8 +93,8 @@ export default {
         title: 'Overview',
         status: 'Activity',
         charts: {
-          transaction: 'Transactions per ledger top 3 (last 24 hours)',
-          payment: 'Payments (last 12 hours)',
+          transaction: 'Transactions per ledger top 3',
+          payment: 'Payments volume',
         },
         tasks: {
           title: 'Tasks',
@@ -255,7 +255,7 @@ export default {
       account: {
         title: 'Account',
         charts: {
-          transaction: '{{account}} transactions (last 12 hours)',
+          transaction: 'Transactions volume',
         },
         table: {
           columnLabel: {
@@ -399,8 +399,8 @@ export default {
       app: {
         sections: {
           charts: {
-            transaction: '{{provider}} payments (last 12 hours)',
-            payment: '{{provider}} type (last 7 days)',
+            transaction: '{{provider}} payments volume',
+            payment: '{{provider}} type',
           },
           dangerZone: {
             title: 'Manage connector',
@@ -600,6 +600,9 @@ export default {
       },
       units: {
         seconds: 'seconds',
+      },
+      chart: {
+        last: 'Last {{value}} {{kind}}',
       },
       boundaries: {
         errorState: {

@@ -254,6 +254,7 @@ export default function Index() {
           >
             <Pie
               data={chart.pie}
+              time={{ value: '7', kind: 'days' }}
               options={{
                 plugins: {
                   legend: {

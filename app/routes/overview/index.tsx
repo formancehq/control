@@ -113,7 +113,7 @@ const getTransactionLedgerChartData = async (
         datasets.push(
           buildLineChartDataset(
             chart,
-            ledgersList[i],
+            big3[i],
             get(theme.palette, `${top3color(i)}.bright`)
           )
         );
@@ -342,6 +342,7 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                         <Line
                           title={t('pages.overview.charts.transaction')}
                           data={transactionChart}
+                          time={{ value: '24', kind: 'hours' }}
                           options={{
                             plugins: {
                               legend: {
