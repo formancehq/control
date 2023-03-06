@@ -1,14 +1,16 @@
-import dayjs from "dayjs";
-import localizedFormat from "dayjs/plugin/localizedFormat";
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 
-import { ObjectOf, theme } from "@numaryhq/storybook";
-import { ChartDataset } from "~/src/types/chart";
-import { Bucket } from "~/src/types/search";
+import { ObjectOf, theme } from '@numaryhq/storybook';
+
+import { ChartDataset } from '~/src/types/chart';
+import { Bucket } from '~/src/types/search';
 
 dayjs.extend(localizedFormat);
 
 export const top3color = (index: number) => {
-  const colorMap = ["yellow", "violet", "blue"];
+  const colorMap = ['yellow', 'violet', 'blue'];
+
   return colorMap[index];
 };
 
