@@ -6,4 +6,6 @@ export type PieProps = {
   data: Chart;
   options?: ChartOptions;
   title?: string;
+  height?: number;
+  time?: { value: string; kind: string };
 };

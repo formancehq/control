@@ -6,4 +6,5 @@ export enum ChartPlaceholderTypes {
 export type ChartPlaceholderProps = {
   type: ChartPlaceholderTypes;
   title?: string;
+  time?: { value: string; kind: string };
 };

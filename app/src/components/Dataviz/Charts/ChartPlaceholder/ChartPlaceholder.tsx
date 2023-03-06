@@ -1,7 +1,7 @@
 import React, { FunctionComponent, ReactElement } from 'react';
 
 import { QueryStats } from '@mui/icons-material';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { ChartPlaceholderProps, ChartPlaceholderTypes } from './types';
@@ -39,35 +39,53 @@ const pieDataMock: Chart = {
 const ChartPlaceholder: FunctionComponent<ChartPlaceholderProps> = ({
   type,
   title,
+  time = { value: '12', kind: 'hours' },
 }) => {
   const { t } = useTranslation();
   const chartsMap = {
-    [ChartPlaceholderTypes.LINE]: <Line data={lineDataMock} title={title} />,
-    [ChartPlaceholderTypes.PIE]: <Pie data={pieDataMock} title={title} />,
+    [ChartPlaceholderTypes.LINE]: <Line data={lineDataMock} height={220} />,
+    [ChartPlaceholderTypes.PIE]: <Pie data={pieDataMock} height={220} />,
   } as ObjectOf<ReactElement>;
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      sx={{
-        p: 2,
-        mt: 2,
-        mb: 2,
-        borderRadius: '6px',
-        border: ({ palette }) => `1px solid ${palette.neutral[100]}`,
-      }}
-    >
-      <Box sx={{ opacity: '0.1', width: '100%' }}>{chartsMap[type]}</Box>
-      <Box>
-        <LoadingButton
-          variant="stroke"
-          content={t('common.noActivity')}
-          endIcon={<QueryStats />}
-        />
+    <>
+      {title && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            opacity: '0.1',
+          }}
+        >
+          <Typography variant="h2" mb={1} mt={1}>
+            {title}
+          </Typography>
+          <Typography variant="h2" mb={1} mt={1}>
+            {t('common.chart.last', { value: time.value, kind: time.kind })}
+          </Typography>
+        </Box>
+      )}
+      <Box
+        display="flex"
+        height={300}
+        flexDirection="column"
+        alignItems="center"
+        sx={{
+          p: 2,
+          borderRadius: '6px',
+          border: ({ palette }) => `1px solid ${palette.neutral[100]}`,
+        }}
+      >
+        <Box sx={{ opacity: '0.1', width: '100%' }}>{chartsMap[type]}</Box>
+        <Box>
+          <LoadingButton
+            variant="stroke"
+            content={t('common.noActivity')}
+            endIcon={<QueryStats />}
+          />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 

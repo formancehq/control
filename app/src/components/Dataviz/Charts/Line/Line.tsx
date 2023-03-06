@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Line as ChLine } from 'react-chartjs-2';
+import { useTranslation } from 'react-i18next';
 
 import { LineProps } from './types';
 
@@ -29,22 +30,40 @@ ChartJS.register(
   Legend
 );
 
-const Line: FunctionComponent<LineProps> = ({ data, options, title }) => {
+const Line: FunctionComponent<LineProps> = ({
+  data,
+  options,
+  title,
+  height = 300,
+  time = { value: '12', kind: 'hours' },
+}) => {
+  const { t } = useTranslation();
   if (data.datasets.length === 0 || data.labels.length === 0) {
-    return <ChartPlaceholder type={ChartPlaceholderTypes.LINE} title={title} />;
+    return (
+      <ChartPlaceholder
+        type={ChartPlaceholderTypes.LINE}
+        title={title}
+        time={time}
+      />
+    );
   }
 
   return (
     <>
       {title && (
-        <Typography variant="h2" mb={1} mt={1}>
-          {title}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="h2" mb={1} mt={1}>
+            {title}
+          </Typography>
+          <Typography variant="h2" mb={1} mt={1}>
+            {t('common.chart.last', { value: time.value, kind: time.kind })}
+          </Typography>
+        </Box>
       )}
       <Box
         sx={{
           p: 2,
-          height: 300,
+          height,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
