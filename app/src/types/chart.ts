@@ -14,3 +14,8 @@ export type Chart = {
   labels: (Date | string)[];
   datasets: Omit<ChartDataset, 'labels'>[];
 };
+
+export enum ChartTypes {
+  LINE = 'line',
+  PIE = 'pie',
+}

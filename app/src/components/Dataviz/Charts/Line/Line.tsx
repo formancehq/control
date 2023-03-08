@@ -17,8 +17,8 @@ import { useTranslation } from 'react-i18next';
 import { LineProps } from './types';
 
 import ChartPlaceholder from '~/src/components/Dataviz/Charts/ChartPlaceholder';
-import { ChartPlaceholderTypes } from '~/src/components/Dataviz/Charts/ChartPlaceholder/types';
 import { getChartOptions } from '~/src/components/Dataviz/Charts/utils';
+import { ChartTypes } from '~/src/types/chart';
 
 ChartJS.register(
   CategoryScale,
@@ -40,11 +40,7 @@ const Line: FunctionComponent<LineProps> = ({
   const { t } = useTranslation();
   if (data.datasets.length === 0 || data.labels.length === 0) {
     return (
-      <ChartPlaceholder
-        type={ChartPlaceholderTypes.LINE}
-        title={title}
-        time={time}
-      />
+      <ChartPlaceholder type={ChartTypes.LINE} title={title} time={time} />
     );
   }
 

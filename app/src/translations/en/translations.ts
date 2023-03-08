@@ -93,7 +93,7 @@ export default {
         title: 'Overview',
         status: 'Activity',
         charts: {
-          transaction: 'Transactions per ledger top 3',
+          transaction: 'Transactions volume per ledger top 3',
           payment: 'Payments volume',
         },
         tasks: {

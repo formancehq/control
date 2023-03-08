@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { PieProps } from './types';
 
 import ChartPlaceholder from '~/src/components/Dataviz/Charts/ChartPlaceholder';
-import { ChartPlaceholderTypes } from '~/src/components/Dataviz/Charts/ChartPlaceholder/types';
 import { getChartOptions } from '~/src/components/Dataviz/Charts/utils';
+import { ChartTypes } from '~/src/types/chart';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -23,13 +23,7 @@ const Pie: FunctionComponent<PieProps> = ({
   const { t } = useTranslation();
 
   if (data.datasets.length === 0 || data.labels.length === 0) {
-    return (
-      <ChartPlaceholder
-        type={ChartPlaceholderTypes.PIE}
-        title={title}
-        time={time}
-      />
-    );
+    return <ChartPlaceholder type={ChartTypes.PIE} title={title} time={time} />;
   }
 
   return (
