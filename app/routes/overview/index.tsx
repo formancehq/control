@@ -120,7 +120,7 @@ const getTransactionLedgerChartData = async (
       }
     }
 
-    return buildChart(buildLabels(datasets, 'dd LT'), datasets);
+    return buildChart(buildLabels(datasets, 'dd LT'), datasets, 'dd LT');
   }
 };
 
@@ -143,7 +143,7 @@ const getPaymentChartData = async (api: ApiClient) => {
   if (chart) {
     const dataset = buildLineChartDataset(chart);
 
-    return buildChart(buildLabels([dataset], 'LT'), [dataset]);
+    return buildChart(buildLabels([dataset]), [dataset]);
   }
 };
 

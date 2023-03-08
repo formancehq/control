@@ -4,13 +4,13 @@ import { QueryStats } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { ChartPlaceholderProps, ChartPlaceholderTypes } from './types';
+import { ChartPlaceholderProps } from './types';
 
 import { LoadingButton, ObjectOf } from '@numaryhq/storybook';
 
 import Line from '~/src/components/Dataviz/Charts/Line';
 import Pie from '~/src/components/Dataviz/Charts/Pie';
-import { Chart } from '~/src/types/chart';
+import { Chart, ChartTypes } from '~/src/types/chart';
 
 const lineDataMock = {
   labels: ['11:00 PM', '1:00 PM', '2:00 PM', '4:00 PM', '8:00 PM', '9:00 PM'],
@@ -43,8 +43,8 @@ const ChartPlaceholder: FunctionComponent<ChartPlaceholderProps> = ({
 }) => {
   const { t } = useTranslation();
   const chartsMap = {
-    [ChartPlaceholderTypes.LINE]: <Line data={lineDataMock} height={220} />,
-    [ChartPlaceholderTypes.PIE]: <Pie data={pieDataMock} height={220} />,
+    [ChartTypes.LINE]: <Line data={lineDataMock} height={220} />,
+    [ChartTypes.PIE]: <Pie data={pieDataMock} height={220} />,
   } as ObjectOf<ReactElement>;
 
   return (

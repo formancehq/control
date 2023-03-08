@@ -128,7 +128,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return {
       account: account ? normalizeBalance(account) : undefined,
       transactions,
-      chart: buildChart(buildLabels([dataset], 'LT'), [dataset]),
+      chart: buildChart(buildLabels([dataset]), [dataset]),
     };
   }
 
