@@ -22,6 +22,7 @@ import { TopbarProps } from '~/src/components/Layout/components/Topbar/types';
 import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
 import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
+import { Gateway } from '~/src/types/gateway';
 import { CurrentUser } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
 
@@ -29,11 +30,8 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
-  const [region, setRegion] = useState<string>();
+  const [gateway, setGateway] = useState<{ region: string; env: string }>();
   const { api, setCurrentUser, currentUser, metas } = useService();
-  console.log(metas);
-  const isSandbox = metas.api.split('staging').length > 0;
-  console.log(isSandbox);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -99,9 +97,9 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
     (async () => {
       const client = new ReactApiClient();
       client.setBaseUrl && client.setBaseUrl(metas.api);
-      const region = await client.getResource<string>('/versions', 'region');
-      if (region) {
-        setRegion(region);
+      const gateway = await client.getResource<Gateway>('/versions');
+      if (gateway) {
+        setGateway(gateway);
       }
       await getCurrentUser();
     })();
@@ -149,21 +147,22 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ display: 'flex' }}>
-          {region && (
+          {gateway && gateway.region && (
             <Box>
               <Typography
                 variant="bold"
                 sx={{
-                  color: !isSandbox
-                    ? palette.neutral[200]
-                    : palette.yellow.normal,
+                  color:
+                    gateway.env === 'staging'
+                      ? palette.yellow.normal
+                      : palette.neutral[200],
                   p: '4px 6px',
                   border: '1px solid',
                   borderRadius: 2,
                   mr: 2,
                 }}
               >
-                {region}
+                {gateway.region}
               </Typography>
             </Box>
           )}

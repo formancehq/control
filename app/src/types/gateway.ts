@@ -5,6 +5,7 @@ export type GatewayVersion = {
 };
 
 export type Gateway = {
+  env: string;
   region: string;
   versions: GatewayVersion[];
 };
