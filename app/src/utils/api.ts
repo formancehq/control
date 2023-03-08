@@ -6,6 +6,7 @@ export const API_PAYMENT = '/payments';
 export const API_WALLET = '/wallets';
 export const API_AUTH = '/auth';
 export const API_WEBHOOK = '/webhooks';
+export const API_ORCHESTRATION = '/orchestration';
 
 export const errorsMap = {
   404: Errors.NOT_FOUND,

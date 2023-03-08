@@ -209,6 +209,7 @@ export const breadcrumbsFactory = (
     '/ledgers/:ledgerId/transactions/:transactionId'
   );
   const transactionsIndex = match('/transactions');
+  const flowsIndex = match('/flows/:id');
   const connectorsIndex = match('/connectors/:id');
   const oAuthClientRoute = match('/oauth-clients/:oAuthClientId');
   const webhookRoute = match('/webhooks/:webhookId');
@@ -337,6 +338,10 @@ export const breadcrumbsFactory = (
       getRoute(CONNECTORS_ROUTE),
       i18n.t('common.breadcrumbs.categories.configuration')
     );
+  }
+
+  if (flowsIndex) {
+    return [{ label: i18n.t('common.breadcrumbs.categories.flows') }];
   }
 
   if (paymentsAccountsIndex) {
