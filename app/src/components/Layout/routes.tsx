@@ -6,9 +6,11 @@ import {
   AccountTree,
   Apps,
   CreditCard,
+  DashboardCustomize,
   Dns,
   Home,
   InsertLink,
+  Schema,
   SwapHoriz,
   Wallet,
   Webhook,
@@ -39,6 +41,13 @@ export const APPS_ROUTE = '/connectors/apps';
 export const APP_ROUTE = '/apps/:name';
 export const OAUTH_CLIENT_ROUTE = '/oauth-clients/:id';
 export const CONNECTORS_ROUTE = APPS_ROUTE;
+// Flows
+export const WORKFLOWS_ROUTE = '/flows/workflows';
+export const INSTANCES_ROUTE = '/flows/instances';
+export const WORKFLOW_ROUTE = '/workflows/:id';
+export const INSTANCE_ROUTE = '/instances/:id';
+export const FLOWS_ROUTE = WORKFLOWS_ROUTE;
+
 // TODO uncomment when reco is ready
 export const RECON_ROUTE = '/operations/reconciliation';
 // TODO uncomment when monitoring is ready
@@ -139,6 +148,21 @@ export const webhooks: RouterConfig = {
   icon: <Webhook />,
 };
 
+// Flows
+export const workflows: RouterConfig = {
+  id: 'workflows',
+  label: 'navbar.title.workflows',
+  paths: [WORKFLOWS_ROUTE, WORKFLOW_ROUTE],
+  icon: <Schema />,
+};
+export const instances: RouterConfig = {
+  id: 'instances',
+  label: 'navbar.title.instances',
+  paths: [INSTANCES_ROUTE, INSTANCE_ROUTE],
+  icon: <DashboardCustomize />,
+};
+
+// Status
 export const status: RouterConfig = {
   id: 'status',
   label: 'navbar.title.status',
@@ -181,6 +205,10 @@ export const routerConfig: { label?: string; children: RouterConfig[] }[] = [
   //   label: 'sidebar.operations',
   //   children: [reconciliation],
   // },
+  {
+    label: 'sidebar.flows',
+    children: [workflows, instances],
+  },
   {
     label: 'sidebar.configuration',
     children: [apps, oAuthClients, webhooks, status],

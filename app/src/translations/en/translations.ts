@@ -6,6 +6,7 @@ export default {
       operations: 'Operations',
       connectors: 'Connectors',
       configuration: 'Configuration',
+      flows: 'Flows',
     },
     topbar: {
       logout: 'Logout',
@@ -42,6 +43,8 @@ export default {
         apps: 'Apps',
         oAuthClients: 'OAuth Clients',
         webhooks: 'Webhooks',
+        workflows: 'Workflows',
+        instances: 'Instances',
         status: 'Instance',
       },
     },
@@ -375,6 +378,38 @@ export default {
       reconciliation: {
         title: 'Reconciliation',
       },
+      flows: {
+        title: 'Flows',
+        tabs: {
+          workflows: {
+            title: 'Workflows',
+          },
+          instances: {
+            title: 'Instances',
+          },
+        },
+      },
+      workflows: {
+        title: 'Workflows',
+        table: {
+          columnLabel: {
+            id: 'ID',
+            name: 'Name',
+            createdAt: 'Creation date',
+          },
+        },
+      },
+      instances: {
+        title: 'Instances',
+        table: {
+          columnLabel: {
+            id: 'ID',
+            workflowID: 'Workflow ID',
+            createdAt: 'Creation date',
+            terminatedAt: 'End date',
+          },
+        },
+      },
       connectors: {
         title: 'Connectors',
         table: {
@@ -697,6 +732,7 @@ export default {
           payments: 'Payments',
           ledgers: 'Ledgers',
           configuration: 'Configuration',
+          flows: 'Flows',
           status: 'Instance',
         },
         targets: {
