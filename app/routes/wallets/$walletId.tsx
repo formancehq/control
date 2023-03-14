@@ -206,25 +206,37 @@ export default function Index() {
         </SectionWrapper>
         <SectionWrapper title={t('pages.wallet.sections.balances.title')}>
           <Table
-            withHeader={false}
             withPagination={false}
             items={data.balances}
             action
             columns={[
               {
                 key: 'name',
-                label: '',
+                label: t(
+                  'pages.wallet.sections.balances.table.columnLabel.name'
+                ),
                 width: 30,
               },
               {
-                key: 'type',
-                label: '',
+                key: 'role',
+                label: t(
+                  'pages.wallet.sections.balances.table.columnLabel.role'
+                ),
                 width: 30,
               },
               {
                 key: 'assets',
-                label: '',
-                width: 60,
+                label: t(
+                  'pages.wallet.sections.balances.table.columnLabel.amounts'
+                ),
+                width: 40,
+              },
+              {
+                key: 'expiresAt',
+                label: t(
+                  'pages.wallet.sections.balances.table.columnLabel.expiresAt'
+                ),
+                width: 20,
               },
             ]}
             renderItem={(
@@ -247,6 +259,13 @@ export default function Index() {
                     color={balance.name === 'main' ? 'green' : undefined}
                   />,
                   'formattedAssets',
+                  balance.expiresAt ? (
+                    <Date key={index} timestamp={balance.expiresAt} />
+                  ) : (
+                    <Typography variant="placeholder">
+                      {t('pages.wallet.sections.balances.expiresAtPlaceholder')}
+                    </Typography>
+                  ),
                 ]}
                 item={balance}
               />
