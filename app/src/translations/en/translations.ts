@@ -200,6 +200,15 @@ export default {
           },
           balances: {
             title: 'Balances',
+            expiresAtPlaceholder: 'No expiring date',
+            table: {
+              columnLabel: {
+                name: 'Name',
+                role: 'Role',
+                amounts: 'Amounts',
+                expiresAt: 'Expires at',
+              },
+            },
           },
           holds: {
             title: 'Last holds',

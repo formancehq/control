@@ -9,6 +9,7 @@ export type Wallet = {
 
 export type WalletBalance = {
   name: string;
+  expiresAt: Date;
 };
 
 export type WalletDetailedBalance = WalletBalance & {
