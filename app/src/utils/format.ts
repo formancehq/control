@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 import { Cursor } from '~/src/types/generic';
 
 export const initials = (name: string, depth = 2): string | undefined => {
@@ -25,3 +27,5 @@ export const buildCursor = <T>(items: T[]): Cursor<T> => ({
 });
 
 export const formatTableId = (id?: string): string => (id ? `${id}_` : '');
+
+export const formatDate = (date: Date) => dayjs(date).format('ddd MMM D YYYY');

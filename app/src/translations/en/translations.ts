@@ -608,6 +608,13 @@ export default {
               },
             },
           },
+          instances: {
+            title: 'Instances',
+            createdAt: 'Created at',
+            updatedAt: 'Last update',
+            terminated: 'Terminated',
+            running: 'Running',
+          },
         },
       },
       webhook: {
