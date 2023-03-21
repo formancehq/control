@@ -26,6 +26,7 @@ import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
 import { camelCase, get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import reactFlowStyles from 'reactflow/dist/style.css';
 
 import styles from './root.css';
 import { useOpen } from './src/hooks/useOpen';
@@ -61,7 +62,10 @@ interface DocumentProps {
   title?: string;
 }
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
+export const links: LinksFunction = () => [
+  { rel: 'stylesheet', href: reactFlowStyles },
+  { rel: 'stylesheet', href: styles },
+];
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get('Cookie'));

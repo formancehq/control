@@ -552,6 +552,36 @@ export default {
           },
         },
       },
+      workflow: {
+        title: 'Workflow',
+        sections: {
+          details: {
+            title: 'Detailed config',
+            config: {
+              waitEvent: {
+                title: 'Wait event',
+                event: 'Event',
+              },
+              delay: {
+                title: 'Delay',
+                duration: 'Duration (s)',
+                until: 'Until (date)',
+              },
+              send: {
+                title: 'Send',
+                source: 'Source',
+                destination: 'Destination',
+                account: 'Account',
+                wallet: 'Wallet',
+                payment: 'Payment',
+                id: 'ID',
+                ledger: 'Ledger',
+                psp: 'PSP',
+              },
+            },
+          },
+        },
+      },
       webhook: {
         title: 'Webhook',
         secret: 'Webhook secret',
@@ -713,6 +743,7 @@ export default {
           webhooks: 'Webhooks',
           apps: 'Apps',
           connectors: 'Connectors',
+          workflows: 'Workflows',
         },
       },
       search: {

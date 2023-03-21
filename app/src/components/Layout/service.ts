@@ -19,6 +19,7 @@ import {
   TRANSACTIONS_ROUTE,
   WALLETS_ROUTE,
   WEBHOOKS_ROUTE,
+  WORKFLOWS_ROUTE,
 } from '~/src/components/Layout/routes';
 import { ObjectOf } from '~/src/types/generic';
 
@@ -155,6 +156,21 @@ const buildAppBreadcrumbs = (
   ];
 };
 
+const buildWorkflowBreadcrumbs = (
+  navigate: NavigateFunction,
+  id: string
+): BreadcrumbsLink[] => [
+  ...buildIndexBreadcrumbs(
+    navigate,
+    'workflows',
+    WORKFLOWS_ROUTE,
+    i18n.t('common.breadcrumbs.categories.flows')
+  ),
+  {
+    label: id,
+  },
+];
+
 const buildIndexBreadcrumbs = (
   navigate: NavigateFunction,
   target: string,
@@ -210,6 +226,7 @@ export const breadcrumbsFactory = (
   );
   const transactionsIndex = match('/transactions');
   const flowsIndex = match('/flows/:id');
+  const workflowRoute = match('/workflows/:workflowId');
   const connectorsIndex = match('/connectors/:id');
   const oAuthClientRoute = match('/oauth-clients/:oAuthClientId');
   const webhookRoute = match('/webhooks/:webhookId');
@@ -311,6 +328,10 @@ export const breadcrumbsFactory = (
 
   if (appRoute) {
     return buildAppBreadcrumbs(navigate, params.appName);
+  }
+
+  if (workflowRoute) {
+    return buildWorkflowBreadcrumbs(navigate, params.workflowId);
   }
 
   if (accountsIndex) {

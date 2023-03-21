@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Chip, Date, Row } from '@numaryhq/storybook';
 
+import { WORKFLOW_ROUTE } from '~/src/components/Layout/routes';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import { OrchestrationWorkflow } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
@@ -78,6 +80,9 @@ export default function Index() {
               <Date key={index} timestamp={workflow.createdAt} />,
             ]}
             item={workflow}
+            renderActions={() => (
+              <ShowListAction id={workflow.id} route={WORKFLOW_ROUTE} />
+            )}
           />
         )}
       />
