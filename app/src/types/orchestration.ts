@@ -45,6 +45,7 @@ export type OrchestrationInstance = {
   id: string;
   workflowID: string;
   createdAt: Date;
+  updatedAt: Date;
   terminatedAt: Date;
   terminated: boolean;
 };
