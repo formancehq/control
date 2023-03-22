@@ -19,6 +19,7 @@ import {
   buildPayloadQuery,
   buildQueryPayloadMatchPhrase,
   buildQueryPayloadTerms,
+  buildRange,
 } from '~/src/components/Dataviz/Charts/utils';
 import {
   accounts,
@@ -116,7 +117,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
             { key: 'indexed.source', value: [params.accountId] },
             { key: 'indexed.destination', value: [params.accountId] },
           ]),
-          undefined,
+          [buildRange('indexed.timestamp')],
           { minimum_should_match: 1 }
         ),
       },
