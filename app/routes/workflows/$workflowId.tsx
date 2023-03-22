@@ -63,6 +63,7 @@ const nodeTypes = { customNode: CustomNode };
 export default function Index() {
   const { t } = useTranslation();
   const workflow = useLoaderData(); // TODO type
+  console.log(workflow);
   const navigate = useNavigate();
   let x = 0;
   const initialNodes = workflow.config.stages.map(
@@ -124,32 +125,42 @@ export default function Index() {
           </Box>
         </SectionWrapper>
         <SectionWrapper title={t('pages.workflow.sections.instances.title')}>
-          {workflow.instances.map((instance: OrchestrationInstance) => (
-            <Box
-              key={instance.id}
-              onClick={() => navigate(getRoute(INSTANCE_ROUTE, instance.id))}
-              sx={{
-                ':hover': {
-                  opacity: 0.3,
-                  cursor: 'pointer',
-                },
-              }}
-            >
-              <StatsCard
-                icon={<DashboardCustomize />}
-                variant="yellow"
-                title1={t('pages.workflow.sections.instances.createdAt')}
-                title2={t('pages.workflow.sections.instances.updatedAt')}
-                chipValue={
-                  instance.terminated
-                    ? t('pages.workflow.sections.instances.terminated')
-                    : t('pages.workflow.sections.instances.running')
-                }
-                value1={formatDate(instance.createdAt)}
-                value2={formatDate(instance.updatedAt)}
-              />
-            </Box>
-          ))}
+          <Box
+            mt={3}
+            display="flex"
+            flexWrap="wrap"
+            data-testid="stats-card"
+            justifyContent="flex-start"
+            gap="26px"
+          >
+            {workflow.instances.map((instance: OrchestrationInstance) => (
+              <Box
+                key={instance.id}
+                onClick={() => navigate(getRoute(INSTANCE_ROUTE, instance.id))}
+                sx={{
+                  ':hover': {
+                    opacity: 0.3,
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <StatsCard
+                  icon={<DashboardCustomize />}
+                  variant="violet"
+                  type="light"
+                  title1={t('pages.workflow.sections.instances.createdAt')}
+                  title2={t('pages.workflow.sections.instances.updatedAt')}
+                  chipValue={
+                    instance.terminated
+                      ? t('pages.workflow.sections.instances.terminated')
+                      : t('pages.workflow.sections.instances.running')
+                  }
+                  value1={formatDate(instance.createdAt)}
+                  value2={formatDate(instance.updatedAt)}
+                />
+              </Box>
+            ))}
+          </Box>
         </SectionWrapper>
       </>
     </Page>
