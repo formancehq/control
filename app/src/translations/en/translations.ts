@@ -580,6 +580,14 @@ export default {
           },
         },
       },
+      instance: {
+        title: 'Instance',
+        sections: {
+          details: {
+            title: 'Details',
+          },
+        },
+      },
       workflow: {
         title: 'Workflow',
         sections: {
@@ -786,6 +794,7 @@ export default {
           connectors: 'Connectors',
           status: 'Status',
           workflows: 'Workflows',
+          instances: 'Instances',
         },
       },
       search: {

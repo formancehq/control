@@ -11,6 +11,7 @@ import {
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
   getRoute,
+  INSTANCES_ROUTE,
   LEDGER_ROUTE,
   LEDGERS_ROUTE,
   OAUTH_CLIENTS_ROUTE,
@@ -157,21 +158,6 @@ const buildAppBreadcrumbs = (
   ];
 };
 
-const buildWorkflowBreadcrumbs = (
-  navigate: NavigateFunction,
-  id: string
-): BreadcrumbsLink[] => [
-  ...buildIndexBreadcrumbs(
-    navigate,
-    'workflows',
-    WORKFLOWS_ROUTE,
-    i18n.t('common.breadcrumbs.categories.flows')
-  ),
-  {
-    label: id,
-  },
-];
-
 const buildIndexBreadcrumbs = (
   navigate: NavigateFunction,
   target: string,
@@ -228,6 +214,7 @@ export const breadcrumbsFactory = (
   const transactionsIndex = match('/transactions');
   const flowsIndex = match('/flows/:id');
   const workflowRoute = match('/workflows/:workflowId');
+  const instanceRoute = match('/instances/:instanceId');
   const connectorsIndex = match('/connectors/:id');
   const oAuthClientRoute = match('/oauth-clients/:oAuthClientId');
   const webhookRoute = match('/webhooks/:webhookId');
@@ -333,7 +320,31 @@ export const breadcrumbsFactory = (
   }
 
   if (workflowRoute) {
-    return buildWorkflowBreadcrumbs(navigate, params.workflowId);
+    return [
+      ...buildIndexBreadcrumbs(
+        navigate,
+        'workflows',
+        WORKFLOWS_ROUTE,
+        i18n.t('common.breadcrumbs.categories.flows')
+      ),
+      {
+        label: params.workflowId,
+      },
+    ];
+  }
+
+  if (instanceRoute) {
+    return [
+      ...buildIndexBreadcrumbs(
+        navigate,
+        'instances',
+        INSTANCES_ROUTE,
+        i18n.t('common.breadcrumbs.categories.flows')
+      ),
+      {
+        label: params.instanceId,
+      },
+    ];
   }
 
   if (accountsIndex) {
