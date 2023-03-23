@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { DashboardCustomize, Wallet as WalletIcon } from '@mui/icons-material';
+import { DashboardCustomize, Schema } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
@@ -63,7 +63,6 @@ const nodeTypes = { customNode: CustomNode };
 export default function Index() {
   const { t } = useTranslation();
   const workflow = useLoaderData(); // TODO type
-  console.log(workflow);
   const navigate = useNavigate();
   let x = 0;
   const initialNodes = workflow.config.stages.map(
@@ -101,10 +100,7 @@ export default function Index() {
     <Page
       id="workflow"
       title={
-        <IconTitlePage
-          icon={<WalletIcon />}
-          title={t('pages.workflow.title')}
-        />
+        <IconTitlePage icon={<Schema />} title={t('pages.workflow.title')} />
       }
     >
       <>

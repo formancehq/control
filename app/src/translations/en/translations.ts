@@ -552,6 +552,14 @@ export default {
           },
         },
       },
+      instance: {
+        title: 'Instance',
+        sections: {
+          details: {
+            title: 'Details',
+          },
+        },
+      },
       workflow: {
         title: 'Workflow',
         sections: {
@@ -751,6 +759,7 @@ export default {
           apps: 'Apps',
           connectors: 'Connectors',
           workflows: 'Workflows',
+          instances: 'Instances',
         },
       },
       search: {
