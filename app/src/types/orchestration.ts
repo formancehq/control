@@ -21,15 +21,6 @@ export type OrchestrationStageSendPayment = {
   psp: string;
 };
 
-export type OrchestrationStageSend<T> = {
-  source: T;
-  destination: T;
-  amount: {
-    amount: number;
-    asset: string;
-  };
-};
-
 export type OrchestrationStageDelay = {
   duration?: string;
   until?: string;
@@ -37,6 +28,30 @@ export type OrchestrationStageDelay = {
 
 export type OrchestrationStageWaitEvent = {
   event: string;
+};
+
+export type OrchestrationStageInputAccount = {
+  account: OrchestrationStageSendAccount;
+};
+export type OrchestrationStageInputWallet = {
+  wallet: OrchestrationStageSendWallet;
+};
+export type OrchestrationStageInputPayment = {
+  payment: OrchestrationStageSendPayment;
+};
+
+export type OrchestrationStageInput =
+  | OrchestrationStageInputAccount
+  | OrchestrationStageInputWallet
+  | OrchestrationStageInputPayment;
+
+export type OrchestrationStageSend = {
+  source: OrchestrationStageInput;
+  destination: OrchestrationStageInput;
+  amount: {
+    amount: number;
+    asset: string;
+  };
 };
 
 export type OrchestrationStage<T> = ObjectOf<T>;
@@ -54,4 +69,14 @@ export enum OrchestrationStages {
   SEND = 'send',
   WAIT_EVENT = 'wait_event',
   DELAY = 'delay',
+}
+
+export enum OrchestrationRunHistories {
+  RUN_SEND = 'RunSend',
+  RUN_WAIT_EVENT = 'RunWaitEvent',
+  RUN_DELAY = 'RunDelay',
+}
+
+export enum OrchestrationStageSendHistory {
+  CREATE_TRANSACTION = 'CreateTransaction',
 }

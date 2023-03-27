@@ -557,7 +557,40 @@ export default {
         sections: {
           details: {
             title: 'Details',
+            runSend: {
+              startedAt: 'Started at',
+              terminatedAt: 'Terminated at',
+            },
           },
+        },
+      },
+      flow: {
+        createTransaction: {
+          preCommitVolumes: 'Pre commit volumes',
+          postCommitTransactions: 'Post commit transaction',
+          metadata: 'Metadata',
+          timestamp: 'Timestamp',
+          reference: 'Reference',
+        },
+        waitEvent: {
+          title: 'Wait event',
+          event: 'Event',
+        },
+        delay: {
+          title: 'Delay',
+          duration: 'Duration (s)',
+          until: 'Until (date)',
+        },
+        send: {
+          title: 'Send',
+          source: 'Source',
+          destination: 'Destination',
+          account: 'Account',
+          wallet: 'Wallet',
+          payment: 'Payment',
+          id: 'ID',
+          ledger: 'Ledger',
+          psp: 'PSP',
         },
       },
       workflow: {
@@ -565,28 +598,6 @@ export default {
         sections: {
           details: {
             title: 'Detailed config',
-            config: {
-              waitEvent: {
-                title: 'Wait event',
-                event: 'Event',
-              },
-              delay: {
-                title: 'Delay',
-                duration: 'Duration (s)',
-                until: 'Until (date)',
-              },
-              send: {
-                title: 'Send',
-                source: 'Source',
-                destination: 'Destination',
-                account: 'Account',
-                wallet: 'Wallet',
-                payment: 'Payment',
-                id: 'ID',
-                ledger: 'Ledger',
-                psp: 'PSP',
-              },
-            },
           },
           instances: {
             title: 'Instances',
