@@ -7,6 +7,7 @@ import { DelayStageProps } from './types';
 
 import { Chip } from '@numaryhq/storybook';
 
+import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 import {
   chipContainer,
   containerSx,
@@ -18,18 +19,18 @@ const DelayStage: FunctionComponent<DelayStageProps> = ({ delay }) => {
   return (
     <Box className=" react-flow__nodes">
       <Box className="react-flow__node-default">
-        <p>{t('pages.workflow.sections.details.config.delay.title')}</p>
+        <NodeTitle label={t('pages.flow.delay.title')} />
         <>
           <Box component="span" display="block" pl={1} sx={containerSx}>
             <Box sx={chipContainer}>
               <Typography sx={{ fontSize: '8px' }} variant="bold">
-                {t('pages.workflow.sections.details.config.delay.duration')}
+                {t('pages.flow.delay.duration')}
               </Typography>
               <Chip label={delay.duration} variant="square" color="brown" />
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={{ fontSize: '8px' }} variant="bold">
-                {t('pages.workflow.sections.details.config.delay.until')}
+                {t('pages.flow.delay.until')}
               </Typography>
               <Chip label={delay.until} variant="square" color="brown" />
             </Box>

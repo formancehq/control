@@ -1,6 +1,5 @@
+import { OrchestrationStageDelay } from '~/src/types/orchestration';
+
 export type DelayStageProps = {
-  delay: {
-    duration: string;
-    until?: string;
-  };
+  delay: OrchestrationStageDelay;
 };
