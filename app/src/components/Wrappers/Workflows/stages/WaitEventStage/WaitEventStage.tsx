@@ -7,6 +7,7 @@ import { WaitEventStageProps } from './types';
 
 import { Chip } from '@numaryhq/storybook';
 
+import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 import {
   chipContainer,
   containerSx,
@@ -20,12 +21,12 @@ const WaitEventStage: FunctionComponent<WaitEventStageProps> = ({
   return (
     <Box className=" react-flow__nodes">
       <Box className="react-flow__node-default">
-        <p>{t('pages.workflow.sections.details.config.waitEvent.title')}</p>
+        <NodeTitle label={t('pages.flow.waitEvent.title')} />
         <>
           <Box component="span" display="block" pl={1} sx={containerSx}>
             <Box sx={chipContainer}>
               <Typography sx={{ fontSize: '8px' }} variant="bold">
-                {t('pages.workflow.sections.details.config.waitEvent.event')}
+                {t('pages.flow.waitEvent.event')}
               </Typography>
               <Chip label={wait_event.event} variant="square" color="blue" />
             </Box>

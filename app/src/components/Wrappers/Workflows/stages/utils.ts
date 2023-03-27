@@ -10,4 +10,7 @@ export const chipContainer = {
   gap: 1,
   alignItems: 'center',
   justifyContent: 'space-between',
+  '& .MuiTypography-root': {
+    fontSize: '8px',
+  },
 };
