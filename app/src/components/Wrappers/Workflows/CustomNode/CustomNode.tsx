@@ -17,8 +17,9 @@ import {
 } from '~/src/types/orchestration';
 
 const CustomNode: FunctionComponent<CustomNodeProps> = ({
-  data: { label, details },
+  data: { label, details, isChild },
   isConnectable,
+  ...props
 }) => {
   const map = {
     [OrchestrationStages.SEND]: <SendStage send={details.send} />,
@@ -40,12 +41,21 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
 
   return (
     <div className="custom-node">
-      <Handle
-        type="target"
-        position={Position.Top}
-        isConnectable={isConnectable}
-      />
+      {isChild && (
+        <Handle
+          type="target"
+          position={Position.Top}
+          isConnectable={isConnectable}
+        />
+      )}
       {get(map, label)}
+      {!isChild && (
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          isConnectable={isConnectable}
+        />
+      )}
     </div>
   );
 };

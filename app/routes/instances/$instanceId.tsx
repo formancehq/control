@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 
 import { DashboardCustomize } from '@mui/icons-material';
 import { Box } from '@mui/material';
@@ -7,7 +8,7 @@ import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
-import ReactFlow, { Controls, Edge, Position } from 'reactflow';
+import ReactFlow, { Controls, Edge, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
 
 import { Page, SectionWrapper } from '@numaryhq/storybook';
@@ -15,6 +16,7 @@ import { Page, SectionWrapper } from '@numaryhq/storybook';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
+import { OrchestrationRunHistories } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -68,40 +70,41 @@ const nodeTypes = { customNode: CustomNode };
 export default function Index() {
   const { t } = useTranslation();
   const instance = useLoaderData(); // TODO type
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+
+  console.log(instance);
   let x = 0;
 
   const instanceHistoryNodes = instance.instanceHistory.map(
     (history: any, index: number) => {
       x = x + index === 0 ? 0 : x + 200;
-      const pair = index % 2 === 0;
 
       return {
         type: 'customNode',
         id: `instance-history-node-${index}`,
         position: { x, y: 100 },
-        data: { label: history.name, details: history },
-        sourcePosition: pair ? Position.Left : Position.Right,
-        targetPosition: pair ? Position.Right : Position.Left,
+        data: {
+          isChild: history.name !== OrchestrationRunHistories.RUN_SEND,
+          label: history.name,
+          details: history,
+        },
       };
     }
   );
 
   const stageSendHistoryNodes = instance.sendStageHistory.map(
     (history: any, index: number) => {
-      x = x + index === 0 ? 0 : x + 200;
-      const pair = index % 2 === 0;
+      x = x + index === 0 ? 0 : x + 100;
 
       return {
         type: 'customNode',
         id: `stage-send-history-node-${index}`,
-        position: { x, y: 300 },
-
+        position: { x, y: 400 },
         data: {
+          isChild: true,
           label: history.name,
           details: history.output.CreateTransaction.data[0],
         },
-        sourcePosition: pair ? Position.Left : Position.Right,
-        targetPosition: pair ? Position.Right : Position.Left,
       };
     }
   );
@@ -112,28 +115,25 @@ export default function Index() {
         return {
           id: `instance-history-edge-${index}`,
           source: `instance-history-node-${index}`,
-          animated: true,
           target: `instance-history-node-${index + 1}`,
         };
       }
     })
     .filter((edge: Edge) => edge !== undefined);
 
-  const stageSendHistoryEdges = instance.instanceHistory
-    .map((history: any, index: number) => {
-      if (index < instance.instanceHistory.length - 1) {
-        return {
-          id: `stage-send-history-edge-${index}`,
-          source: `stage-send-history-node-${index}`,
-          animated: true,
-          target: `stage-send-history-node-${index + 1}`,
-        };
-      }
+  const stageSendHistoryEdges = instance.sendStageHistory.map(
+    (history: any, index: number) => ({
+      id: `stage-send-history-edge-${index}`,
+      source: `instance-history-node-0`,
+      animated: true,
+      target: `stage-send-history-node-${index}`,
     })
-    .filter((edge: Edge) => edge !== undefined);
+  );
 
-  const nodes = [...instanceHistoryNodes, ...stageSendHistoryNodes];
-  const edges = [...instanceHistoryEdges, ...stageSendHistoryEdges];
+  useEffect(() => {
+    setNodes([...instanceHistoryNodes, ...stageSendHistoryNodes]);
+  }, []);
+  const edges = [...stageSendHistoryEdges, ...instanceHistoryEdges];
 
   return (
     <Page
@@ -152,6 +152,7 @@ export default function Index() {
               nodes={nodes}
               edges={edges}
               fitView
+              onNodesChange={onNodesChange}
               elementsSelectable={false}
               nodesConnectable={false}
               preventScrolling
