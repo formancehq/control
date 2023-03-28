@@ -4,4 +4,5 @@ export type CustomNodeProps = {
     details: any; // TODO make type
   };
   isConnectable: boolean;
+  id: string;
 };
