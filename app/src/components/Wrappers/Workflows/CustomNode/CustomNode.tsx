@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, memo } from 'react';
 
 import { get } from 'lodash';
 import { Handle, Position } from 'reactflow';
@@ -17,7 +17,7 @@ import {
 } from '~/src/types/orchestration';
 
 const CustomNode: FunctionComponent<CustomNodeProps> = ({
-  data: { label, details, isChild },
+  data: { label, details, isHighLevel, isLowLevel },
   isConnectable,
   ...props
 }) => {
@@ -41,7 +41,7 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
 
   return (
     <div className="custom-node">
-      {isChild && (
+      {isLowLevel && (
         <Handle
           type="target"
           position={Position.Top}
@@ -49,7 +49,7 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
         />
       )}
       {get(map, label)}
-      {!isChild && (
+      {isHighLevel && (
         <Handle
           type="source"
           position={Position.Bottom}
@@ -60,4 +60,4 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
   );
 };
 
-export default CustomNode;
+export default memo(CustomNode);
