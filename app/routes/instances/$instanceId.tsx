@@ -8,7 +8,7 @@ import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
-import ReactFlow, { Controls, Edge, useNodesState } from 'reactflow';
+import ReactFlow, { Controls, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
 
 import { Page, SectionWrapper } from '@numaryhq/storybook';
@@ -84,7 +84,7 @@ export default function Index() {
         id: `instance-history-node-${index}`,
         position: { x, y: 100 },
         data: {
-          isChild: history.name !== OrchestrationRunHistories.RUN_SEND,
+          isHighLevel: history.name === OrchestrationRunHistories.RUN_SEND,
           label: history.name,
           details: history,
         },
@@ -94,14 +94,15 @@ export default function Index() {
 
   const stageSendHistoryNodes = instance.sendStageHistory.map(
     (history: any, index: number) => {
-      x = x + index === 0 ? 0 : x + 100;
+      x = x + index === 0 ? 0 : x + 20;
 
       return {
         type: 'customNode',
         id: `stage-send-history-node-${index}`,
         position: { x, y: 400 },
+        style: { width: '250px' },
         data: {
-          isChild: true,
+          isLowLevel: true,
           label: history.name,
           details: history.output.CreateTransaction.data[0],
         },
@@ -109,19 +110,7 @@ export default function Index() {
     }
   );
 
-  const instanceHistoryEdges = instance.instanceHistory
-    .map((history: any, index: number) => {
-      if (index < instance.instanceHistory.length - 1) {
-        return {
-          id: `instance-history-edge-${index}`,
-          source: `instance-history-node-${index}`,
-          target: `instance-history-node-${index + 1}`,
-        };
-      }
-    })
-    .filter((edge: Edge) => edge !== undefined);
-
-  const stageSendHistoryEdges = instance.sendStageHistory.map(
+  const edges = instance.sendStageHistory.map(
     (history: any, index: number) => ({
       id: `stage-send-history-edge-${index}`,
       source: `instance-history-node-0`,
@@ -133,7 +122,6 @@ export default function Index() {
   useEffect(() => {
     setNodes([...instanceHistoryNodes, ...stageSendHistoryNodes]);
   }, []);
-  const edges = [...stageSendHistoryEdges, ...instanceHistoryEdges];
 
   return (
     <Page
@@ -156,6 +144,7 @@ export default function Index() {
               elementsSelectable={false}
               nodesConnectable={false}
               preventScrolling
+              nodeOrigin={[0.5, 0.5]}
               nodeTypes={nodeTypes}
             >
               <Controls showInteractive={false} />
