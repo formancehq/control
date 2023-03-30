@@ -5,8 +5,13 @@ import { Handle, Position } from 'reactflow';
 
 import { CustomNodeProps } from './types';
 
+import CreateTransaction from '~/src/components/Wrappers/Workflows/histories/activities/CreateTransaction';
+import CreditWallet from '~/src/components/Wrappers/Workflows/histories/activities/CreditWallet';
+import GetAccount from '~/src/components/Wrappers/Workflows/histories/activities/GetAccount';
+import GetPayment from '~/src/components/Wrappers/Workflows/histories/activities/GetPayment';
+import GetWallet from '~/src/components/Wrappers/Workflows/histories/activities/GetWallet';
+import RevertTransaction from '~/src/components/Wrappers/Workflows/histories/activities/RevertTransaction';
 import RunSend from '~/src/components/Wrappers/Workflows/histories/RunSend';
-import CreateTransaction from '~/src/components/Wrappers/Workflows/histories/stages/CreateTransaction';
 import DelayStage from '~/src/components/Wrappers/Workflows/stages/DelayStage';
 import SendStage from '~/src/components/Wrappers/Workflows/stages/SendStage';
 import WaitEventStage from '~/src/components/Wrappers/Workflows/stages/WaitEventStage/WaitEventStage';
@@ -17,9 +22,8 @@ import {
 } from '~/src/types/orchestration';
 
 const CustomNode: FunctionComponent<CustomNodeProps> = ({
-  data: { label, details, isHighLevel, isLowLevel },
+  data: { label, details, isHighLevel = false, isLowLevel = false },
   isConnectable,
-  ...props
 }) => {
   const map = {
     [OrchestrationStages.SEND]: <SendStage send={details.send} />,
@@ -36,6 +40,15 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
     ),
     [OrchestrationStageSendHistory.CREATE_TRANSACTION]: (
       <CreateTransaction {...details} />
+    ),
+    [OrchestrationStageSendHistory.REVERT_TRANSACTION]: (
+      <RevertTransaction {...details} />
+    ),
+    [OrchestrationStageSendHistory.GET_PAYMENT]: <GetPayment {...details} />,
+    [OrchestrationStageSendHistory.GET_WALLET]: <GetWallet {...details} />,
+    [OrchestrationStageSendHistory.GET_ACCOUNT]: <GetAccount {...details} />,
+    [OrchestrationStageSendHistory.CREDIT_WALLET]: (
+      <CreditWallet {...details} />
     ),
   };
 

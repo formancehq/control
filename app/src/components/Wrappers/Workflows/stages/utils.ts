@@ -14,3 +14,14 @@ export const chipContainer = {
     fontSize: '8px',
   },
 };
+
+export const jsonContainer = {
+  ...chipContainer,
+  display: 'flex',
+  alignItems: 'flex-start',
+  flexDirection: 'column',
+  gap: 0,
+  '& li': {
+    fontSize: '8px !important',
+  },
+};

@@ -7,6 +7,7 @@ import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
+import { get, isArray } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ReactFlow, { Controls, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
@@ -71,8 +72,6 @@ export default function Index() {
   const { t } = useTranslation();
   const instance = useLoaderData(); // TODO type
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
-
-  console.log(instance);
   let x = 0;
 
   const instanceHistoryNodes = instance.instanceHistory.map(
@@ -83,6 +82,7 @@ export default function Index() {
         type: 'customNode',
         id: `instance-history-node-${index}`,
         position: { x, y: 100 },
+        style: { width: '250px' },
         data: {
           isHighLevel: history.name === OrchestrationRunHistories.RUN_SEND,
           label: history.name,
@@ -94,7 +94,9 @@ export default function Index() {
 
   const stageSendHistoryNodes = instance.sendStageHistory.map(
     (history: any, index: number) => {
-      x = x + index === 0 ? 0 : x + 20;
+      x = x + index === 0 ? 0 : x + 250;
+      const output = get(history, 'output', get(history, 'input'));
+      const item = output[Object.keys(output)[0]];
 
       return {
         type: 'customNode',
@@ -104,7 +106,7 @@ export default function Index() {
         data: {
           isLowLevel: true,
           label: history.name,
-          details: history.output.CreateTransaction.data[0],
+          details: isArray(item.data) ? item.data[0] : item.data,
         },
       };
     }
@@ -135,7 +137,13 @@ export default function Index() {
     >
       <>
         <SectionWrapper title={t('pages.instance.sections.details.title')}>
-          <Box sx={{ width: '96%', height: '400px', mb: 10 }}>
+          <Box
+            sx={{
+              width: '96%',
+              height: nodes.length > 3 ? '800px' : '400px',
+              mb: 10,
+            }}
+          >
             <ReactFlow
               nodes={nodes}
               edges={edges}
