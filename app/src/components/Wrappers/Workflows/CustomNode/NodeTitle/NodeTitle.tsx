@@ -12,9 +12,10 @@ const NodeTitle: FunctionComponent<NodeTitleProps> = ({
   label,
   color,
   onToggle,
+  icon,
 }) => {
   const [expanded, expand] = useToggle(false);
-  const icon = expanded ? <ExpandMore /> : <ChevronRight />;
+  const expandIcon = expanded ? <ExpandMore /> : <ChevronRight />;
 
   return (
     <Box
@@ -23,14 +24,29 @@ const NodeTitle: FunctionComponent<NodeTitleProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         p: 0.5,
-        background: ({ palette }) => (color ? color : palette.neutral[50]),
+        background: ({ palette }) => (color ? color : palette.neutral[100]),
         borderRadius: '6px',
+        height: 42,
       }}
     >
+      <Box
+        component="span"
+        pr={1}
+        display="flex"
+        alignItems="center"
+        sx={{
+          '& .MuiSvgIcon-root': {
+            width: '0.7em',
+            height: '0.7em',
+          },
+        }}
+      >
+        {icon}
+      </Box>
       <Typography>{label}</Typography>
       {onToggle && (
         <LoadingButton
-          startIcon={icon}
+          startIcon={expandIcon}
           variant="transparent"
           onClick={() => {
             expand();

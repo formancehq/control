@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const workflows = await (
       await createApiClient(session)
-    ).getResource<OrchestrationWorkflow[]>(
+    ).getResource<OrchestrationWorkflow<any>[]>(
       `${API_ORCHESTRATION}/workflows`,
       'data'
     );
@@ -43,7 +43,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   const { t } = useTranslation();
-  const workflows = useLoaderData<OrchestrationWorkflow[]>();
+  const workflows = useLoaderData<OrchestrationWorkflow<any>[]>();
 
   return (
     <Box mt={2}>
@@ -66,7 +66,7 @@ export default function Index() {
             label: t('pages.workflows.table.columnLabel.createdAt'),
           },
         ]}
-        renderItem={(workflow: OrchestrationWorkflow, index: number) => (
+        renderItem={(workflow: OrchestrationWorkflow<any>, index: number) => (
           <Row
             key={index}
             keys={[

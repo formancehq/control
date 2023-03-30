@@ -1,15 +1,17 @@
 import React, { FunctionComponent } from 'react';
 
+import { SwapHoriz } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { Chip, Date, JsonViewer } from '@numaryhq/storybook';
+import { Chip, CopyPasteTooltip, Date, JsonViewer } from '@numaryhq/storybook';
 
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
-import { CreateTransactionProps } from '~/src/components/Wrappers/Workflows/histories/stages/CreateTransaction/types';
+import { CreateTransactionProps } from '~/src/components/Wrappers/Workflows/histories/activities/CreateTransaction/types';
 import {
   chipContainer,
   containerSx,
+  jsonContainer,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { useToggle } from '~/src/hooks/useToggle';
@@ -18,7 +20,6 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
   reference,
   metadata,
   postCommitTransactions,
-  postings,
   preCommitVolumes,
   timestamp,
   txid,
@@ -26,16 +27,6 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
   const { t } = useTranslation();
   const { palette } = useTheme();
   const [show, toggle] = useToggle(false);
-
-  const jsonContainer = {
-    ...chipContainer,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0,
-    '& li': {
-      fontSize: '8px !important',
-    },
-  };
 
   return (
     <Box
@@ -47,40 +38,59 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
       }}
     >
       <NodeTitle
-        label="Create Transaction"
+        label={t('pages.flow.activities.createTransaction.title')}
         color={palette.violet.light}
         onToggle={toggle}
+        icon={<SwapHoriz />}
       />
       {show && (
         <>
-          <Box component="span" display="block" pl={1} sx={containerSx}>
+          <Box component="span" display="block" pl={1} sx={containerSx} mt={1}>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.createTransaction.reference')}
+                {t('pages.flow.activities.createTransaction.reference')}
               </Typography>
-              <Chip label={reference} variant="square" color="green" />
+              <CopyPasteTooltip
+                tooltipMessage={t('common.tooltip.copied')}
+                value={reference}
+              >
+                <Chip
+                  label={reference}
+                  variant="square"
+                  color="green"
+                  sx={{ overflow: 'hidden' }}
+                />
+              </CopyPasteTooltip>
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.createTransaction.timestamp')}
+                {t('pages.flow.activities.createTransaction.txid')}
+              </Typography>
+              <Chip label={txid} variant="square" color="blue" />
+            </Box>
+            <Box sx={chipContainer}>
+              <Typography sx={typoSx} variant="bold">
+                {t('pages.flow.activities.createTransaction.timestamp')}
               </Typography>
               <Date timestamp={timestamp} />
             </Box>
             <Box sx={jsonContainer}>
               <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.createTransaction.metadata')}
+                {t('pages.flow.activities.createTransaction.metadata')}
               </Typography>
               <JsonViewer jsonData={metadata} expanded />
             </Box>
             <Box sx={jsonContainer}>
               <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.createTransaction.postCommitTransactions')}
+                {t(
+                  'pages.flow.activities.createTransaction.postCommitTransactions'
+                )}
               </Typography>
               <JsonViewer jsonData={postCommitTransactions} expanded />
             </Box>
             <Box sx={jsonContainer}>
               <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.createTransaction.preCommitVolumes')}
+                {t('pages.flow.activities.createTransaction.preCommitVolumes')}
               </Typography>
               <JsonViewer jsonData={preCommitVolumes} expanded />
             </Box>
