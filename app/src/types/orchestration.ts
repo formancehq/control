@@ -79,4 +79,9 @@ export enum OrchestrationRunHistories {
 
 export enum OrchestrationStageSendHistory {
   CREATE_TRANSACTION = 'CreateTransaction',
+  REVERT_TRANSACTION = 'RevertTransaction',
+  GET_PAYMENT = 'GetPayment',
+  GET_ACCOUNT = 'GetAccount',
+  GET_WALLET = 'GetWallet',
+  CREDIT_WALLET = 'CreditWallet',
 }

@@ -73,7 +73,12 @@ export default function Index() {
         type: 'customNode',
         id: (index + 1).toString(),
         position: { x, y: 250 },
-        data: { label: Object.keys(stage)[0], details: stage },
+        style: { width: '200px' },
+        data: {
+          label: Object.keys(stage)[0],
+          details: stage,
+          isLowLevel: true,
+        },
       };
     }
   );
@@ -82,7 +87,10 @@ export default function Index() {
     {
       id: '0',
       position: { x: 0, y: 50 },
-      data: { label: workflow.config.name || 'Default workflow' },
+      data: {
+        label: workflow.config.name || 'Default workflow',
+        isHighLevel: true,
+      },
     },
     ...initialNodes,
   ];

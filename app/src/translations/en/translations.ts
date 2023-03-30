@@ -565,12 +565,36 @@ export default {
         },
       },
       flow: {
-        createTransaction: {
-          preCommitVolumes: 'Pre commit volumes',
-          postCommitTransactions: 'Post commit transaction',
-          metadata: 'Metadata',
-          timestamp: 'Timestamp',
-          reference: 'Reference',
+        activities: {
+          createTransaction: {
+            title: 'Create transaction',
+            preCommitVolumes: 'Pre commit volumes',
+            postCommitTransactions: 'Post commit transaction',
+            metadata: 'Metadata',
+            timestamp: 'Timestamp',
+            reference: 'Reference',
+            txid: 'Txid',
+          },
+          creditWallet: {
+            title: 'Credit wallet',
+            metadata: 'Metadata',
+          },
+          getAccount: {
+            title: 'Get account',
+            metadata: 'Metadata',
+          },
+          getPayment: {
+            title: 'Get payment',
+            metadata: 'Metadata',
+          },
+          getWallet: {
+            title: 'Get wallet',
+            metadata: 'Metadata',
+          },
+          revertTransaction: {
+            title: 'Revert transaction',
+            metadata: 'Metadata',
+          },
         },
         waitEvent: {
           title: 'Wait event',
