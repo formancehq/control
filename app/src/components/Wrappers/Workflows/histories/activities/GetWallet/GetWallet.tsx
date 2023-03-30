@@ -4,18 +4,24 @@ import { Wallet } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { JsonViewer } from '@numaryhq/storybook';
+import { Chip, Date, JsonViewer } from '@numaryhq/storybook';
 
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 import { GetWalletProps } from '~/src/components/Wrappers/Workflows/histories/activities/GetWallet/types';
 import {
+  chipContainer,
   containerSx,
   jsonContainer,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { useToggle } from '~/src/hooks/useToggle';
 
-const GetWallet: FunctionComponent<GetWalletProps> = ({ metadata }) => {
+const GetWallet: FunctionComponent<GetWalletProps> = ({
+  metadata,
+  name,
+  createdAt,
+  ledger,
+}) => {
   const { t } = useTranslation();
   const { palette } = useTheme();
   const [show, toggle] = useToggle(false);
@@ -38,6 +44,24 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({ metadata }) => {
       {show && (
         <>
           <Box component="span" display="block" sx={containerSx}>
+            <Box sx={chipContainer}>
+              <Typography sx={typoSx} variant="bold">
+                {t('pages.flow.activities.getWallet.name')}
+              </Typography>
+              <Chip label={name} variant="square" color="blue" />
+            </Box>
+            <Box sx={chipContainer}>
+              <Typography sx={typoSx} variant="bold">
+                {t('pages.flow.activities.getWallet.ledger')}
+              </Typography>
+              <Chip label={ledger} variant="square" color="brown" />
+            </Box>
+            <Box sx={jsonContainer}>
+              <Typography sx={typoSx} variant="bold">
+                {t('pages.flow.activities.getWallet.createdAt')}
+              </Typography>
+              <Date timestamp={createdAt} />
+            </Box>
             <Box sx={jsonContainer}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.metadata')}
