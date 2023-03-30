@@ -37,7 +37,7 @@ const GetAccount: FunctionComponent<GetAccountProps> = ({ metadata }) => {
       />
       {show && (
         <>
-          <Box component="span" display="block" pl={1} sx={containerSx}>
+          <Box component="span" display="block" sx={containerSx}>
             <Box sx={jsonContainer}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getAccount.metadata')}

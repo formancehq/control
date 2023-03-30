@@ -20,6 +20,7 @@ export const jsonContainer = {
   display: 'flex',
   alignItems: 'flex-start',
   flexDirection: 'column',
+  width: '100%',
   gap: 0,
   '& li': {
     fontSize: '8px !important',
