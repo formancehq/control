@@ -1,5 +1,3 @@
-import { ObjectOf } from '@numaryhq/storybook';
+import { Wallet } from '~/src/types/wallet';
 
-export type GetWalletProps = {
-  metadata: ObjectOf<any>;
-};
+export type GetWalletProps = Wallet & { ledger: string };

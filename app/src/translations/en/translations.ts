@@ -621,6 +621,9 @@ export default {
           getWallet: {
             title: 'Get wallet',
             metadata: 'Metadata',
+            ledger: 'Ledger',
+            name: 'Name',
+            createdAt: 'Created at',
           },
           revertTransaction: {
             title: 'Revert transaction',
