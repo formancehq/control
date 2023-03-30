@@ -1,5 +1,3 @@
-import { ObjectOf } from '@numaryhq/storybook';
+import { Payment } from '~/src/types/payment';
 
-export type GetPaymentProps = {
-  metadata: ObjectOf<any>;
-};
+export type GetPaymentProps = Payment;

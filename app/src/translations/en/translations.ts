@@ -613,7 +613,10 @@ export default {
           },
           getPayment: {
             title: 'Get payment',
-            metadata: 'Metadata',
+            createdAt: 'Created at',
+            initialAmount: 'Initial amount',
+            raw: 'Raw data',
+            reference: 'Reference',
           },
           getWallet: {
             title: 'Get wallet',

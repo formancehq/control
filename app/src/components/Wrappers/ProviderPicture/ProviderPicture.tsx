@@ -2,7 +2,6 @@ import React, { FunctionComponent } from 'react';
 
 import { Box, Typography } from '@mui/material';
 import { get } from 'lodash';
-import { boolean, string } from 'yup/lib/locale';
 
 import { ProviderPictureProps } from './types';
 
@@ -12,6 +11,7 @@ import { providersMap } from '~/src/utils/providersMap';
 const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
   provider,
   text,
+  border = true,
 }) => {
   const logoAttr = get(
     providersMap,
@@ -26,7 +26,8 @@ const ProviderPicture: FunctionComponent<ProviderPictureProps> = ({
       <Box
         component="span"
         sx={{
-          border: ({ palette }) => `1px solid ${palette.neutral[300]}`,
+          border: ({ palette }) =>
+            border ? `1px solid ${palette.neutral[300]}` : 'none',
           borderRadius: '6px',
           p: '5px 5px 0px 5px',
         }}
