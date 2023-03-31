@@ -587,6 +587,16 @@ export default {
           getAccount: {
             title: 'Get account',
             metadata: 'Metadata',
+            address: 'ID',
+          },
+          stripeTransfer: {
+            title: 'Stripe transfer',
+            destination: 'Destination',
+            amount: 'Amount',
+          },
+          debitWallet: {
+            title: 'Debit wallet',
+            amount: 'Amount',
           },
           getPayment: {
             title: 'Get payment',
@@ -604,7 +614,6 @@ export default {
           },
           revertTransaction: {
             title: 'Revert transaction',
-            metadata: 'Metadata',
           },
         },
         waitEvent: {

@@ -7,10 +7,12 @@ import { CustomNodeProps } from './types';
 
 import CreateTransaction from '~/src/components/Wrappers/Workflows/histories/activities/CreateTransaction';
 import CreditWallet from '~/src/components/Wrappers/Workflows/histories/activities/CreditWallet';
+import DebitWallet from '~/src/components/Wrappers/Workflows/histories/activities/DebitWallet';
 import GetAccount from '~/src/components/Wrappers/Workflows/histories/activities/GetAccount';
 import GetPayment from '~/src/components/Wrappers/Workflows/histories/activities/GetPayment';
 import GetWallet from '~/src/components/Wrappers/Workflows/histories/activities/GetWallet';
 import RevertTransaction from '~/src/components/Wrappers/Workflows/histories/activities/RevertTransaction';
+import StripeTransfer from '~/src/components/Wrappers/Workflows/histories/activities/StripeTransfer';
 import RunSend from '~/src/components/Wrappers/Workflows/histories/RunSend';
 import DelayStage from '~/src/components/Wrappers/Workflows/stages/DelayStage';
 import SendStage from '~/src/components/Wrappers/Workflows/stages/SendStage';
@@ -49,6 +51,10 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
     [OrchestrationStageSendHistory.GET_ACCOUNT]: <GetAccount {...details} />,
     [OrchestrationStageSendHistory.CREDIT_WALLET]: (
       <CreditWallet {...details} />
+    ),
+    [OrchestrationStageSendHistory.DEBIT_WALLET]: <DebitWallet {...details} />,
+    [OrchestrationStageSendHistory.STRIPE_TRANSFER]: (
+      <StripeTransfer {...details} />
     ),
   };
 
