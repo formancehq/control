@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 
 import { Wallet } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
+import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { Chip, Date, JsonViewer } from '@numaryhq/storybook';
@@ -43,7 +44,7 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
       />
       {show && (
         <>
-          <Box component="span" display="block" sx={containerSx}>
+          <Box component="span" display="block" sx={containerSx} mt={1}>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.name')}
@@ -56,18 +57,20 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
               </Typography>
               <Chip label={ledger} variant="square" color="brown" />
             </Box>
-            <Box sx={jsonContainer}>
+            <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.createdAt')}
               </Typography>
               <Date timestamp={createdAt} />
             </Box>
-            <Box sx={jsonContainer}>
-              <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.activities.getWallet.metadata')}
-              </Typography>
-              <JsonViewer jsonData={metadata} expanded />
-            </Box>
+            {!isEmpty(metadata) && (
+              <Box sx={jsonContainer}>
+                <Typography sx={typoSx} variant="bold">
+                  {t('pages.flow.activities.getWallet.metadata')}
+                </Typography>
+                <JsonViewer jsonData={metadata} expanded />
+              </Box>
+            )}
           </Box>
         </>
       )}
