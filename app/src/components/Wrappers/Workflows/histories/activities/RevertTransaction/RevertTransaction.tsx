@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 
 import { SwapHoriz } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
+import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { JsonViewer } from '@numaryhq/storybook';
@@ -40,12 +41,14 @@ const RevertTransaction: FunctionComponent<RevertTransactionProps> = ({
       {show && (
         <>
           <Box component="span" display="block" sx={containerSx}>
-            <Box sx={jsonContainer}>
-              <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.activities.revertTransaction.metadata')}
-              </Typography>
-              <JsonViewer jsonData={metadata} expanded />
-            </Box>
+            {!isEmpty(metadata) && (
+              <Box sx={jsonContainer}>
+                <Typography sx={typoSx} variant="bold">
+                  {t('pages.flow.activities.revertTransaction.metadata')}
+                </Typography>
+                <JsonViewer jsonData={metadata} expanded />
+              </Box>
+            )}
           </Box>
         </>
       )}
