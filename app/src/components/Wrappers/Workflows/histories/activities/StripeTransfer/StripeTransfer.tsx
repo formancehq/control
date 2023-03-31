@@ -2,24 +2,23 @@ import React, { FunctionComponent } from 'react';
 
 import { AccountTree } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
-import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { Chip, JsonViewer } from '@numaryhq/storybook';
+import { Chip } from '@numaryhq/storybook';
 
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
-import { GetAccountProps } from '~/src/components/Wrappers/Workflows/histories/activities/GetAccount/types';
+import { StripeTransferProps } from '~/src/components/Wrappers/Workflows/histories/activities/StripeTransfer/types';
 import {
   chipContainer,
   containerSx,
-  jsonContainer,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { useToggle } from '~/src/hooks/useToggle';
 
-const GetAccount: FunctionComponent<GetAccountProps> = ({
-  metadata,
-  address,
+const StripeTransfer: FunctionComponent<StripeTransferProps> = ({
+  asset,
+  destination,
+  amount,
 }) => {
   const { t } = useTranslation();
   const { palette } = useTheme();
@@ -35,7 +34,7 @@ const GetAccount: FunctionComponent<GetAccountProps> = ({
       }}
     >
       <NodeTitle
-        label={t('pages.flow.activities.getAccount.title')}
+        label={t('pages.flow.activities.stripeTransfer.title')}
         color={palette.green.light}
         onToggle={toggle}
         icon={<AccountTree />}
@@ -45,18 +44,16 @@ const GetAccount: FunctionComponent<GetAccountProps> = ({
           <Box component="span" display="block" sx={containerSx} mt={1}>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.activities.getAccount.address')}
+                {t('pages.flow.activities.stripeTransfer.destination')}
               </Typography>
-              <Chip label={address} variant="square" />
+              <Chip label={destination} variant="square" />
             </Box>
-            {!isEmpty(metadata) && (
-              <Box sx={jsonContainer}>
-                <Typography sx={typoSx} variant="bold">
-                  {t('pages.flow.activities.getAccount.metadata')}
-                </Typography>
-                <JsonViewer jsonData={metadata} expanded />
-              </Box>
-            )}
+            <Box sx={chipContainer}>
+              <Typography sx={typoSx} variant="bold">
+                {t('pages.flow.activities.stripeTransfer.amount')}
+              </Typography>
+              <Chip label={`${amount} ${asset}`} variant="square" color="red" />
+            </Box>
           </Box>
         </>
       )}
@@ -64,4 +61,4 @@ const GetAccount: FunctionComponent<GetAccountProps> = ({
   );
 };
 
-export default GetAccount;
+export default StripeTransfer;
