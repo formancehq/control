@@ -42,12 +42,17 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
   item,
 }) => {
   const { t } = useTranslation();
+  const titleTypoSx = {
+    fontSize: '10px',
+    display: 'flex',
+    alignItems: 'center',
+  };
 
   const handleDestinationOrSource = () => {
     if (isAccount(item)) {
       return (
         <Box sx={containerSx}>
-          <Typography sx={{ fontSize: '10px' }}>
+          <Typography sx={titleTypoSx}>
             <AccountTree
               fontSize="small"
               sx={{ width: '0.5em', height: '0.5em', pr: 0.5 }}
@@ -79,7 +84,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
     if (isWallet(item)) {
       return (
         <Box sx={containerSx}>
-          <Typography sx={{ fontSize: '10px' }}>
+          <Typography sx={titleTypoSx}>
             <Wallet
               fontSize="small"
               sx={{ width: '0.5em', height: '0.5em', pr: 0.5 }}
@@ -101,7 +106,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
     if (isPayment(item)) {
       return (
         <Box sx={containerSx}>
-          <Typography sx={{ fontSize: '10px' }}>
+          <Typography sx={titleTypoSx}>
             <CreditCard
               fontSize="small"
               sx={{ width: '0.5em', height: '0.5em', pr: 0.5 }}

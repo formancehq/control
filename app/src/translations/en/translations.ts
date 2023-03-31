@@ -606,6 +606,11 @@ export default {
           creditWallet: {
             title: 'Credit wallet',
             metadata: 'Metadata',
+            identifier: 'Identifier',
+            type: 'Type',
+            amount: 'Amount',
+            balance: 'Balance',
+            sources: 'Sources',
           },
           getAccount: {
             title: 'Get account',
