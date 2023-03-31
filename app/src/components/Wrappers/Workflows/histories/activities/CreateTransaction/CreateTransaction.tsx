@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 
 import { SwapHoriz } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
+import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { Chip, CopyPasteTooltip, Date, JsonViewer } from '@numaryhq/storybook';
@@ -74,26 +75,34 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
               </Typography>
               <Date timestamp={timestamp} />
             </Box>
-            <Box sx={jsonContainer}>
-              <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.activities.createTransaction.metadata')}
-              </Typography>
-              <JsonViewer jsonData={metadata} expanded />
-            </Box>
-            <Box sx={jsonContainer}>
-              <Typography sx={typoSx} variant="bold">
-                {t(
-                  'pages.flow.activities.createTransaction.postCommitTransactions'
-                )}
-              </Typography>
-              <JsonViewer jsonData={postCommitTransactions} expanded />
-            </Box>
-            <Box sx={jsonContainer}>
-              <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.activities.createTransaction.preCommitVolumes')}
-              </Typography>
-              <JsonViewer jsonData={preCommitVolumes} expanded />
-            </Box>
+            {!isEmpty(metadata) && (
+              <Box sx={jsonContainer}>
+                <Typography sx={typoSx} variant="bold">
+                  {t('pages.flow.activities.createTransaction.metadata')}
+                </Typography>
+                <JsonViewer jsonData={metadata} expanded />
+              </Box>
+            )}
+            {postCommitTransactions && (
+              <Box sx={jsonContainer}>
+                <Typography sx={typoSx} variant="bold">
+                  {t(
+                    'pages.flow.activities.createTransaction.postCommitTransactions'
+                  )}
+                </Typography>
+                <JsonViewer jsonData={postCommitTransactions} expanded />
+              </Box>
+            )}
+            {preCommitVolumes && (
+              <Box sx={jsonContainer}>
+                <Typography sx={typoSx} variant="bold">
+                  {t(
+                    'pages.flow.activities.createTransaction.preCommitVolumes'
+                  )}
+                </Typography>
+                <JsonViewer jsonData={preCommitVolumes} expanded />
+              </Box>
+            )}
           </Box>
         </>
       )}
