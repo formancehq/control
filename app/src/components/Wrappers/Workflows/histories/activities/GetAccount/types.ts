@@ -1,5 +1,3 @@
-import { ObjectOf } from '@numaryhq/storybook';
+import { Account } from '~/src/types/ledger';
 
-export type GetAccountProps = {
-  metadata: ObjectOf<any>;
-};
+export type GetAccountProps = Account;

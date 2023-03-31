@@ -84,4 +84,6 @@ export enum OrchestrationStageSendHistory {
   GET_ACCOUNT = 'GetAccount',
   GET_WALLET = 'GetWallet',
   CREDIT_WALLET = 'CreditWallet',
+  DEBIT_WALLET = 'DebitWallet',
+  STRIPE_TRANSFER = 'StripeTransfer',
 }

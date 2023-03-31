@@ -97,6 +97,7 @@ export default function Index() {
       x = x + index === 0 ? 0 : x + 250;
       const output = get(history, 'output', get(history, 'input'));
       const item = output[Object.keys(output)[0]];
+      console.log(history, item);
 
       return {
         type: 'customNode',
@@ -106,7 +107,7 @@ export default function Index() {
         data: {
           isLowLevel: true,
           label: history.name,
-          details: isArray(item.data) ? item.data[0] : item.data,
+          details: isArray(item.data) ? item.data[0] : get(item, 'data', item),
         },
       };
     }
