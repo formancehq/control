@@ -17,6 +17,7 @@ import { getRoute, INSTANCE_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
+import RootNode from '~/src/components/Wrappers/Workflows/CustomNode/RootNode';
 import { OrchestrationInstance } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -58,16 +59,17 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-const nodeTypes = { customNode: CustomNode };
+const nodeTypes = { customNode: CustomNode, rootNode: RootNode };
 
 export default function Index() {
   const { t } = useTranslation();
   const workflow = useLoaderData(); // TODO type
   const navigate = useNavigate();
   let x = 0;
+  const initPos = workflow.config.stages.length === 1 ? 0 : -200;
   const initialNodes = workflow.config.stages.map(
     (stage: any, index: number) => {
-      x = x + index === 0 ? 0 : x + 200;
+      x = x + index === 0 ? initPos : x + 250;
 
       return {
         type: 'customNode',
@@ -86,11 +88,8 @@ export default function Index() {
   const init = [
     {
       id: '0',
+      type: 'rootNode',
       position: { x: 0, y: 50 },
-      data: {
-        label: workflow.config.name || 'Default workflow',
-        isHighLevel: true,
-      },
     },
     ...initialNodes,
   ];

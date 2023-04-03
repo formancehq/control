@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react';
 
-import { PendingOutlined } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
@@ -8,11 +7,13 @@ import { WaitEventStageProps } from './types';
 
 import { Chip } from '@numaryhq/storybook';
 
+import { orchestrationStagesIconMap } from '~/src/components/Wrappers/StatusChip/maps';
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 import {
   chipContainer,
   containerSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
+import { OrchestrationStages } from '~/src/types/orchestration';
 
 const WaitEventStage: FunctionComponent<WaitEventStageProps> = ({
   wait_event,
@@ -29,10 +30,10 @@ const WaitEventStage: FunctionComponent<WaitEventStageProps> = ({
     >
       <NodeTitle
         label={t('pages.flow.waitEvent.title')}
-        icon={<PendingOutlined />}
+        icon={orchestrationStagesIconMap[OrchestrationStages.WAIT_EVENT]}
       />
       <>
-        <Box component="span" display="block" pl={1} sx={containerSx}>
+        <Box component="span" display="block" mt={1} sx={containerSx}>
           <Box sx={chipContainer}>
             <Typography sx={{ fontSize: '8px' }} variant="bold">
               {t('pages.flow.waitEvent.event')}

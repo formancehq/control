@@ -1,13 +1,14 @@
 import React, { FunctionComponent } from 'react';
 
-import { Send } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { SendStageProps } from './types';
 
+import { orchestrationStagesIconMap } from '~/src/components/Wrappers/StatusChip/maps';
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 import SourceDestinationBox from '~/src/components/Wrappers/Workflows/CustomNode/SourceDestinationBox';
+import { OrchestrationStages } from '~/src/types/orchestration';
 
 const SendStage: FunctionComponent<SendStageProps> = ({ send }) => {
   const { t } = useTranslation();
@@ -20,7 +21,10 @@ const SendStage: FunctionComponent<SendStageProps> = ({ send }) => {
         width: '100%',
       }}
     >
-      <NodeTitle label={t('pages.flow.send.title')} icon={<Send />} />
+      <NodeTitle
+        label={t('pages.flow.send.title')}
+        icon={orchestrationStagesIconMap[OrchestrationStages.SEND]}
+      />
       <>
         <Box
           component="span"
