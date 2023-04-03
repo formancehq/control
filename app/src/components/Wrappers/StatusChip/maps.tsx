@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {
+  ArrowCircleUp,
   Block,
   Done,
   East,
@@ -10,10 +11,16 @@ import {
   MoreHoriz,
   NorthEast,
   PauseCircle,
+  PauseCircleOutline,
+  Schedule,
   SouthEast,
 } from '@mui/icons-material';
 
 import { ConnectorStatuses, TaskStatuses } from '~/src/types/connectorsConfig';
+import {
+  OrchestrationInstanceStatuses,
+  OrchestrationStages,
+} from '~/src/types/orchestration';
 import { PaymentStatuses, PaymentTypes } from '~/src/types/payment';
 
 export const paymentIconMap = {
@@ -65,7 +72,23 @@ export const appIconMap = {
   [ConnectorStatuses.ACTIVE]: <Done />,
   [ConnectorStatuses.INACTIVE]: <PauseCircle />,
 };
+
 export const appColorMap = {
   [ConnectorStatuses.ACTIVE]: 'green',
   [ConnectorStatuses.INACTIVE]: 'red',
+};
+
+export const orchestrationStagesIconMap = {
+  [OrchestrationStages.DELAY]: <Schedule />,
+  [OrchestrationStages.WAIT_EVENT]: <PauseCircleOutline />,
+  [OrchestrationStages.SEND]: <ArrowCircleUp />,
+};
+
+export const orchestrationInstanceStatusIconMap = {
+  [OrchestrationInstanceStatuses.TERMINATED]: <Done />,
+  [OrchestrationInstanceStatuses.RUNNING]: <LoopOutlined />,
+};
+export const orchestrationInstanceStatusColorMap = {
+  [OrchestrationInstanceStatuses.TERMINATED]: 'red',
+  [OrchestrationInstanceStatuses.RUNNING]: 'violet',
 };

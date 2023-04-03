@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react';
 
-import { Schedule } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
@@ -8,11 +7,13 @@ import { DelayStageProps } from './types';
 
 import { Chip } from '@numaryhq/storybook';
 
+import { orchestrationStagesIconMap } from '~/src/components/Wrappers/StatusChip/maps';
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 import {
   chipContainer,
   containerSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
+import { OrchestrationStages } from '~/src/types/orchestration';
 
 const DelayStage: FunctionComponent<DelayStageProps> = ({ delay }) => {
   const { t } = useTranslation();
@@ -25,9 +26,12 @@ const DelayStage: FunctionComponent<DelayStageProps> = ({ delay }) => {
         width: '100%',
       }}
     >
-      <NodeTitle label={t('pages.flow.delay.title')} icon={<Schedule />} />
+      <NodeTitle
+        label={t('pages.flow.delay.title')}
+        icon={orchestrationStagesIconMap[OrchestrationStages.DELAY]}
+      />
       <>
-        <Box component="span" display="block" pl={1} sx={containerSx}>
+        <Box component="span" display="block" mt={1} sx={containerSx}>
           <Box sx={chipContainer}>
             <Typography sx={{ fontSize: '8px' }} variant="bold">
               {t('pages.flow.delay.duration')}

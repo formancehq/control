@@ -30,13 +30,13 @@ const GetAccount: FunctionComponent<GetAccountProps> = ({
       className="react-flow__node-default"
       sx={{
         borderRadius: '15px',
-        border: ({ palette }) => `1px dotted ${palette.green.bright}`,
+        border: ({ palette }) => `1px dotted ${palette.blue.bright}`,
         width: '100%',
       }}
     >
       <NodeTitle
         label={t('pages.flow.activities.getAccount.title')}
-        color={palette.green.light}
+        color={palette.blue.light}
         onToggle={toggle}
         icon={<AccountTree />}
       />

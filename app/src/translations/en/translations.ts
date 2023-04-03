@@ -364,9 +364,11 @@ export default {
       workflows: {
         title: 'Workflows',
         table: {
+          noName: 'Default',
           columnLabel: {
             id: 'ID',
             name: 'Name',
+            stages: 'Stages',
             createdAt: 'Creation date',
           },
         },
@@ -376,6 +378,7 @@ export default {
         table: {
           columnLabel: {
             id: 'ID',
+            status: 'Status',
             workflowID: 'Workflow ID',
             createdAt: 'Creation date',
             terminatedAt: 'End date',

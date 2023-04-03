@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 
-import { AccountTree } from '@mui/icons-material';
+import { MoveDown } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
@@ -29,15 +29,15 @@ const StripeTransfer: FunctionComponent<StripeTransferProps> = ({
       className="react-flow__node-default"
       sx={{
         borderRadius: '15px',
-        border: ({ palette }) => `1px dotted ${palette.green.bright}`,
+        border: ({ palette }) => `1px dotted ${palette.neutral[700]}`,
         width: '100%',
       }}
     >
       <NodeTitle
         label={t('pages.flow.activities.stripeTransfer.title')}
-        color={palette.green.light}
+        color={palette.neutral[400]}
         onToggle={toggle}
-        icon={<AccountTree />}
+        icon={<MoveDown />}
       />
       {show && (
         <>

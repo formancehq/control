@@ -4,7 +4,9 @@ export type OrchestrationWorkflow<T> = {
   id: string;
   name: string;
   createdAt: Date;
-  stages: OrchestrationStage<T>[];
+  config: {
+    stages: OrchestrationStage<T>[];
+  };
 };
 
 export type OrchestrationStageSendAccount = {
@@ -64,6 +66,11 @@ export type OrchestrationInstance = {
   terminatedAt: Date;
   terminated: boolean;
 };
+
+export enum OrchestrationInstanceStatuses {
+  RUNNING = 'running',
+  TERMINATED = 'terminated',
+}
 
 export enum OrchestrationStages {
   SEND = 'send',
