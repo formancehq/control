@@ -72,11 +72,17 @@ export default function Index() {
   const { t } = useTranslation();
   const instance = useLoaderData(); // TODO type
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const initPosInstance =
+    instance.instanceHistory.length === 1
+      ? 50 * instance.sendStageHistory.length + 50
+      : -200;
+  const initPosActivity = instance.sendStageHistory.length === 1 ? 0 : -200;
   let x = 0;
+  let j = 0;
 
   const instanceHistoryNodes = instance.instanceHistory.map(
     (history: any, index: number) => {
-      x = x + index === 0 ? 0 : x + 200;
+      x = x + index === 0 ? initPosInstance : x + 300;
 
       return {
         type: 'customNode',
@@ -94,7 +100,7 @@ export default function Index() {
 
   const stageSendHistoryNodes = instance.sendStageHistory.map(
     (history: any, index: number) => {
-      x = x + index === 0 ? 0 : x + 250;
+      j = j + index === 0 ? initPosActivity : j + 300;
       const output = get(history, 'output', get(history, 'input'));
       const item = output[Object.keys(output)[0]];
       console.log(history, item);
@@ -102,7 +108,7 @@ export default function Index() {
       return {
         type: 'customNode',
         id: `stage-send-history-node-${index}`,
-        position: { x, y: 400 },
+        position: { x: j, y: 400 },
         style: { width: '250px' },
         data: {
           isLowLevel: true,
@@ -141,7 +147,7 @@ export default function Index() {
           <Box
             sx={{
               width: '96%',
-              height: nodes.length > 3 ? '800px' : '400px',
+              height: '500px',
               mb: 10,
             }}
           >

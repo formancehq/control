@@ -9,8 +9,18 @@ import { useTranslation } from 'react-i18next';
 
 import { Chip, Date, Row } from '@numaryhq/storybook';
 
+import { INSTANCE_ROUTE } from '~/src/components/Layout/routes';
+import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
+import StatusChip from '~/src/components/Wrappers/StatusChip';
+import {
+  orchestrationInstanceStatusColorMap,
+  orchestrationInstanceStatusIconMap,
+} from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
-import { OrchestrationInstance } from '~/src/types/orchestration';
+import {
+  OrchestrationInstance,
+  OrchestrationInstanceStatuses,
+} from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -42,6 +52,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const { t } = useTranslation();
   const instances = useLoaderData<OrchestrationInstance>();
+  console.log(instances);
 
   return (
     <Box mt={2}>
@@ -54,18 +65,17 @@ export default function Index() {
           {
             key: 'id',
             label: t('pages.instances.table.columnLabel.id'),
+            width: 40,
           },
           {
-            key: 'workflowID',
-            label: t('pages.instances.table.columnLabel.workflowID'),
+            key: 'status',
+            label: t('pages.instances.table.columnLabel.status'),
+            width: 40,
           },
           {
             key: 'createdAt',
             label: t('pages.instances.table.columnLabel.createdAt'),
-          },
-          {
-            key: 'terminatedAt',
-            label: t('pages.instances.table.columnLabel.terminatedAt'),
+            width: 20,
           },
         ]}
         renderItem={(instance: OrchestrationInstance, index: number) => (
@@ -78,16 +88,22 @@ export default function Index() {
                 variant="square"
                 color="yellow"
               />,
-              <Chip
+              <StatusChip
                 key={index}
-                label={instance.workflowID}
-                variant="square"
-                color="blue"
+                status={
+                  instance.terminated
+                    ? OrchestrationInstanceStatuses.TERMINATED
+                    : OrchestrationInstanceStatuses.RUNNING
+                }
+                iconMap={orchestrationInstanceStatusIconMap}
+                colorMap={orchestrationInstanceStatusColorMap}
               />,
               <Date key={index} timestamp={instance.createdAt} />,
-              <Date key={index} timestamp={instance.terminatedAt} />,
             ]}
             item={instance}
+            renderActions={() => (
+              <ShowListAction id={instance.id} route={INSTANCE_ROUTE} />
+            )}
           />
         )}
       />
