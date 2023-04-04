@@ -586,6 +586,21 @@ export default {
       instance: {
         title: 'Instance',
         sections: {
+          logs: {
+            title: 'Logs',
+            getPayment: 'Read payment id {{id}}',
+            getWallet: 'Read wallet id {{id}}',
+            creditWallet: {
+              main: 'Credit wallet {{id}} (balance: {{balance}}) of {{amount}} from account {{source}}',
+              child1: 'Added metadata {{key}} with value {{value}}',
+            },
+            createTransaction: {
+              main: 'Send {{amount}} from account {{source}} to account {{destination}} ({{ledger}})',
+              child1: 'Created transaction with txid : {{txid}}',
+              child2: 'Reference : {{reference}}',
+              child3: 'Added metadata {{key}} with value {{value}}',
+            },
+          },
           details: {
             title: 'Details',
             runSend: {
