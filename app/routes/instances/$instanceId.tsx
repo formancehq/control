@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 
-import { DashboardCustomize } from '@mui/icons-material';
-import { Box } from '@mui/material';
+import { Add, DashboardCustomize, PlaylistAdd } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -12,11 +12,15 @@ import { useTranslation } from 'react-i18next';
 import ReactFlow, { Controls, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
 
-import { Page, SectionWrapper } from '@numaryhq/storybook';
+import { Page, SectionWrapper, ShellViewer } from '@numaryhq/storybook';
 
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
+import {
+  logsFactory,
+  OrchestrationFactoryLog,
+} from '~/src/components/Wrappers/Workflows/logs/factory';
 import { OrchestrationRunHistories } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -80,6 +84,8 @@ export default function Index() {
   let x = 0;
   let j = 0;
 
+  const logs = logsFactory(instance.sendStageHistory);
+
   const instanceHistoryNodes = instance.instanceHistory.map(
     (history: any, index: number) => {
       x = x + index === 0 ? initPosInstance : x + 300;
@@ -103,7 +109,6 @@ export default function Index() {
       j = j + index === 0 ? initPosActivity : j + 300;
       const output = get(history, 'output', get(history, 'input'));
       const item = output[Object.keys(output)[0]];
-      console.log(history, item);
 
       return {
         type: 'customNode',
@@ -166,6 +171,38 @@ export default function Index() {
             </ReactFlow>
           </Box>
         </SectionWrapper>
+        {logs.length > 0 && (
+          <SectionWrapper title={t('pages.instance.sections.logs.title')}>
+            <ShellViewer copy={false}>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {logs.map((log: OrchestrationFactoryLog, index: number) => (
+                  <Box display="flex" flexDirection="column" key={index}>
+                    <Typography
+                      variant="money"
+                      sx={{ display: 'flex', alignItems: 'center' }}
+                    >
+                      <PlaylistAdd />
+                      {log.main}
+                    </Typography>
+                    {log.children &&
+                      log.children.map((child: string, index: number) => (
+                        <Typography
+                          key={index}
+                          variant="money"
+                          color="secondary"
+                          ml={3}
+                          sx={{ display: 'flex', alignItems: 'center' }}
+                        >
+                          <Add fontSize="small" />
+                          {child}
+                        </Typography>
+                      ))}
+                  </Box>
+                ))}
+              </Box>
+            </ShellViewer>
+          </SectionWrapper>
+        )}
       </>
     </Page>
   );

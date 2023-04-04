@@ -52,7 +52,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const { t } = useTranslation();
   const instances = useLoaderData<OrchestrationInstance>();
-  console.log(instances);
 
   return (
     <Box mt={2}>
