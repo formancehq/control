@@ -643,6 +643,9 @@ export default {
             balance: 'Balance',
             sources: 'Sources',
           },
+          voidHold: {
+            title: 'Void hold',
+          },
           getAccount: {
             title: 'Get account',
             metadata: 'Metadata',

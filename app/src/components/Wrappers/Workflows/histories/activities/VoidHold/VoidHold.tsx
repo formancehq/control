@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 
-const RevertTransaction: FunctionComponent = () => {
+const VoidHold: FunctionComponent = () => {
   const { t } = useTranslation();
   const { palette } = useTheme();
 
@@ -20,7 +20,7 @@ const RevertTransaction: FunctionComponent = () => {
       }}
     >
       <NodeTitle
-        label={t('pages.flow.activities.revertTransaction.title')}
+        label={t('pages.flow.activities.voidHold.title')}
         color={palette.brown.light}
         icon={<SwapHoriz />}
       />
@@ -28,4 +28,4 @@ const RevertTransaction: FunctionComponent = () => {
   );
 };
 
-export default RevertTransaction;
+export default VoidHold;
