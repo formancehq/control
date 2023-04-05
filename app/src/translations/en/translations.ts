@@ -596,6 +596,8 @@ export default {
         },
       },
       flow: {
+        error:
+          'An error has occurred during one of the activities of the stage:',
         activities: {
           createTransaction: {
             title: 'Create transaction',
