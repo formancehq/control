@@ -560,10 +560,23 @@ export default {
         sections: {
           logs: {
             title: 'Logs',
+            error: 'Could not retrieve history log for {{activity}} activity',
             getPayment: 'Read payment id {{id}}',
+            getAccount: 'Read account {{id}} of ledger {{ledger}}',
+            voidHold: 'Cancel debit hold {{id}}',
+            revertTransaction: {
+              main: 'Revert transaction {{id}}',
+              child1: 'Created transaction: {{txid}}',
+            },
+            stripeTransfer:
+              'Send {{amount}} to Stripe connected account: {{destination}}',
             getWallet: 'Read wallet id {{id}}',
             creditWallet: {
               main: 'Credit wallet {{id}} (balance: {{balance}}) of {{amount}} from account {{source}}',
+              child1: 'Added metadata {{key}} with value {{value}}',
+            },
+            debitWallet: {
+              main: 'Debit wallet {{id}} (balance: {{balance}}) of {{amount}} to account {{destination}}',
               child1: 'Added metadata {{key}} with value {{value}}',
             },
             createTransaction: {
