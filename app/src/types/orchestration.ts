@@ -93,4 +93,5 @@ export enum OrchestrationStageSendHistory {
   CREDIT_WALLET = 'CreditWallet',
   DEBIT_WALLET = 'DebitWallet',
   STRIPE_TRANSFER = 'StripeTransfer',
+  VOID_HOLD = 'VoidHold',
 }
