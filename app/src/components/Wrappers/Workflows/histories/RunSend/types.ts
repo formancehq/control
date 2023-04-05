@@ -6,4 +6,5 @@ export type RunSendProps = {
   terminated: boolean;
   startedAt: Date;
   terminatedAt: Date;
+  error: string;
 };
