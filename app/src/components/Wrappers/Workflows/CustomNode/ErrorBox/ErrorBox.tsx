@@ -12,34 +12,45 @@ const ErrorBox: FunctionComponent<ErrorBoxProps> = ({ error }) => {
   if (!error || isEmpty(error)) return null;
 
   return (
-    <Alert
-      severity="info"
+    <Box
       sx={{
-        fontSize: '8px',
-        p: 1,
-        lineHeight: '1.2',
-        mt: 1,
+        '.MuiPaper-root': {
+          borderColor: ({ palette }) => palette.neutral[50],
+        },
+        '.MuiAlert-icon svg': {
+          color: ({ palette }) => palette.red.bright,
+        },
       }}
-      variant="outlined"
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="money" sx={{ fontSize: '8px' }}>
-          {t('pages.flow.error')}
-        </Typography>
-        <Typography
-          variant="money"
-          sx={{
-            fontSize: '8px',
-            background: ({ palette }) => palette.neutral[100],
-            p: 1,
-            mt: 1,
-            borderRadius: '6px',
-          }}
-        >
-          {error}
-        </Typography>
-      </Box>
-    </Alert>
+      <Alert
+        severity="info"
+        sx={{
+          fontSize: '8px',
+          p: 1,
+          lineHeight: '1.2',
+          mt: 1,
+        }}
+        variant="outlined"
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="money" sx={{ fontSize: '8px' }}>
+            {t('pages.flow.error')}
+          </Typography>
+          <Typography
+            variant="money"
+            sx={{
+              fontSize: '8px',
+              background: ({ palette }) => palette.neutral[50],
+              p: 1,
+              mt: 1,
+              borderRadius: '6px',
+            }}
+          >
+            {error}
+          </Typography>
+        </Box>
+      </Alert>
+    </Box>
   );
 };
 
