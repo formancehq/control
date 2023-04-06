@@ -1,28 +1,27 @@
 import * as React from 'react';
 
-import { DashboardCustomize, Schema } from '@mui/icons-material';
-import { Box } from '@mui/material';
+import { Schema } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import ReactFlow, { Controls } from 'reactflow';
 import invariant from 'tiny-invariant';
 
-import { Page, SectionWrapper, StatsCard } from '@numaryhq/storybook';
+import { Chip, Date, Page, Row, SectionWrapper } from '@numaryhq/storybook';
 
-import { getRoute, INSTANCE_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
+import InstanceList from '~/src/components/Wrappers/Lists/InstanceList';
+import Table from '~/src/components/Wrappers/Table';
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
 import RootNode from '~/src/components/Wrappers/Workflows/CustomNode/RootNode';
-import { OrchestrationInstance } from '~/src/types/orchestration';
+import { FlowWorkflow } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { formatDate } from '~/src/utils/format';
 
 export const meta: MetaFunction = () => ({
   title: 'Flow',
@@ -63,8 +62,7 @@ const nodeTypes = { customNode: CustomNode, rootNode: RootNode };
 
 export default function Index() {
   const { t } = useTranslation();
-  const workflow = useLoaderData(); // TODO type
-  const navigate = useNavigate();
+  const workflow = useLoaderData<FlowWorkflow>() as unknown as FlowWorkflow;
   let x = 0;
   const initPos = workflow.config.stages.length === 1 ? 0 : -200;
   const initialNodes = workflow.config.stages.map(
@@ -85,7 +83,7 @@ export default function Index() {
     }
   );
 
-  const init = [
+  const nodes = [
     {
       id: '0',
       type: 'rootNode',
@@ -94,28 +92,73 @@ export default function Index() {
     ...initialNodes,
   ];
 
-  const initialEdges = workflow.config.stages.map(
-    (stage: any, index: number) => ({
-      id: `edge-${index}`,
-      source: '0',
-      animated: true,
-      target: (index + 1).toString(),
-    })
-  );
+  const edges = workflow.config.stages.map((stage: any, index: number) => ({
+    id: `edge-${index}`,
+    source: '0',
+    animated: true,
+    target: (index + 1).toString(),
+  }));
 
   return (
     <Page
       id="workflow"
       title={
-        <IconTitlePage icon={<Schema />} title={t('pages.workflow.title')} />
+        <Box mb={2}>
+          <IconTitlePage icon={<Schema />} title={t('pages.workflow.title')} />
+        </Box>
       }
     >
       <>
+        <Table
+          id="workflow"
+          items={[workflow]}
+          withPagination={false}
+          columns={[]}
+          renderItem={(workflow: FlowWorkflow, index: number) => (
+            <Row
+              key={index}
+              keys={[
+                <Box
+                  component="span"
+                  key={index}
+                  display="flex"
+                  alignItems="center"
+                >
+                  <Chip
+                    label={workflow.config.stages.length}
+                    color="violet"
+                    sx={{ borderRadius: '50%' }}
+                  />
+                  <Typography ml={1}>
+                    {t('pages.workflow.sections.recap.stages')}
+                  </Typography>
+                </Box>,
+                <Box
+                  component="span"
+                  key={index}
+                  display="flex"
+                  alignItems="center"
+                >
+                  <Chip
+                    label={workflow.instances.length}
+                    color="violet"
+                    sx={{ borderRadius: '50%' }}
+                  />
+                  <Typography ml={1}>
+                    {t('pages.workflow.sections.recap.instances')}
+                  </Typography>
+                </Box>,
+                <Date key={index} timestamp={workflow.createdAt} />,
+              ]}
+              item={workflow}
+            />
+          )}
+        />
         <SectionWrapper title={t('pages.workflow.sections.details.title')}>
           <Box sx={{ width: '96%', height: '400px', mb: 10 }}>
             <ReactFlow
-              nodes={init}
-              edges={initialEdges}
+              nodes={nodes as any}
+              edges={edges}
               fitView
               nodeOrigin={[0.5, 0.5]}
               elementsSelectable={false}
@@ -128,42 +171,7 @@ export default function Index() {
           </Box>
         </SectionWrapper>
         <SectionWrapper title={t('pages.workflow.sections.instances.title')}>
-          <Box
-            mt={3}
-            display="flex"
-            flexWrap="wrap"
-            data-testid="stats-card"
-            justifyContent="flex-start"
-            gap="26px"
-          >
-            {workflow.instances.map((instance: OrchestrationInstance) => (
-              <Box
-                key={instance.id}
-                onClick={() => navigate(getRoute(INSTANCE_ROUTE, instance.id))}
-                sx={{
-                  ':hover': {
-                    opacity: 0.3,
-                    cursor: 'pointer',
-                  },
-                }}
-              >
-                <StatsCard
-                  icon={<DashboardCustomize />}
-                  variant="violet"
-                  type="light"
-                  title1={t('pages.workflow.sections.instances.createdAt')}
-                  title2={t('pages.workflow.sections.instances.updatedAt')}
-                  chipValue={
-                    instance.terminated
-                      ? t('pages.workflow.sections.instances.terminated')
-                      : t('pages.workflow.sections.instances.running')
-                  }
-                  value1={formatDate(instance.createdAt)}
-                  value2={formatDate(instance.updatedAt)}
-                />
-              </Box>
-            ))}
-          </Box>
+          <InstanceList instances={workflow.instances} />
         </SectionWrapper>
       </>
     </Page>

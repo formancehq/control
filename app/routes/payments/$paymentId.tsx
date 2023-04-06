@@ -110,7 +110,7 @@ export default function PaymentDetails() {
   );
 
   return (
-    <Page id="payment" title="">
+    <Page id="payment">
       <>
         <Box
           sx={{

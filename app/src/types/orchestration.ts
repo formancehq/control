@@ -65,6 +65,22 @@ export type OrchestrationInstance = {
   updatedAt: Date;
   terminatedAt: Date;
   terminated: boolean;
+  error: string;
+};
+
+export type FlowInputOutput = {
+  input: any;
+  output: any;
+  name: string;
+};
+
+export type FlowInstance = OrchestrationInstance & {
+  stages: FlowInputOutput[];
+  activities: FlowInputOutput[];
+  status: ObjectOf<any>[];
+};
+export type FlowWorkflow = OrchestrationWorkflow<any> & {
+  instances: OrchestrationInstance[];
 };
 
 export enum OrchestrationInstanceStatuses {

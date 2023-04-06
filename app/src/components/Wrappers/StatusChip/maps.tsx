@@ -89,6 +89,6 @@ export const orchestrationInstanceStatusIconMap = {
   [OrchestrationInstanceStatuses.RUNNING]: <LoopOutlined />,
 };
 export const orchestrationInstanceStatusColorMap = {
-  [OrchestrationInstanceStatuses.TERMINATED]: 'red',
+  [OrchestrationInstanceStatuses.TERMINATED]: 'green',
   [OrchestrationInstanceStatuses.RUNNING]: 'violet',
 };
