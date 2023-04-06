@@ -3,7 +3,10 @@ import { get, isEmpty } from 'lodash';
 import { ObjectOf } from '@numaryhq/storybook';
 
 import i18n from '~/src/translations';
-import { OrchestrationStageSendHistory } from '~/src/types/orchestration';
+import {
+  FlowInputOutput,
+  OrchestrationStageSendHistory,
+} from '~/src/types/orchestration';
 
 export type OrchestrationFactoryLog = { main: string; children?: string[] };
 
@@ -227,7 +230,7 @@ const getStripeTransferLog = (data: any): OrchestrationFactoryLog => {
 };
 
 export function logsFactory(
-  history: { name: string; input: any; output: any }[]
+  history: FlowInputOutput[]
 ): OrchestrationFactoryLog[] {
   return history
     .map((h) => {

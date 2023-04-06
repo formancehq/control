@@ -586,6 +586,13 @@ export default {
       instance: {
         title: 'Instance',
         sections: {
+          recap: {
+            stages: 'stage(s)',
+            activities: 'activitie(s)',
+            noError: 'No error',
+            error: 'Error: {{error}}',
+            workflow: 'Workflow ID: {{id}}',
+          },
           logs: {
             title: 'Logs',
             error: 'Could not retrieve history log for {{activity}} activity',
@@ -704,6 +711,10 @@ export default {
       workflow: {
         title: 'Workflow',
         sections: {
+          recap: {
+            stages: 'stage(s)',
+            instances: 'instances(s)',
+          },
           details: {
             title: 'Detailed config',
           },
