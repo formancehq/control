@@ -10,6 +10,7 @@ import { LoadingButton, ObjectOf } from '@numaryhq/storybook';
 
 import Line from '~/src/components/Dataviz/Charts/Line';
 import Pie from '~/src/components/Dataviz/Charts/Pie';
+import { subtitleSx, titleSx } from '~/src/components/Dataviz/utils';
 import { Chart, ChartTypes } from '~/src/types/chart';
 
 const lineDataMock = {
@@ -57,17 +58,17 @@ const ChartPlaceholder: FunctionComponent<ChartPlaceholderProps> = ({
             opacity: '0.1',
           }}
         >
-          <Typography variant="h2" mb={1} mt={1}>
+          <Typography mb={1} mt={1} sx={titleSx}>
             {title}
           </Typography>
-          <Typography variant="h2" mb={1} mt={1}>
+          <Typography mb={1} mt={1} sx={subtitleSx}>
             {t('common.chart.last', { value: time.value, kind: time.kind })}
           </Typography>
         </Box>
       )}
       <Box
         display="flex"
-        height={300}
+        height={250}
         flexDirection="column"
         alignItems="center"
         sx={{
@@ -77,7 +78,7 @@ const ChartPlaceholder: FunctionComponent<ChartPlaceholderProps> = ({
         }}
       >
         <Box sx={{ opacity: '0.1', width: '100%' }}>{chartsMap[type]}</Box>
-        <Box>
+        <Box sx={{ position: 'absolute', top: '40%' }}>
           <LoadingButton
             variant="stroke"
             content={t('common.noActivity')}
