@@ -93,7 +93,7 @@ export default {
         title: 'Overview',
         status: 'Activity',
         charts: {
-          transaction: 'Transactions volume per ledger top 3',
+          transaction: 'Transactions volume per top ledgers',
           payment: 'Payments volume',
         },
         tasks: {
@@ -408,8 +408,8 @@ export default {
       app: {
         sections: {
           charts: {
-            transaction: '{{provider}} payments volume',
-            payment: '{{provider}} type',
+            transaction: 'Payments volume',
+            payment: 'Payments type',
           },
           dangerZone: {
             title: 'Manage connector',

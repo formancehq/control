@@ -32,6 +32,7 @@ import {
   buildRange,
   buildTermsAggs,
 } from '~/src/components/Dataviz/Charts/utils';
+import { subtitleSx, titleSx } from '~/src/components/Dataviz/utils';
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
@@ -340,6 +341,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                         }}
                       >
                         <Line
+                          sxTitle={{ ...titleSx, fontSize: '20px' }}
+                          sxSubtitle={{ ...subtitleSx, fontSize: '14px' }}
                           title={t('pages.overview.charts.transaction')}
                           data={transactionChart}
                           time={{ value: '24', kind: 'hours' }}
@@ -361,6 +364,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                         }}
                       >
                         <Line
+                          sxTitle={{ ...titleSx, fontSize: '20px' }}
+                          sxSubtitle={{ ...subtitleSx, fontSize: '14px' }}
                           title={t('pages.overview.charts.payment')}
                           data={paymentChart}
                         />
