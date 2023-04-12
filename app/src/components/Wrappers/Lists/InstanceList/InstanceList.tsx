@@ -1,8 +1,6 @@
 import React, { FunctionComponent } from 'react';
 
-import { ErrorOutline } from '@mui/icons-material';
-import { Box, Tooltip } from '@mui/material';
-import { isEmpty } from 'lodash';
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { Chip, Date, Row } from '@numaryhq/storybook';
@@ -72,15 +70,7 @@ const InstanceList: FunctionComponent<InstanceListProps> = ({ instances }) => {
                 iconMap={orchestrationInstanceStatusIconMap}
                 colorMap={orchestrationInstanceStatusColorMap}
               />
-              {!isEmpty(instance.error) && (
-                <Tooltip title={instance.error}>
-                  <ErrorOutline
-                    sx={{ color: ({ palette }) => palette.neutral[300] }}
-                  />
-                </Tooltip>
-              )}
             </Box>,
-
             <Date key={index} timestamp={instance.createdAt} />,
           ]}
           item={instance}

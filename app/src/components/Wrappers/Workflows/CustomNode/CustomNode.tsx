@@ -27,6 +27,8 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
   data: { label, details, isHighLevel = false, isLowLevel = false },
   isConnectable,
 }) => {
+  const input = get(details, 'input', {}) || {};
+  const output = get(details, 'output', {}) || {};
   const map = {
     [OrchestrationStages.SEND]: <SendStage send={details.send} />,
     [OrchestrationStages.WAIT_EVENT]: (
@@ -41,20 +43,68 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
       <WaitEventStage wait_event={details.input} />
     ),
     [OrchestrationStageSendHistory.CREATE_TRANSACTION]: (
-      <CreateTransaction {...details} />
+      <CreateTransaction
+        {...{
+          ...get(
+            output,
+            `${[OrchestrationStageSendHistory.CREATE_TRANSACTION]}.data[0]`
+          ),
+          ledger: get(
+            input,
+            `${[OrchestrationStageSendHistory.CREATE_TRANSACTION]}.ledger`
+          ),
+        }}
+      />
     ),
-    [OrchestrationStageSendHistory.REVERT_TRANSACTION]: (
-      <RevertTransaction {...details} />
+    [OrchestrationStageSendHistory.REVERT_TRANSACTION]: <RevertTransaction />,
+    [OrchestrationStageSendHistory.GET_PAYMENT]: (
+      <GetPayment
+        {...{
+          ...get(output, `${[OrchestrationStageSendHistory.GET_PAYMENT]}.data`),
+        }}
+      />
     ),
-    [OrchestrationStageSendHistory.GET_PAYMENT]: <GetPayment {...details} />,
-    [OrchestrationStageSendHistory.GET_WALLET]: <GetWallet {...details} />,
-    [OrchestrationStageSendHistory.GET_ACCOUNT]: <GetAccount {...details} />,
+    [OrchestrationStageSendHistory.GET_WALLET]: (
+      <GetWallet
+        {...{
+          ...get(output, `${[OrchestrationStageSendHistory.GET_WALLET]}.data`),
+        }}
+      />
+    ),
+    [OrchestrationStageSendHistory.GET_ACCOUNT]: (
+      <GetAccount
+        {...{
+          ...get(output, `${[OrchestrationStageSendHistory.GET_ACCOUNT]}.data`),
+          ledger: get(
+            input,
+            `${[OrchestrationStageSendHistory.GET_ACCOUNT]}.ledger`
+          ),
+        }}
+      />
+    ),
     [OrchestrationStageSendHistory.CREDIT_WALLET]: (
-      <CreditWallet {...details} />
+      <CreditWallet
+        {...{
+          ...get(
+            input,
+            `${[OrchestrationStageSendHistory.CREDIT_WALLET]}.data`
+          ),
+        }}
+      />
     ),
-    [OrchestrationStageSendHistory.DEBIT_WALLET]: <DebitWallet {...details} />,
+    [OrchestrationStageSendHistory.DEBIT_WALLET]: (
+      <DebitWallet
+        {...{
+          ...get(input, `${[OrchestrationStageSendHistory.DEBIT_WALLET]}.data`),
+        }}
+      />
+    ),
     [OrchestrationStageSendHistory.STRIPE_TRANSFER]: (
-      <StripeTransfer {...details} />
+      <StripeTransfer
+        {...{
+          ...get(input, [OrchestrationStageSendHistory.STRIPE_TRANSFER]),
+        }}
+      />
     ),
   };
 

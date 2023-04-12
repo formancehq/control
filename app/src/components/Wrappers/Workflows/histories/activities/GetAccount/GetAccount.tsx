@@ -5,8 +5,10 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { Chip, JsonViewer } from '@numaryhq/storybook';
+import { JsonViewer } from '@numaryhq/storybook';
 
+import { getLedgerAccountDetailsRoute } from '~/src/components/Layout/routes';
+import RoutingChip from '~/src/components/Wrappers/RoutingChip/RoutingChip';
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 import { GetAccountProps } from '~/src/components/Wrappers/Workflows/histories/activities/GetAccount/types';
 import {
@@ -20,6 +22,7 @@ import { useToggle } from '~/src/hooks/useToggle';
 const GetAccount: FunctionComponent<GetAccountProps> = ({
   metadata,
   address,
+  ledger,
 }) => {
   const { t } = useTranslation();
   const { palette } = useTheme();
@@ -47,7 +50,10 @@ const GetAccount: FunctionComponent<GetAccountProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getAccount.address')}
               </Typography>
-              <Chip label={address} variant="square" />
+              <RoutingChip
+                label={address}
+                route={getLedgerAccountDetailsRoute(address, ledger)}
+              />
             </Box>
             {!isEmpty(metadata) && (
               <Box sx={jsonContainer}>

@@ -13,6 +13,7 @@ const StatusChip: FunctionComponent<StatusChipProps> = ({
   iconMap,
   colorMap,
   status,
+  onClick,
 }) => {
   const icon = get(iconMap, status, <MoreHoriz />);
   const color = get(colorMap, status, 'violet') as ColorVariants;
@@ -23,6 +24,7 @@ const StatusChip: FunctionComponent<StatusChipProps> = ({
       variant="square"
       color={color}
       icon={icon}
+      onClick={onClick}
     />
   );
 };

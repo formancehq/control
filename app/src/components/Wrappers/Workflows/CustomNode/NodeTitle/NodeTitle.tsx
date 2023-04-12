@@ -47,6 +47,7 @@ const NodeTitle: FunctionComponent<NodeTitleProps> = ({
       {onToggle && (
         <LoadingButton
           startIcon={expandIcon}
+          sx={{ p: 0, m: 0 }}
           variant="transparent"
           onClick={() => {
             expand();

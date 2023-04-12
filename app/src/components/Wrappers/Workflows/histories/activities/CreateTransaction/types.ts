@@ -8,4 +8,5 @@ export type CreateTransactionProps = Pick<
 > & {
   postCommitTransactions: ObjectOf<any>;
   preCommitVolumes: ObjectOf<any>;
+  ledger: string;
 };

@@ -6,4 +6,5 @@ export type StatusChipProps = {
   status: string;
   iconMap: ObjectOf<ReactElement>;
   colorMap: ObjectOf<any>;
+  onClick?: () => void;
 };
