@@ -86,12 +86,12 @@ export const orchestrationStagesIconMap = {
 };
 
 export const orchestrationInstanceStatusIconMap = {
-  [OrchestrationInstanceStatuses.TERMINATED]: <Done />,
+  [OrchestrationInstanceStatuses.TERMINATED]: <ErrorOutline />,
   [OrchestrationInstanceStatuses.RUNNING]: <LoopOutlined />,
 };
 export const orchestrationInstanceStatusColorMap = {
-  [OrchestrationInstanceStatuses.TERMINATED]: 'green',
-  [OrchestrationInstanceStatuses.RUNNING]: 'violet',
+  [OrchestrationInstanceStatuses.TERMINATED]: 'red',
+  [OrchestrationInstanceStatuses.RUNNING]: 'green',
 };
 
 export const gatewayServicesIconMap = {

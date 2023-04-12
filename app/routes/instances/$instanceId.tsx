@@ -7,8 +7,9 @@ import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
-import { get, isArray, isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import ReactFlow, { Controls, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
 
@@ -20,8 +21,10 @@ import {
   ShellViewer,
 } from '@numaryhq/storybook';
 
+import { getRoute, WORKFLOW_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
+import RoutingChip from '~/src/components/Wrappers/RoutingChip/RoutingChip';
 import StatusChip from '~/src/components/Wrappers/StatusChip';
 import {
   orchestrationInstanceStatusColorMap,
@@ -94,6 +97,7 @@ const nodeTypes = { customNode: CustomNode };
 export default function Index() {
   const { t } = useTranslation();
   const instance = useLoaderData<FlowInstance>() as unknown as FlowInstance;
+  const navigate = useNavigate();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const initPosInstance =
     instance.stages.length === 1 ? 50 * instance.activities.length + 50 : -200;
@@ -102,7 +106,6 @@ export default function Index() {
   let j = 0;
 
   const logs = logsFactory(instance.activities);
-
   const stagesNodes = instance.stages.map((history: any, index: number) => {
     x = x + index === 0 ? initPosInstance : x + 300;
 
@@ -122,8 +125,8 @@ export default function Index() {
   const activitiesNodes = instance.activities.map(
     (history: any, index: number) => {
       j = j + index === 0 ? initPosActivity : j + 300;
-      const output = get(history, 'output', get(history, 'input'));
-      const item = output[Object.keys(output)[0]];
+      const output = get(history, 'output');
+      const input = get(history, 'input');
 
       return {
         type: 'customNode',
@@ -133,7 +136,7 @@ export default function Index() {
         data: {
           isLowLevel: true,
           label: history.name,
-          details: isArray(item.data) ? item.data[0] : get(item, 'data', item),
+          details: { input, output },
         },
       };
     }
@@ -189,12 +192,12 @@ export default function Index() {
             <Row
               key={index}
               keys={[
-                <Chip
+                <RoutingChip
                   key={index}
                   label={t('pages.instance.sections.recap.workflow', {
                     id: instance.workflowID,
                   })}
-                  variant="square"
+                  route={getRoute(WORKFLOW_ROUTE, instance.workflowID)}
                 />,
                 <Box
                   component="span"

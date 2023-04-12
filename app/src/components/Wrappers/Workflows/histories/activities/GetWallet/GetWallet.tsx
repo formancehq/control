@@ -5,8 +5,14 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { Chip, Date, JsonViewer } from '@numaryhq/storybook';
+import { Date, JsonViewer } from '@numaryhq/storybook';
 
+import {
+  getRoute,
+  LEDGER_ROUTE,
+  WALLET_ROUTE,
+} from '~/src/components/Layout/routes';
+import RoutingChip from '~/src/components/Wrappers/RoutingChip/RoutingChip';
 import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle';
 import { GetWalletProps } from '~/src/components/Wrappers/Workflows/histories/activities/GetWallet/types';
 import {
@@ -22,6 +28,7 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
   name,
   createdAt,
   ledger,
+  id,
 }) => {
   const { t } = useTranslation();
   const { palette } = useTheme();
@@ -49,13 +56,21 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.name')}
               </Typography>
-              <Chip label={name} variant="square" color="blue" />
+              <RoutingChip
+                label={name}
+                color="blue"
+                route={getRoute(WALLET_ROUTE, id)}
+              />
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.ledger')}
               </Typography>
-              <Chip label={ledger} variant="square" color="brown" />
+              <RoutingChip
+                label={ledger}
+                color="brown"
+                route={getRoute(LEDGER_ROUTE, ledger)}
+              />
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">

@@ -1,13 +1,14 @@
 import React, { FunctionComponent } from 'react';
 
-import { CreditCard } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { Chip, Date, JsonViewer } from '@numaryhq/storybook';
 
+import { getRoute, PAYMENT_ROUTE } from '~/src/components/Layout/routes';
 import { PaymentSchemeChip } from '~/src/components/Wrappers/PaymentSchemeChip/PaymentSchemeChip';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
+import RoutingChip from '~/src/components/Wrappers/RoutingChip/RoutingChip';
 import StatusChip from '~/src/components/Wrappers/StatusChip';
 import {
   paymentColorMap,
@@ -35,6 +36,7 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
   provider,
   createdAt,
   asset,
+  id,
 }) => {
   const { t } = useTranslation();
   const { palette } = useTheme();
@@ -45,15 +47,17 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
       className="react-flow__node-default"
       sx={{
         borderRadius: '15px',
-        border: ({ palette }) => `1px dotted ${palette.red.bright}`,
+        border: ({ palette }) => `1px dotted ${palette.neutral[50]}`,
         width: '100%',
       }}
     >
       <NodeTitle
         label={t('pages.flow.activities.getPayment.title')}
-        color={palette.red.light}
+        color={palette.neutral[50]}
         onToggle={toggle}
-        icon={<CreditCard />}
+        icon={
+          <ProviderPicture provider={provider} text={false} border={false} />
+        }
       />
       {show && (
         <>
@@ -64,13 +68,12 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                '& .MuiSvgIcon-root': {
+                  width: '0.6em',
+                  height: '0.6em',
+                },
               }}
             >
-              <ProviderPicture
-                provider={provider}
-                text={false}
-                border={false}
-              />
               <StatusChip
                 status={status}
                 iconMap={paymentIconMap}
@@ -83,11 +86,16 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
                 colorMap={paymentTypeColorMap}
               />
             </Box>
+
             <Box sx={chipContainer} mt={1}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getPayment.reference')}
               </Typography>
-              <Chip label={reference} variant="square" color="brown" />
+              <RoutingChip
+                label={reference}
+                color="brown"
+                route={getRoute(PAYMENT_ROUTE, id)}
+              />
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">

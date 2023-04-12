@@ -9,6 +9,14 @@ import { SourceDestinationBoxProps } from './types';
 import { Chip } from '@numaryhq/storybook';
 
 import {
+  getLedgerAccountDetailsRoute,
+  getRoute,
+  LEDGER_ROUTE,
+  PAYMENT_ROUTE,
+  WALLET_ROUTE,
+} from '~/src/components/Layout/routes';
+import RoutingChip from '~/src/components/Wrappers/RoutingChip/RoutingChip';
+import {
   chipContainer,
   containerSx,
   typoSx,
@@ -64,15 +72,22 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.id')}
               </Typography>
-              <Chip label={item.account.id} variant="square" color="green" />
+              <RoutingChip
+                label={item.account.id}
+                color="green"
+                route={getLedgerAccountDetailsRoute(
+                  item.account.id,
+                  item.account.ledger
+                )}
+              />
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.ledger')}
               </Typography>
-              <Chip
+              <RoutingChip
                 label={item.account.ledger}
-                variant="square"
+                route={getRoute(LEDGER_ROUTE, item.account.ledger)}
                 color="green"
               />
             </Box>
@@ -96,7 +111,11 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.id')}
               </Typography>
-              <Chip label={item.wallet.id} variant="square" color="green" />
+              <RoutingChip
+                label={item.wallet.id}
+                route={getRoute(WALLET_ROUTE, item.wallet.id)}
+                color="green"
+              />
             </Box>
           </Box>
         </Box>
@@ -118,7 +137,11 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.id')}
               </Typography>
-              <Chip label={item.payment.id} variant="square" color="green" />
+              <RoutingChip
+                label={item.payment.id}
+                color="green"
+                route={getRoute(PAYMENT_ROUTE, item.payment.id)}
+              />
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">

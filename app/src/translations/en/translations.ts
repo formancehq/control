@@ -392,7 +392,7 @@ export default {
       workflows: {
         title: 'Workflows',
         table: {
-          noName: 'Default',
+          noName: 'Untitled',
           columnLabel: {
             id: 'ID',
             name: 'Name',

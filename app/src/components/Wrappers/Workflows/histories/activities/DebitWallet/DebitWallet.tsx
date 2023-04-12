@@ -25,13 +25,13 @@ const DebitWallet: FunctionComponent<DebitWalletProps> = ({ amount }) => {
       className="react-flow__node-default"
       sx={{
         borderRadius: '15px',
-        border: ({ palette }) => `1px dotted ${palette.blue.bright}`,
+        border: ({ palette }) => `1px dotted ${palette.red.bright}`,
         width: '100%',
       }}
     >
       <NodeTitle
         label={t('pages.flow.activities.debitWallet.title')}
-        color={palette.blue.light}
+        color={palette.red.light}
         onToggle={toggle}
         icon={<Wallet />}
       />
