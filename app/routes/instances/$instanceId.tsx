@@ -32,6 +32,8 @@ import {
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
+import ArrowNode from '~/src/components/Wrappers/Workflows/CustomNode/ArrowNode';
+import SequentialNode from '~/src/components/Wrappers/Workflows/CustomNode/SequentialNode';
 import {
   logsFactory,
   OrchestrationFactoryLog,
@@ -92,7 +94,11 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-const nodeTypes = { customNode: CustomNode };
+const nodeTypes = {
+  customNode: CustomNode,
+  sequentialNode: SequentialNode,
+  arrowNode: ArrowNode,
+};
 
 export default function Index() {
   const { t } = useTranslation();
@@ -104,23 +110,42 @@ export default function Index() {
   const initPosActivity = instance.activities.length === 1 ? 0 : -200;
   let x = 0;
   let j = 0;
+  let z = 0;
 
   const logs = logsFactory(instance.activities);
-  const stagesNodes = instance.stages.map((history: any, index: number) => {
-    x = x + index === 0 ? initPosInstance : x + 300;
+  const stagesNodes = instance.stages
+    .map((history: any, index: number) => {
+      x = x + index === 0 ? initPosInstance : x + 400;
 
-    return {
-      type: 'customNode',
-      id: `stages-node-${index}`,
-      position: { x, y: 100 },
-      style: { width: '250px' },
-      data: {
-        isHighLevel: history.name === OrchestrationRunHistories.RUN_SEND,
-        label: history.name,
-        details: history,
-      },
-    };
-  });
+      const nodes = [
+        {
+          type: 'customNode',
+          id: `stages-node-${index}`,
+          position: { x, y: 100 },
+          style: { width: '250px' },
+          draggable: false,
+          selectable: false,
+          data: {
+            isHighLevel: history.name === OrchestrationRunHistories.RUN_SEND,
+            label: history.name,
+            details: history,
+          },
+        },
+      ];
+
+      if (instance.stages.length - 1 !== index) {
+        nodes.push({
+          type: 'arrowNode',
+          draggable: false,
+          selectable: false,
+          id: `arrow-node-${index}`,
+          position: { x: x + 210, y: 100 },
+        } as any);
+      }
+
+      return nodes;
+    })
+    .flat();
 
   const activitiesNodes = instance.activities.map(
     (history: any, index: number) => {
@@ -131,7 +156,7 @@ export default function Index() {
       return {
         type: 'customNode',
         id: `activities-node-${index}`,
-        position: { x: j, y: 400 },
+        position: { x: j, y: 450 },
         style: { width: '250px' },
         data: {
           isLowLevel: true,
@@ -142,15 +167,46 @@ export default function Index() {
     }
   );
 
-  const edges = instance.activities.map((history: any, index: number) => ({
-    id: `activities-edge-${index}`,
-    source: `stages-node-0`,
+  const sequentialNodes = instance.activities.map(
+    (history: any, index: number) => {
+      z = z + index === 0 ? initPosActivity : z + 300;
+
+      return {
+        type: 'sequentialNode',
+        id: `seq-node-${index}`,
+        position: { x: z, y: 350 },
+        data: {
+          label: index + 1,
+        },
+      };
+    }
+  );
+
+  const edgeStages = instance.stages.map((history: any, index: number) => ({
+    id: `stages-edge-${index}`,
+    source: `stages-node-${index}`,
     animated: true,
-    target: `activities-node-${index}`,
+    target: `stages-node-${index + 1}`,
   }));
 
+  const edgesSeq = instance.activities.map((history: any, index: number) => ({
+    id: `seq-edge-${index}`,
+    source: `stages-node-0`,
+    animated: true,
+    target: `seq-node-${index}`,
+  }));
+
+  const edgeActivities = instance.activities.map(
+    (history: any, index: number) => ({
+      id: `activities-edge-${index}`,
+      source: `seq-node-${index}`,
+      animated: true,
+      target: `activities-node-${index}`,
+    })
+  );
+  console.log([...edgeStages, ...edgesSeq, ...edgeActivities]);
   useEffect(() => {
-    setNodes([...stagesNodes, ...activitiesNodes]);
+    setNodes([...stagesNodes, ...sequentialNodes, ...activitiesNodes] as any);
   }, []);
 
   return (
@@ -256,7 +312,7 @@ export default function Index() {
           >
             <ReactFlow
               nodes={nodes}
-              edges={edges}
+              edges={[...edgeStages, ...edgesSeq, ...edgeActivities]}
               fitView
               onNodesChange={onNodesChange}
               elementsSelectable={false}
