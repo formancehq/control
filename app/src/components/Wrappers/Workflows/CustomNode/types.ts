@@ -7,4 +7,5 @@ export type CustomNodeProps = {
   };
   isConnectable: boolean;
   id: string;
+  type: string;
 };
