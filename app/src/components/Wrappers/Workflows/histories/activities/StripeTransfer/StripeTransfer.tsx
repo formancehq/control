@@ -11,6 +11,7 @@ import { StripeTransferProps } from '~/src/components/Wrappers/Workflows/histori
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { useToggle } from '~/src/hooks/useToggle';
@@ -46,13 +47,17 @@ const StripeTransfer: FunctionComponent<StripeTransferProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.stripeTransfer.destination')}
               </Typography>
-              <Chip label={destination} variant="square" />
+              <Chip label={getPlaceholder(destination)} variant="square" />
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.stripeTransfer.amount')}
               </Typography>
-              <Chip label={`${amount} ${asset}`} variant="square" color="red" />
+              <Chip
+                label={getPlaceholder(`${amount} ${asset}`)}
+                variant="square"
+                color="red"
+              />
             </Box>
           </Box>
         </>

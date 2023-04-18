@@ -9,7 +9,6 @@ import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
 import { get, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import ReactFlow, { Controls, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
 
@@ -63,18 +62,22 @@ export const loader: LoaderFunction = async ({
       `${API_ORCHESTRATION}/instances/${params.instanceId}`,
       'data'
     );
-    const stages = await api.getResource<any>(
-      `${API_ORCHESTRATION}/instances/${params.instanceId}/history`,
-      'data'
-    );
+    const stages = await api
+      .getResource<any>(
+        `${API_ORCHESTRATION}/instances/${params.instanceId}/history`,
+        'data'
+      )
+      .catch(() => []);
 
     // There is no history for stage wait_event and delay, so we can hardcode 0 as send stage number
     const activities =
       instance.status.length > 0
-        ? await api.getResource<any>(
-            `${API_ORCHESTRATION}/instances/${params.instanceId}/stages/0/history`,
-            'data'
-          )
+        ? await api
+            .getResource<any>(
+              `${API_ORCHESTRATION}/instances/${params.instanceId}/stages/0/history`,
+              'data'
+            )
+            .catch(() => [])
         : [];
 
     return { ...instance, stages, activities } as FlowInstance;
@@ -103,7 +106,6 @@ const nodeTypes = {
 export default function Index() {
   const { t } = useTranslation();
   const instance = useLoaderData<FlowInstance>() as unknown as FlowInstance;
-  const navigate = useNavigate();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const initPosInstance =
     instance.stages.length === 1 ? 50 * instance.activities.length + 50 : -200;
@@ -111,7 +113,7 @@ export default function Index() {
   let x = 0;
   let j = 0;
   let z = 0;
-
+  const displayFlow = instance.stages.length > 0;
   const logs = logsFactory(instance.activities);
   const stagesNodes = instance.stages
     .map((history: any, index: number) => {
@@ -303,27 +305,33 @@ export default function Index() {
           )}
         />
         <SectionWrapper title={t('pages.instance.sections.details.title')}>
-          <Box
-            sx={{
-              width: '96%',
-              height: '500px',
-              mb: 10,
-            }}
-          >
-            <ReactFlow
-              nodes={nodes}
-              edges={[...edgeStages, ...edgesSeq, ...edgeActivities]}
-              fitView
-              onNodesChange={onNodesChange}
-              elementsSelectable={false}
-              nodesConnectable={false}
-              preventScrolling
-              nodeOrigin={[0.5, 0.5]}
-              nodeTypes={nodeTypes}
+          {displayFlow ? (
+            <Box
+              sx={{
+                width: '96%',
+                height: '500px',
+                mb: 10,
+              }}
             >
-              <Controls showInteractive={false} />
-            </ReactFlow>
-          </Box>
+              <ReactFlow
+                nodes={nodes}
+                edges={[...edgeStages, ...edgesSeq, ...edgeActivities]}
+                fitView
+                onNodesChange={onNodesChange}
+                elementsSelectable={false}
+                nodesConnectable={false}
+                preventScrolling
+                nodeOrigin={[0.5, 0.5]}
+                nodeTypes={nodeTypes}
+              >
+                <Controls showInteractive={false} />
+              </ReactFlow>
+            </Box>
+          ) : (
+            <Typography variant="placeholder">
+              {t('common.noActivity')}
+            </Typography>
+          )}
         </SectionWrapper>
         {logs.length > 0 && (
           <SectionWrapper title={t('pages.instance.sections.logs.title')}>

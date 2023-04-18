@@ -12,6 +12,7 @@ import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle'
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { OrchestrationStages } from '~/src/types/orchestration';
 
@@ -38,7 +39,11 @@ const WaitEventStage: FunctionComponent<WaitEventStageProps> = ({
             <Typography sx={{ fontSize: '8px' }} variant="bold">
               {t('pages.flow.waitEvent.event')}
             </Typography>
-            <Chip label={wait_event.event} variant="square" color="blue" />
+            <Chip
+              label={getPlaceholder(wait_event.event)}
+              variant="square"
+              color="blue"
+            />
           </Box>
         </Box>
       </>

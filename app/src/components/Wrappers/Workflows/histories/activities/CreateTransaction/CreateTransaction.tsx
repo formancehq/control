@@ -14,7 +14,9 @@ import { CreateTransactionProps } from '~/src/components/Wrappers/Workflows/hist
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
   jsonContainer,
+  placeholderSx,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { useToggle } from '~/src/hooks/useToggle';
@@ -59,7 +61,7 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
                 value={reference}
               >
                 <Chip
-                  label={reference}
+                  label={getPlaceholder(reference)}
                   variant="square"
                   color="green"
                   sx={{ overflow: 'hidden' }}
@@ -71,7 +73,7 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
                 {t('pages.flow.activities.createTransaction.txid')}
               </Typography>
               <RoutingChip
-                label={`${txid}`}
+                label={getPlaceholder(`${txid}`)}
                 color="blue"
                 route={
                   ledger
@@ -84,7 +86,13 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.createTransaction.timestamp')}
               </Typography>
-              <Date timestamp={timestamp} />
+              {timestamp ? (
+                <Date timestamp={timestamp} />
+              ) : (
+                <Typography variant="placeholder" sx={placeholderSx}>
+                  {getPlaceholder()}
+                </Typography>
+              )}
             </Box>
             {!isEmpty(metadata) && (
               <Box sx={jsonContainer}>

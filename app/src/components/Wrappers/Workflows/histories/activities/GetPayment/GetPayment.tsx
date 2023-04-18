@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 
 import { Box, Typography, useTheme } from '@mui/material';
+import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { Chip, Date, JsonViewer } from '@numaryhq/storybook';
@@ -21,7 +22,9 @@ import { GetPaymentProps } from '~/src/components/Wrappers/Workflows/histories/a
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
   jsonContainer,
+  placeholderSx,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { useToggle } from '~/src/hooks/useToggle';
@@ -75,13 +78,13 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
               }}
             >
               <StatusChip
-                status={status}
+                status={getPlaceholder(status)}
                 iconMap={paymentIconMap}
                 colorMap={paymentColorMap}
               />
               <PaymentSchemeChip scheme={scheme} />
               <StatusChip
-                status={type}
+                status={getPlaceholder(type)}
                 iconMap={paymentTypeIconMap}
                 colorMap={paymentTypeColorMap}
               />
@@ -92,7 +95,7 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
                 {t('pages.flow.activities.getPayment.reference')}
               </Typography>
               <RoutingChip
-                label={reference}
+                label={getPlaceholder(reference)}
                 color="brown"
                 route={getRoute(PAYMENT_ROUTE, id)}
               />
@@ -101,24 +104,32 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getPayment.createdAt')}
               </Typography>
-              <Date timestamp={createdAt} />
+              {createdAt ? (
+                <Date timestamp={createdAt} />
+              ) : (
+                <Typography variant="placeholder" sx={placeholderSx}>
+                  {getPlaceholder()}
+                </Typography>
+              )}
             </Box>
             <Box sx={chipContainer}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getPayment.initialAmount')}
               </Typography>
               <Chip
-                label={`${initialAmount} ${asset}`}
+                label={getPlaceholder(`${initialAmount} ${asset}`)}
                 variant="square"
                 color="yellow"
               />
             </Box>
-            <Box sx={jsonContainer}>
-              <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.activities.getPayment.raw')}
-              </Typography>
-              <JsonViewer jsonData={raw} expanded />
-            </Box>
+            {raw && !isEmpty(raw) && (
+              <Box sx={jsonContainer}>
+                <Typography sx={typoSx} variant="bold">
+                  {t('pages.flow.activities.getPayment.raw')}
+                </Typography>
+                <JsonViewer jsonData={raw} expanded />
+              </Box>
+            )}
           </Box>
         </>
       )}

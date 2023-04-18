@@ -14,6 +14,7 @@ import { GetAccountProps } from '~/src/components/Wrappers/Workflows/histories/a
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
   jsonContainer,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
@@ -51,7 +52,7 @@ const GetAccount: FunctionComponent<GetAccountProps> = ({
                 {t('pages.flow.activities.getAccount.address')}
               </Typography>
               <RoutingChip
-                label={address}
+                label={getPlaceholder(address)}
                 route={getLedgerAccountDetailsRoute(address, ledger)}
               />
             </Box>
