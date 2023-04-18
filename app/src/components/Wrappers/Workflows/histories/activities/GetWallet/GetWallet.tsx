@@ -18,7 +18,9 @@ import { GetWalletProps } from '~/src/components/Wrappers/Workflows/histories/ac
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
   jsonContainer,
+  placeholderSx,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { useToggle } from '~/src/hooks/useToggle';
@@ -57,7 +59,7 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
                 {t('pages.flow.activities.getWallet.name')}
               </Typography>
               <RoutingChip
-                label={name}
+                label={getPlaceholder(name)}
                 color="blue"
                 route={getRoute(WALLET_ROUTE, id)}
               />
@@ -67,7 +69,7 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
                 {t('pages.flow.activities.getWallet.ledger')}
               </Typography>
               <RoutingChip
-                label={ledger}
+                label={getPlaceholder(ledger)}
                 color="brown"
                 route={getRoute(LEDGER_ROUTE, ledger)}
               />
@@ -76,7 +78,13 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.createdAt')}
               </Typography>
-              <Date timestamp={createdAt} />
+              {createdAt ? (
+                <Date timestamp={createdAt} />
+              ) : (
+                <Typography variant="placeholder" sx={placeholderSx}>
+                  {getPlaceholder()}
+                </Typography>
+              )}
             </Box>
             {!isEmpty(metadata) && (
               <Box sx={jsonContainer}>

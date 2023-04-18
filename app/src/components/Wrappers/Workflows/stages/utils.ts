@@ -1,3 +1,6 @@
+import i18next from 'i18next';
+import { isEmpty } from 'lodash';
+
 export const containerSx = {
   textAlign: 'initial',
   display: 'block',
@@ -34,3 +37,13 @@ export const jsonContainer = {
     width: 'calc(100% - 15px)',
   },
 };
+
+export const getPlaceholder = (str?: string | number | undefined): string => {
+  if (str && !isEmpty(str) && str !== 'undefined') {
+    return `${str}`;
+  }
+
+  return i18next.t('common.noData');
+};
+
+export const placeholderSx = { pr: 0.5 };

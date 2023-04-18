@@ -64,6 +64,7 @@ export default function Index() {
   const { t } = useTranslation();
   const workflow = useLoaderData<FlowWorkflow>() as unknown as FlowWorkflow;
   let x = 0;
+  const displayFlow = workflow.config.stages.length > 0;
   const initPos = workflow.config.stages.length === 1 ? 0 : -200;
   const nodes = workflow.config.stages
     .map((stage: any, index: number) => {
@@ -158,22 +159,24 @@ export default function Index() {
             />
           )}
         />
-        <SectionWrapper title={t('pages.workflow.sections.details.title')}>
-          <Box sx={{ width: '96%', height: '400px', mb: 10 }}>
-            <ReactFlow
-              nodes={nodes as any}
-              edges={edges}
-              fitView
-              nodeOrigin={[0.5, 0.5]}
-              elementsSelectable={false}
-              nodesConnectable={false}
-              preventScrolling
-              nodeTypes={nodeTypes}
-            >
-              <Controls showInteractive={false} />
-            </ReactFlow>
-          </Box>
-        </SectionWrapper>
+        {displayFlow && (
+          <SectionWrapper title={t('pages.workflow.sections.details.title')}>
+            <Box sx={{ width: '96%', height: '400px', mb: 10 }}>
+              <ReactFlow
+                nodes={nodes as any}
+                edges={edges}
+                fitView
+                nodeOrigin={[0.5, 0.5]}
+                elementsSelectable={false}
+                nodesConnectable={false}
+                preventScrolling
+                nodeTypes={nodeTypes}
+              >
+                <Controls showInteractive={false} />
+              </ReactFlow>
+            </Box>
+          </SectionWrapper>
+        )}
         <SectionWrapper title={t('pages.workflow.sections.instances.title')}>
           <InstanceList instances={workflow.instances} />
         </SectionWrapper>

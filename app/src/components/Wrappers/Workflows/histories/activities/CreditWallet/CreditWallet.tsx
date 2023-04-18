@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 
 import { Wallet } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
+import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { Chip, JsonViewer } from '@numaryhq/storybook';
@@ -11,6 +12,7 @@ import { CreditWalletProps } from '~/src/components/Wrappers/Workflows/histories
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
   jsonContainer,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
@@ -49,7 +51,7 @@ const CreditWallet: FunctionComponent<CreditWalletProps> = ({
                 {t('pages.flow.activities.creditWallet.amount')}
               </Typography>
               <Chip
-                label={`${amount.amount} ${amount.asset}`}
+                label={getPlaceholder(`${amount.amount} ${amount.asset}`)}
                 variant="square"
                 color="red"
               />
@@ -58,7 +60,11 @@ const CreditWallet: FunctionComponent<CreditWalletProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.creditWallet.balance')}
               </Typography>
-              <Chip label={balance} variant="square" color="violet" />
+              <Chip
+                label={getPlaceholder(balance)}
+                variant="square"
+                color="violet"
+              />
             </Box>
             <Box id="container">
               <Box>
@@ -66,42 +72,52 @@ const CreditWallet: FunctionComponent<CreditWalletProps> = ({
                   {t('pages.flow.activities.creditWallet.sources')}
                 </Typography>
               </Box>
-              <Box display="flex" flexDirection="column" gap={1}>
-                {sources.map((source, index: number) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      border: ({ palette }) =>
-                        `1px dotted ${palette.neutral[200]}`,
-                      borderRadius: '6px',
-                      display: 'flex',
-                      textAlign: 'center',
-                      justifyContent: 'space-around',
-                      p: 1,
-                    }}
-                  >
-                    <Box>
-                      <Typography sx={typoSx} variant="bold" mr={1}>
-                        {t('pages.flow.activities.creditWallet.identifier')}
-                      </Typography>
-                      <Chip label={source.identifier} variant="square" />
+              {sources.length > 0 && (
+                <Box display="flex" flexDirection="column" gap={1}>
+                  {sources.map((source, index: number) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        border: ({ palette }) =>
+                          `1px dotted ${palette.neutral[200]}`,
+                        borderRadius: '6px',
+                        display: 'flex',
+                        textAlign: 'center',
+                        justifyContent: 'space-around',
+                        p: 1,
+                      }}
+                    >
+                      <Box>
+                        <Typography sx={typoSx} variant="bold" mr={1}>
+                          {t('pages.flow.activities.creditWallet.identifier')}
+                        </Typography>
+                        <Chip
+                          label={getPlaceholder(source.identifier)}
+                          variant="square"
+                        />
+                      </Box>
+                      <Box>
+                        <Typography sx={typoSx} variant="bold" mr={1}>
+                          {t('pages.flow.activities.creditWallet.type')}
+                        </Typography>
+                        <Chip
+                          label={getPlaceholder(source.type)}
+                          variant="square"
+                        />
+                      </Box>
                     </Box>
-                    <Box>
-                      <Typography sx={typoSx} variant="bold" mr={1}>
-                        {t('pages.flow.activities.creditWallet.type')}
-                      </Typography>
-                      <Chip label={source.type} variant="square" />
-                    </Box>
-                  </Box>
-                ))}
+                  ))}
+                </Box>
+              )}
+            </Box>
+            {metadata && !isEmpty(metadata) && (
+              <Box sx={jsonContainer}>
+                <Typography sx={typoSx} variant="bold">
+                  {t('pages.flow.activities.creditWallet.metadata')}
+                </Typography>
+                <JsonViewer jsonData={metadata} expanded />
               </Box>
-            </Box>
-            <Box sx={jsonContainer}>
-              <Typography sx={typoSx} variant="bold">
-                {t('pages.flow.activities.creditWallet.metadata')}
-              </Typography>
-              <JsonViewer jsonData={metadata} expanded />
-            </Box>
+            )}
           </Box>
         </>
       )}

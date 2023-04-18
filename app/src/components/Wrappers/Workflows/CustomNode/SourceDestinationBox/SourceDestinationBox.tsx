@@ -19,6 +19,7 @@ import RoutingChip from '~/src/components/Wrappers/RoutingChip/RoutingChip';
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import {
@@ -73,7 +74,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
                 {t('pages.flow.send.id')}
               </Typography>
               <RoutingChip
-                label={item.account.id}
+                label={getPlaceholder(item.account.id)}
                 color="green"
                 route={getLedgerAccountDetailsRoute(
                   item.account.id,
@@ -86,7 +87,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
                 {t('pages.flow.send.ledger')}
               </Typography>
               <RoutingChip
-                label={item.account.ledger}
+                label={getPlaceholder(item.account.ledger)}
                 route={getRoute(LEDGER_ROUTE, item.account.ledger)}
                 color="green"
               />
@@ -112,7 +113,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
                 {t('pages.flow.send.id')}
               </Typography>
               <RoutingChip
-                label={item.wallet.id}
+                label={getPlaceholder(item.wallet.id)}
                 route={getRoute(WALLET_ROUTE, item.wallet.id)}
                 color="green"
               />
@@ -138,7 +139,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
                 {t('pages.flow.send.id')}
               </Typography>
               <RoutingChip
-                label={item.payment.id}
+                label={getPlaceholder(item.payment.id)}
                 color="green"
                 route={getRoute(PAYMENT_ROUTE, item.payment.id)}
               />
@@ -147,7 +148,11 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.psp')}
               </Typography>
-              <Chip label={item.payment.psp} variant="square" color="green" />
+              <Chip
+                label={getPlaceholder(item.payment.psp)}
+                variant="square"
+                color="green"
+              />
             </Box>
           </Box>
         </Box>

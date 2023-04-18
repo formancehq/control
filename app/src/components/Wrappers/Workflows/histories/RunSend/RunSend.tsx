@@ -14,6 +14,8 @@ import SourceDestinationBox from '~/src/components/Wrappers/Workflows/CustomNode
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
+  placeholderSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 
 const RunSend: FunctionComponent<RunSendProps> = ({
@@ -39,13 +41,25 @@ const RunSend: FunctionComponent<RunSendProps> = ({
             <Typography variant="bold">
               {t('pages.instance.sections.details.runSend.startedAt')}
             </Typography>
-            <Date timestamp={startedAt} />
+            {startedAt ? (
+              <Date timestamp={startedAt} />
+            ) : (
+              <Typography variant="placeholder" sx={placeholderSx}>
+                {getPlaceholder()}
+              </Typography>
+            )}
           </Box>
           <Box sx={chipContainer}>
             <Typography variant="bold">
               {t('pages.instance.sections.details.runSend.startedAt')}
             </Typography>
-            <Date timestamp={terminatedAt} />
+            {terminatedAt ? (
+              <Date timestamp={terminatedAt} />
+            ) : (
+              <Typography variant="placeholder" sx={placeholderSx}>
+                {getPlaceholder()}
+              </Typography>
+            )}
           </Box>
           <SourceDestinationBox item={input.source} />
           <SourceDestinationBox item={input.destination} />

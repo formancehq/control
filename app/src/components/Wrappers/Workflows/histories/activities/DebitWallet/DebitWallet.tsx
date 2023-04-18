@@ -11,6 +11,7 @@ import { DebitWalletProps } from '~/src/components/Wrappers/Workflows/histories/
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
   typoSx,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { useToggle } from '~/src/hooks/useToggle';
@@ -43,7 +44,7 @@ const DebitWallet: FunctionComponent<DebitWalletProps> = ({ amount }) => {
                 {t('pages.flow.activities.debitWallet.amount')}
               </Typography>
               <Chip
-                label={`${amount.amount} ${amount.asset}`}
+                label={getPlaceholder(`${amount.amount} ${amount.asset}`)}
                 variant="square"
                 color="red"
               />

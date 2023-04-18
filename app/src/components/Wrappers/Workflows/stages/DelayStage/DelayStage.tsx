@@ -12,6 +12,7 @@ import NodeTitle from '~/src/components/Wrappers/Workflows/CustomNode/NodeTitle'
 import {
   chipContainer,
   containerSx,
+  getPlaceholder,
 } from '~/src/components/Wrappers/Workflows/stages/utils';
 import { OrchestrationStages } from '~/src/types/orchestration';
 
@@ -36,13 +37,21 @@ const DelayStage: FunctionComponent<DelayStageProps> = ({ delay }) => {
             <Typography sx={{ fontSize: '8px' }} variant="bold">
               {t('pages.flow.delay.duration')}
             </Typography>
-            <Chip label={delay.duration} variant="square" color="brown" />
+            <Chip
+              label={getPlaceholder(delay.duration)}
+              variant="square"
+              color="brown"
+            />
           </Box>
           <Box sx={chipContainer}>
             <Typography sx={{ fontSize: '8px' }} variant="bold">
               {t('pages.flow.delay.until')}
             </Typography>
-            <Chip label={delay.until} variant="square" color="brown" />
+            <Chip
+              label={getPlaceholder(delay.until)}
+              variant="square"
+              color="brown"
+            />
           </Box>
         </Box>
       </>

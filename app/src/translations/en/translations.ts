@@ -853,6 +853,7 @@ export default {
       },
       soon: 'Soon!',
       title: 'Formance',
+      noData: 'No data',
       noResults: 'No results',
       noActivity: 'No activity found',
       table: {
