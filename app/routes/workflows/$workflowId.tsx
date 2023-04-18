@@ -17,7 +17,7 @@ import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import InstanceList from '~/src/components/Wrappers/Lists/InstanceList';
 import Table from '~/src/components/Wrappers/Table';
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
-import RootNode from '~/src/components/Wrappers/Workflows/CustomNode/RootNode';
+import ArrowNode from '~/src/components/Wrappers/Workflows/CustomNode/ArrowNode';
 import { FlowWorkflow } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -58,39 +58,43 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-const nodeTypes = { customNode: CustomNode, rootNode: RootNode };
+const nodeTypes = { customNode: CustomNode, arrowNode: ArrowNode };
 
 export default function Index() {
   const { t } = useTranslation();
   const workflow = useLoaderData<FlowWorkflow>() as unknown as FlowWorkflow;
   let x = 0;
   const initPos = workflow.config.stages.length === 1 ? 0 : -200;
-  const initialNodes = workflow.config.stages.map(
-    (stage: any, index: number) => {
-      x = x + index === 0 ? initPos : x + 250;
+  const nodes = workflow.config.stages
+    .map((stage: any, index: number) => {
+      x = x + index === 0 ? initPos : x + 360;
 
-      return {
-        type: 'customNode',
-        id: (index + 1).toString(),
-        position: { x, y: 250 },
-        style: { width: '200px' },
-        data: {
-          label: Object.keys(stage)[0],
-          details: stage,
-          isLowLevel: true,
+      const nodes = [
+        {
+          type: 'customNode',
+          id: (index + 1).toString(),
+          position: { x, y: 250 },
+          style: { width: '200px' },
+          data: {
+            label: Object.keys(stage)[0],
+            details: stage,
+          },
         },
-      };
-    }
-  );
+      ];
 
-  const nodes = [
-    {
-      id: '0',
-      type: 'rootNode',
-      position: { x: 0, y: 50 },
-    },
-    ...initialNodes,
-  ];
+      if (workflow.config.stages.length - 1 !== index) {
+        nodes.push({
+          type: 'arrowNode',
+          draggable: false,
+          selectable: false,
+          id: `arrow-node-${index}`,
+          position: { x: x + 190, y: 250 },
+        } as any);
+      }
+
+      return nodes;
+    })
+    .flat();
 
   const edges = workflow.config.stages.map((stage: any, index: number) => ({
     id: `edge-${index}`,

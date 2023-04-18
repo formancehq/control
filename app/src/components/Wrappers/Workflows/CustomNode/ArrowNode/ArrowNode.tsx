@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 
 import { ArrowNodeProps } from './types';
 
-const ArrowNode: FunctionComponent<ArrowNodeProps> = ({ isConnectable }) => (
+const ArrowNode: FunctionComponent<ArrowNodeProps> = () => (
   <Box>
     <Box
       sx={{
