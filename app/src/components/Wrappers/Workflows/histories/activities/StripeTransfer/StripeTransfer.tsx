@@ -43,13 +43,13 @@ const StripeTransfer: FunctionComponent<StripeTransferProps> = ({
       {show && (
         <>
           <Box component="span" display="block" sx={containerSx} mt={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(destination)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.stripeTransfer.destination')}
               </Typography>
               <Chip label={getPlaceholder(destination)} variant="square" />
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(`${amount} ${asset}`)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.stripeTransfer.amount')}
               </Typography>

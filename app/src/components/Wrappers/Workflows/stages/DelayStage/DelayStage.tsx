@@ -33,7 +33,7 @@ const DelayStage: FunctionComponent<DelayStageProps> = ({ delay }) => {
       />
       <>
         <Box component="span" display="block" mt={1} sx={containerSx}>
-          <Box sx={chipContainer}>
+          <Box sx={chipContainer(delay.duration)}>
             <Typography sx={{ fontSize: '8px' }} variant="bold">
               {t('pages.flow.delay.duration')}
             </Typography>
@@ -43,7 +43,7 @@ const DelayStage: FunctionComponent<DelayStageProps> = ({ delay }) => {
               color="brown"
             />
           </Box>
-          <Box sx={chipContainer}>
+          <Box sx={chipContainer(delay.until)}>
             <Typography sx={{ fontSize: '8px' }} variant="bold">
               {t('pages.flow.delay.until')}
             </Typography>

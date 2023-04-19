@@ -158,7 +158,7 @@ export default function Index() {
       return {
         type: 'customNode',
         id: `activities-node-${index}`,
-        position: { x: j, y: 450 },
+        position: { x: j, y: 430 },
         style: { width: '250px' },
         data: {
           isLowLevel: true,
@@ -187,14 +187,12 @@ export default function Index() {
   const edgeStages = instance.stages.map((history: any, index: number) => ({
     id: `stages-edge-${index}`,
     source: `stages-node-${index}`,
-    animated: true,
     target: `stages-node-${index + 1}`,
   }));
 
   const edgesSeq = instance.activities.map((history: any, index: number) => ({
     id: `seq-edge-${index}`,
     source: `stages-node-0`,
-    animated: true,
     target: `seq-node-${index}`,
   }));
 
@@ -206,7 +204,7 @@ export default function Index() {
       target: `activities-node-${index}`,
     })
   );
-  console.log([...edgeStages, ...edgesSeq, ...edgeActivities]);
+
   useEffect(() => {
     setNodes([...stagesNodes, ...sequentialNodes, ...activitiesNodes] as any);
   }, []);

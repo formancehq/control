@@ -37,7 +37,7 @@ const RunSend: FunctionComponent<RunSendProps> = ({
       <NodeTitle label={t('pages.flow.send.title')} icon={<Send />} />
       <>
         <Box component="span" display="block" sx={containerSx} mt={1}>
-          <Box sx={chipContainer}>
+          <Box sx={chipContainer()}>
             <Typography variant="bold">
               {t('pages.instance.sections.details.runSend.startedAt')}
             </Typography>
@@ -49,7 +49,7 @@ const RunSend: FunctionComponent<RunSendProps> = ({
               </Typography>
             )}
           </Box>
-          <Box sx={chipContainer}>
+          <Box sx={chipContainer()}>
             <Typography variant="bold">
               {t('pages.instance.sections.details.runSend.startedAt')}
             </Typography>

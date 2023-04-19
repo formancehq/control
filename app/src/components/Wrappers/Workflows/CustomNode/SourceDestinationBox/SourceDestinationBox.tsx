@@ -69,7 +69,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
             {t('pages.flow.send.account')}
           </Typography>
           <Box component="span" display="block" pl={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(item.account.id)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.id')}
               </Typography>
@@ -82,7 +82,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
                 )}
               />
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(item.account.ledger)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.ledger')}
               </Typography>
@@ -108,7 +108,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
             {t('pages.wallet.title')}
           </Typography>
           <Box component="span" display="block" pl={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(item.wallet.id)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.id')}
               </Typography>
@@ -134,7 +134,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
             {t('pages.payment.title')}
           </Typography>
           <Box component="span" display="block" pl={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(item.payment.id)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.id')}
               </Typography>
@@ -144,7 +144,7 @@ const SourceDestinationBox: FunctionComponent<SourceDestinationBoxProps> = ({
                 route={getRoute(PAYMENT_ROUTE, item.payment.id)}
               />
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(item.payment.psp)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.send.psp')}
               </Typography>

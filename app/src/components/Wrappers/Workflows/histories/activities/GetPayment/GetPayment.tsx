@@ -90,7 +90,7 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
               />
             </Box>
 
-            <Box sx={chipContainer} mt={1}>
+            <Box sx={chipContainer(reference)} mt={1}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getPayment.reference')}
               </Typography>
@@ -100,7 +100,7 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
                 route={getRoute(PAYMENT_ROUTE, id)}
               />
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer()}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getPayment.createdAt')}
               </Typography>
@@ -112,7 +112,7 @@ const GetPayment: FunctionComponent<GetPaymentProps> = ({
                 </Typography>
               )}
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(`${initialAmount} ${asset}`)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getPayment.initialAmount')}
               </Typography>

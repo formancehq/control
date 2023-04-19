@@ -54,7 +54,7 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
       {show && (
         <>
           <Box component="span" display="block" sx={containerSx} mt={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(name)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.name')}
               </Typography>
@@ -64,7 +64,7 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
                 route={getRoute(WALLET_ROUTE, id)}
               />
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(ledger)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.ledger')}
               </Typography>
@@ -74,7 +74,7 @@ const GetWallet: FunctionComponent<GetWalletProps> = ({
                 route={getRoute(LEDGER_ROUTE, ledger)}
               />
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer()}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getWallet.createdAt')}
               </Typography>
