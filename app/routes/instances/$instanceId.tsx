@@ -7,7 +7,7 @@ import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
-import { get, isEmpty } from 'lodash';
+import { flattenDeep, get, isEmpty, omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ReactFlow, { Controls, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
@@ -40,7 +40,6 @@ import {
 import {
   FlowInstance,
   OrchestrationInstanceStatuses,
-  OrchestrationRunHistories,
 } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -62,25 +61,44 @@ export const loader: LoaderFunction = async ({
       `${API_ORCHESTRATION}/instances/${params.instanceId}`,
       'data'
     );
-    const stages = await api
+    const stagesHistory = await api
       .getResource<any>(
         `${API_ORCHESTRATION}/instances/${params.instanceId}/history`,
         'data'
       )
       .catch(() => []);
 
+    const stages = [];
     // There is no history for stage wait_event and delay, so we can hardcode 0 as send stage number
-    const activities =
-      instance.status.length > 0
-        ? await api
-            .getResource<any>(
-              `${API_ORCHESTRATION}/instances/${params.instanceId}/stages/0/history`,
-              'data'
-            )
-            .catch(() => [])
-        : [];
+    if (instance.status.length > 0) {
+      for (const status of instance.status) {
+        const activities = [];
+        const stage = {
+          ...stagesHistory[status.stage],
+          instanceId: status.instanceID,
+          id: status.status,
+          error: status.error,
+        };
 
-    return { ...instance, stages, activities } as FlowInstance;
+        const stageActivities = await api
+          .getResource<any>(
+            `${API_ORCHESTRATION}/instances/${params.instanceId}/stages/${status.stage}/history`,
+            'data'
+          )
+          .catch();
+
+        if (stageActivities) {
+          const activitiesFormatted = stageActivities.map((activity: any) => ({
+            ...activity,
+            stageId: status.stage,
+          }));
+          activities.push(activitiesFormatted);
+        }
+        stages.push({ ...stage, activities: activities.flat() });
+      }
+    }
+
+    return { ...omit(instance, ['status']), stages } as FlowInstance;
   }
 
   return handleResponse(await withSession(request, handleData));
@@ -107,18 +125,20 @@ export default function Index() {
   const { t } = useTranslation();
   const instance = useLoaderData<FlowInstance>() as unknown as FlowInstance;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const activities = instance.stages.map((stage) => stage.activities).flat();
   const initPosInstance =
-    instance.stages.length === 1 ? 50 * instance.activities.length + 50 : -200;
-  const initPosActivity = instance.activities.length === 1 ? 0 : -200;
+    instance.stages.length === 1 ? 50 * activities.length + 50 : -200;
+  const initPosActivity = activities.length === 1 ? 0 : -200;
   let x = 0;
   let j = 0;
   let z = 0;
-  const displayFlow = instance.stages.length > 0;
-  const logs = logsFactory(instance.activities);
-  const stagesNodes = instance.stages
-    .map((history: any, index: number) => {
-      x = x + index === 0 ? initPosInstance : x + 400;
+  let sequentialNodeId = 0;
 
+  const displayFlow = instance.stages.length > 0;
+  const logs = logsFactory(activities);
+  const stagesNodes = instance.stages
+    .map((stage: any, index: number) => {
+      x = x + index === 0 ? initPosInstance : x + 400;
       const nodes = [
         {
           type: 'customNode',
@@ -128,9 +148,9 @@ export default function Index() {
           draggable: false,
           selectable: false,
           data: {
-            isHighLevel: history.name === OrchestrationRunHistories.RUN_SEND,
-            label: history.name,
-            details: history,
+            isHighLevel: stage.activities.length > 0,
+            label: stage.name,
+            details: stage,
           },
         },
       ];
@@ -149,61 +169,56 @@ export default function Index() {
     })
     .flat();
 
-  const activitiesNodes = instance.activities.map(
-    (history: any, index: number) => {
-      j = j + index === 0 ? initPosActivity : j + 300;
-      const output = get(history, 'output');
-      const input = get(history, 'input');
+  const activitiesNodes = activities.map((activity: any, index: number) => {
+    j = j + index === 0 ? initPosActivity : j + 300;
+    const output = get(activity, 'output');
+    const input = get(activity, 'input');
 
-      return {
-        type: 'customNode',
-        id: `activities-node-${index}`,
-        position: { x: j, y: 430 },
-        style: { width: '250px' },
-        data: {
-          isLowLevel: true,
-          label: history.name,
-          details: { input, output },
-        },
-      };
-    }
+    return {
+      type: 'customNode',
+      id: `activities-node-${index}`,
+      position: { x: j, y: 430 },
+      style: { width: '250px' },
+      data: {
+        isLowLevel: true,
+        label: activity.name,
+        details: { input, output },
+      },
+    };
+  });
+
+  const sequentialNodes = flattenDeep(
+    instance.stages.map((stage: any) => {
+      const n = [] as any[];
+      stage.activities.forEach((_activity: any, index: number) => {
+        z = z + index === 0 ? initPosActivity : z + 300;
+        n.push({
+          type: 'sequentialNode',
+          id: `seq-node-${sequentialNodeId}`,
+          position: { x: z, y: 350 },
+          data: {
+            label: index + 1,
+          },
+        });
+        sequentialNodeId++;
+      });
+
+      return n as any[];
+    })
   );
 
-  const sequentialNodes = instance.activities.map(
-    (history: any, index: number) => {
-      z = z + index === 0 ? initPosActivity : z + 300;
-
-      return {
-        type: 'sequentialNode',
-        id: `seq-node-${index}`,
-        position: { x: z, y: 350 },
-        data: {
-          label: index + 1,
-        },
-      };
-    }
-  );
-
-  const edgeStages = instance.stages.map((history: any, index: number) => ({
+  const edgeStages = activities.map((activity: any, index: number) => ({
     id: `stages-edge-${index}`,
-    source: `stages-node-${index}`,
-    target: `stages-node-${index + 1}`,
-  }));
-
-  const edgesSeq = instance.activities.map((history: any, index: number) => ({
-    id: `seq-edge-${index}`,
-    source: `stages-node-0`,
+    source: `stages-node-${activity.stageId}`,
     target: `seq-node-${index}`,
   }));
 
-  const edgeActivities = instance.activities.map(
-    (history: any, index: number) => ({
-      id: `activities-edge-${index}`,
-      source: `seq-node-${index}`,
-      animated: true,
-      target: `activities-node-${index}`,
-    })
-  );
+  const edgeActivities = activities.map((_activity: any, index: number) => ({
+    id: `activities-edge-${index}`,
+    source: `seq-node-${index}`,
+    animated: true,
+    target: `activities-node-${index}`,
+  }));
 
   useEffect(() => {
     setNodes([...stagesNodes, ...sequentialNodes, ...activitiesNodes] as any);
@@ -277,7 +292,7 @@ export default function Index() {
                   alignItems="center"
                 >
                   <Chip
-                    label={instance.activities.length}
+                    label={activities.length}
                     color="violet"
                     sx={{ borderRadius: '50%' }}
                   />
@@ -313,7 +328,7 @@ export default function Index() {
             >
               <ReactFlow
                 nodes={nodes}
-                edges={[...edgeStages, ...edgesSeq, ...edgeActivities]}
+                edges={[...edgeStages, ...edgeActivities]}
                 fitView
                 onNodesChange={onNodesChange}
                 elementsSelectable={false}

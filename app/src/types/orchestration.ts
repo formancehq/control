@@ -69,6 +69,7 @@ export type OrchestrationInstance = {
 };
 
 export type FlowInputOutput = {
+  activities: FlowInputOutput[];
   input: any;
   output: any;
   name: string;
@@ -76,7 +77,6 @@ export type FlowInputOutput = {
 
 export type FlowInstance = OrchestrationInstance & {
   stages: FlowInputOutput[];
-  activities: FlowInputOutput[];
   status: ObjectOf<any>[];
 };
 export type FlowWorkflow = OrchestrationWorkflow<any> & {
