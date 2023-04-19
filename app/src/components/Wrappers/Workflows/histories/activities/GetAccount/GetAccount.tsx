@@ -47,7 +47,7 @@ const GetAccount: FunctionComponent<GetAccountProps> = ({
       {show && (
         <>
           <Box component="span" display="block" sx={containerSx} mt={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(address)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.getAccount.address')}
               </Typography>

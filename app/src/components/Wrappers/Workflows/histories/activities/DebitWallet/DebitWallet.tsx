@@ -39,7 +39,7 @@ const DebitWallet: FunctionComponent<DebitWalletProps> = ({ amount }) => {
       {show && (
         <>
           <Box component="span" display="block" sx={containerSx} mt={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(`${amount.amount} ${amount.asset}`)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.debitWallet.amount')}
               </Typography>

@@ -46,7 +46,7 @@ const CreditWallet: FunctionComponent<CreditWalletProps> = ({
       {show && (
         <>
           <Box component="span" display="block" sx={containerSx} mt={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(`${amount.amount} ${amount.asset}`)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.creditWallet.amount')}
               </Typography>
@@ -56,7 +56,7 @@ const CreditWallet: FunctionComponent<CreditWalletProps> = ({
                 color="red"
               />
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(balance)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.creditWallet.balance')}
               </Typography>

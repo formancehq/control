@@ -52,7 +52,7 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
       {show && (
         <>
           <Box component="span" display="block" sx={containerSx} mt={1}>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(reference)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.createTransaction.reference')}
               </Typography>
@@ -68,7 +68,7 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
                 />
               </CopyPasteTooltip>
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer(`${txid}`)}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.createTransaction.txid')}
               </Typography>
@@ -82,7 +82,7 @@ const CreateTransaction: FunctionComponent<CreateTransactionProps> = ({
                 }
               />
             </Box>
-            <Box sx={chipContainer}>
+            <Box sx={chipContainer()}>
               <Typography sx={typoSx} variant="bold">
                 {t('pages.flow.activities.createTransaction.timestamp')}
               </Typography>

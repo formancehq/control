@@ -35,7 +35,7 @@ const WaitEventStage: FunctionComponent<WaitEventStageProps> = ({
       />
       <>
         <Box component="span" display="block" mt={1} sx={containerSx}>
-          <Box sx={chipContainer}>
+          <Box sx={chipContainer(wait_event.event)}>
             <Typography sx={{ fontSize: '8px' }} variant="bold">
               {t('pages.flow.waitEvent.event')}
             </Typography>

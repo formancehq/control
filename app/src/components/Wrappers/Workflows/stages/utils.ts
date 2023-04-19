@@ -1,5 +1,8 @@
+import { SxProps } from '@mui/system';
 import i18next from 'i18next';
 import { isEmpty } from 'lodash';
+
+import { theme } from '@numaryhq/storybook';
 
 export const containerSx = {
   textAlign: 'initial',
@@ -9,7 +12,7 @@ export const containerSx = {
 };
 export const typoSx = { fontSize: '8px' };
 
-export const chipContainer = {
+export const chipContainer = (str?: string | number | undefined) => ({
   display: 'flex',
   gap: 1,
   alignItems: 'center',
@@ -21,7 +24,8 @@ export const chipContainer = {
     width: '0.5em',
     height: '0.5em',
   },
-};
+  ...getPlaceholderChipSx(str),
+});
 
 export const jsonContainer = {
   ...chipContainer,
@@ -47,3 +51,28 @@ export const getPlaceholder = (str?: string | number | undefined): string => {
 };
 
 export const placeholderSx = { pr: 0.5 };
+
+export const chipPlaceholderSx = {
+  '& .MuiChip-root': {
+    fontSize: '8px',
+    lineHeight: '24px',
+    fontWeight: 400,
+    letterSpacing: '-0.01em',
+    color: theme.palette.neutral[500],
+    fontStyle: 'italic',
+    background: 'transparent',
+    '& .MuiChip-label': {
+      pr: 0.5,
+    },
+  },
+};
+
+export const getPlaceholderChipSx = (
+  str?: string | number | undefined
+): undefined | SxProps => {
+  if (str && !isEmpty(str) && str !== 'undefined') {
+    return undefined;
+  }
+
+  return chipPlaceholderSx;
+};
