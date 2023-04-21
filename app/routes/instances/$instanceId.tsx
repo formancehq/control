@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Add, DashboardCustomize, PlaylistAdd } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
@@ -7,7 +7,7 @@ import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
-import { flattenDeep, get, isEmpty, omit } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ReactFlow, { Controls, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
@@ -33,6 +33,7 @@ import Table from '~/src/components/Wrappers/Table';
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
 import ArrowNode from '~/src/components/Wrappers/Workflows/CustomNode/ArrowNode';
 import SequentialNode from '~/src/components/Wrappers/Workflows/CustomNode/SequentialNode';
+import ActivitiesWrapper from '~/src/components/Wrappers/Workflows/histories/activities/ActivitiesWrapper';
 import {
   logsFactory,
   OrchestrationFactoryLog,
@@ -118,24 +119,31 @@ export function ErrorBoundary({ error }: { error: Error }) {
 const nodeTypes = {
   customNode: CustomNode,
   sequentialNode: SequentialNode,
+  activitiesWrapperNode: ActivitiesWrapper,
   arrowNode: ArrowNode,
 };
 
 export default function Index() {
   const { t } = useTranslation();
-  const instance = useLoaderData<FlowInstance>() as unknown as FlowInstance;
+  const rawInstance = useLoaderData<FlowInstance>() as unknown as FlowInstance;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [next, setNext] = useState(5);
+  let x = 0;
+  const j = 0;
+  const z = 0;
+  const sequentialNodeId = 0;
+
+  const instance = {
+    ...rawInstance,
+    stages: rawInstance.stages.slice(0, next),
+  };
   const activities = instance.stages.map((stage) => stage.activities).flat();
   const initPosInstance =
     instance.stages.length === 1 ? 50 * activities.length + 50 : -200;
   const initPosActivity = activities.length === 1 ? 0 : -200;
-  let x = 0;
-  let j = 0;
-  let z = 0;
-  let sequentialNodeId = 0;
-
   const displayFlow = instance.stages.length > 0;
   const logs = logsFactory(activities);
+
   const stagesNodes = instance.stages
     .map((stage: any, index: number) => {
       x = x + index === 0 ? initPosInstance : x + 400;
@@ -154,7 +162,6 @@ export default function Index() {
           },
         },
       ];
-
       if (instance.stages.length - 1 !== index) {
         nodes.push({
           type: 'arrowNode',
@@ -164,65 +171,77 @@ export default function Index() {
           position: { x: x + 210, y: 100 },
         } as any);
       }
+      if (stage.activities.length > 0) {
+        nodes.push({
+          type: 'activitiesWrapperNode',
+          id: `activities-wrapper-node-${index}`,
+          position: { x, y: 500 },
+          style: { width: '250px' },
+          data: {
+            details: stage,
+          },
+        } as any);
+      }
 
       return nodes;
     })
     .flat();
+  //
+  // const activitiesNodes = activities.map((activity: any, index: number) => {
+  //   j = j + index === 0 ? initPosActivity : j + 300;
+  //   const output = get(activity, "output");
+  //   const input = get(activity, "input");
+  //
+  //   return {
+  //     type: "customNode",
+  //     id: `activities-node-${index}`,
+  //     position: { x: j, y: 430 },
+  //     style: { width: "250px" },
+  //     data: {
+  //       isLowLevel: true,
+  //       label: activity.name,
+  //       details: { input, output },
+  //     },
+  //   };
+  // });
 
-  const activitiesNodes = activities.map((activity: any, index: number) => {
-    j = j + index === 0 ? initPosActivity : j + 300;
-    const output = get(activity, 'output');
-    const input = get(activity, 'input');
+  // const sequentialNodes = flattenDeep(
+  //   instance.stages.map((stage: any) => {
+  //     const n = [] as any[];
+  //     stage.activities.forEach((_activity: any, index: number) => {
+  //       z = z + index === 0 ? initPosActivity : z + 300;
+  //       n.push({
+  //         type: "sequentialNode",
+  //         id: `seq-node-${sequentialNodeId}`,
+  //         position: { x: z, y: 350 },
+  //         data: {
+  //           label: index + 1,
+  //         },
+  //       });
+  //       sequentialNodeId++;
+  //     });
+  //
+  //     return n as any[];
+  //   })
+  // );
 
-    return {
-      type: 'customNode',
-      id: `activities-node-${index}`,
-      position: { x: j, y: 430 },
-      style: { width: '250px' },
-      data: {
-        isLowLevel: true,
-        label: activity.name,
-        details: { input, output },
-      },
-    };
-  });
-
-  const sequentialNodes = flattenDeep(
-    instance.stages.map((stage: any) => {
-      const n = [] as any[];
-      stage.activities.forEach((_activity: any, index: number) => {
-        z = z + index === 0 ? initPosActivity : z + 300;
-        n.push({
-          type: 'sequentialNode',
-          id: `seq-node-${sequentialNodeId}`,
-          position: { x: z, y: 350 },
-          data: {
-            label: index + 1,
-          },
-        });
-        sequentialNodeId++;
-      });
-
-      return n as any[];
-    })
-  );
-
-  const edgeStages = activities.map((activity: any, index: number) => ({
+  const edgeStages = instance.stages.map((stage: any, index: number) => ({
     id: `stages-edge-${index}`,
-    source: `stages-node-${activity.stageId}`,
-    target: `seq-node-${index}`,
+    source: `stages-node-${index}`,
+    animated: true,
+    target: `activities-wrapper-node-${index}`,
   }));
 
-  const edgeActivities = activities.map((_activity: any, index: number) => ({
-    id: `activities-edge-${index}`,
-    source: `seq-node-${index}`,
-    animated: true,
-    target: `activities-node-${index}`,
-  }));
+  // const edgeActivities = activities.map((_activity: any, index: number) => ({
+  //   id: `activities-edge-${index}`,
+  //   source: `seq-node-${index}`,
+  //   animated: true,
+  //   target: `activities-node-${index}`,
+  // }));
 
   useEffect(() => {
-    setNodes([...stagesNodes, ...sequentialNodes, ...activitiesNodes] as any);
-  }, []);
+    setNodes(stagesNodes as any);
+  }, [next]);
 
   return (
     <Page
@@ -328,7 +347,7 @@ export default function Index() {
             >
               <ReactFlow
                 nodes={nodes}
-                edges={[...edgeStages, ...edgeActivities]}
+                edges={[...edgeStages]}
                 fitView
                 onNodesChange={onNodesChange}
                 elementsSelectable={false}
@@ -336,6 +355,9 @@ export default function Index() {
                 preventScrolling
                 nodeOrigin={[0.5, 0.5]}
                 nodeTypes={nodeTypes}
+                onPaneClick={() => {
+                  setNext(next + 1);
+                }}
               >
                 <Controls showInteractive={false} />
               </ReactFlow>

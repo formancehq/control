@@ -643,6 +643,7 @@ export default {
             reference: 'Reference',
             txid: 'Txid',
           },
+          title: 'Activities',
           creditWallet: {
             title: 'Credit wallet',
             metadata: 'Metadata',
