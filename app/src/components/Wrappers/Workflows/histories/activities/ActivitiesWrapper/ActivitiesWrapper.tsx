@@ -7,6 +7,7 @@ import { Handle, Position } from 'reactflow';
 import { ActivitiesWrapperProps } from './types';
 
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode/CustomNode';
+import SequentialNode from '~/src/components/Wrappers/Workflows/CustomNode/SequentialNode/SequentialNode';
 
 const ActivitiesWrapper: FunctionComponent<ActivitiesWrapperProps> = ({
   data: { details },
@@ -22,22 +23,76 @@ const ActivitiesWrapper: FunctionComponent<ActivitiesWrapperProps> = ({
         position={Position.Top}
         isConnectable={isConnectable}
       />
-      <Box className="react-flow__node-default">
+      <Box
+        className=""
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          borderStyle: 'dotted',
+          borderRadius: '14px',
+          borderColor: 'transparent',
+        }}
+      >
         {details.activities.map((a: any, index: number) => (
-          <CustomNode
+          <Box
+            mb={1}
             key={index}
-            data={{
-              details: {
-                ...a,
-              },
-              label: a.name,
-              isLowLevel: true,
-              isHighLevel: false,
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
             }}
-            isConnectable
-            id={`${index}`}
-            type={a.name}
-          />
+          >
+            <CustomNode
+              width={250}
+              data={{
+                details: {
+                  ...a,
+                },
+                label: a.name,
+                isLowLevel: true,
+                isHighLevel: false,
+              }}
+              isConnectable
+              id={`${index}`}
+              type={a.name}
+            />
+            {index < details.activities.length - 1 && (
+              <Box
+                mt={1}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
+                <Box
+                  sx={{
+                    height: 10,
+                    width: '1px',
+                    borderLeftColor: ({ palette }) => palette.neutral[600],
+                    borderLeftWidth: 1,
+                    borderLeftStyle: 'dotted',
+                  }}
+                />
+                <SequentialNode
+                  data={{ label: (index + 1).toString() }}
+                  isConnectable={false}
+                />
+                <Box
+                  sx={{
+                    height: 10,
+                    width: '1px',
+                    borderLeftColor: ({ palette }) => palette.neutral[600],
+                    borderLeftWidth: 1,
+                    borderLeftStyle: 'dotted',
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
         ))}
       </Box>
       <Handle

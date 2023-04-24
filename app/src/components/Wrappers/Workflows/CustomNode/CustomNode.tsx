@@ -1,5 +1,6 @@
 import React, { FunctionComponent, memo } from 'react';
 
+import { Box } from '@mui/material';
 import { get } from 'lodash';
 import { Handle, Position } from 'reactflow';
 
@@ -26,6 +27,7 @@ import {
 const CustomNode: FunctionComponent<CustomNodeProps> = ({
   data: { label, details, isHighLevel = false, isLowLevel = false },
   isConnectable,
+  width = '100%',
 }) => {
   const input = get(details, 'input', {}) || {};
   const output = get(details, 'output', {}) || {};
@@ -109,7 +111,7 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
   };
 
   return (
-    <div className="custom-node">
+    <Box className="custom-node" sx={{ width }}>
       {isLowLevel && (
         <Handle
           type="target"
@@ -125,7 +127,7 @@ const CustomNode: FunctionComponent<CustomNodeProps> = ({
           isConnectable={isConnectable}
         />
       )}
-    </div>
+    </Box>
   );
 };
 
