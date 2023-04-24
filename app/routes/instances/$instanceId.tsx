@@ -176,7 +176,7 @@ export default function Index() {
           type: 'activitiesWrapperNode',
           id: `activities-wrapper-node-${index}`,
           position: { x, y: 500 },
-          style: { width: '250px' },
+          style: { width: '300px' },
           data: {
             details: stage,
           },

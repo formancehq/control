@@ -7,5 +7,6 @@ export type CustomNodeProps = {
   };
   isConnectable: boolean;
   id: string;
+  width?: number;
   type: string;
 };
