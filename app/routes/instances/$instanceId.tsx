@@ -72,7 +72,6 @@ export const loader: LoaderFunction = async ({
         'data'
       )
       .catch(() => []);
-    console.log(stagesHistory, instance);
     const stages = [];
     if (instance.status.length > 0) {
       for (const status of instance.status) {
@@ -198,7 +197,7 @@ export default function Index() {
     animated: true,
     target: `activities-wrapper-node-${index}`,
   }));
-  console.log(nodes);
+
   useEffect(() => {
     setNodes(stagesNodes as any);
   }, [next]);
