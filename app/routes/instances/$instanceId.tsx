@@ -1,21 +1,21 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Add,
   DashboardCustomize,
   PlaylistAdd,
   Redo,
-} from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
-import type { MetaFunction } from "@remix-run/node";
-import { Session } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import { LoaderFunction, TypedResponse } from "@remix-run/server-runtime";
-import { isEmpty, omit } from "lodash";
-import { useTranslation } from "react-i18next";
-import ReactFlow, { ControlButton, Controls, useNodesState } from "reactflow";
-import invariant from "tiny-invariant";
+} from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
+import type { MetaFunction } from '@remix-run/node';
+import { Session } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
+import { isEmpty, omit } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import ReactFlow, { ControlButton, Controls, useNodesState } from 'reactflow';
+import invariant from 'tiny-invariant';
 
 import {
   Chip,
@@ -23,36 +23,36 @@ import {
   Row,
   SectionWrapper,
   ShellViewer,
-} from "@numaryhq/storybook";
+} from '@numaryhq/storybook';
 
-import { getRoute, WORKFLOW_ROUTE } from "~/src/components/Layout/routes";
-import ComponentErrorBoundary from "~/src/components/Wrappers/ComponentErrorBoundary";
-import IconTitlePage from "~/src/components/Wrappers/IconTitlePage";
-import RoutingChip from "~/src/components/Wrappers/RoutingChip/RoutingChip";
-import StatusChip from "~/src/components/Wrappers/StatusChip";
+import { getRoute, WORKFLOW_ROUTE } from '~/src/components/Layout/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
+import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
+import RoutingChip from '~/src/components/Wrappers/RoutingChip/RoutingChip';
+import StatusChip from '~/src/components/Wrappers/StatusChip';
 import {
   orchestrationInstanceStatusColorMap,
   orchestrationInstanceStatusIconMap,
-} from "~/src/components/Wrappers/StatusChip/maps";
-import Table from "~/src/components/Wrappers/Table";
-import CustomNode from "~/src/components/Wrappers/Workflows/CustomNode";
-import ArrowNode from "~/src/components/Wrappers/Workflows/CustomNode/ArrowNode";
-import ActivitiesWrapper from "~/src/components/Wrappers/Workflows/histories/activities/ActivitiesWrapper";
+} from '~/src/components/Wrappers/StatusChip/maps';
+import Table from '~/src/components/Wrappers/Table';
+import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
+import ArrowNode from '~/src/components/Wrappers/Workflows/CustomNode/ArrowNode';
+import ActivitiesWrapper from '~/src/components/Wrappers/Workflows/histories/activities/ActivitiesWrapper';
 import {
   logsFactory,
   OrchestrationFactoryLog,
-} from "~/src/components/Wrappers/Workflows/logs/factory";
+} from '~/src/components/Wrappers/Workflows/logs/factory';
 import {
   FlowInstance,
   OrchestrationInstanceStatuses,
-} from "~/src/types/orchestration";
-import { API_ORCHESTRATION } from "~/src/utils/api";
-import { createApiClient } from "~/src/utils/api.server";
-import { handleResponse, withSession } from "~/src/utils/auth.server";
+} from '~/src/types/orchestration';
+import { API_ORCHESTRATION } from '~/src/utils/api';
+import { createApiClient } from '~/src/utils/api.server';
+import { handleResponse, withSession } from '~/src/utils/auth.server';
 
 export const meta: MetaFunction = () => ({
-  title: "Flow",
-  description: "Show a workflow instance",
+  title: 'Flow',
+  description: 'Show a workflow instance',
 });
 
 export const loader: LoaderFunction = async ({
@@ -60,16 +60,16 @@ export const loader: LoaderFunction = async ({
   params,
 }): Promise<TypedResponse<FlowInstance>> => {
   async function handleData(session: Session) {
-    invariant(params.instanceId, "Expected params.instanceId");
+    invariant(params.instanceId, 'Expected params.instanceId');
     const api = await createApiClient(session);
     const instance = await api.getResource<any>(
       `${API_ORCHESTRATION}/instances/${params.instanceId}`,
-      "data"
+      'data'
     );
     const stagesHistory = await api
       .getResource<any>(
         `${API_ORCHESTRATION}/instances/${params.instanceId}/history`,
-        "data"
+        'data'
       )
       .catch(() => []);
     console.log(stagesHistory, instance);
@@ -87,7 +87,7 @@ export const loader: LoaderFunction = async ({
         const stageActivities = await api
           .getResource<any>(
             `${API_ORCHESTRATION}/instances/${params.instanceId}/stages/${status.stage}/history`,
-            "data"
+            'data'
           )
           .catch(() => []);
 
@@ -102,7 +102,7 @@ export const loader: LoaderFunction = async ({
       }
     }
 
-    return { ...omit(instance, ["status"]), stages } as FlowInstance;
+    return { ...omit(instance, ['status']), stages } as FlowInstance;
   }
 
   return handleResponse(await withSession(request, handleData));
@@ -149,12 +149,12 @@ export default function Index() {
     .map((stage: any, index: number) => {
       x = x + index === 0 ? initPosInstance : x + 400;
       if (isEmpty(stage.error) && stage.name) {
-        let nodes = [
+        const nodes = [
           {
-            type: "customNode",
+            type: 'customNode',
             id: `stages-node-${index}`,
             position: { x, y: 100 },
-            style: { width: "250px" },
+            style: { width: '250px' },
             draggable: false,
             selectable: false,
             data: {
@@ -166,7 +166,7 @@ export default function Index() {
         ];
         if (instance.stages.length - 1 !== index) {
           nodes.push({
-            type: "arrowNode",
+            type: 'arrowNode',
             draggable: false,
             selectable: false,
             id: `arrow-node-${index}`,
@@ -175,17 +175,19 @@ export default function Index() {
         }
         if (stage.activities.length > 0) {
           nodes.push({
-            type: "activitiesWrapperNode",
+            type: 'activitiesWrapperNode',
             id: `activities-wrapper-node-${index}`,
             position: { x, y: 500 },
-            style: { width: "300px" },
+            style: { width: '300px' },
             data: {
               details: stage,
             },
           } as any);
         }
+
         return nodes;
       }
+
       return [];
     })
     .flat();
@@ -207,16 +209,16 @@ export default function Index() {
       title={
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
+            display: 'flex',
+            alignItems: 'center',
             gap: 1,
             mb: 2,
-            width: "100%",
+            width: '100%',
           }}
         >
           <IconTitlePage
             icon={<DashboardCustomize />}
-            title={t("pages.instance.title")}
+            title={t('pages.instance.title')}
           />
           <StatusChip
             status={
@@ -242,7 +244,7 @@ export default function Index() {
               keys={[
                 <RoutingChip
                   key={index}
-                  label={t("pages.instance.sections.recap.workflow", {
+                  label={t('pages.instance.sections.recap.workflow', {
                     id: instance.workflowID,
                   })}
                   route={getRoute(WORKFLOW_ROUTE, instance.workflowID)}
@@ -256,10 +258,10 @@ export default function Index() {
                   <Chip
                     label={rawInstance.stages.length}
                     color="violet"
-                    sx={{ borderRadius: "50%" }}
+                    sx={{ borderRadius: '50%' }}
                   />
                   <Typography ml={1}>
-                    {t("pages.instance.sections.recap.stages")}
+                    {t('pages.instance.sections.recap.stages')}
                   </Typography>
                 </Box>,
                 <Box
@@ -271,22 +273,22 @@ export default function Index() {
                   <Chip
                     label={activitiesCount}
                     color="violet"
-                    sx={{ borderRadius: "50%" }}
+                    sx={{ borderRadius: '50%' }}
                   />
                   <Typography ml={1}>
-                    {t("pages.instance.sections.recap.activities")}
+                    {t('pages.instance.sections.recap.activities')}
                   </Typography>
                 </Box>,
                 <Chip
                   key={index}
                   label={
                     isEmpty(instance.error)
-                      ? t("pages.instance.sections.recap.noError")
-                      : t("pages.instance.sections.recap.error", {
+                      ? t('pages.instance.sections.recap.noError')
+                      : t('pages.instance.sections.recap.error', {
                           error: instance.error,
                         })
                   }
-                  color={isEmpty(instance.error) ? "blue" : "red"}
+                  color={isEmpty(instance.error) ? 'blue' : 'red'}
                   variant="square"
                 />,
               ]}
@@ -294,12 +296,12 @@ export default function Index() {
             />
           )}
         />
-        <SectionWrapper title={t("pages.instance.sections.details.title")}>
+        <SectionWrapper title={t('pages.instance.sections.details.title')}>
           {displayFlow && nodes.length > 0 ? (
             <Box
               sx={{
-                width: "96%",
-                height: "500px",
+                width: '96%',
+                height: '500px',
                 mb: 10,
               }}
             >
@@ -322,14 +324,14 @@ export default function Index() {
                     onClick={() => setNext(next + 1)}
                     onMouseEnter={() => setShowPaginationLabel(true)}
                     onMouseLeave={() => setShowPaginationLabel(false)}
-                    title={t("pages.instance.sections.flow.showMore")}
+                    title={t('pages.instance.sections.flow.showMore')}
                     disabled={next === rawInstance.stages.length}
                   >
-                    <Box sx={{ transition: "all 0.5s", width: "auto" }}>
+                    <Box sx={{ transition: 'all 0.5s', width: 'auto' }}>
                       {!showPaginationLabel ? (
                         <Redo />
                       ) : (
-                        t("pages.instance.sections.flow.showing", {
+                        t('pages.instance.sections.flow.showing', {
                           current: next,
                           total: rawInstance.stages.length,
                         })
@@ -341,19 +343,19 @@ export default function Index() {
             </Box>
           ) : (
             <Typography variant="placeholder">
-              {t("common.noActivity")}
+              {t('common.noActivity')}
             </Typography>
           )}
         </SectionWrapper>
         {logs.length > 0 && (
-          <SectionWrapper title={t("pages.instance.sections.logs.title")}>
+          <SectionWrapper title={t('pages.instance.sections.logs.title')}>
             <ShellViewer copy={false} scroll>
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {logs.map((log: OrchestrationFactoryLog, index: number) => (
                   <Box display="flex" flexDirection="column" key={index}>
                     <Typography
                       variant="money"
-                      sx={{ display: "flex", alignItems: "center" }}
+                      sx={{ display: 'flex', alignItems: 'center' }}
                     >
                       <PlaylistAdd />
                       {log.main}
@@ -365,7 +367,7 @@ export default function Index() {
                           variant="money"
                           color="secondary"
                           ml={3}
-                          sx={{ display: "flex", alignItems: "center" }}
+                          sx={{ display: 'flex', alignItems: 'center' }}
                         >
                           <Add fontSize="small" />
                           {child}
