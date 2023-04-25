@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { Add, DashboardCustomize, PlaylistAdd } from '@mui/icons-material';
+import {
+  Add,
+  DashboardCustomize,
+  PlaylistAdd,
+  Redo,
+} from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
@@ -9,7 +14,7 @@ import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
 import { isEmpty, omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import ReactFlow, { Controls, useNodesState } from 'reactflow';
+import ReactFlow, { ControlButton, Controls, useNodesState } from 'reactflow';
 import invariant from 'tiny-invariant';
 
 import {
@@ -32,7 +37,6 @@ import {
 import Table from '~/src/components/Wrappers/Table';
 import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
 import ArrowNode from '~/src/components/Wrappers/Workflows/CustomNode/ArrowNode';
-import SequentialNode from '~/src/components/Wrappers/Workflows/CustomNode/SequentialNode';
 import ActivitiesWrapper from '~/src/components/Wrappers/Workflows/histories/activities/ActivitiesWrapper';
 import {
   logsFactory,
@@ -70,7 +74,6 @@ export const loader: LoaderFunction = async ({
       .catch(() => []);
 
     const stages = [];
-    // There is no history for stage wait_event and delay, so we can hardcode 0 as send stage number
     if (instance.status.length > 0) {
       for (const status of instance.status) {
         const activities = [];
@@ -118,7 +121,6 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 const nodeTypes = {
   customNode: CustomNode,
-  sequentialNode: SequentialNode,
   activitiesWrapperNode: ActivitiesWrapper,
   arrowNode: ArrowNode,
 };
@@ -128,19 +130,18 @@ export default function Index() {
   const rawInstance = useLoaderData<FlowInstance>() as unknown as FlowInstance;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [next, setNext] = useState(5);
+  const [showPaginationLabel, setShowPaginationLabel] = useState(false);
   let x = 0;
-  const j = 0;
-  const z = 0;
-  const sequentialNodeId = 0;
-
   const instance = {
     ...rawInstance,
     stages: rawInstance.stages.slice(0, next),
   };
   const activities = instance.stages.map((stage) => stage.activities).flat();
+  const activitiesCount = rawInstance.stages
+    .map((stage) => stage.activities)
+    .flat().length;
   const initPosInstance =
     instance.stages.length === 1 ? 50 * activities.length + 50 : -200;
-  const initPosActivity = activities.length === 1 ? 0 : -200;
   const displayFlow = instance.stages.length > 0;
   const logs = logsFactory(activities);
 
@@ -186,58 +187,13 @@ export default function Index() {
       return nodes;
     })
     .flat();
-  //
-  // const activitiesNodes = activities.map((activity: any, index: number) => {
-  //   j = j + index === 0 ? initPosActivity : j + 300;
-  //   const output = get(activity, "output");
-  //   const input = get(activity, "input");
-  //
-  //   return {
-  //     type: "customNode",
-  //     id: `activities-node-${index}`,
-  //     position: { x: j, y: 430 },
-  //     style: { width: "250px" },
-  //     data: {
-  //       isLowLevel: true,
-  //       label: activity.name,
-  //       details: { input, output },
-  //     },
-  //   };
-  // });
 
-  // const sequentialNodes = flattenDeep(
-  //   instance.stages.map((stage: any) => {
-  //     const n = [] as any[];
-  //     stage.activities.forEach((_activity: any, index: number) => {
-  //       z = z + index === 0 ? initPosActivity : z + 300;
-  //       n.push({
-  //         type: "sequentialNode",
-  //         id: `seq-node-${sequentialNodeId}`,
-  //         position: { x: z, y: 350 },
-  //         data: {
-  //           label: index + 1,
-  //         },
-  //       });
-  //       sequentialNodeId++;
-  //     });
-  //
-  //     return n as any[];
-  //   })
-  // );
-
-  const edgeStages = instance.stages.map((stage: any, index: number) => ({
+  const edges = instance.stages.map((stage: any, index: number) => ({
     id: `stages-edge-${index}`,
     source: `stages-node-${index}`,
     animated: true,
     target: `activities-wrapper-node-${index}`,
   }));
-
-  // const edgeActivities = activities.map((_activity: any, index: number) => ({
-  //   id: `activities-edge-${index}`,
-  //   source: `seq-node-${index}`,
-  //   animated: true,
-  //   target: `activities-node-${index}`,
-  // }));
 
   useEffect(() => {
     setNodes(stagesNodes as any);
@@ -296,7 +252,7 @@ export default function Index() {
                   alignItems="center"
                 >
                   <Chip
-                    label={instance.stages.length}
+                    label={rawInstance.stages.length}
                     color="violet"
                     sx={{ borderRadius: '50%' }}
                   />
@@ -311,7 +267,7 @@ export default function Index() {
                   alignItems="center"
                 >
                   <Chip
-                    label={activities.length}
+                    label={activitiesCount}
                     color="violet"
                     sx={{ borderRadius: '50%' }}
                   />
@@ -347,7 +303,7 @@ export default function Index() {
             >
               <ReactFlow
                 nodes={nodes}
-                edges={[...edgeStages]}
+                edges={edges}
                 fitView
                 onNodesChange={onNodesChange}
                 elementsSelectable={false}
@@ -359,7 +315,26 @@ export default function Index() {
                   setNext(next + 1);
                 }}
               >
-                <Controls showInteractive={false} />
+                <Controls showInteractive={false}>
+                  <ControlButton
+                    onClick={() => setNext(next + 1)}
+                    onMouseEnter={() => setShowPaginationLabel(true)}
+                    onMouseLeave={() => setShowPaginationLabel(false)}
+                    title={t('pages.instance.sections.flow.showMore')}
+                    disabled={next === rawInstance.stages.length}
+                  >
+                    <Box sx={{ transition: 'all 0.5s', width: 'auto' }}>
+                      {!showPaginationLabel ? (
+                        <Redo />
+                      ) : (
+                        t('pages.instance.sections.flow.showing', {
+                          current: next,
+                          total: rawInstance.stages.length,
+                        })
+                      )}
+                    </Box>
+                  </ControlButton>
+                </Controls>
               </ReactFlow>
             </Box>
           ) : (

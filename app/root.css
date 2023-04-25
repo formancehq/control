@@ -64,3 +64,20 @@ body {
 .react-flow__handle {
   background-color: hsl(0, 0%, 98%)
 }
+.react-flow__controls-button {
+  border: 1px solid hsl(220, 13%, 85%);
+  box-shadow: none;
+  margin: 4px;
+  width: auto;
+  min-width: 20px;
+  min-height: 20px;
+  border-radius: 6px;
+  font-family: Inter,sans-serif;
+}
+.react-flow__controls-button:hover {
+  background-color: hsl(220, 26%, 95%);
+  transition: 0.5s
+}
+.react-flow__controls {
+  box-shadow: none;
+}
