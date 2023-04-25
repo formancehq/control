@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { MoreHoriz } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
@@ -76,59 +77,69 @@ export default function Index() {
             width: 10,
           },
         ]}
-        renderItem={(workflow: OrchestrationWorkflow<any>, index: number) => (
-          <Row
-            key={index}
-            keys={[
-              <Chip
-                key={index}
-                label={workflow.id}
-                variant="square"
-                color="yellow"
-              />,
-              workflow.name ? (
-                'name'
-              ) : (
-                <Typography variant="placeholder">
-                  {t('pages.workflows.table.noName')}
-                </Typography>
-              ),
-              <Box
-                key={index}
-                component="span"
-                display="flex"
-                flexDirection="column"
-              >
-                <Box component="span">
-                  <Chip
-                    key={index}
-                    label={workflow.config.stages.length}
-                    color="blue"
-                    sx={{ borderRadius: '50%' }}
-                  />
-                </Box>
+        renderItem={(workflow: OrchestrationWorkflow<any>, index: number) => {
+          const stages =
+            workflow.config.stages.length > 10
+              ? workflow.config.stages.slice(0, 10)
+              : workflow.config.stages;
+
+          return (
+            <Row
+              key={index}
+              keys={[
+                <Chip
+                  key={index}
+                  label={workflow.id}
+                  variant="square"
+                  color="yellow"
+                />,
+                workflow.name ? (
+                  'name'
+                ) : (
+                  <Typography variant="placeholder">
+                    {t('pages.workflows.table.noName')}
+                  </Typography>
+                ),
                 <Box
+                  key={index}
                   component="span"
-                  sx={{
-                    mt: 0.5,
-                    '& .MuiSvgIcon-root': {
-                      color: ({ palette }) => palette.neutral[300],
-                    },
-                  }}
+                  display="flex"
+                  flexDirection="column"
                 >
-                  {workflow.config.stages.map((stage) =>
-                    get(orchestrationStagesIconMap, Object.keys(stage)[0])
-                  )}
-                </Box>
-              </Box>,
-              <Date key={index} timestamp={workflow.createdAt} />,
-            ]}
-            item={workflow}
-            renderActions={() => (
-              <ShowListAction id={workflow.id} route={WORKFLOW_ROUTE} />
-            )}
-          />
-        )}
+                  <Box component="span">
+                    <Chip
+                      key={index}
+                      label={workflow.config.stages.length}
+                      color="blue"
+                      sx={{ borderRadius: '50%' }}
+                    />
+                  </Box>
+                  <Box
+                    component="span"
+                    sx={{
+                      mt: 0.5,
+                      '& .MuiSvgIcon-root': {
+                        color: ({ palette }) => palette.neutral[300],
+                      },
+                    }}
+                  >
+                    <>
+                      {stages.map((stage) =>
+                        get(orchestrationStagesIconMap, Object.keys(stage)[0])
+                      )}
+                      {workflow.config.stages.length > 10 && <MoreHoriz />}
+                    </>
+                  </Box>
+                </Box>,
+                <Date key={index} timestamp={workflow.createdAt} />,
+              ]}
+              item={workflow}
+              renderActions={() => (
+                <ShowListAction id={workflow.id} route={WORKFLOW_ROUTE} />
+              )}
+            />
+          );
+        }}
       />
     </Box>
   );

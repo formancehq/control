@@ -586,6 +586,10 @@ export default {
       instance: {
         title: 'Instance',
         sections: {
+          flow: {
+            showing: 'Showing {{current}} stages on {{total}}',
+            showMore: 'Show more stages',
+          },
           recap: {
             stages: 'stage(s)',
             activities: 'activitie(s)',
