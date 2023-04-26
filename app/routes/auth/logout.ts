@@ -9,7 +9,6 @@ export const loader: LoaderFunction = async ({ request }): Promise<any> => {
   return redirect('/', {
     headers: {
       'Set-Cookie': await destroySession(session),
-      'Clear-SiteData': 'cache',
     },
   });
 };

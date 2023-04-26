@@ -16,7 +16,6 @@ import {
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get('Cookie'));
   const sessionHolder: Authentication = parseSessionHolder(session);
-
   const authentication = await getOpenIdConfig().then((config) =>
     refreshToken(config, sessionHolder.refresh_token)
   );
