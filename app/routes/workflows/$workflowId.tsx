@@ -12,12 +12,12 @@ import invariant from 'tiny-invariant';
 
 import { Chip, Date, Page, Row, SectionWrapper } from '@numaryhq/storybook';
 
+import CustomNode from '~/src/components/Workflows/CustomNode';
+import ArrowNode from '~/src/components/Workflows/CustomNode/ArrowNode';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import InstanceList from '~/src/components/Wrappers/Lists/InstanceList';
 import Table from '~/src/components/Wrappers/Table';
-import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
-import ArrowNode from '~/src/components/Wrappers/Workflows/CustomNode/ArrowNode';
 import { FlowWorkflow } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -68,7 +68,7 @@ export default function Index() {
   const initPos = workflow.config.stages.length === 1 ? 0 : -200;
   const nodes = workflow.config.stages
     .map((stage: any, index: number) => {
-      x = x + index === 0 ? initPos : x + 360;
+      x = x + index === 0 ? initPos : x + 300;
 
       const nodes = [
         {
@@ -89,7 +89,7 @@ export default function Index() {
           draggable: false,
           selectable: false,
           id: `arrow-node-${index}`,
-          position: { x: x + 190, y: 250 },
+          position: { x: x + 160, y: 250 },
         } as any);
       }
 
