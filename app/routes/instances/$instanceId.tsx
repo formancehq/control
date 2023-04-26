@@ -26,6 +26,13 @@ import {
 } from '@numaryhq/storybook';
 
 import { getRoute, WORKFLOW_ROUTE } from '~/src/components/Layout/routes';
+import CustomNode from '~/src/components/Workflows/CustomNode';
+import ArrowNode from '~/src/components/Workflows/CustomNode/ArrowNode';
+import ActivitiesWrapper from '~/src/components/Workflows/histories/activities/ActivitiesWrapper';
+import {
+  logsFactory,
+  OrchestrationFactoryLog,
+} from '~/src/components/Workflows/logs/factory';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import RoutingChip from '~/src/components/Wrappers/RoutingChip/RoutingChip';
@@ -35,13 +42,6 @@ import {
   orchestrationInstanceStatusIconMap,
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
-import CustomNode from '~/src/components/Wrappers/Workflows/CustomNode';
-import ArrowNode from '~/src/components/Wrappers/Workflows/CustomNode/ArrowNode';
-import ActivitiesWrapper from '~/src/components/Wrappers/Workflows/histories/activities/ActivitiesWrapper';
-import {
-  logsFactory,
-  OrchestrationFactoryLog,
-} from '~/src/components/Wrappers/Workflows/logs/factory';
 import {
   FlowInstance,
   OrchestrationInstanceStatuses,
@@ -146,7 +146,7 @@ export default function Index() {
 
   const stagesNodes = instance.stages
     .map((stage: any, index: number) => {
-      x = x + index === 0 ? initPosInstance : x + 400;
+      x = x + index === 0 ? initPosInstance : x + 350;
       if (isEmpty(stage.error) && stage.name) {
         const nodes = [
           {
@@ -169,7 +169,7 @@ export default function Index() {
             draggable: false,
             selectable: false,
             id: `arrow-node-${index}`,
-            position: { x: x + 210, y: 100 },
+            position: { x: x + 185, y: 100 },
           } as any);
         }
         if (stage.activities.length > 0) {
