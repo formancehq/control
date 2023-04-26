@@ -40,7 +40,6 @@ const Line: FunctionComponent<LineProps> = ({
   sxTitle = titleSx,
   sxSubtitle = subtitleSx,
 }) => {
-  console.log(sxTitle);
   const { t } = useTranslation();
   if (data.datasets.length === 0 || data.labels.length === 0) {
     return (

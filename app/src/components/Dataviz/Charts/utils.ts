@@ -129,7 +129,6 @@ export const buildChart = (
   reverseDateFormat = 'LT',
   type = ChartTypes.LINE
 ): Chart => {
-  console.log(type);
   if (type === ChartTypes.LINE) {
     datasets.forEach((dataset: ChartDataset) => {
       const dataFormated = labels.map(() => 0);
