@@ -17,6 +17,8 @@ import {
   Widgets,
 } from '@mui/icons-material';
 
+import { FEATURES } from '~/src/contexts/service';
+
 export const ROOT_ROUTE = '/';
 export const OVERVIEW_ROUTE = '/overview';
 // Ledgers
@@ -79,6 +81,7 @@ export type RouterConfig = {
   paths: string[];
   icon?: React.ReactNode;
   strict?: boolean;
+  feature: FEATURES;
 };
 
 export const overview: RouterConfig = {
@@ -86,6 +89,7 @@ export const overview: RouterConfig = {
   label: 'navbar.title.overview',
   paths: [OVERVIEW_ROUTE, ROOT_ROUTE],
   icon: <Home />,
+  feature: FEATURES.OVERVIEW,
 };
 
 // Ledgers
@@ -94,18 +98,21 @@ export const accounts: RouterConfig = {
   label: 'navbar.title.accounts',
   paths: [ACCOUNTS_ROUTE, ACCOUNT_ROUTE],
   icon: <AccountTree />,
+  feature: FEATURES.ACCOUNTS,
 };
 export const transactions: RouterConfig = {
   id: 'transactions',
   label: 'navbar.title.transactions',
   paths: [TRANSACTIONS_ROUTE, TRANSACTION_ROUTE],
   icon: <SwapHoriz />,
+  feature: FEATURES.TRANSACTIONS,
 };
 export const ledgers: RouterConfig = {
   id: 'ledgers',
   label: 'navbar.title.ledgers',
   paths: [LEDGERS_ROUTE, LEDGER_ROUTE, LEDGERS_LOGS_ROUTE],
   icon: <AccountBalance />,
+  feature: FEATURES.LEDGERS,
 };
 
 // Payments
@@ -114,18 +121,21 @@ export const paymentsAccounts: RouterConfig = {
   label: 'navbar.title.paymentsAccounts',
   paths: [PAYMENTS_ACCOUNTS_ROUTE],
   icon: <AccountBalanceWallet />,
+  feature: FEATURES.PAYMENTS_ACCOUNT,
 };
 export const wallets: RouterConfig = {
   id: 'wallets',
   label: 'navbar.title.wallets',
   paths: [WALLETS_ROUTE, WALLET_ROUTE],
   icon: <Wallet />,
+  feature: FEATURES.WALLETS,
 };
 export const payments: RouterConfig = {
   id: 'payments',
   label: 'navbar.title.payments',
   paths: [PAYMENTS_ROUTE, PAYMENT_ROUTE],
   icon: <CreditCard />,
+  feature: FEATURES.PAYMENTS,
 };
 
 // Configuration
@@ -134,18 +144,21 @@ export const apps: RouterConfig = {
   label: 'navbar.title.apps',
   paths: [APPS_ROUTE, APP_ROUTE],
   icon: <Widgets />,
+  feature: FEATURES.APPS,
 };
 export const oAuthClients: RouterConfig = {
   id: 'oAuthClient',
   label: 'navbar.title.oAuthClients',
   paths: [OAUTH_CLIENTS_ROUTE, OAUTH_CLIENT_ROUTE],
   icon: <Apps />,
+  feature: FEATURES.O_AUTH_CLIENTS,
 };
 export const webhooks: RouterConfig = {
   id: 'webhooks',
   label: 'navbar.title.webhooks',
   paths: [WEBHOOKS_ROUTE, WEBHOOK_ROUTE],
   icon: <Webhook />,
+  feature: FEATURES.WEBHOOKS,
 };
 
 // Flows
@@ -154,12 +167,14 @@ export const workflows: RouterConfig = {
   label: 'navbar.title.workflows',
   paths: [WORKFLOWS_ROUTE, WORKFLOW_ROUTE],
   icon: <Schema />,
+  feature: FEATURES.WORKFLOWS,
 };
 export const instances: RouterConfig = {
   id: 'instances',
   label: 'navbar.title.instances',
   paths: [INSTANCES_ROUTE, INSTANCE_ROUTE],
   icon: <DashboardCustomize />,
+  feature: FEATURES.INSTANCES,
 };
 
 // Status
@@ -168,6 +183,7 @@ export const status: RouterConfig = {
   label: 'navbar.title.status',
   paths: [STATUS_ROUTE],
   icon: <Dns />,
+  feature: FEATURES.STATUS,
 };
 
 // Operations
@@ -177,6 +193,7 @@ export const reconciliation: RouterConfig = {
   label: 'navbar.title.reconciliation',
   paths: [RECON_ROUTE],
   icon: <InsertLink />,
+  feature: FEATURES.RECONCILIATION,
 };
 
 // TODO uncomment when monitoring is ready

@@ -14,6 +14,8 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Connector } from '~/src/types/connectorsConfig';
 import { API_PAYMENT } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -47,6 +49,7 @@ export default function Index() {
   const { t } = useTranslation();
   const connectorsData = useLoaderData<Connector[]>();
   const navigate = useNavigate();
+  useFeatureFlag(FEATURES.APPS);
 
   return (
     <Box mt={2}>

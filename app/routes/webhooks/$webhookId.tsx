@@ -32,6 +32,8 @@ import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
 import WebhookStatus from '~/src/components/Wrappers/WebhookStatus';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { useService } from '~/src/hooks/useService';
 import { Webhook } from '~/src/types/webhook';
 import { API_WEBHOOK } from '~/src/utils/api';
@@ -53,6 +55,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
     />
   );
 }
+
 export const loader: LoaderFunction = async ({ request, params }) => {
   async function handleData(session: Session) {
     invariant(params.webhookId, 'Expected params.webhookId');
@@ -76,6 +79,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export default function Index() {
   const data = useLoaderData() as unknown as Webhook;
   const { t } = useTranslation();
+  useFeatureFlag(FEATURES.WORKFLOWS);
+
   const { api, snackbar } = useService();
   const { webhookId: id } = useParams<{
     webhookId: string;

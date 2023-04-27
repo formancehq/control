@@ -29,6 +29,7 @@ OTEL_TRACES_EXPORTER_ZIPKIN_ENDPOINT=http://localhost:9411/api/v2/spans
 UNSECURE_COOKIES=1
 // from ci
 VERSION=develop
+FEATURES_DISABLED="workflows,instances,payments" // See Feature Flag section
 ```
 
 ```sh
@@ -38,6 +39,14 @@ yarn dev
 This starts your app in development mode, rebuilding assets on file changes.
 
 If you need to run open-tel use `docker compose up` and change OTEL_TRACES to 1.
+
+
+## Feature flag
+Features can be disabled by setting one or more of the feature string into FEATURES_DISABLED env var. String must be separated by a comma.
+
+List can be found inside `app/src/service.ts` (`enum FEATURES`)
+
+Note that if FEATURES_DISABLED is not given, all features will be enabled.
 
 ## Deployment
 

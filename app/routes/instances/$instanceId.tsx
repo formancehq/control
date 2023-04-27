@@ -42,6 +42,8 @@ import {
   orchestrationInstanceStatusIconMap,
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import {
   FlowInstance,
   OrchestrationInstanceStatuses,
@@ -126,6 +128,8 @@ const nodeTypes = {
 
 export default function Index() {
   const { t } = useTranslation();
+  useFeatureFlag(FEATURES.INSTANCES);
+
   const rawInstance = useLoaderData<FlowInstance>() as unknown as FlowInstance;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [next, setNext] = useState(5);

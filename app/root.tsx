@@ -93,6 +93,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     await withSession(request, async () => {
       const sessionHolder = decrypt<Authentication>(cookie);
       const payload = getJwtPayload(sessionHolder);
+      const featuresDisabled = get(process, 'env.FEATURES_DISABLED', '').split(
+        ','
+      );
       const user = await getCurrentUser(
         openIdConfig,
         sessionHolder.access_token
@@ -108,6 +111,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       };
 
       return {
+        featuresDisabled,
         metas: {
           origin: REDIRECT_URI,
           openIdConfig,
@@ -277,7 +281,8 @@ const Document = withEmotionCache(
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { metas, currentUser } = useLoaderData();
+  const { metas, currentUser, featuresDisabled } =
+    useLoaderData<ServiceContext>() as ServiceContext;
   const { t } = useTranslation();
   const [loading, _load, stopLoading] = useOpen(true);
   const [feedback, setFeedback] = useState({
@@ -340,6 +345,7 @@ export default function App() {
       ) : (
         <ServiceContext.Provider
           value={{
+            featuresDisabled,
             api: new ReactApiClient(),
             currentUser,
             metas,

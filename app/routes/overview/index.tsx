@@ -53,6 +53,7 @@ export const meta: MetaFunction = () => ({
 export function ErrorBoundary() {
   return <Overview />;
 }
+
 const getLedgersStats = async (ledgersList: string[], api: ApiClient) => {
   const ledgers = [] as any;
   const firstThreeLedgers = take(ledgersList, 3);

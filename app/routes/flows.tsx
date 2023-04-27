@@ -33,6 +33,7 @@ export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
   const handleActive = (path: string) => location.pathname.includes(path);
+
   const config = [
     {
       active: handleActive('workflows'),

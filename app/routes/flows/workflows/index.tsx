@@ -11,10 +11,16 @@ import { useTranslation } from 'react-i18next';
 
 import { Chip, Date, Row } from '@numaryhq/storybook';
 
-import { WORKFLOW_ROUTE } from '~/src/components/Layout/routes';
+import {
+  WORKFLOW_ROUTE,
+  workflows as workflowsConfig,
+} from '~/src/components/Layout/routes';
+import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import { orchestrationStagesIconMap } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { OrchestrationWorkflow } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -24,6 +30,16 @@ export const meta: MetaFunction = () => ({
   title: 'Flows',
   description: 'Workflow list',
 });
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <ComponentErrorBoundary
+      id={workflowsConfig.id}
+      title="pages.workflows.title"
+      error={error}
+    />
+  );
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
@@ -47,6 +63,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const { t } = useTranslation();
   const workflows = useLoaderData<OrchestrationWorkflow<any>[]>();
+  useFeatureFlag(FEATURES.WORKFLOWS);
 
   return (
     <Box mt={2}>

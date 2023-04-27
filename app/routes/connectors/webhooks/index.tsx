@@ -16,6 +16,8 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
 import WebhookStatus from '~/src/components/Wrappers/WebhookStatus';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor } from '~/src/types/generic';
 import { Webhook } from '~/src/types/webhook';
 import { API_WEBHOOK } from '~/src/utils/api';
@@ -54,6 +56,7 @@ export default function Index() {
   const { t } = useTranslation();
   const cursor = useLoaderData() as unknown as Cursor<Webhook>;
   const [webhooks, setWebhooks] = useState<Webhook[]>(cursor.data);
+  useFeatureFlag(FEATURES.WEBHOOKS);
 
   return (
     <Box mt={2}>

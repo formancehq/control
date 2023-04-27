@@ -14,6 +14,8 @@ import { ledgers } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import LedgerLogList from '~/src/components/Wrappers/Lists/LedgerLogList';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor } from '~/src/types/generic';
 import { LedgerLog, Transaction } from '~/src/types/ledger';
 import { API_LEDGER } from '~/src/utils/api';
@@ -65,6 +67,7 @@ export default function Index() {
   const { ledgerId: id } = useParams<{
     ledgerId: string;
   }>();
+  useFeatureFlag(FEATURES.LEDGERS);
 
   return (
     <Page

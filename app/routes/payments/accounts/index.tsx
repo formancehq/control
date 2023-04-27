@@ -11,6 +11,8 @@ import { paymentsAccounts as paymentsAccountsConfig } from '~/src/components/Lay
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ProviderPicture from '~/src/components/Wrappers/ProviderPicture';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor } from '~/src/types/generic';
 import { Account } from '~/src/types/payment';
 import { API_PAYMENT } from '~/src/utils/api';
@@ -46,6 +48,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const accounts = useLoaderData<Account[]>();
   const { t } = useTranslation();
+  useFeatureFlag(FEATURES.PAYMENTS_ACCOUNT);
 
   return (
     <Page id={paymentsAccountsConfig.id}>

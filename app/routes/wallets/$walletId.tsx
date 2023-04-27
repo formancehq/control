@@ -23,7 +23,9 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
 import { TableContext } from '~/src/contexts/table';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
 import {
@@ -156,6 +158,7 @@ export default function Index() {
   const { t } = useTranslation();
   const data =
     useLoaderData<WalletDetailsData>() as unknown as WalletDetailsData;
+  useFeatureFlag(FEATURES.WALLETS);
 
   return (
     <Page

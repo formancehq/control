@@ -30,6 +30,8 @@ import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Chart } from '~/src/types/chart';
 import { Cursor } from '~/src/types/generic';
 import {
@@ -150,6 +152,7 @@ export default function Index() {
   const fetcher = useFetcher();
   const account = fetcher.data?.account || loaderData.account;
   const { palette } = useTheme();
+  useFeatureFlag(FEATURES.ACCOUNTS);
 
   const sync = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
