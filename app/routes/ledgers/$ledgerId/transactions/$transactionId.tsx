@@ -21,6 +21,8 @@ import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import PaymentList from '~/src/components/Wrappers/Lists/PaymentList';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor, ObjectOf } from '~/src/types/generic';
 import {
   LedgerResources,
@@ -116,6 +118,7 @@ export default function Index() {
   const { t } = useTranslation();
   const fetcher = useFetcher();
   const transaction = fetcher.data || loaderData;
+  useFeatureFlag(FEATURES.TRANSACTIONS);
 
   const sync = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

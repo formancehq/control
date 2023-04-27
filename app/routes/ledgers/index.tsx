@@ -15,6 +15,8 @@ import {
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { API_LEDGER } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -55,6 +57,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const { t } = useTranslation();
   const ledgers = useLoaderData<string[]>();
+  useFeatureFlag(FEATURES.LEDGERS);
 
   return (
     <Page id={ledgersConfig.id}>

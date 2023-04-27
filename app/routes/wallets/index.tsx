@@ -17,6 +17,8 @@ import {
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor } from '~/src/types/generic';
 import { Wallet } from '~/src/types/wallet';
 import { API_WALLET } from '~/src/utils/api';
@@ -55,6 +57,7 @@ export default function Index() {
   const { t } = useTranslation();
   const wallets = useLoaderData<string[]>();
   const navigate = useNavigate();
+  useFeatureFlag(FEATURES.WALLETS);
 
   return (
     <Page id={walletsConfig.id}>

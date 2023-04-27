@@ -37,6 +37,8 @@ import {
   paymentTypeIconMap,
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
 import { Payment, PaymentDetail } from '~/src/types/payment';
@@ -92,6 +94,7 @@ export default function PaymentDetails() {
   const { payment, transactions } =
     useLoaderData<PaymentDetailData>() as unknown as PaymentDetailData;
   const { t } = useTranslation();
+  useFeatureFlag(FEATURES.PAYMENTS);
 
   const renderTableItem = (
     key: string,

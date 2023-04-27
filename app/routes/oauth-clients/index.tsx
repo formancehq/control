@@ -17,6 +17,8 @@ import { LoadingButton, Row, TextArea, TextField } from '@numaryhq/storybook';
 import { getRoute, OAUTH_CLIENT_ROUTE } from '~/src/components/Layout/routes';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
 import { OAuthClient, OAuthSecret } from '~/src/types/oauthClient';
@@ -95,6 +97,7 @@ export default function Index() {
     resolver: yupResolver(schema),
     mode: 'onTouched',
   });
+  useFeatureFlag(FEATURES.O_AUTH_CLIENTS);
 
   const onSave = async () => {
     const validated = await trigger('name');

@@ -18,6 +18,8 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import InstanceList from '~/src/components/Wrappers/Lists/InstanceList';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { FlowWorkflow } from '~/src/types/orchestration';
 import { API_ORCHESTRATION } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -63,6 +65,8 @@ const nodeTypes = { customNode: CustomNode, arrowNode: ArrowNode };
 export default function Index() {
   const { t } = useTranslation();
   const workflow = useLoaderData<FlowWorkflow>() as unknown as FlowWorkflow;
+  useFeatureFlag(FEATURES.WORKFLOWS);
+
   let x = 0;
   const displayFlow = workflow.config.stages.length > 0;
   const initPos = workflow.config.stages.length === 1 ? 0 : -200;

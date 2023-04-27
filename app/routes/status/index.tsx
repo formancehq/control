@@ -22,6 +22,8 @@ import {
   gatewayServicesIconMap,
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { useService } from '~/src/hooks/useService';
 import {
   Gateway,
@@ -62,6 +64,7 @@ export default function Index() {
   const { t } = useTranslation();
   const { metas } = useService();
   const id = metas.api.split('.')[0].split('//')[1];
+  useFeatureFlag(FEATURES.STATUS);
 
   return (
     <Page id="status">
