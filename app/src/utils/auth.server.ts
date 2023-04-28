@@ -83,10 +83,10 @@ export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
   const uri = `${process.env.API_URL}/api/${API_AUTH}/.well-known/openid-configuration`;
 
   return fetch(uri)
+    .then(async (response) => response.json())
     .catch(() => {
       throw new Error('Error while fetching openid config');
-    })
-    .then(async (response) => response.json());
+    });
 };
 
 export const getJwtPayload = (

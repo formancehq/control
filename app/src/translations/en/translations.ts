@@ -633,6 +633,11 @@ export default {
         last: 'Last {{value}} {{kind}}',
       },
       boundaries: {
+        auth: 'authentication',
+        buttons: {
+          overview: 'Go back home',
+          getHelp: 'Get help',
+        },
         errorState: {
           error: {
             title:
@@ -662,7 +667,7 @@ export default {
             button: 'Go back home',
           },
         },
-        title: "That's an error",
+        title: "That's an {{type}} error",
       },
       soon: 'Soon!',
       title: 'Formance',

@@ -89,7 +89,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         });
       }
     } catch (e) {
-      console.info('Current user could not be retrieved');
+      console.info('Current user could not be retrieved yet');
     }
   };
 
