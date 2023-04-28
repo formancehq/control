@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ReactElement, useEffect, useState } from 'react';
 
 import { withEmotionCache } from '@emotion/react';
-import { Logout } from '@mui/icons-material';
+import { Forum, Logout } from '@mui/icons-material';
 import {
   Backdrop,
   Box,
@@ -23,7 +23,7 @@ import {
   useLoaderData,
 } from '@remix-run/react';
 import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
-import { camelCase, get } from 'lodash';
+import { camelCase, get, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,6 +36,7 @@ import Layout from '~/src/components/Layout';
 import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
+import { Errors } from '~/src/types/generic';
 import {
   Authentication,
   CurrentUser,
@@ -71,8 +72,17 @@ export const loader: LoaderFunction = async ({ request }) => {
   const buff = new Buffer(JSON.stringify(stateObject));
   const stateAsBase64 = buff.toString('base64');
   const openIdConfig = await getOpenIdConfig();
-
-  if (!cookie) {
+  const error = url.searchParams.get('error');
+  if (error) {
+    throw Error(
+      JSON.stringify({
+        error,
+        description: url.searchParams.get('error_description'),
+        error_type: Errors.AUTH,
+      })
+    );
+  }
+  if (!cookie && !error) {
     // TODO add method on auth.server with URL params to be more elegant
     return redirect(
       `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}&state=${stateAsBase64}&response_type=code&scope=openid email offline_access`
@@ -102,74 +112,101 @@ const renderError = (
   navigate: NavigateFunction,
   t: any,
   message?: string,
-  description?: string
-): ReactElement => (
-  <Backdrop
-    sx={{
-      zIndex: (theme) => theme.zIndex.drawer + 1,
-    }}
-    open={true}
-  >
-    <Box
-      display="flex"
-      justifyContent="space-evenly"
+  description?: string,
+  type?: Errors
+): ReactElement => {
+  const isAuthError = (type && type == Errors.AUTH) || false;
+
+  return (
+    <Backdrop
       sx={{
-        width: '100%',
-        height: '100%',
-        background: ({ palette }) => palette.neutral[0],
+        zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
+      open={true}
     >
       <Box
+        display="flex"
+        justifyContent="space-evenly"
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          alignSelf: 'center',
+          width: '100%',
+          height: '100%',
           background: ({ palette }) => palette.neutral[0],
         }}
       >
-        <Typography variant="large2x" mb={0}>
-          {t('common.boundaries.title')}
-        </Typography>
-        <Typography variant="h2" mt={1}>
-          {message || t('common.boundaries.errorState.error.title')}
-        </Typography>
         <Box
           sx={{
-            mt: 4,
-            p: 4,
-            borderRadius: 2,
-            color: ({ palette }) => palette.neutral[0],
-            backgroundColor: ({ palette }) => palette.neutral[900],
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            alignSelf: 'center',
+            background: ({ palette }) => palette.neutral[0],
           }}
         >
-          <Typography variant="body2">
-            {description || t('common.boundaries.errorState.error.description')}
+          <Typography variant="large2x" mb={0}>
+            {t('common.boundaries.title', {
+              type: isAuthError
+                ? t(`common.boundaries.${Errors.AUTH}`)
+                : undefined,
+            })}
           </Typography>
-        </Box>
-        <Box sx={{ display: 'flex' }}>
-          <LoadingButton
-            id="go-back-home"
-            content="Back to main page"
-            variant="stroke"
-            onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
-            sx={{ mt: 5, mr: 1 }}
-          />
-          <LoadingButton
-            id="logout"
-            content={t('topbar.logout')}
-            variant="stroke"
-            startIcon={<Logout />}
-            onClick={() => {
-              window.location.href = `${window.origin}/auth/redirect-logout`;
+          <Typography variant="h2" mt={1}>
+            {message || t('common.boundaries.errorState.error.title')}
+          </Typography>
+          <Box
+            sx={{
+              mt: 4,
+              p: 4,
+              borderRadius: 2,
+              color: ({ palette }) => palette.neutral[0],
+              backgroundColor: ({ palette }) => palette.neutral[900],
             }}
-            sx={{ mt: 5 }}
-          />
+          >
+            <Typography variant="body2">
+              {description ||
+                t('common.boundaries.errorState.error.description')}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {!isAuthError && (
+              <LoadingButton
+                id="go-back-home"
+                content={t('common.boundaries.buttons.overview')}
+                variant="stroke"
+                onClick={() => navigate(getRoute(OVERVIEW_ROUTE))}
+                sx={{ mt: 5 }}
+              />
+            )}
+            {!isAuthError && (
+              <LoadingButton
+                id="logout"
+                content={t('topbar.logout')}
+                variant="stroke"
+                startIcon={<Logout />}
+                onClick={() => {
+                  window.location.href = `${window.origin}/auth/redirect-logout`;
+                }}
+                sx={{ mt: 5 }}
+              />
+            )}
+            <LoadingButton
+              id="get-help"
+              content={t('common.boundaries.buttons.getHelp')}
+              variant="stroke"
+              startIcon={<Forum />}
+              onClick={() => {
+                window.open(
+                  'https://formance-community.slack.com/ssb/redirect',
+                  '_blank'
+                );
+              }}
+              sx={{ mt: 5 }}
+            />
+          </Box>
         </Box>
       </Box>
-    </Box>
-  </Backdrop>
-);
+    </Backdrop>
+  );
+};
 
 const Document = withEmotionCache(
   ({ children, title }: DocumentProps, emotionCache) => {
@@ -319,10 +356,28 @@ export function ErrorBoundary({ error }: { error: Error }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   logger(error, 'app/root', undefined);
+  let errorParsed = {
+    error: undefined,
+    description: undefined,
+    error_type: undefined,
+  };
+  try {
+    errorParsed = JSON.parse(error.message);
+  } catch {
+    noop();
+  }
 
   return (
     <Document title="Error!">
-      <Layout>{renderError(navigate, t)}</Layout>
+      <Layout>
+        {renderError(
+          navigate,
+          t,
+          errorParsed.error,
+          errorParsed.description,
+          errorParsed.error_type
+        )}
+      </Layout>
     </Document>
   );
 }
@@ -331,6 +386,7 @@ export function CatchBoundary() {
   const caught = useCatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  console.log('cccc', caught);
   logger(caught, 'app/root/CatchBoundary');
 
   const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));

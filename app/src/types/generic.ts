@@ -21,4 +21,6 @@ export enum Errors {
   FORBIDDEN = 'forbidden',
   SERVICE_DOWN = 'service_down',
   ERROR = 'error',
+  AUTH = 'auth',
+  OTHER = 'other',
 }

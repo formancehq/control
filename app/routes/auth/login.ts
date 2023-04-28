@@ -1,6 +1,7 @@
-import { json, redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
 
+import { Errors } from '~/src/types/generic';
 import {
   commitSession,
   COOKIE_NAME,
@@ -34,10 +35,11 @@ export const loader: LoaderFunction = async ({
     });
   }
 
-  return json(
-    {},
-    {
-      status: 401,
-    }
+  return redirect(
+    `${process.env.REDIRECT_URI}?error_type=${
+      Errors.AUTH
+    }&error=${url.searchParams.get(
+      'error'
+    )}&error_description=${url.searchParams.get('error_description')}`
   );
 };
