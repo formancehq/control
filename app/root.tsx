@@ -37,17 +37,13 @@ import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
 import { Errors } from '~/src/types/generic';
-import {
-  Authentication,
-  CurrentUser,
-  errorsMap,
-  logger,
-} from '~/src/utils/api';
+import { Authentication, errorsMap, logger } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
 import {
   AUTH_CALLBACK_ROUTE,
   COOKIE_NAME,
   decrypt,
+  getCurrentUser,
   getJwtPayload,
   getOpenIdConfig,
   getSession,
@@ -93,6 +89,19 @@ export const loader: LoaderFunction = async ({ request }) => {
     await withSession(request, async () => {
       const sessionHolder = decrypt<Authentication>(cookie);
       const payload = getJwtPayload(sessionHolder);
+      const user = await getCurrentUser(
+        openIdConfig,
+        sessionHolder.access_token
+      );
+
+      const pseudo = user && user.email ? user.email.split('@')[0] : undefined;
+
+      const currentUser = {
+        ...user,
+        avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
+        scp: payload ? payload.scp : [],
+        pseudo,
+      };
 
       return {
         metas: {
@@ -100,9 +109,7 @@ export const loader: LoaderFunction = async ({ request }) => {
           openIdConfig,
           api: process.env.API_URL,
         },
-        currentUser: {
-          scp: payload ? payload.scp : [],
-        },
+        currentUser,
       };
     })
   );
@@ -267,7 +274,6 @@ const Document = withEmotionCache(
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
   const { metas, currentUser } = useLoaderData();
-  const [user, setUser] = useState<CurrentUser>(currentUser);
   const { t } = useTranslation();
   const [loading, _load, stopLoading] = useOpen(true);
   const [feedback, setFeedback] = useState({
@@ -331,8 +337,7 @@ export default function App() {
         <ServiceContext.Provider
           value={{
             api: new ReactApiClient(),
-            currentUser: user,
-            setCurrentUser: (user: CurrentUser) => setUser(user),
+            currentUser,
             metas,
             snackbar: displayFeedback,
           }}

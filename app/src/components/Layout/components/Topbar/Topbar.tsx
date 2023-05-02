@@ -23,7 +23,6 @@ import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
 import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
 import { Gateway } from '~/src/types/gateway';
-import { CurrentUser } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
 
 const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
@@ -31,7 +30,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
   const [gateway, setGateway] = useState<{ region: string; env: string }>();
-  const { api, setCurrentUser, currentUser, metas } = useService();
+  const { currentUser, metas } = useService();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -73,26 +72,6 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
     window.location.href = `${metas.origin}/auth/redirect-logout`;
   };
 
-  const getCurrentUser = async () => {
-    try {
-      const user = await api.getResource<CurrentUser>(
-        `${metas.openIdConfig.userinfo_endpoint.split('api')[1]}`
-      );
-      if (user) {
-        const pseudo =
-          user && user.email ? user.email.split('@')[0] : undefined;
-
-        setCurrentUser({
-          ...user,
-          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
-          pseudo,
-        });
-      }
-    } catch (e) {
-      console.info('Current user could not be retrieved yet');
-    }
-  };
-
   useEffect(() => {
     (async () => {
       const client = new ReactApiClient();
@@ -101,7 +80,6 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
       if (gateway) {
         setGateway(gateway);
       }
-      await getCurrentUser();
     })();
   }, []);
 
