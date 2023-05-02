@@ -12,6 +12,7 @@ import { ObjectOf } from '~/src/types/generic';
 import {
   API_AUTH,
   Authentication,
+  CurrentUser,
   JwtPayload,
   Methods,
   SessionWrapper,
@@ -88,6 +89,18 @@ export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
       throw new Error('Error while fetching openid config');
     });
 };
+
+export const getCurrentUser = async (
+  openIdConfig: OpenIdConfiguration,
+  token: string
+): Promise<CurrentUser> =>
+  fetch(openIdConfig.userinfo_endpoint, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then(async (response) => response.json())
+    .catch(() => {
+      throw new Error('Error while fetching current user');
+    });
 
 export const getJwtPayload = (
   decryptedCookie: Authentication
