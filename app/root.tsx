@@ -46,7 +46,7 @@ import {
   decrypt,
   getCurrentUser,
   getJwtPayload,
-  getOpenIdConfig,
+  getMembershipOpenIdConfig,
   getSession,
   handleResponse,
   REDIRECT_URI,
@@ -71,8 +71,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   const stateObject: State = { redirectTo: `${url.pathname}${url.search}` };
   const buff = new Buffer(JSON.stringify(stateObject));
   const stateAsBase64 = buff.toString('base64');
-  const openIdConfig = await getOpenIdConfig();
+  const openIdConfig = await getMembershipOpenIdConfig();
   const error = url.searchParams.get('error');
+
   if (error) {
     throw Error(
       JSON.stringify({
@@ -82,10 +83,11 @@ export const loader: LoaderFunction = async ({ request }) => {
       })
     );
   }
+
   if (!cookie && !error) {
     // TODO add method on auth.server with URL params to be more elegant
     return redirect(
-      `${openIdConfig.authorization_endpoint}?client_id=${process.env.CLIENT_ID}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}&state=${stateAsBase64}&response_type=code&scope=openid email offline_access`
+      `${openIdConfig.authorization_endpoint}?client_id=${process.env.MEMBERSHIP_CLIENT_ID}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}&state=${stateAsBase64}&response_type=code&scope=openid email offline_access supertoken`
     );
   }
 
@@ -317,10 +319,7 @@ export default function App() {
             setTimeout(refreshToken, interval)
           )
           .catch(async (reason) => {
-            console.info(
-              'Error when refreshing access token. Ending session',
-              reason
-            );
+            console.info('Error when handling session. Ending session', reason);
             window.location.href = `${origin}/auth/redirect-logout`;
           });
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -401,7 +400,6 @@ export function CatchBoundary() {
   const caught = useCatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  console.log('cccc', caught);
   logger(caught, 'app/root/CatchBoundary');
 
   const error = camelCase(get(errorsMap, caught.status, errorsMap[422]));

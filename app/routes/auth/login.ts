@@ -5,9 +5,10 @@ import { Errors } from '~/src/types/generic';
 import {
   commitSession,
   COOKIE_NAME,
+  createAuthCookie,
   encrypt,
-  exchangeToken,
-  getOpenIdConfig,
+  getAccessTokenFromCode,
+  getMembershipOpenIdConfig,
   getSession,
   State,
 } from '~/src/utils/auth.server';
@@ -21,11 +22,12 @@ export const loader: LoaderFunction = async ({
   const stateBase64 = url.searchParams.get('state');
   const buff = new Buffer(stateBase64!, 'base64');
   const state: State = JSON.parse(buff.toString('ascii'));
-  const openIdConfig = await getOpenIdConfig();
+  const openIdConfig = await getMembershipOpenIdConfig();
   if (code) {
     // get through authentication callback
-    const authentication = await exchangeToken(openIdConfig, code);
-    const encryptedCookie = encrypt(authentication);
+    const authentication = await getAccessTokenFromCode(openIdConfig, code);
+    const encryptedCookie = encrypt(createAuthCookie(authentication));
+
     session.set(COOKIE_NAME, encryptedCookie);
 
     return redirect(state.redirectTo || '/', {

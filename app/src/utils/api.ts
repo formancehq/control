@@ -70,6 +70,14 @@ export type Authentication = {
   error?: string;
   error_description?: string;
 };
+
+export type AuthCookie = {
+  master_access_token: string;
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+};
+
 export type JwtPayload = {
   sub: string;
   aud: string[];

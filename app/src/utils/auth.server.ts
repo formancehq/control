@@ -11,6 +11,7 @@ import { TypedResponse } from '@remix-run/server-runtime';
 import { ObjectOf } from '~/src/types/generic';
 import {
   API_AUTH,
+  AuthCookie,
   Authentication,
   CurrentUser,
   JwtPayload,
@@ -26,8 +27,18 @@ export interface State {
   redirectTo: string;
 }
 
-export const parseSessionHolder = (session: Session): Authentication =>
-  decrypt<Authentication>(session.get(COOKIE_NAME));
+export const createAuthCookie = (
+  authentication: Authentication,
+  masterToken?: string
+): AuthCookie => ({
+  access_token: authentication.access_token,
+  refresh_token: authentication.refresh_token,
+  expires_in: authentication.expires_in,
+  master_access_token: masterToken || authentication.access_token,
+});
+
+export const parseSessionHolder = (session: Session): AuthCookie =>
+  decrypt<AuthCookie>(session.get(COOKIE_NAME));
 
 // export the whole sessionStorage object
 const unsecureCookies =
@@ -47,7 +58,7 @@ export const sessionStorage = createCookieSessionStorage({
   }),
 });
 
-export const encrypt = (payload: Authentication): string => {
+export const encrypt = (payload: AuthCookie): string => {
   const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
   const iv = process.env.ENCRYPTION_IV!;
 
@@ -80,15 +91,26 @@ export interface OpenIdConfiguration {
   introspection_endpoint: string;
 }
 
-export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
-  const uri = `${process.env.API_URL}/api/${API_AUTH}/.well-known/openid-configuration`;
+export const getAuthStackOpenIdConfig =
+  async (): Promise<OpenIdConfiguration> => {
+    const uri = `${process.env.API_URL}/api/${API_AUTH}/.well-known/openid-configuration`;
 
-  return fetch(uri)
-    .then(async (response) => response.json())
-    .catch(() => {
-      throw new Error('Error while fetching openid config');
-    });
-};
+    return fetch(uri)
+      .then(async (response) => response.json())
+      .catch(() => {
+        throw new Error('Error while fetching openid config from auth stack');
+      });
+  };
+export const getMembershipOpenIdConfig =
+  async (): Promise<OpenIdConfiguration> => {
+    const uri = `${process.env.MEMBERSHIP_URL}/api/.well-known/openid-configuration`;
+
+    return fetch(uri)
+      .then(async (response) => response.json())
+      .catch(() => {
+        throw new Error('Error while fetching openid config from membership');
+      });
+  };
 
 export const getCurrentUser = async (
   openIdConfig: OpenIdConfiguration,
@@ -109,11 +131,11 @@ export const getJwtPayload = (
     Buffer.from(decryptedCookie.access_token.split('.')[1], 'base64').toString()
   );
 
-export const exchangeToken = async (
+export const getAccessTokenFromCode = async (
   openIdConfig: ObjectOf<any>,
   code: string
 ): Promise<Authentication> => {
-  const uri = `${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}`;
+  const uri = `${openIdConfig.token_endpoint}?grant_type=authorization_code&client_id=${process.env.MEMBERSHIP_CLIENT_ID}&client_secret=${process.env.MEMBERSHIP_CLIENT_SECRET}&code=${code}&redirect_uri=${REDIRECT_URI}${AUTH_CALLBACK_ROUTE}`;
 
   return await fetch(uri).then(async (response) => {
     if (response.status != 200) {
@@ -128,7 +150,7 @@ export const refreshToken = async (
   openIdConfig: OpenIdConfiguration,
   refreshToken: string
 ): Promise<Authentication> => {
-  const uri = `${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&refresh_token=${refreshToken}`;
+  const uri = `${openIdConfig.token_endpoint}?grant_type=refresh_token&client_id=${process.env.MEMBERSHIP_CLIENT_ID}&client_secret=${process.env.MEMBERSHIP_CLIENT_SECRET}&refresh_token=${refreshToken}`;
 
   return fetch(uri, {
     method: 'POST',
@@ -141,18 +163,71 @@ export const refreshToken = async (
   });
 };
 
-export const introspect = async (
+export const getSecurityToken = async (
   openIdConfig: OpenIdConfiguration,
-  accessToken: string
-): Promise<{ active: boolean }> => {
-  const auth = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
+  audience: string,
+  subjectToken: string
+): Promise<Authentication> => {
+  const uri = `${openIdConfig.token_endpoint}?grant_type=urn:ietf:params:oauth:grant-type:token-exchange&audience=${audience}&subject_token_type=urn:ietf:params:oauth:token-type:access_token&subject_token=${subjectToken}`;
+
+  return fetch(uri, {
+    method: 'POST',
+    headers: {
+      Authorization: getBasicAuth(
+        process.env.MEMBERSHIP_CLIENT_ID!,
+        process.env.MEMBERSHIP_CLIENT_SECRET
+      ),
+    },
+  }).then(async (response) => {
+    if (response.status != 200) {
+      throw new Error(
+        `Error while getting security token: ${response.status} / ${response.statusText}`
+      );
+    }
+
+    return await response.json();
+  });
+};
+
+export const getBasicAuth = (id: string, secret = '') => {
+  const auth = `${id}:${secret}`;
   const buff = new Buffer(auth);
   const basic = buff.toString('base64');
+
+  return `Basic ${basic}`;
+};
+
+export const exchangeToken = async (
+  openIdConfig: OpenIdConfiguration,
+  assertion: string
+): Promise<Authentication> => {
+  const uri = `${openIdConfig.token_endpoint}?grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${assertion}&scope=openid email`;
+
+  return fetch(uri, {
+    headers: { Authorization: getBasicAuth('fctl') }, // todo change once backend is ready
+    method: 'POST',
+  }).then(async (response) => {
+    if (response.status != 200) {
+      throw new Error(
+        `Error while exchanging token: ${response.status} / ${response.statusText}`
+      );
+    }
+
+    return await response.json();
+  });
+};
+
+export const introspect = async (
+  openIdConfig: OpenIdConfiguration,
+  accessToken: string,
+  clientId: string,
+  clientSecret?: string
+): Promise<{ active: boolean }> => {
   const data = new FormData();
   data.append('token', accessToken || '');
 
   return fetch(openIdConfig.introspection_endpoint, {
-    headers: { Authorization: `Basic ${basic}` },
+    headers: { Authorization: getBasicAuth(clientId, clientSecret) },
     method: Methods.POST,
     body: data,
   }).then(async (response) => {
