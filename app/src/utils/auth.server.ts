@@ -125,10 +125,13 @@ export const getCurrentUser = async (
     });
 
 export const getJwtPayload = (
-  decryptedCookie: Authentication
+  decryptedCookie: AuthCookie
 ): JwtPayload | undefined =>
   JSON.parse(
-    Buffer.from(decryptedCookie.access_token.split('.')[1], 'base64').toString()
+    Buffer.from(
+      decryptedCookie.master_access_token.split('.')[1],
+      'base64'
+    ).toString()
   );
 
 export const getAccessTokenFromCode = async (

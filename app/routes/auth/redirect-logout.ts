@@ -13,7 +13,7 @@ import {
 export const loader: LoaderFunction = async ({ request }): Promise<any> => {
   const session = await getSession(request.headers.get('Cookie'));
   const sessionHolder = parseSessionHolder(session);
-  console.log(sessionHolder);
+
   try {
     const openIdConfig = await getMembershipOpenIdConfig();
     const intro = await introspect(
@@ -29,8 +29,6 @@ export const loader: LoaderFunction = async ({ request }): Promise<any> => {
       );
     }
   } catch (e) {
-    console.log(e);
-
     return redirect(`${process.env.REDIRECT_URI}?error_type=${Errors.AUTH}`);
   }
 

@@ -56,8 +56,9 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
       >
         {routerConfig.map(({ label: groupLabel, children }, index) => {
           const renderGroup =
-            children.filter((c) => !featuresDisabled.includes(c.feature))
-              .length > 0;
+            children.filter(
+              (c) => featuresDisabled && !featuresDisabled.includes(c.feature)
+            ).length > 0;
 
           return (
             <Box key={index} sx={{ marginTop: resized ? '24px' : '0px' }}>
@@ -76,7 +77,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
               )}
 
               {children.map(({ label, paths, id, icon, strict, feature }) => {
-                if (!featuresDisabled.includes(feature)) {
+                if (featuresDisabled && !featuresDisabled.includes(feature)) {
                   let selected = false;
                   for (let i = 0; i < paths.length; i++) {
                     if (paths[i] === location.pathname) {

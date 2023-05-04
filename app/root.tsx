@@ -38,7 +38,7 @@ import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
 import { Errors } from '~/src/types/generic';
-import { Authentication, errorsMap, logger } from '~/src/utils/api';
+import { AuthCookie, errorsMap, logger } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
 import {
   AUTH_CALLBACK_ROUTE,
@@ -93,14 +93,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return handleResponse(
     await withSession(request, async () => {
-      const sessionHolder = decrypt<Authentication>(cookie);
+      const sessionHolder = decrypt<AuthCookie>(cookie);
       const payload = getJwtPayload(sessionHolder);
       const featuresDisabled = get(process, 'env.FEATURES_DISABLED', '').split(
         ','
       );
       const user = await getCurrentUser(
         openIdConfig,
-        sessionHolder.access_token
+        sessionHolder.master_access_token
       );
 
       const pseudo = user && user.email ? user.email.split('@')[0] : undefined;

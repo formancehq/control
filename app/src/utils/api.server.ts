@@ -4,7 +4,7 @@ import { get, isUndefined } from 'lodash';
 
 import {
   ApiClient,
-  Authentication,
+  AuthCookie,
   logger,
   Methods,
   toJson,
@@ -15,15 +15,17 @@ export type Headers = { Authorization?: string; 'Content-Type': string };
 
 export const createApiClient = async (
   session: Session,
-  url?: string
-): Promise<ApiClient> => new DefaultApiClient(session, url);
+  url?: string,
+  masterToken = false
+): Promise<ApiClient> => new DefaultApiClient(session, masterToken, url);
 
 export class DefaultApiClient implements ApiClient {
   public baseUrl: string | undefined;
   public session: Session;
+  private readonly masterToken: boolean;
   protected headers: Headers;
 
-  constructor(session: Session, url?: string) {
+  constructor(session: Session, masterToken: boolean, url?: string) {
     this.baseUrl = url;
     this.headers = {
       'Content-Type': 'application/json',
@@ -35,6 +37,7 @@ export class DefaultApiClient implements ApiClient {
         } else throw new Error('API_URL is not defined');
       }
     }
+    this.masterToken = masterToken;
     this.session = session;
   }
 
@@ -79,10 +82,14 @@ export class DefaultApiClient implements ApiClient {
   ): Promise<T | undefined | void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
-    const sessionHolder: Authentication = parseSessionHolder(this.session);
+    const sessionHolder: AuthCookie = parseSessionHolder(this.session);
     this.headers = {
       ...this.headers,
-      Authorization: `Bearer ${sessionHolder.access_token}`,
+      Authorization: `Bearer ${
+        this.masterToken
+          ? sessionHolder.master_access_token
+          : sessionHolder.access_token
+      }`,
     };
 
     return fetch(uri, {

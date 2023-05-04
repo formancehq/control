@@ -74,11 +74,13 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
 
   useEffect(() => {
     (async () => {
-      const client = new ReactApiClient();
-      client.setBaseUrl && client.setBaseUrl(metas.api);
-      const gateway = await client.getResource<Gateway>('/versions');
-      if (gateway) {
-        setGateway(gateway);
+      if (metas && metas.api) {
+        const client = new ReactApiClient();
+        client.setBaseUrl && client.setBaseUrl(metas.api);
+        const gateway = await client.getResource<Gateway>('/versions');
+        if (gateway) {
+          setGateway(gateway);
+        }
       }
     })();
   }, []);
