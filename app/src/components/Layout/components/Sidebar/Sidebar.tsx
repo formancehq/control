@@ -52,6 +52,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ width, resized }) => {
           ml: resized ? 2 : 0,
           position: 'fixed',
           height: '100%',
+          overflow: 'auto',
         }}
       >
         {routerConfig.map(({ label: groupLabel, children }, index) => {
