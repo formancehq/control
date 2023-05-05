@@ -26,6 +26,7 @@ import Topbar from '~/src/components/Layout/components/Topbar';
 import { routerConfig } from '~/src/components/Layout/routes';
 import { breadcrumbsFactory } from '~/src/components/Layout/service';
 import { LayoutProps } from '~/src/components/Layout/types';
+import { useService } from '~/src/hooks/useService';
 import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
 
 const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
@@ -41,6 +42,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { t } = useTranslation();
+  const { metas } = useService();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -89,7 +91,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
           <animated.div style={{ height: '100%' }}>
             <Topbar resized={showMiniSidebar} onResize={handleMiniSidebar} />
             <Box id="layout" sx={{ minHeight: '100%', display: 'flex' }}>
-              {showSidebar && (
+              {showSidebar && !metas.shouldRedirectToStackOnboarding && (
                 <Sidebar width={sideBarWidth} resized={showMiniSidebar} />
               )}
               <Box

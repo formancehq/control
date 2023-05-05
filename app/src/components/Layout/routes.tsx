@@ -21,6 +21,7 @@ import { FEATURES } from '~/src/contexts/service';
 
 export const ROOT_ROUTE = '/';
 export const OVERVIEW_ROUTE = '/overview';
+export const STACK_CREATE_ROUTE = '/stacks/create';
 // Ledgers
 export const ACCOUNT_ROUTE = '/ledgers/:slug/accounts/:id';
 export const TRANSACTION_ROUTE = '/ledgers/:slug/transactions/:id';
@@ -81,7 +82,7 @@ export type RouterConfig = {
   paths: string[];
   icon?: React.ReactNode;
   strict?: boolean;
-  feature: FEATURES;
+  feature: FEATURES | 'none';
 };
 
 export const overview: RouterConfig = {
@@ -89,7 +90,14 @@ export const overview: RouterConfig = {
   label: 'navbar.title.overview',
   paths: [OVERVIEW_ROUTE, ROOT_ROUTE],
   icon: <Home />,
-  feature: FEATURES.OVERVIEW,
+  feature: 'none',
+};
+
+export const createStack: RouterConfig = {
+  id: 'createStack',
+  label: 'navbar.title.stacks',
+  paths: [STACK_CREATE_ROUTE],
+  feature: 'none',
 };
 
 // Ledgers
@@ -193,7 +201,7 @@ export const reconciliation: RouterConfig = {
   label: 'navbar.title.reconciliation',
   paths: [RECON_ROUTE],
   icon: <InsertLink />,
-  feature: FEATURES.RECONCILIATION,
+  feature: 'none',
 };
 
 // TODO uncomment when monitoring is ready

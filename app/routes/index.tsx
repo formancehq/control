@@ -4,7 +4,11 @@ import { useEffect } from 'react';
 import type { MetaFunction } from '@remix-run/node';
 import { useNavigate } from 'react-router-dom';
 
-import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
+import {
+  OVERVIEW_ROUTE,
+  STACK_CREATE_ROUTE,
+} from '~/src/components/Layout/routes';
+import { useService } from '~/src/hooks/useService';
 
 export const meta: MetaFunction = () => ({
   title: 'Home',
@@ -13,9 +17,14 @@ export const meta: MetaFunction = () => ({
 
 export default function Index() {
   const navigate = useNavigate();
+  const { metas } = useService();
 
   useEffect(() => {
-    navigate(getRoute(OVERVIEW_ROUTE));
+    if (metas.shouldRedirectToStackOnboarding) {
+      navigate(STACK_CREATE_ROUTE);
+    } else {
+      navigate(OVERVIEW_ROUTE);
+    }
   }, []);
 
   return <></>;

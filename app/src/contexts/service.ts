@@ -13,6 +13,8 @@ export type ServiceContext = {
     origin: string;
     openIdConfig: OpenIdConfiguration;
     api: string;
+    membership: string;
+    shouldRedirectToStackOnboarding: boolean;
   };
   snackbar: SnackbarSetter;
 };

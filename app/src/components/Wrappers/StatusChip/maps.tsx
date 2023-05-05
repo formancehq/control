@@ -17,11 +17,11 @@ import {
 } from '@mui/icons-material';
 
 import { ConnectorStatuses, TaskStatuses } from '~/src/types/connectorsConfig';
+import { GatewayServiceStatus } from '~/src/types/gateway';
 import {
   OrchestrationInstanceStatuses,
   OrchestrationStages,
 } from '~/src/types/orchestration';
-import { GatewayServiceStatus } from '~/src/types/gateway';
 import { PaymentStatuses, PaymentTypes } from '~/src/types/payment';
 
 export const paymentIconMap = {

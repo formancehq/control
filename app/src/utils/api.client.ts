@@ -4,9 +4,13 @@ import { ApiClient, logger, Methods, toJson } from '~/src/utils/api';
 
 export class ReactApiClient implements ApiClient {
   private baseUrl: string | undefined;
+  private masterToken = false;
 
   setBaseUrl(url: string) {
     this.baseUrl = url;
+  }
+  setMasterToken(masterToken: boolean) {
+    this.masterToken = masterToken;
   }
 
   getResource<T>(
@@ -51,6 +55,7 @@ export class ReactApiClient implements ApiClient {
         path,
         method,
         body,
+        masterToken: this.masterToken,
         baseUrl: this.baseUrl,
       }),
     })

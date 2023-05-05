@@ -7,7 +7,7 @@ export type SelectProps = {
   placeholder: string;
   width?: number;
   name: string;
-  type?: Filters.TERMS | Filters.LEDGERS;
+  type?: Filters;
   onChange?: () => void;
   formatLabel?: (item: string) => string;
 };

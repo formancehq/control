@@ -38,8 +38,10 @@ import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
 import { Errors } from '~/src/types/generic';
+import { MembershipOrganization, MembershipStack } from '~/src/types/stack';
 import { AuthCookie, errorsMap, logger } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
+import { createApiClient } from '~/src/utils/api.server';
 import {
   AUTH_CALLBACK_ROUTE,
   COOKIE_NAME,
@@ -102,6 +104,27 @@ export const loader: LoaderFunction = async ({ request }) => {
         openIdConfig,
         sessionHolder.master_access_token
       );
+      const api = await createApiClient(
+        session,
+        `${process.env.MEMBERSHIP_URL}/api`,
+        true
+      );
+      const organizations = await api.getResource<MembershipOrganization[]>(
+        '/organizations',
+        'data'
+      );
+      const stacks = [];
+
+      if (organizations) {
+        for (const organization of organizations) {
+          const organizationStacks = await api.getResource<MembershipStack[]>(
+            `/organizations/${organization.id}/stacks`,
+            'data'
+          );
+          stacks.push(organizationStacks);
+        }
+      }
+      const stackOnboarding = stacks.flat().length === 0;
 
       const pseudo = user && user.email ? user.email.split('@')[0] : undefined;
 
@@ -118,6 +141,8 @@ export const loader: LoaderFunction = async ({ request }) => {
           origin: REDIRECT_URI,
           openIdConfig,
           api: process.env.API_URL,
+          membership: process.env.MEMBERSHIP_URL,
+          shouldRedirectToStackOnboarding: stackOnboarding,
         },
         currentUser,
       };

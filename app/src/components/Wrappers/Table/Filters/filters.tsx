@@ -7,6 +7,7 @@ import { AutocompleteOption } from '@numaryhq/storybook';
 export enum Filters {
   TERMS = 'terms',
   LEDGERS = 'ledgers',
+  STACKS = 'stacks',
 }
 
 // TODO improve
