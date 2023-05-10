@@ -32,7 +32,7 @@ const ComponentErrorBoundary: FunctionComponent<
 
   return (
     <Box mt={1}>
-      <EmptyState title={t('common.boundaries.title')}>
+      <EmptyState title={t('common.boundaries.title', { type: '' })}>
         <>
           <Box
             sx={{

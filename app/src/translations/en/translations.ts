@@ -127,7 +127,7 @@ export default {
           },
           useCaseLib: {
             title: 'Use cases',
-            description: 'Checkout what use case you want to implement',
+            description: 'Check out what use case you want to implement',
             buttonText: 'Go to the library',
           },
         },
@@ -144,7 +144,7 @@ export default {
           ledger: {
             title: 'Submit ledger transactions ',
             description:
-              'Create transactions and accounts, and checkout financial flows',
+              'Create transactions and accounts, and check out financial flows',
             buttonText: 'Add ledger transaction',
           },
         },
@@ -458,7 +458,7 @@ export default {
             inputTypeDoesntExist:
               'Form builder has no factory method for field type {{fieldType}}',
             error:
-              "Something wrong happened while installing connector. Checkout {{connectorName}}'s page for more details.",
+              "Something wrong happened while installing connector. Check out {{connectorName}}'s page for more details.",
           },
         },
       },
@@ -789,6 +789,26 @@ export default {
           },
         },
       },
+      stacks: {
+        form: {
+          create: {
+            button: 'Create environment',
+            title: 'Create your first stack',
+            explainer: 'This will create a sandbox stack.',
+            name: {
+              label: 'Environment name',
+              errors: {
+                required: 'Name is required',
+              },
+            },
+            region: {
+              errors: {
+                required: 'You must choose a region',
+              },
+            },
+          },
+        },
+      },
     },
     common: {
       status: {
@@ -835,7 +855,7 @@ export default {
           },
           serviceDown: {
             title: 'Hm, we are experiencing technical difficulties.',
-            description: 'You can checkout our status page to find out more.',
+            description: 'You can check out our status page to find out more.',
             button: 'Go to status page',
           },
           notFound: {
@@ -845,7 +865,7 @@ export default {
           },
           unauthorized: {
             title: 'Looks like you do not have required permission!',
-            description: 'Checkout with your admin!',
+            description: 'Check out with your admin!',
             button: 'Go back home',
           },
           forbidden: {

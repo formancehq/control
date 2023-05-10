@@ -8,9 +8,9 @@ import { useTranslation } from 'react-i18next';
 
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import Select from '~/src/components/Wrappers/Table/Filters/Select';
-import { MembershipOrganization, MembershipStack } from '~/src/types/stack';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { getStacks } from '~/src/utils/membership';
 
 export const meta: MetaFunction = () => ({
   title: 'Stacks',
@@ -24,24 +24,8 @@ export const loader: LoaderFunction = async ({ request }) => {
       `${process.env.MEMBERSHIP_URL}/api`,
       true
     );
-    const organizations = await api.getResource<MembershipOrganization[]>(
-      '/organizations',
-      'data'
-    );
-    const stacks = [];
 
-    if (organizations) {
-      for (const organization of organizations) {
-        const organizationStacks = await api.getResource<MembershipStack[]>(
-          `/organizations/${organization.id}/stacks`,
-          'data'
-        );
-        stacks.push(organizationStacks);
-      }
-    }
-    console.log(stacks);
-
-    return stacks.flat();
+    return await getStacks(api);
   }
 
   return handleResponse(await withSession(request, handleData));

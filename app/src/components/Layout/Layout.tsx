@@ -72,6 +72,15 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   });
 
   const sideBarWidth = showMiniSidebar ? 80 : 250;
+  const va =
+    metas && metas.shouldRedirectToStackOnboarding
+      ? {
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }
+      : {};
 
   return (
     <Box sx={{ height: '100%' }}>
@@ -91,11 +100,21 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
           <animated.div style={{ height: '100%' }}>
             <Topbar resized={showMiniSidebar} onResize={handleMiniSidebar} />
             <Box id="layout" sx={{ minHeight: '100%', display: 'flex' }}>
-              {showSidebar && !metas.shouldRedirectToStackOnboarding && (
-                <Sidebar width={sideBarWidth} resized={showMiniSidebar} />
-              )}
+              {showSidebar &&
+                metas &&
+                !metas.shouldRedirectToStackOnboarding && (
+                  <Sidebar width={sideBarWidth} resized={showMiniSidebar} />
+                )}
               <Box
-                sx={{ width: { sm: `calc(100% - ${sideBarWidth}px)` } }}
+                sx={{
+                  width: {
+                    sm:
+                      metas && metas.shouldRedirectToStackOnboarding
+                        ? '100%'
+                        : `calc(100% - ${sideBarWidth}px)`,
+                  },
+                  ...va,
+                }}
                 mt={8}
               >
                 {!showSidebar && (
@@ -144,7 +163,9 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
                     </MuiMenu>
                   </>
                 )}
-                {links && <Breadcrumbs links={links} />}
+                {links && !metas.shouldRedirectToStackOnboarding && (
+                  <Breadcrumbs links={links} />
+                )}
                 {children}
               </Box>
             </Box>

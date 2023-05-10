@@ -5,17 +5,20 @@ import { OpenIdConfiguration } from '~/src/utils/auth.server';
 
 export type SnackbarSetter = (message?: string) => void;
 
+export type Metas = {
+  origin: string;
+  openIdConfig: OpenIdConfiguration;
+  api: string;
+  membership: string;
+  shouldRedirectToStackOnboarding: boolean;
+};
+
 export type ServiceContext = {
   api: ApiClient;
   currentUser: CurrentUser;
   featuresDisabled: string[];
-  metas: {
-    origin: string;
-    openIdConfig: OpenIdConfiguration;
-    api: string;
-    membership: string;
-    shouldRedirectToStackOnboarding: boolean;
-  };
+  metas: Metas;
+  setService: (service: ServiceContext) => void;
   snackbar: SnackbarSetter;
 };
 export const ServiceContext = createContext({} as ServiceContext);

@@ -23,7 +23,7 @@ import {
   useLoaderData,
 } from '@remix-run/react';
 import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
-import { camelCase, get, noop } from 'lodash';
+import { camelCase, first, get, head, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import reactFlowStyles from 'reactflow/dist/style.css';
@@ -38,8 +38,7 @@ import { getRoute, OVERVIEW_ROUTE } from '~/src/components/Layout/routes';
 import ClientStyleContext from '~/src/contexts/clientStyleContext';
 import { ServiceContext } from '~/src/contexts/service';
 import { Errors } from '~/src/types/generic';
-import { MembershipOrganization, MembershipStack } from '~/src/types/stack';
-import { AuthCookie, errorsMap, logger } from '~/src/utils/api';
+import { AuthCookie, CurrentUser, errorsMap, logger } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
 import { createApiClient } from '~/src/utils/api.server';
 import {
@@ -109,29 +108,17 @@ export const loader: LoaderFunction = async ({ request }) => {
         `${process.env.MEMBERSHIP_URL}/api`,
         true
       );
-      const organizations = await api.getResource<MembershipOrganization[]>(
-        '/organizations',
-        'data'
+      const organizationExtended = first(
+        (await api.getResource<[]>('/organizations/expanded', 'data')) || []
       );
-      const stacks = [];
-
-      if (organizations) {
-        for (const organization of organizations) {
-          const organizationStacks = await api.getResource<MembershipStack[]>(
-            `/organizations/${organization.id}/stacks`,
-            'data'
-          );
-          stacks.push(organizationStacks);
-        }
-      }
-      const stackOnboarding = stacks.flat().length === 0;
 
       const pseudo = user && user.email ? user.email.split('@')[0] : undefined;
 
-      const currentUser = {
+      const currentUser: CurrentUser = {
         ...user,
+        organization: organizationExtended,
         avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
-        scp: payload ? payload.scp : [],
+        scp: payload && payload.scp ? payload.scp : [],
         pseudo,
       };
 
@@ -142,7 +129,8 @@ export const loader: LoaderFunction = async ({ request }) => {
           openIdConfig,
           api: process.env.API_URL,
           membership: process.env.MEMBERSHIP_URL,
-          shouldRedirectToStackOnboarding: stackOnboarding,
+          shouldRedirectToStackOnboarding:
+            get(currentUser, 'organization.totalStacks', 0) === 0 || false,
         },
         currentUser,
       };
@@ -320,6 +308,14 @@ export default function App() {
   const displayFeedback = (message = 'common.feedback.error') => {
     setFeedback({ active: true, message: t(message) });
   };
+  const [service, setService] = useState<
+    Omit<ServiceContext, 'setService' | 'api'>
+  >({
+    featuresDisabled,
+    currentUser,
+    metas,
+    snackbar: displayFeedback,
+  });
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
@@ -369,11 +365,9 @@ export default function App() {
       ) : (
         <ServiceContext.Provider
           value={{
-            featuresDisabled,
+            ...service,
             api: new ReactApiClient(),
-            currentUser,
-            metas,
-            snackbar: displayFeedback,
+            setService,
           }}
         >
           <Layout>

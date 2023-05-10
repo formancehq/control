@@ -53,12 +53,16 @@ export type SessionWrapper = {
 
 export type CurrentUser = {
   sub: string;
-  scp: string[];
+  scp: string[] | [];
   email: string;
   email_verified: boolean;
   avatarLetter: string | undefined;
   pseudo: string | undefined;
   zone: string;
+  organization?: {
+    totalStacks?: number;
+    id?: string;
+  };
 };
 
 export type Authentication = {

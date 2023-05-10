@@ -96,35 +96,40 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         background: palette.neutral[800],
         zIndex: 9999,
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent:
+          metas && metas.shouldRedirectToStackOnboarding
+            ? 'end'
+            : 'space-between',
         alignSelf: 'center',
         alignItems: 'center',
       }}
       id="topbar"
     >
-      <Box display="flex" ml={isMobile ? 3 : 0}>
-        {!isMobile && (
-          <IconButton
-            sx={{
-              transition: 'all 0.85s',
-              color: ({ palette }) => palette.neutral[500],
-              background: 'transparent',
-              ml: 2,
-              mr: 2,
-              ':hover': {
-                transform: `rotate(${resized ? '-180deg' : '180deg'})`,
-                color: ({ palette }) => palette.neutral[300],
+      {metas && !metas.shouldRedirectToStackOnboarding && (
+        <Box display="flex" ml={isMobile ? 3 : 0}>
+          {!isMobile && (
+            <IconButton
+              sx={{
                 transition: 'all 0.85s',
+                color: ({ palette }) => palette.neutral[500],
                 background: 'transparent',
-              },
-            }}
-            onClick={onResize}
-          >
-            <MenuOpen />
-          </IconButton>
-        )}
-        <Search />
-      </Box>
+                ml: 2,
+                mr: 2,
+                ':hover': {
+                  transform: `rotate(${resized ? '-180deg' : '180deg'})`,
+                  color: ({ palette }) => palette.neutral[300],
+                  transition: 'all 0.85s',
+                  background: 'transparent',
+                },
+              }}
+              onClick={onResize}
+            >
+              <MenuOpen />
+            </IconButton>
+          )}
+          <Search />
+        </Box>
+      )}
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ display: 'flex' }}>
           {gateway && gateway.region && (

@@ -2,6 +2,17 @@ import { get } from 'lodash';
 
 import { ApiClient, logger, Methods, toJson } from '~/src/utils/api';
 
+export const createReactApiClient = async (
+  url: string,
+  masterToken = false
+): Promise<ApiClient> => {
+  const client = new ReactApiClient();
+  client.setBaseUrl && client.setBaseUrl(url);
+  client.setMasterToken && client.setMasterToken(masterToken);
+
+  return client;
+};
+
 export class ReactApiClient implements ApiClient {
   private baseUrl: string | undefined;
   private masterToken = false;
