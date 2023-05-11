@@ -38,7 +38,8 @@ export interface ApiClient {
   ) => Promise<T | undefined | void>;
   putResource: <T>(
     params: string,
-    path?: string
+    path?: string,
+    body?: any
   ) => Promise<T | undefined | void>;
   deleteResource: <T>(
     params: string,
@@ -63,6 +64,7 @@ export type CurrentUser = {
     totalStacks?: number;
     id?: string;
   };
+  lastStack?: string;
 };
 
 export type Authentication = {

@@ -5,6 +5,7 @@ export type MembershipStack = {
   createdAt: Date;
   region: string;
   kind: Environments;
+  uri: string;
 };
 export type MembershipOrganization = {
   id: string;

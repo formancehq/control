@@ -3,12 +3,9 @@ import { useService } from '~/src/hooks/useService';
 import { Errors } from '~/src/types/generic';
 
 export function useFeatureFlag(feature: FEATURES): Error | void {
-  const { featuresDisabled, metas } = useService();
+  const { featuresDisabled } = useService();
 
-  if (
-    featuresDisabled.includes(feature) ||
-    metas.shouldRedirectToStackOnboarding
-  ) {
+  if (featuresDisabled.includes(feature)) {
     throw Error(Errors.UNAUTHORIZED);
   }
 }

@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
+import { StackList } from '~/routes/stacks/list';
 import { TopbarProps } from '~/src/components/Layout/components/Topbar/types';
 import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
@@ -131,6 +132,24 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         </Box>
       )}
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        {metas && !metas.shouldRedirectToStackOnboarding && (
+          <Box
+            sx={{
+              mr: 1,
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: ({ palette }) => palette.neutral[0],
+              },
+              '& .MuiSvgIcon-root': {
+                color: ({ palette }) => palette.neutral[0],
+              },
+              '& .MuiInputBase-input': {
+                color: ({ palette }) => palette.neutral[0],
+              },
+            }}
+          >
+            <StackList />
+          </Box>
+        )}
         <Box sx={{ display: 'flex' }}>
           {gateway && gateway.region && (
             <Box>

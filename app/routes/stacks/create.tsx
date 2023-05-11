@@ -33,10 +33,11 @@ import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
 import { ObjectOf } from '~/src/types/generic';
 import { MembershipRegion } from '~/src/types/stack';
-import { API_AUTH, ApiClient } from '~/src/utils/api';
+import { API_AUTH, ApiClient, CurrentUser } from '~/src/utils/api';
 import { createReactApiClient } from '~/src/utils/api.client';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
+import { updateLastStack } from '~/src/utils/membership';
 
 export const meta: MetaFunction = () => ({
   title: 'Stacks',
@@ -67,14 +68,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 export type CreateStack = {
   name: string;
-  region: string;
+  regionID: string;
 };
 
 export const schema = yup.object({
   name: yup
     .string()
     .required(i18n.t('pages.stacks.form.create.name.errors.required')),
-  region: yup
+  regionID: yup
     .string()
     .required(i18n.t('pages.stacks.form.create.region.errors.required')),
 });
@@ -82,6 +83,7 @@ export const schema = yup.object({
 export default function Index() {
   const { snackbar, metas, currentUser, setService, ...rest } = useService();
   const [client, setClient] = useState<ApiClient>();
+  const [user, setUser] = useState<CurrentUser>(currentUser);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const regions = useLoaderData<
@@ -100,14 +102,19 @@ export default function Index() {
     mode: 'onChange',
     defaultValues: {
       name: '',
-      region: '',
+      regionID: '',
     },
   });
-
-  console.log(currentUser);
+  const service = {
+    ...rest,
+    setService,
+    snackbar,
+    currentUser: user,
+    metas: { ...metas, shouldRedirectToStackOnboarding: false },
+  };
 
   useInterval(async () => {
-    if (client) {
+    if (client && user) {
       setLoading(true);
       try {
         const openIdConfig = await client.getResource<ObjectOf<any>>(
@@ -115,13 +122,7 @@ export default function Index() {
         );
         if (openIdConfig) {
           setLoading(false);
-          setService({
-            ...rest,
-            setService,
-            snackbar,
-            currentUser,
-            metas: { ...metas, shouldRedirectToStackOnboarding: false },
-          });
+          setService(service);
           navigate(getRoute(OVERVIEW_ROUTE));
         }
       } catch {
@@ -149,12 +150,21 @@ export default function Index() {
             `/api/organizations/${currentUser.organization.id}/stacks`,
             formValues
           );
+
           if (stack) {
+            await updateLastStack(api, currentUser.sub, stack.uri, () =>
+              setService({
+                ...service,
+                currentUser: { ...user, lastStack: stack.uri },
+              })
+            );
             const client = await createReactApiClient(stack.uri);
+            setUser({ ...user, lastStack: stack.uri });
             setClient(client);
           }
         }
-      } catch {
+      } catch (e) {
+        console.log('eeeee ', e);
         snackbar(
           t('common.feedback.create', {
             item: values.name,
@@ -234,7 +244,7 @@ export default function Index() {
                 </Box>
                 <Box mb={3}>
                   <Controller
-                    name="region"
+                    name="regionID"
                     control={control}
                     rules={{ required: true }}
                     render={({ field: { ref, onChange, ...rest } }) => (

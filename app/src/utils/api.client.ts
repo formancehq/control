@@ -33,9 +33,10 @@ export class ReactApiClient implements ApiClient {
 
   putResource<T>(
     params: string,
-    path?: string | undefined
+    path?: string | undefined,
+    body?: any
   ): Promise<T | undefined | void> {
-    return this.handleRequest<T>(Methods.PUT, params, undefined, path);
+    return this.handleRequest<T>(Methods.PUT, params, body, path);
   }
 
   postResource<T>(

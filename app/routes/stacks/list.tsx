@@ -1,13 +1,19 @@
 import * as React from 'react';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
+import { get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
-import Select from '~/src/components/Wrappers/Table/Filters/Select';
+import { Select } from '@numaryhq/storybook';
+
+import { useService } from '~/src/hooks/useService';
+import { ObjectOf } from '~/src/types/generic';
+import { MembershipStack } from '~/src/types/stack';
+import { createReactApiClient } from '~/src/utils/api.client';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import { getStacks } from '~/src/utils/membership';
@@ -32,21 +38,45 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const StackList: FunctionComponent = () => {
-  const fetcher = useFetcher<string[] | null>();
+  const fetcher = useFetcher<MembershipStack[] | null>();
   const { t } = useTranslation();
+  const { metas } = useService();
+  const [value, setValue] = useState<string>('');
 
   useEffect(() => {
     fetcher.load('/stacks/list');
+    setValue(
+      localStorage.getItem('currentStack') || get(fetcher, 'data[0].uri', '')
+    );
   }, []);
+
+  const onChange = async (event: SelectChangeEvent<unknown>) => {
+    if (typeof event.target.value === 'string') {
+      localStorage.setItem('currentStack', event.target.value as string);
+      setValue(event.target.value);
+      await createReactApiClient(metas.membership).putResource<ObjectOf<any>>(
+        `/api/users/${currentUser.sub}`,
+        undefined,
+        { metadata: { lastStack: stack.uri } }
+      );
+    }
+  };
 
   return (
     <Select
-      id="stacks-autocomplete"
-      options={fetcher.data ? fetcher.data : []}
-      name="stacks-autocomplete"
+      items={
+        fetcher.data
+          ? fetcher.data.map((stack: MembershipStack, index: number) => ({
+              id: stack.uri ? stack.uri : index,
+              label: `${stack.name} ${stack.organizationId}-${stack.id}`,
+            }))
+          : []
+      }
       placeholder={t('common.filters.stacks')}
-      type={Filters.STACKS}
-      width={350}
+      select={{
+        onChange,
+        value,
+      }}
     />
   );
 };
