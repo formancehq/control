@@ -29,12 +29,14 @@ export interface State {
 
 export const createAuthCookie = (
   authentication: Authentication,
+  apiUrl: string,
   masterToken?: string
 ): AuthCookie => ({
   access_token: authentication.access_token,
   refresh_token: authentication.refresh_token,
   expires_in: authentication.expires_in,
   master_access_token: masterToken || authentication.access_token,
+  apiUrl,
 });
 
 export const parseSessionHolder = (session: Session): AuthCookie =>
@@ -91,16 +93,17 @@ export interface OpenIdConfiguration {
   introspection_endpoint: string;
 }
 
-export const getAuthStackOpenIdConfig =
-  async (): Promise<OpenIdConfiguration> => {
-    const uri = `${process.env.API_URL}/api/${API_AUTH}/.well-known/openid-configuration`;
+export const getAuthStackOpenIdConfig = async (
+  url: string
+): Promise<OpenIdConfiguration> => {
+  const uri = `${url}/api/${API_AUTH}/.well-known/openid-configuration`;
 
-    return fetch(uri)
-      .then(async (response) => response.json())
-      .catch(() => {
-        throw new Error('Error while fetching openid config from auth stack');
-      });
-  };
+  return fetch(uri)
+    .then(async (response) => response.json())
+    .catch(() => {
+      throw new Error('Error while fetching openid config from auth stack');
+    });
+};
 export const getMembershipOpenIdConfig =
   async (): Promise<OpenIdConfiguration> => {
     const uri = `${process.env.MEMBERSHIP_URL}/api/.well-known/openid-configuration`;
@@ -116,7 +119,7 @@ export const getCurrentUser = async (
   openIdConfig: OpenIdConfiguration,
   token: string
 ): Promise<CurrentUser> =>
-  fetch(openIdConfig.userinfo_endpoint, {
+  fetch(`${process.env.MEMBERSHIP_URL}/api/me`, {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then(async (response) => response.json())

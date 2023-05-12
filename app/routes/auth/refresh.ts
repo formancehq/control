@@ -1,6 +1,6 @@
 import { json } from '@remix-run/node';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { floor } from 'lodash';
+import { floor, get } from 'lodash';
 
 import {
   commitSession,
@@ -9,35 +9,42 @@ import {
   encrypt,
   exchangeToken,
   getAuthStackOpenIdConfig,
+  getCurrentUser,
   getMembershipOpenIdConfig,
   getSecurityToken,
   getSession,
   parseSessionHolder,
   refreshToken,
 } from '~/src/utils/auth.server';
+import { getFavorites } from '~/src/utils/membership';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get('Cookie'));
   const sessionHolder = parseSessionHolder(session);
   const openIdConfig = await getMembershipOpenIdConfig();
+  const audience = 'stack://qqaoixccdziy/cxun';
+  const user = await getCurrentUser(openIdConfig, sessionHolder.access_token);
+  const apiUrl = get(getFavorites(user), 'stackUrl');
   const refreshAuth = await refreshToken(
     openIdConfig,
     sessionHolder.refresh_token
   );
-  const audience = 'stack://qqaoixccdziy/cxun';
+
   const securityToken = await getSecurityToken(
     openIdConfig,
     audience,
     refreshAuth.access_token
   );
-  const authentication = await getAuthStackOpenIdConfig().then((config) =>
-    exchangeToken(config, securityToken.access_token)
+  const authentication = await getAuthStackOpenIdConfig(apiUrl!).then(
+    (config) => exchangeToken(config, securityToken.access_token)
   );
+
   session.set(
     COOKIE_NAME,
     encrypt(
       createAuthCookie(
         { ...authentication, refresh_token: refreshAuth.refresh_token },
+        apiUrl!,
         refreshAuth.access_token
       )
     )

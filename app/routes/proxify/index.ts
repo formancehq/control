@@ -23,7 +23,7 @@ export const action: ActionFunction = async ({ request }) => {
         ret = await apiClient.getResource(body.params, body.body);
         break;
       case Methods.PUT:
-        ret = await apiClient.putResource(body.params, body.body);
+        ret = await apiClient.putResource(body.params, body.path, body.body);
         break;
       case Methods.DELETE:
         ret = await apiClient.deleteResource(body.params, body.path);

@@ -11,12 +11,15 @@ import { useTranslation } from 'react-i18next';
 import { Select } from '@numaryhq/storybook';
 
 import { useService } from '~/src/hooks/useService';
-import { ObjectOf } from '~/src/types/generic';
 import { MembershipStack } from '~/src/types/stack';
 import { createReactApiClient } from '~/src/utils/api.client';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { getStacks } from '~/src/utils/membership';
+import {
+  createFavoriteMetadata,
+  getStacks,
+  updateUserMetadata,
+} from '~/src/utils/membership';
 
 export const meta: MetaFunction = () => ({
   title: 'Stacks',
@@ -42,6 +45,7 @@ export const StackList: FunctionComponent = () => {
   const { t } = useTranslation();
   const { metas } = useService();
   const [value, setValue] = useState<string>('');
+  const { currentUser } = useService();
 
   useEffect(() => {
     fetcher.load('/stacks/list');
@@ -52,13 +56,11 @@ export const StackList: FunctionComponent = () => {
 
   const onChange = async (event: SelectChangeEvent<unknown>) => {
     if (typeof event.target.value === 'string') {
-      localStorage.setItem('currentStack', event.target.value as string);
-      setValue(event.target.value);
-      await createReactApiClient(metas.membership).putResource<ObjectOf<any>>(
-        `/api/users/${currentUser.sub}`,
-        undefined,
-        { metadata: { lastStack: stack.uri } }
-      );
+      const stackUrl = event.target.value;
+      setValue(stackUrl);
+      const api = await createReactApiClient(metas.membership, true);
+      const metadata = createFavoriteMetadata(stackUrl);
+      await updateUserMetadata(api, metadata);
     }
   };
 

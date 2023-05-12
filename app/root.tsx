@@ -23,7 +23,7 @@ import {
   useLoaderData,
 } from '@remix-run/react';
 import { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
-import { camelCase, first, get, head, noop } from 'lodash';
+import { camelCase, get, head, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import reactFlowStyles from 'reactflow/dist/style.css';
@@ -58,6 +58,12 @@ import {
   State,
   withSession,
 } from '~/src/utils/auth.server';
+import {
+  createFavoriteMetadata,
+  getFavorites,
+  getStacks,
+  updateUserMetadata,
+} from '~/src/utils/membership';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -99,6 +105,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return handleResponse(
     await withSession(request, async () => {
       const sessionHolder = decrypt<AuthCookie>(cookie);
+      console.log(sessionHolder);
       const payload = getJwtPayload(sessionHolder);
       const featuresDisabled = get(process, 'env.FEATURES_DISABLED', '').split(
         ','
@@ -112,15 +119,20 @@ export const loader: LoaderFunction = async ({ request }) => {
         `${process.env.MEMBERSHIP_URL}/api`,
         true
       );
-      const organizationExtended = first(
-        (await api.getResource<[]>('/organizations/expanded', 'data')) || []
-      );
+      let favorites = undefined;
+      let stacks = [];
+      // If no favorite organization is set, set the first one.
+      if (!getFavorites(user)) {
+        stacks = await getStacks(api);
+        favorites = createFavoriteMetadata(get(stacks[0], 'uri'));
+        await updateUserMetadata(api, favorites);
+      }
 
       const pseudo = user && user.email ? user.email.split('@')[0] : undefined;
 
       const currentUser: CurrentUser = {
         ...user,
-        organization: organizationExtended,
+        metadata: favorites,
         avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
         scp: payload && payload.scp ? payload.scp : [],
         pseudo,
@@ -128,13 +140,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
       return {
         featuresDisabled,
+        abilities: {
+          shouldRedirectToStackOnboarding: stacks.length === 0 || false,
+        },
         metas: {
           origin: REDIRECT_URI,
           openIdConfig,
-          api: process.env.API_URL,
+          api: get(getFavorites(user), 'stackUrl'),
           membership: process.env.MEMBERSHIP_URL,
-          shouldRedirectToStackOnboarding:
-            get(currentUser, 'organization.totalStacks', 0) === 0 || false,
         },
         currentUser,
       };
@@ -300,7 +313,7 @@ const Document = withEmotionCache(
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
-  const { metas, currentUser, featuresDisabled } =
+  const { metas, currentUser, featuresDisabled, abilities } =
     useLoaderData<ServiceContext>() as ServiceContext;
   const { t } = useTranslation();
   const [loading, _load, stopLoading] = useOpen(true);
@@ -319,6 +332,7 @@ export default function App() {
     featuresDisabled,
     currentUser,
     metas,
+    abilities,
     snackbar: displayFeedback,
   });
 
@@ -334,7 +348,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (metas && metas.shouldRedirectToStackOnboarding) {
+    if (abilities && abilities.shouldRedirectToStackOnboarding) {
       navigate(STACK_CREATE_ROUTE);
     }
     stopLoading();

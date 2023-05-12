@@ -33,11 +33,14 @@ import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
 import { ObjectOf } from '~/src/types/generic';
 import { MembershipRegion } from '~/src/types/stack';
-import { API_AUTH, ApiClient, CurrentUser } from '~/src/utils/api';
+import { API_AUTH, ApiClient } from '~/src/utils/api';
 import { createReactApiClient } from '~/src/utils/api.client';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
-import { updateLastStack } from '~/src/utils/membership';
+import {
+  createFavoriteMetadata,
+  updateUserMetadata,
+} from '~/src/utils/membership';
 
 export const meta: MetaFunction = () => ({
   title: 'Stacks',
@@ -81,9 +84,9 @@ export const schema = yup.object({
 });
 
 export default function Index() {
-  const { snackbar, metas, currentUser, setService, ...rest } = useService();
+  const { snackbar, metas, currentUser, setService, abilities, ...rest } =
+    useService();
   const [client, setClient] = useState<ApiClient>();
-  const [user, setUser] = useState<CurrentUser>(currentUser);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const regions = useLoaderData<
@@ -109,12 +112,16 @@ export default function Index() {
     ...rest,
     setService,
     snackbar,
-    currentUser: user,
-    metas: { ...metas, shouldRedirectToStackOnboarding: false },
+    currentUser,
+    metas,
+    abilities: {
+      ...abilities,
+      shouldRedirectToStackOnboarding: false,
+    },
   };
 
   useInterval(async () => {
-    if (client && user) {
+    if (client && currentUser) {
       setLoading(true);
       try {
         const openIdConfig = await client.getResource<ObjectOf<any>>(
@@ -122,7 +129,6 @@ export default function Index() {
         );
         if (openIdConfig) {
           setLoading(false);
-          setService(service);
           navigate(getRoute(OVERVIEW_ROUTE));
         }
       } catch {
@@ -136,7 +142,7 @@ export default function Index() {
     if (validated) {
       const formValues = getValues();
       const values = {
-        region: formValues.region,
+        region: formValues.regionID,
         name: formValues.name,
       };
       try {
@@ -152,19 +158,18 @@ export default function Index() {
           );
 
           if (stack) {
-            await updateLastStack(api, currentUser.sub, stack.uri, () =>
+            const metadata = createFavoriteMetadata(stack.uri);
+            await updateUserMetadata(api, metadata, () =>
               setService({
                 ...service,
-                currentUser: { ...user, lastStack: stack.uri },
+                currentUser: { ...currentUser, metadata },
               })
             );
             const client = await createReactApiClient(stack.uri);
-            setUser({ ...user, lastStack: stack.uri });
             setClient(client);
           }
         }
       } catch (e) {
-        console.log('eeeee ', e);
         snackbar(
           t('common.feedback.create', {
             item: values.name,
@@ -256,8 +261,8 @@ export default function Index() {
                         placeholder={t('common.forms.selectEntity', {
                           entityName: 'region',
                         })}
-                        error={!!errors.region}
-                        errorMessage={errors.region?.message as string}
+                        error={!!errors.regionID}
+                        errorMessage={errors.regionID?.message as string}
                         select={{
                           ref: ref,
                           inputRef: ref,

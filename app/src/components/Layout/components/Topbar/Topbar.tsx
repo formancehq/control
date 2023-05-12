@@ -31,7 +31,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
   const [gateway, setGateway] = useState<{ region: string; env: string }>();
-  const { currentUser, metas } = useService();
+  const { currentUser, metas, abilities } = useService();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -98,7 +98,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         zIndex: 9999,
         display: 'flex',
         justifyContent:
-          metas && metas.shouldRedirectToStackOnboarding
+          abilities && abilities.shouldRedirectToStackOnboarding
             ? 'end'
             : 'space-between',
         alignSelf: 'center',
@@ -106,7 +106,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
       }}
       id="topbar"
     >
-      {metas && !metas.shouldRedirectToStackOnboarding && (
+      {abilities && !abilities.shouldRedirectToStackOnboarding && (
         <Box display="flex" ml={isMobile ? 3 : 0}>
           {!isMobile && (
             <IconButton
@@ -132,7 +132,7 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         </Box>
       )}
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        {metas && !metas.shouldRedirectToStackOnboarding && (
+        {abilities && !abilities.shouldRedirectToStackOnboarding && (
           <Box
             sx={{
               mr: 1,

@@ -17,7 +17,13 @@ export const createApiClient = async (
   session: Session,
   url?: string,
   masterToken = false
-): Promise<ApiClient> => new DefaultApiClient(session, masterToken, url);
+): Promise<ApiClient> => {
+  const sessionHolder = parseSessionHolder(session);
+  console.log('session >>>>', sessionHolder);
+  const api = new DefaultApiClient(session, masterToken, url);
+
+  return api;
+};
 
 export class DefaultApiClient implements ApiClient {
   public baseUrl: string | undefined;
@@ -32,9 +38,10 @@ export class DefaultApiClient implements ApiClient {
     };
     if (typeof process !== 'undefined') {
       if (isUndefined(url)) {
-        if (process.env.API_URL) {
-          this.baseUrl = `${process.env.API_URL}/api`;
-        } else throw new Error('API_URL is not defined');
+        const sessionHolder = parseSessionHolder(session);
+        if (sessionHolder) {
+          this.baseUrl = `${sessionHolder.apiUrl}/api`;
+        } else throw new Error('Api Url is not defined');
       }
     }
     this.masterToken = masterToken;
@@ -62,9 +69,10 @@ export class DefaultApiClient implements ApiClient {
 
   public async putResource<T>(
     params?: string,
-    path?: string
+    path?: string,
+    body?: any
   ): Promise<T | undefined | void> {
-    return this.handleRequest(Methods.PUT, params, undefined, path);
+    return this.handleRequest(Methods.PUT, params, body, path);
   }
 
   public async deleteResource<T>(

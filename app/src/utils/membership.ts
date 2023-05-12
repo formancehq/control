@@ -1,6 +1,10 @@
+import { get } from 'lodash';
+
 import { ObjectOf } from '~/src/types/generic';
 import { MembershipOrganization, MembershipStack } from '~/src/types/stack';
-import { ApiClient } from '~/src/utils/api';
+import { ApiClient, CurrentUser } from '~/src/utils/api';
+
+export const USER_METADATA_ROOT_KEY = 'console';
 
 export const getStacks = async (api: ApiClient): Promise<MembershipStack[]> => {
   const organizations = await api.getResource<MembershipOrganization[]>(
@@ -24,23 +28,47 @@ export const getStacks = async (api: ApiClient): Promise<MembershipStack[]> => {
   return stacks.flat();
 };
 
-export const updateLastStack = async (
+export type FavoriteMetadata = {
+  stackUrl?: string;
+  stackId?: string;
+  organizationId?: string;
+};
+
+export type UpdateMetadata = {
+  metadata: {
+    console: string;
+  };
+};
+export const updateUserMetadata = async (
   api: ApiClient,
-  idCurrentUser: string,
-  uri: string,
-  contextUpdater?: () => void
+  metadata?: UpdateMetadata | undefined,
+  callback?: () => void
 ): Promise<any> => {
-  try {
-    const metadata = await api.putResource<ObjectOf<any>>(
-      `/api/users/${idCurrentUser}`,
-      undefined,
-      { metadata: { lastStack: uri } }
-    );
-    console.log('metadata', metadata);
-    if (metadata && contextUpdater) {
-      contextUpdater();
-    }
-  } catch (e) {
-    console.log('eeeeeeeee metadata', e);
+  if (metadata) {
+    await api.putResource<ObjectOf<any>>('/api/me', 'data', metadata);
+    if (callback) callback();
   }
 };
+
+export const createFavoriteMetadata = (
+  url: string
+): UpdateMetadata | undefined => {
+  if (!url) return;
+
+  const s = url.split('-');
+
+  return {
+    metadata: {
+      [USER_METADATA_ROOT_KEY]: JSON.stringify({
+        stackUrl: url,
+        organizationId: s[0].split('//')[1],
+        stackId: s[1].split('.')[0],
+      }),
+    },
+  };
+};
+
+export const getFavorites = (
+  currentUser: CurrentUser
+): FavoriteMetadata | undefined =>
+  JSON.parse(get(currentUser, `metadata.${USER_METADATA_ROOT_KEY}`));

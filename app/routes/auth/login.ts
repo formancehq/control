@@ -1,5 +1,6 @@
 import { redirect } from '@remix-run/node';
 import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
+import { get } from 'lodash';
 
 import { Errors } from '~/src/types/generic';
 import {
@@ -8,9 +9,11 @@ import {
   createAuthCookie,
   encrypt,
   getAccessTokenFromCode,
+  getCurrentUser,
   getMembershipOpenIdConfig,
   getSession,
 } from '~/src/utils/auth.server';
+import { getFavorites } from '~/src/utils/membership';
 
 export const loader: LoaderFunction = async ({
   request,
@@ -22,8 +25,12 @@ export const loader: LoaderFunction = async ({
   if (code) {
     // get through authentication callback
     const authentication = await getAccessTokenFromCode(openIdConfig, code);
-    const encryptedCookie = encrypt(createAuthCookie(authentication));
-
+    const user = await getCurrentUser(
+      openIdConfig,
+      authentication.access_token
+    );
+    const apiUrl = get(getFavorites(user), 'stackUrl');
+    const encryptedCookie = encrypt(createAuthCookie(authentication, apiUrl!));
     session.set(COOKIE_NAME, encryptedCookie);
 
     return redirect('/', {

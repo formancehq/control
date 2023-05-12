@@ -10,6 +10,9 @@ export type Metas = {
   openIdConfig: OpenIdConfiguration;
   api: string;
   membership: string;
+};
+
+export type Abilities = {
   shouldRedirectToStackOnboarding: boolean;
 };
 
@@ -18,6 +21,7 @@ export type ServiceContext = {
   currentUser: CurrentUser;
   featuresDisabled: string[];
   metas: Metas;
+  abilities: Abilities;
   setService: (service: ServiceContext) => void;
   snackbar: SnackbarSetter;
 };

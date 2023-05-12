@@ -1,3 +1,5 @@
+import { ObjectOf } from '@numaryhq/storybook';
+
 import { Errors } from '~/src/types/generic';
 
 export const API_SEARCH = '/search';
@@ -53,6 +55,7 @@ export type SessionWrapper = {
 };
 
 export type CurrentUser = {
+  metadata?: ObjectOf<any>;
   sub: string;
   scp: string[] | [];
   email: string;
@@ -82,6 +85,7 @@ export type AuthCookie = {
   access_token: string;
   refresh_token: string;
   expires_in: number;
+  apiUrl: string;
 };
 
 export type JwtPayload = {
