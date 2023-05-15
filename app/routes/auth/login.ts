@@ -1,8 +1,9 @@
 import { redirect } from '@remix-run/node';
 import { LoaderFunction, TypedResponse } from '@remix-run/server-runtime';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 
 import { Errors } from '~/src/types/generic';
+import { MembershipStack } from '~/src/types/stack';
 import {
   commitSession,
   COOKIE_NAME,
@@ -13,7 +14,12 @@ import {
   getMembershipOpenIdConfig,
   getSession,
 } from '~/src/utils/auth.server';
-import { getFavorites } from '~/src/utils/membership';
+import {
+  createFavoriteMetadata,
+  getStacks,
+  UpdateMetadata,
+  updateUserMetadata,
+} from '~/src/utils/membership';
 
 export const loader: LoaderFunction = async ({
   request,
@@ -29,8 +35,31 @@ export const loader: LoaderFunction = async ({
       openIdConfig,
       authentication.access_token
     );
-    const apiUrl = get(getFavorites(user), 'stackUrl');
-    const encryptedCookie = encrypt(createAuthCookie(authentication, apiUrl!));
+    let favorites = user.metadata;
+    const stacks: MembershipStack[] = await getStacks(
+      undefined,
+      authentication.access_token
+    );
+
+    if (!favorites || isEmpty(favorites)) {
+      if (stacks.length > 0) {
+        favorites = createFavoriteMetadata(get(stacks[0], 'uri'));
+        await updateUserMetadata(
+          undefined,
+          favorites as UpdateMetadata,
+          undefined,
+          authentication.access_token
+        );
+      }
+    }
+
+    const encryptedCookie = encrypt(
+      createAuthCookie(authentication, {
+        ...user,
+        metadata: favorites,
+        totalStack: stacks.length,
+      })
+    );
     session.set(COOKIE_NAME, encryptedCookie);
 
     return redirect('/', {

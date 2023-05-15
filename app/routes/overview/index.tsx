@@ -32,7 +32,6 @@ export default function Index() {
 const Overview: FunctionComponent = () => {
   const { t } = useTranslation();
   const { currentUser } = useService();
-  console.log(currentUser);
 
   return (
     <>

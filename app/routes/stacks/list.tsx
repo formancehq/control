@@ -5,7 +5,6 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { get } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { Select } from '@numaryhq/storybook';
@@ -17,6 +16,7 @@ import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
 import {
   createFavoriteMetadata,
+  getFavorites,
   getStacks,
   updateUserMetadata,
 } from '~/src/utils/membership';
@@ -44,14 +44,12 @@ export const StackList: FunctionComponent = () => {
   const fetcher = useFetcher<MembershipStack[] | null>();
   const { t } = useTranslation();
   const { metas } = useService();
-  const [value, setValue] = useState<string>('');
   const { currentUser } = useService();
+  const favorites = getFavorites(currentUser);
+  const [value, setValue] = useState<string>(favorites?.stackId || '');
 
   useEffect(() => {
     fetcher.load('/stacks/list');
-    setValue(
-      localStorage.getItem('currentStack') || get(fetcher, 'data[0].uri', '')
-    );
   }, []);
 
   const onChange = async (event: SelectChangeEvent<unknown>) => {

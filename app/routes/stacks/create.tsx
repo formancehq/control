@@ -13,7 +13,6 @@ import type { MetaFunction } from '@remix-run/node';
 import { Session } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -23,17 +22,15 @@ import { LoadingButton, Page, Select, TextField } from '@numaryhq/storybook';
 
 import {
   createStack as stackCreateConfig,
-  getRoute,
   OVERVIEW_ROUTE,
 } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { buildOptions } from '~/src/components/Wrappers/Table/Filters/filters';
-import { useInterval } from '~/src/hooks/useInterval';
 import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
 import { ObjectOf } from '~/src/types/generic';
-import { MembershipRegion } from '~/src/types/stack';
-import { API_AUTH, ApiClient } from '~/src/utils/api';
+import { MembershipOrganization, MembershipRegion } from '~/src/types/stack';
+import { ApiClient } from '~/src/utils/api';
 import { createReactApiClient } from '~/src/utils/api.client';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -64,7 +61,16 @@ export const loader: LoaderFunction = async ({ request }) => {
       true
     );
 
-    return await api.getResource<MembershipRegion[]>('/regions', 'data');
+    const regions = await api.getResource<MembershipRegion[]>(
+      '/regions',
+      'data'
+    );
+    const organizations = await api.getResource<MembershipOrganization[]>(
+      '/organizations',
+      'data'
+    );
+
+    return { regions, organizations };
   }
 
   return handleResponse(await withSession(request, handleData));
@@ -72,6 +78,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export type CreateStack = {
   name: string;
   regionID: string;
+  organization: string;
 };
 
 export const schema = yup.object({
@@ -81,17 +88,23 @@ export const schema = yup.object({
   regionID: yup
     .string()
     .required(i18n.t('pages.stacks.form.create.region.errors.required')),
+  organization: yup
+    .string()
+    .required(i18n.t('pages.stacks.form.create.organization.errors.required')),
 });
 
 export default function Index() {
   const { snackbar, metas, currentUser, setService, abilities, ...rest } =
     useService();
-  const [client, setClient] = useState<ApiClient>();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, _setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const regions = useLoaderData<
-    MembershipRegion[]
-  >() as unknown as MembershipRegion[];
+  const { regions, organizations } = useLoaderData<{
+    regions: MembershipRegion[];
+    organizations: MembershipOrganization[];
+  }>() as unknown as {
+    regions: MembershipRegion[];
+    organizations: MembershipOrganization[];
+  };
   const { typography, palette } = useTheme();
   const { t } = useTranslation();
   const {
@@ -120,23 +133,6 @@ export default function Index() {
     },
   };
 
-  useInterval(async () => {
-    if (client && currentUser) {
-      setLoading(true);
-      try {
-        const openIdConfig = await client.getResource<ObjectOf<any>>(
-          `${API_AUTH}/.well-known/openid-configuration`
-        );
-        if (openIdConfig) {
-          setLoading(false);
-          navigate(getRoute(OVERVIEW_ROUTE));
-        }
-      } catch {
-        noop();
-      }
-    }
-  }, 3000);
-
   const onSave = async () => {
     const validated = await trigger();
     if (validated) {
@@ -144,32 +140,35 @@ export default function Index() {
       const values = {
         region: formValues.regionID,
         name: formValues.name,
+        organization: formValues.organization,
       };
       try {
-        if (
-          currentUser &&
-          currentUser.organization &&
-          currentUser.organization.id
-        ) {
-          const api = await createReactApiClient(metas.membership, true);
+        if (currentUser) {
+          const api = await createReactApiClient(
+            `${metas.membership}/api`,
+            true
+          );
           const stack = await api.postResource<ObjectOf<any>>(
-            `/api/organizations/${currentUser.organization.id}/stacks`,
-            formValues
+            `/organizations/${values.organization}/stacks`,
+            formValues,
+            'data'
           );
 
           if (stack) {
             const metadata = createFavoriteMetadata(stack.uri);
-            await updateUserMetadata(api, metadata, () =>
+            const favorite = await updateUserMetadata(api, metadata, () =>
               setService({
                 ...service,
                 currentUser: { ...currentUser, metadata },
               })
             );
-            const client = await createReactApiClient(stack.uri);
-            setClient(client);
+            if (favorite) {
+              navigate(OVERVIEW_ROUTE);
+            }
           }
         }
       } catch (e) {
+        console.log(e);
         snackbar(
           t('common.feedback.create', {
             item: values.name,
@@ -243,6 +242,34 @@ export default function Index() {
                         error={!!errors.name}
                         errorMessage={errors.name?.message}
                         label={t('pages.stacks.form.create.name.label')}
+                      />
+                    )}
+                  />
+                </Box>
+                <Box mb={3}>
+                  <Controller
+                    name="organization"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { ref, onChange, value, ...rest } }) => (
+                      <Select
+                        {...rest}
+                        items={buildOptions(organizations.map((org) => org.id))}
+                        placeholder={t('common.forms.selectEntity', {
+                          entityName: 'organization',
+                        })}
+                        error={!!errors.organization}
+                        errorMessage={errors.organization?.message as string}
+                        select={{
+                          disabled: organizations.length === 1,
+                          ref: ref,
+                          inputRef: ref,
+                          value:
+                            organizations.length === 1
+                              ? organizations[0].id
+                              : value,
+                          onChange: onChange,
+                        }}
                       />
                     )}
                   />

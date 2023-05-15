@@ -31,7 +31,11 @@ import {
   GatewayVersion,
 } from '~/src/types/gateway';
 import { createApiClient } from '~/src/utils/api.server';
-import { handleResponse, withSession } from '~/src/utils/auth.server';
+import {
+  handleResponse,
+  parseSessionHolder,
+  withSession,
+} from '~/src/utils/auth.server';
 import { lowerCaseAllWordsExceptFirstLetter } from '~/src/utils/format';
 
 export const meta: MetaFunction = () => ({
@@ -41,8 +45,10 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
+    const sessionHolder = parseSessionHolder(session);
+
     return await (
-      await createApiClient(session, process.env.API_URL)
+      await createApiClient(session, sessionHolder.apiUrl)
     ).getResource<Gateway>('/versions');
   }
 

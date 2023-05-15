@@ -9,7 +9,6 @@ import {
   encrypt,
   exchangeToken,
   getAuthStackOpenIdConfig,
-  getCurrentUser,
   getMembershipOpenIdConfig,
   getSecurityToken,
   getSession,
@@ -22,14 +21,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get('Cookie'));
   const sessionHolder = parseSessionHolder(session);
   const openIdConfig = await getMembershipOpenIdConfig();
-  const audience = 'stack://qqaoixccdziy/cxun';
-  const user = await getCurrentUser(openIdConfig, sessionHolder.access_token);
-  const apiUrl = get(getFavorites(user), 'stackUrl');
+  const favorites = getFavorites(sessionHolder.currentUser);
+  const apiUrl = get(favorites, 'stackUrl');
+  const audience = `stack://${favorites?.organizationId}/${favorites?.stackId}`;
   const refreshAuth = await refreshToken(
     openIdConfig,
     sessionHolder.refresh_token
   );
-
   const securityToken = await getSecurityToken(
     openIdConfig,
     audience,
@@ -44,7 +42,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     encrypt(
       createAuthCookie(
         { ...authentication, refresh_token: refreshAuth.refresh_token },
-        apiUrl!,
+        sessionHolder.currentUser,
         refreshAuth.access_token
       )
     )

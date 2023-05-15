@@ -63,11 +63,7 @@ export type CurrentUser = {
   avatarLetter: string | undefined;
   pseudo: string | undefined;
   zone: string;
-  organization?: {
-    totalStacks?: number;
-    id?: string;
-  };
-  lastStack?: string;
+  totalStack?: number;
 };
 
 export type Authentication = {
@@ -81,11 +77,11 @@ export type Authentication = {
 };
 
 export type AuthCookie = {
+  currentUser: CurrentUser;
   master_access_token: string;
   access_token: string;
   refresh_token: string;
   expires_in: number;
-  apiUrl: string;
 };
 
 export type JwtPayload = {

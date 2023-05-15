@@ -44,12 +44,10 @@ import { ServiceContext } from '~/src/contexts/service';
 import { Errors } from '~/src/types/generic';
 import { AuthCookie, CurrentUser, errorsMap, logger } from '~/src/utils/api';
 import { ReactApiClient } from '~/src/utils/api.client';
-import { createApiClient } from '~/src/utils/api.server';
 import {
   AUTH_CALLBACK_ROUTE,
   COOKIE_NAME,
   decrypt,
-  getCurrentUser,
   getJwtPayload,
   getMembershipOpenIdConfig,
   getSession,
@@ -58,12 +56,7 @@ import {
   State,
   withSession,
 } from '~/src/utils/auth.server';
-import {
-  createFavoriteMetadata,
-  getFavorites,
-  getStacks,
-  updateUserMetadata,
-} from '~/src/utils/membership';
+import { getFavorites } from '~/src/utils/membership';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -105,48 +98,33 @@ export const loader: LoaderFunction = async ({ request }) => {
   return handleResponse(
     await withSession(request, async () => {
       const sessionHolder = decrypt<AuthCookie>(cookie);
-      console.log(sessionHolder);
       const payload = getJwtPayload(sessionHolder);
       const featuresDisabled = get(process, 'env.FEATURES_DISABLED', '').split(
         ','
       );
-      const user = await getCurrentUser(
-        openIdConfig,
-        sessionHolder.master_access_token
-      );
-      const api = await createApiClient(
-        session,
-        `${process.env.MEMBERSHIP_URL}/api`,
-        true
-      );
-      let favorites = undefined;
-      let stacks = [];
-      // If no favorite organization is set, set the first one.
-      if (!getFavorites(user)) {
-        stacks = await getStacks(api);
-        favorites = createFavoriteMetadata(get(stacks[0], 'uri'));
-        await updateUserMetadata(api, favorites);
-      }
-
-      const pseudo = user && user.email ? user.email.split('@')[0] : undefined;
+      const pseudo =
+        sessionHolder.currentUser && sessionHolder.currentUser.email
+          ? sessionHolder.currentUser.email.split('@')[0]
+          : undefined;
 
       const currentUser: CurrentUser = {
-        ...user,
-        metadata: favorites,
+        ...sessionHolder.currentUser,
         avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
         scp: payload && payload.scp ? payload.scp : [],
         pseudo,
       };
+      console.log('>>>>>curr', currentUser);
 
       return {
         featuresDisabled,
         abilities: {
-          shouldRedirectToStackOnboarding: stacks.length === 0 || false,
+          shouldRedirectToStackOnboarding:
+            currentUser.totalStack === 0 || false,
         },
         metas: {
           origin: REDIRECT_URI,
           openIdConfig,
-          api: get(getFavorites(user), 'stackUrl'),
+          api: get(getFavorites(sessionHolder.currentUser), 'stackUrl'),
           membership: process.env.MEMBERSHIP_URL,
         },
         currentUser,

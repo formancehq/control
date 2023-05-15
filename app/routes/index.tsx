@@ -17,10 +17,10 @@ export const meta: MetaFunction = () => ({
 
 export default function Index() {
   const navigate = useNavigate();
-  const { metas } = useService();
+  const { abilities } = useService();
 
   useEffect(() => {
-    if (metas.shouldRedirectToStackOnboarding) {
+    if (abilities && abilities.shouldRedirectToStackOnboarding) {
       navigate(STACK_CREATE_ROUTE);
     } else {
       navigate(OVERVIEW_ROUTE);

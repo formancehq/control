@@ -10,6 +10,7 @@ import {
   toJson,
 } from '~/src/utils/api';
 import { parseSessionHolder } from '~/src/utils/auth.server';
+import { getFavorites, getStackApiUrl } from '~/src/utils/membership';
 
 export type Headers = { Authorization?: string; 'Content-Type': string };
 
@@ -19,10 +20,11 @@ export const createApiClient = async (
   masterToken = false
 ): Promise<ApiClient> => {
   const sessionHolder = parseSessionHolder(session);
-  console.log('session >>>>', sessionHolder);
-  const api = new DefaultApiClient(session, masterToken, url);
+  const baseUrl = url
+    ? url
+    : `${get(getFavorites(sessionHolder.currentUser), 'stackUrl')}/api`;
 
-  return api;
+  return new DefaultApiClient(session, masterToken, baseUrl);
 };
 
 export class DefaultApiClient implements ApiClient {
@@ -40,7 +42,7 @@ export class DefaultApiClient implements ApiClient {
       if (isUndefined(url)) {
         const sessionHolder = parseSessionHolder(session);
         if (sessionHolder) {
-          this.baseUrl = `${sessionHolder.apiUrl}/api`;
+          this.baseUrl = getStackApiUrl(sessionHolder.currentUser);
         } else throw new Error('Api Url is not defined');
       }
     }

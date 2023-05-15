@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent } from 'react';
 
 import {
   ArrowDropDown,
@@ -23,14 +23,11 @@ import { TopbarProps } from '~/src/components/Layout/components/Topbar/types';
 import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
 import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
-import { Gateway } from '~/src/types/gateway';
-import { ReactApiClient } from '~/src/utils/api.client';
 
 const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
-  const [gateway, setGateway] = useState<{ region: string; env: string }>();
   const { currentUser, metas, abilities } = useService();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -72,19 +69,6 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
     handleCloseUserMenu();
     window.location.href = `${metas.origin}/auth/redirect-logout`;
   };
-
-  useEffect(() => {
-    (async () => {
-      if (metas && metas.api) {
-        const client = new ReactApiClient();
-        client.setBaseUrl && client.setBaseUrl(metas.api);
-        const gateway = await client.getResource<Gateway>('/versions');
-        if (gateway) {
-          setGateway(gateway);
-        }
-      }
-    })();
-  }, []);
 
   return (
     <Box
@@ -151,25 +135,25 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
           </Box>
         )}
         <Box sx={{ display: 'flex' }}>
-          {gateway && gateway.region && (
-            <Box>
-              <Typography
-                variant="bold"
-                sx={{
-                  color:
-                    gateway.env === 'staging'
-                      ? palette.yellow.normal
-                      : palette.neutral[200],
-                  p: '4px 6px',
-                  border: '1px solid',
-                  borderRadius: 2,
-                  mr: 2,
-                }}
-              >
-                {gateway.region}
-              </Typography>
-            </Box>
-          )}
+          {/*{gateway && gateway.region && (*/}
+          {/*  <Box>*/}
+          {/*    <Typography*/}
+          {/*      variant="bold"*/}
+          {/*      sx={{*/}
+          {/*        color:*/}
+          {/*          gateway.env === "staging"*/}
+          {/*            ? palette.yellow.normal*/}
+          {/*            : palette.neutral[200],*/}
+          {/*        p: "4px 6px",*/}
+          {/*        border: "1px solid",*/}
+          {/*        borderRadius: 2,*/}
+          {/*        mr: 2,*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      {gateway.region}*/}
+          {/*    </Typography>*/}
+          {/*  </Box>*/}
+          {/*)}*/}
           <Box
             sx={{
               display: 'flex',

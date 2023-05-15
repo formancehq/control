@@ -7,6 +7,7 @@ import {
   Session,
 } from '@remix-run/node';
 import { TypedResponse } from '@remix-run/server-runtime';
+import { get } from 'lodash';
 
 import { ObjectOf } from '~/src/types/generic';
 import {
@@ -29,14 +30,14 @@ export interface State {
 
 export const createAuthCookie = (
   authentication: Authentication,
-  apiUrl: string,
+  currentUser: CurrentUser,
   masterToken?: string
 ): AuthCookie => ({
   access_token: authentication.access_token,
   refresh_token: authentication.refresh_token,
   expires_in: authentication.expires_in,
   master_access_token: masterToken || authentication.access_token,
-  apiUrl,
+  currentUser,
 });
 
 export const parseSessionHolder = (session: Session): AuthCookie =>
@@ -122,7 +123,11 @@ export const getCurrentUser = async (
   fetch(`${process.env.MEMBERSHIP_URL}/api/me`, {
     headers: { Authorization: `Bearer ${token}` },
   })
-    .then(async (response) => response.json())
+    .then(async (response) => {
+      const data = await response.json();
+
+      return get(data, 'data');
+    })
     .catch(() => {
       throw new Error('Error while fetching current user');
     });
@@ -186,8 +191,9 @@ export const getSecurityToken = async (
     },
   }).then(async (response) => {
     if (response.status != 200) {
+      const data = await response.json();
       throw new Error(
-        `Error while getting security token: ${response.status} / ${response.statusText}`
+        `Error while getting security token: ${response.status} / ${response.statusText} : ${data.error} - ${data.error_description}`
       );
     }
 

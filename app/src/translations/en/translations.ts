@@ -806,6 +806,11 @@ export default {
                 required: 'You must choose a region',
               },
             },
+            organization: {
+              errors: {
+                required: 'You must choose an organization',
+              },
+            },
           },
         },
       },

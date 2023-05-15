@@ -42,7 +42,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { t } = useTranslation();
-  const { metas } = useService();
+  const { abilities } = useService();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -73,7 +73,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
 
   const sideBarWidth = showMiniSidebar ? 80 : 250;
   const va =
-    metas && metas.shouldRedirectToStackOnboarding
+    abilities && abilities.shouldRedirectToStackOnboarding
       ? {
           display: 'flex',
           flexDirection: 'row',
@@ -101,15 +101,15 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
             <Topbar resized={showMiniSidebar} onResize={handleMiniSidebar} />
             <Box id="layout" sx={{ minHeight: '100%', display: 'flex' }}>
               {showSidebar &&
-                metas &&
-                !metas.shouldRedirectToStackOnboarding && (
+                abilities &&
+                !abilities.shouldRedirectToStackOnboarding && (
                   <Sidebar width={sideBarWidth} resized={showMiniSidebar} />
                 )}
               <Box
                 sx={{
                   width: {
                     sm:
-                      metas && metas.shouldRedirectToStackOnboarding
+                      abilities && abilities.shouldRedirectToStackOnboarding
                         ? '100%'
                         : `calc(100% - ${sideBarWidth}px)`,
                   },
@@ -163,7 +163,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
                     </MuiMenu>
                   </>
                 )}
-                {links && !metas.shouldRedirectToStackOnboarding && (
+                {links && !abilities.shouldRedirectToStackOnboarding && (
                   <Breadcrumbs links={links} />
                 )}
                 {children}
