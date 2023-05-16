@@ -79,7 +79,7 @@ export type Authentication = {
 export type AuthCookie = {
   currentUser: CurrentUser;
   master_access_token: string;
-  access_token: string;
+  access_token?: string | undefined;
   refresh_token: string;
   expires_in: number;
 };
@@ -120,6 +120,10 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
 
   if (response?.status === 204) {
     return {} as T;
+  }
+
+  if (response?.status === 401) {
+    throw 401;
   }
 
   throw new Error(

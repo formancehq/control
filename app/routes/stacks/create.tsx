@@ -30,7 +30,6 @@ import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
 import { ObjectOf } from '~/src/types/generic';
 import { MembershipOrganization, MembershipRegion } from '~/src/types/stack';
-import { ApiClient } from '~/src/utils/api';
 import { createReactApiClient } from '~/src/utils/api.client';
 import { createApiClient } from '~/src/utils/api.server';
 import { handleResponse, withSession } from '~/src/utils/auth.server';
@@ -57,7 +56,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(
       session,
-      `${process.env.MEMBERSHIP_URL}/api`,
+      `${process.env.MEMBERSHIP_URL_API}`,
       true
     );
 
@@ -168,7 +167,6 @@ export default function Index() {
           }
         }
       } catch (e) {
-        console.log(e);
         snackbar(
           t('common.feedback.create', {
             item: values.name,

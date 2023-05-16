@@ -56,7 +56,7 @@ import {
   State,
   withSession,
 } from '~/src/utils/auth.server';
-import { getFavorites } from '~/src/utils/membership';
+import { getStackApiUrl } from '~/src/utils/membership';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -113,7 +113,6 @@ export const loader: LoaderFunction = async ({ request }) => {
         scp: payload && payload.scp ? payload.scp : [],
         pseudo,
       };
-      console.log('>>>>>curr', currentUser);
 
       return {
         featuresDisabled,
@@ -124,8 +123,8 @@ export const loader: LoaderFunction = async ({ request }) => {
         metas: {
           origin: REDIRECT_URI,
           openIdConfig,
-          api: get(getFavorites(sessionHolder.currentUser), 'stackUrl'),
-          membership: process.env.MEMBERSHIP_URL,
+          api: getStackApiUrl(currentUser),
+          membership: process.env.MEMBERSHIP_URL_API,
         },
         currentUser,
       };
@@ -332,7 +331,7 @@ export default function App() {
     stopLoading();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (!global.timer) {
+    if (!global.refreshMasterTokenTimer) {
       const refreshToken = (): Promise<any> =>
         fetch(`${metas.origin}/auth/refresh`)
           .then((response) => response.json())
@@ -345,7 +344,23 @@ export default function App() {
           });
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      global.timer = refreshToken();
+      global.refreshMasterTokenTimer = refreshToken();
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (!global.getStsToken) {
+      const stsToken = (): Promise<any> =>
+        fetch(`${metas.origin}/auth/sts`)
+          .then((response) => response.json())
+          .then(({ interval }: { interval: number }) =>
+            setTimeout(stsToken, interval)
+          )
+          .catch(async (reason) => {
+            console.info('Error when getting sts', reason);
+          });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      global.getStsToken = stsToken();
     }
   }, []);
 

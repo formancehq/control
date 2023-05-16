@@ -5,6 +5,7 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import type { MetaFunction, Session } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/server-runtime';
+import { get, isEmpty, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { Select } from '@numaryhq/storybook';
@@ -30,7 +31,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   async function handleData(session: Session) {
     const api = await createApiClient(
       session,
-      `${process.env.MEMBERSHIP_URL}/api`,
+      `${process.env.MEMBERSHIP_URL_API}`,
       true
     );
 
@@ -44,21 +45,32 @@ export const StackList: FunctionComponent = () => {
   const fetcher = useFetcher<MembershipStack[] | null>();
   const { t } = useTranslation();
   const { metas } = useService();
-  const { currentUser } = useService();
-  const favorites = getFavorites(currentUser);
-  const [value, setValue] = useState<string>(favorites?.stackId || '');
-
+  const { currentUser, setService, ...rest } = useService();
+  const stackUrl = get(getFavorites(currentUser), 'stackUrl');
+  const [value, setValue] = useState<string>(stackUrl || '');
   useEffect(() => {
     fetcher.load('/stacks/list');
   }, []);
 
   const onChange = async (event: SelectChangeEvent<unknown>) => {
     if (typeof event.target.value === 'string') {
-      const stackUrl = event.target.value;
-      setValue(stackUrl);
-      const api = await createReactApiClient(metas.membership, true);
-      const metadata = createFavoriteMetadata(stackUrl);
-      await updateUserMetadata(api, metadata);
+      const val = event.target.value;
+      if (!isEmpty(val)) {
+        setValue(val);
+        const api = await createReactApiClient(metas.membership, true);
+        const metadata = createFavoriteMetadata(val);
+        try {
+          await updateUserMetadata(api, metadata, () =>
+            setService({
+              ...rest,
+              currentUser: { ...currentUser, metadata },
+              setService,
+            })
+          );
+        } catch {
+          noop();
+        }
+      }
     }
   };
 
@@ -66,10 +78,12 @@ export const StackList: FunctionComponent = () => {
     <Select
       items={
         fetcher.data
-          ? fetcher.data.map((stack: MembershipStack, index: number) => ({
-              id: stack.uri ? stack.uri : index,
-              label: `${stack.name} ${stack.organizationId}-${stack.id}`,
-            }))
+          ? fetcher.data
+              .filter((stack: MembershipStack) => stack.uri)
+              .map((stack: MembershipStack) => ({
+                id: stack.uri,
+                label: `${stack.name} ${stack.organizationId}-${stack.id}`,
+              }))
           : []
       }
       placeholder={t('common.filters.stacks')}

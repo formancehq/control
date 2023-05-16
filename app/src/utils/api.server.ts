@@ -89,7 +89,7 @@ export class DefaultApiClient implements ApiClient {
     params?: string,
     body?: any,
     path?: string
-  ): Promise<T | undefined | void> {
+  ): Promise<any> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
     const sessionHolder: AuthCookie = parseSessionHolder(this.session);
@@ -104,7 +104,7 @@ export class DefaultApiClient implements ApiClient {
 
     return fetch(uri, {
       method,
-      headers: this.headers,
+      headers: {},
       body: body
         ? body instanceof FormData
           ? body
@@ -112,11 +112,11 @@ export class DefaultApiClient implements ApiClient {
         : undefined,
     })
       .then(async (response) => {
-        const json = await toJson<T>(response);
+        const deserialize = await toJson<T>(response);
 
-        return path ? get(json, path) : json;
+        return path ? get(deserialize, path) : deserialize;
       })
-      .catch((e: any) => {
+      .catch(async (e: any) => {
         logger(e, 'api.server', {
           params,
           body,

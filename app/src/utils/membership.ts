@@ -9,59 +9,59 @@ export const USER_METADATA_ROOT_KEY = 'console';
 export const getStacks = async (
   api?: ApiClient,
   token?: string
-): Promise<MembershipStack[]> => {
-  const stacks: MembershipStack[][] = [];
-  if (!api) {
-    fetch(`${process.env.MEMBERSHIP_URL}/api/organizations`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async (response) => {
-        const data = await response.json();
-        const organizations = get(data, 'data');
-
-        if (organizations) {
-          for (const organization of organizations) {
-            fetch(
-              `${process.env.MEMBERSHIP_URL}/api/organizations/${organization.id}/stacks`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            ).then((response) => {
-              const data = response.json();
-              const organizationStacks = get(data, 'data');
-              if (organizationStacks) {
-                stacks.push(organizationStacks);
-              }
+): Promise<MembershipStack[]> =>
+  // eslint-disable-next-line no-async-promise-executor
+  new Promise(async (resolve, reject) => {
+    if (!api) {
+      fetch(`${process.env.MEMBERSHIP_URL_API}/organizations`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(async (response) => {
+          const data = await response.json();
+          const organizations: MembershipOrganization[] = get(data, 'data');
+          if (organizations) {
+            const promises: any = [];
+            organizations.forEach((organization: MembershipOrganization) => {
+              promises.push(
+                fetch(
+                  `${process.env.MEMBERSHIP_URL_API}/organizations/${organization.id}/stacks`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                ).then(async (res) => get(await res.json(), 'data'))
+              );
+            });
+            Promise.all(promises).then((response) => {
+              resolve(response.flat());
             });
           }
-        }
-      })
-      .catch(() => {
-        throw new Error('Error while fetching stacks');
-      });
-  } else {
-    const organizations = await api.getResource<MembershipOrganization[]>(
-      '/organizations',
-      'data'
-    );
+        })
+        .catch(() => {
+          reject('Error while fetching stacks');
+        });
+    } else {
+      const organizations = await api.getResource<MembershipOrganization[]>(
+        '/organizations',
+        'data'
+      );
 
-    if (organizations) {
-      for (const organization of organizations) {
-        const organizationStacks = await api.getResource<MembershipStack[]>(
-          `/organizations/${organization.id}/stacks`,
-          'data'
-        );
-        if (organizationStacks) {
-          stacks.push(organizationStacks);
+      if (organizations && organizations.length > 0) {
+        const stacks: MembershipStack[][] = [];
+        for (const organization of organizations) {
+          const organizationStacks = await api.getResource<MembershipStack[]>(
+            `/organizations/${organization.id}/stacks`,
+            'data'
+          );
+          if (organizationStacks) {
+            stacks.push(organizationStacks);
+          }
         }
+        resolve(stacks.flat());
       }
     }
-  }
-
-  return stacks.flat();
-};
+  });
 
 export type FavoriteMetadata = {
   stackUrl?: string;
@@ -82,7 +82,7 @@ export const updateUserMetadata = async (
 ): Promise<any> => {
   if (data) {
     if (!api) {
-      fetch(`${process.env.MEMBERSHIP_URL}/api/me`, {
+      fetch(`${process.env.MEMBERSHIP_URL_API}/me`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
         body: JSON.stringify(data),
@@ -91,13 +91,12 @@ export const updateUserMetadata = async (
           throw new Error(`Error while updating user metadata`);
         }
 
-        await response.json();
+        return await response.json();
       });
     } else {
-      await api.putResource<ObjectOf<any>>('/me', 'data', data);
+      return await api.putResource<ObjectOf<any>>('/me', 'data', data);
     }
     if (callback) {
-      console.log('upppppadaaaate');
       callback();
     }
   }
@@ -107,7 +106,6 @@ export const createFavoriteMetadata = (
   url: string
 ): UpdateMetadata | undefined => {
   if (!url) return;
-
   const s = url.split('-');
 
   return {
