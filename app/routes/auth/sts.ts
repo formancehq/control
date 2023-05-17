@@ -1,6 +1,5 @@
-import { json } from '@remix-run/node';
+import { json, Session } from '@remix-run/node';
 import { LoaderFunction } from '@remix-run/server-runtime';
-import { floor } from 'lodash';
 
 import { Authentication, CurrentUser } from '~/src/utils/api';
 import {
@@ -10,6 +9,7 @@ import {
   encrypt,
   exchangeToken,
   getAuthStackOpenIdConfig,
+  getCurrentUser,
   getMembershipOpenIdConfig,
   getSecurityToken,
   getSession,
@@ -22,23 +22,36 @@ import {
   getStackApiUrl,
 } from '~/src/utils/membership';
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
   const session = await getSession(request.headers.get('Cookie'));
-  const sessionHolder = parseSessionHolder(session);
 
+  return await updateAccessToken(session);
+};
+
+export const updateAccessToken = async (
+  session: Session
+): Promise<
+  undefined | Promise<Response & { json(): Promise<{ session: Session }> }>
+> => {
+  const sessionHolder = parseSessionHolder(session);
   if (sessionHolder.currentUser) {
     const openIdConfig = await getMembershipOpenIdConfig();
-    const favorites = getFavorites(sessionHolder.currentUser);
+    const user = await getCurrentUser(
+      openIdConfig,
+      sessionHolder.master_access_token
+    );
+
+    const favorites = getFavorites(user);
     if (favorites) {
       const authentication = await getStackAuth(
         favorites,
         openIdConfig,
         sessionHolder.master_access_token,
-        sessionHolder.currentUser
+        user
       );
 
       const cookie = createAuthCookie(
-        sessionHolder.currentUser,
+        user,
         sessionHolder.refresh_token,
         sessionHolder.expires_in,
         sessionHolder.master_access_token,
@@ -46,20 +59,13 @@ export const loader: LoaderFunction = async ({ request }) => {
       );
       session.set(COOKIE_NAME, encrypt(cookie));
 
-      return json(
-        {
-          interval: floor((299 * 1000) / 5),
+      return json(session, {
+        headers: {
+          'Set-Cookie': await commitSession(session),
         },
-        {
-          headers: {
-            'Set-Cookie': await commitSession(session),
-          },
-        }
-      );
+      });
     }
   }
-
-  return null;
 };
 
 export const getStackAuth = async (

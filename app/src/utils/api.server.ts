@@ -2,6 +2,7 @@
 import { Session } from '@remix-run/node';
 import { get, isUndefined } from 'lodash';
 
+import { updateAccessToken } from '~/routes/auth/sts';
 import {
   ApiClient,
   AuthCookie,
@@ -9,7 +10,11 @@ import {
   Methods,
   toJson,
 } from '~/src/utils/api';
-import { parseSessionHolder } from '~/src/utils/auth.server';
+import {
+  COOKIE_NAME,
+  decrypt,
+  parseSessionHolder,
+} from '~/src/utils/auth.server';
 import { getFavorites, getStackApiUrl } from '~/src/utils/membership';
 
 export type Headers = { Authorization?: string; 'Content-Type': string };
@@ -89,7 +94,7 @@ export class DefaultApiClient implements ApiClient {
     params?: string,
     body?: any,
     path?: string
-  ): Promise<any> {
+  ): Promise<T | undefined | void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const uri = params ? this.decorateUrl(params) : this.baseUrl!;
     const sessionHolder: AuthCookie = parseSessionHolder(this.session);
@@ -104,7 +109,7 @@ export class DefaultApiClient implements ApiClient {
 
     return fetch(uri, {
       method,
-      headers: {},
+      headers: this.headers,
       body: body
         ? body instanceof FormData
           ? body
@@ -112,11 +117,40 @@ export class DefaultApiClient implements ApiClient {
         : undefined,
     })
       .then(async (response) => {
-        const deserialize = await toJson<T>(response);
+        const json = await toJson<T>(response);
 
-        return path ? get(deserialize, path) : deserialize;
+        return path ? get(json, path) : json;
       })
       .catch(async (e: any) => {
+        if (e == 401) {
+          const update = await updateAccessToken(this.session);
+          if (update) {
+            const newSession = await update.json();
+            const cookie: AuthCookie = decrypt(newSession.data[COOKIE_NAME]);
+            this.headers = {
+              ...this.headers,
+              Authorization: `Bearer ${
+                this.masterToken
+                  ? cookie.master_access_token
+                  : cookie.access_token
+              }`,
+            };
+
+            return fetch(uri, {
+              method,
+              headers: this.headers,
+              body: body
+                ? body instanceof FormData
+                  ? body
+                  : JSON.stringify(body)
+                : undefined,
+            }).then(async (response) => {
+              const deserialize = await toJson<T>(response);
+
+              return path ? get(deserialize, path) : deserialize;
+            });
+          }
+        }
         logger(e, 'api.server', {
           params,
           body,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 
 import {
   ArrowDropDown,
@@ -16,19 +16,54 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+import { get, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { StackList } from '~/routes/stacks/list';
+import { Chip, Select } from '@numaryhq/storybook';
+
 import { TopbarProps } from '~/src/components/Layout/components/Topbar/types';
 import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
 import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
+import { createReactApiClient } from '~/src/utils/api.client';
+import {
+  createFavoriteMetadata,
+  getFavorites,
+  updateUserMetadata,
+} from '~/src/utils/membership';
 
 const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
-  const { currentUser, metas, abilities } = useService();
+  const { currentUser, metas, abilities, snackbar } = useService();
+  const { stacks } = currentUser;
+  const stackUrl = get(getFavorites(currentUser), 'stackUrl');
+  const [value, setValue] = useState<string>(stackUrl || '');
+  const region =
+    stacks &&
+    get(
+      stacks.find((stack) => stack.uri === value),
+      'regionID'
+    );
+
+  const onChange = async (event: SelectChangeEvent<unknown>) => {
+    if (typeof event.target.value === 'string') {
+      const val = event.target.value;
+      if (!isEmpty(val)) {
+        setValue(val);
+        const api = await createReactApiClient(metas.membership, true);
+        const metadata = createFavoriteMetadata(val);
+        try {
+          await updateUserMetadata(api, metadata);
+          window.location.href = metas.origin;
+        } catch (e) {
+          snackbar(t('common.feedback.error'));
+        }
+      }
+    }
+  };
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -131,29 +166,29 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
               },
             }}
           >
-            <StackList />
+            <Select
+              items={
+                (stacks &&
+                  stacks.map((stack) => ({
+                    id: stack.uri,
+                    label: `${stack.name} ${stack.organizationId}-${stack.id}`,
+                  }))) ||
+                []
+              }
+              placeholder={t('common.filters.stacks')}
+              select={{
+                onChange,
+                value,
+              }}
+            />
           </Box>
         )}
         <Box sx={{ display: 'flex' }}>
-          {/*{gateway && gateway.region && (*/}
-          {/*  <Box>*/}
-          {/*    <Typography*/}
-          {/*      variant="bold"*/}
-          {/*      sx={{*/}
-          {/*        color:*/}
-          {/*          gateway.env === "staging"*/}
-          {/*            ? palette.yellow.normal*/}
-          {/*            : palette.neutral[200],*/}
-          {/*        p: "4px 6px",*/}
-          {/*        border: "1px solid",*/}
-          {/*        borderRadius: 2,*/}
-          {/*        mr: 2,*/}
-          {/*      }}*/}
-          {/*    >*/}
-          {/*      {gateway.region}*/}
-          {/*    </Typography>*/}
-          {/*  </Box>*/}
-          {/*)}*/}
+          {region && (
+            <Box mr={1}>
+              <Chip label={region} variant="square" />
+            </Box>
+          )}
           <Box
             sx={{
               display: 'flex',

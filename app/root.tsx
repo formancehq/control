@@ -48,6 +48,7 @@ import {
   AUTH_CALLBACK_ROUTE,
   COOKIE_NAME,
   decrypt,
+  getCurrentUser,
   getJwtPayload,
   getMembershipOpenIdConfig,
   getSession,
@@ -56,7 +57,7 @@ import {
   State,
   withSession,
 } from '~/src/utils/auth.server';
-import { getStackApiUrl } from '~/src/utils/membership';
+import { getStackApiUrl, getStacks } from '~/src/utils/membership';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -107,8 +108,18 @@ export const loader: LoaderFunction = async ({ request }) => {
           ? sessionHolder.currentUser.email.split('@')[0]
           : undefined;
 
+      const stacks = await getStacks(
+        undefined,
+        sessionHolder.master_access_token
+      );
+      const user = await getCurrentUser(
+        openIdConfig,
+        sessionHolder.master_access_token
+      );
+
       const currentUser: CurrentUser = {
-        ...sessionHolder.currentUser,
+        ...user,
+        stacks,
         avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
         scp: payload && payload.scp ? payload.scp : [],
         pseudo,
@@ -118,7 +129,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         featuresDisabled,
         abilities: {
           shouldRedirectToStackOnboarding:
-            currentUser.totalStack === 0 || false,
+            (stacks && stacks.length === 0) || false,
         },
         metas: {
           origin: REDIRECT_URI,
@@ -345,22 +356,6 @@ export default function App() {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       global.refreshMasterTokenTimer = refreshToken();
-    }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (!global.getStsToken) {
-      const stsToken = (): Promise<any> =>
-        fetch(`${metas.origin}/auth/sts`)
-          .then((response) => response.json())
-          .then(({ interval }: { interval: number }) =>
-            setTimeout(stsToken, interval)
-          )
-          .catch(async (reason) => {
-            console.info('Error when getting sts', reason);
-          });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      global.getStsToken = stsToken();
     }
   }, []);
 

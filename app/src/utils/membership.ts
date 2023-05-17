@@ -34,7 +34,7 @@ export const getStacks = async (
               );
             });
             Promise.all(promises).then((response) => {
-              resolve(response.flat());
+              resolve(response.flat().filter((stack) => stack.uri));
             });
           }
         })
@@ -58,7 +58,7 @@ export const getStacks = async (
             stacks.push(organizationStacks);
           }
         }
-        resolve(stacks.flat());
+        resolve(stacks.flat().filter((stack) => stack.uri));
       }
     }
   });

@@ -80,11 +80,7 @@ export const loader: LoaderFunction = async ({
     }
 
     const cookie = createAuthCookie(
-      {
-        ...user,
-        ...favorites,
-        totalStack: stacks.length,
-      },
+      user,
       masterAuth.refresh_token,
       masterAuth.expires_in,
       masterAuth.access_token,

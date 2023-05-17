@@ -20,10 +20,7 @@ import * as yup from 'yup';
 
 import { LoadingButton, Page, Select, TextField } from '@numaryhq/storybook';
 
-import {
-  createStack as stackCreateConfig,
-  OVERVIEW_ROUTE,
-} from '~/src/components/Layout/routes';
+import { createStack as stackCreateConfig } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import { buildOptions } from '~/src/components/Wrappers/Table/Filters/filters';
 import { useService } from '~/src/hooks/useService';
@@ -155,14 +152,9 @@ export default function Index() {
 
           if (stack) {
             const metadata = createFavoriteMetadata(stack.uri);
-            const favorite = await updateUserMetadata(api, metadata, () =>
-              setService({
-                ...service,
-                currentUser: { ...currentUser, metadata },
-              })
-            );
+            const favorite = await updateUserMetadata(api, metadata);
             if (favorite) {
-              navigate(OVERVIEW_ROUTE);
+              window.location.href = metas.origin;
             }
           }
         }

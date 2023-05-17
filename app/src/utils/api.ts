@@ -1,6 +1,7 @@
 import { ObjectOf } from '@numaryhq/storybook';
 
 import { Errors } from '~/src/types/generic';
+import { MembershipStack } from '~/src/types/stack';
 
 export const API_SEARCH = '/search';
 export const API_LEDGER = '/ledger';
@@ -63,7 +64,7 @@ export type CurrentUser = {
   avatarLetter: string | undefined;
   pseudo: string | undefined;
   zone: string;
-  totalStack?: number;
+  stacks?: MembershipStack[] | undefined;
 };
 
 export type Authentication = {
@@ -123,7 +124,7 @@ export const toJson = async <T>(response: Response): Promise<undefined | T> => {
   }
 
   if (response?.status === 401) {
-    throw 401;
+    throw response?.status;
   }
 
   throw new Error(
