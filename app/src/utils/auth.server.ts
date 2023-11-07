@@ -1,18 +1,24 @@
 import crypto from 'crypto';
 
-import { createCookieSessionStorage, json, Session } from '@remix-run/node';
+import {
+  createCookie,
+  createCookieSessionStorage,
+  json,
+  Session,
+} from '@remix-run/node';
 import { TypedResponse } from '@remix-run/server-runtime';
 
 import { ObjectOf } from '~/src/types/generic';
 import {
   API_AUTH,
   Authentication,
+  CurrentUser,
   JwtPayload,
   Methods,
   SessionWrapper,
 } from '~/src/utils/api';
 
-export const COOKIE_NAME = 'auth_session';
+export const COOKIE_NAME = '__session';
 export const AUTH_CALLBACK_ROUTE = '/auth/login';
 export const REDIRECT_URI = process.env.REDIRECT_URI;
 
@@ -30,15 +36,15 @@ const unsecureCookies =
 if (unsecureCookies) {
   console.info('Load session storage with unsecure cookies');
 }
+
 export const sessionStorage = createCookieSessionStorage({
-  cookie: {
-    name: COOKIE_NAME, // use any name you want here
+  cookie: createCookie(COOKIE_NAME, {
     sameSite: 'lax', // this helps with CSRF
     path: '/', // remember to add this so the cookie will work in all routes
     httpOnly: !unsecureCookies, // for security reasons, make this cookie http only
     secrets: [process.env.CLIENT_SECRET || 'secret'], // replace this with an actual secret
     secure: !unsecureCookies,
-  },
+  }),
 });
 
 export const encrypt = (payload: Authentication): string => {
@@ -75,14 +81,26 @@ export interface OpenIdConfiguration {
 }
 
 export const getOpenIdConfig = async (): Promise<OpenIdConfiguration> => {
-  const uri = `${process.env.API_URL}${API_AUTH}/.well-known/openid-configuration`;
+  const uri = `${process.env.API_URL}/api/${API_AUTH}/.well-known/openid-configuration`;
 
   return fetch(uri)
+    .then(async (response) => response.json())
     .catch(() => {
       throw new Error('Error while fetching openid config');
-    })
-    .then(async (response) => response.json());
+    });
 };
+
+export const getCurrentUser = async (
+  openIdConfig: OpenIdConfiguration,
+  token: string
+): Promise<CurrentUser> =>
+  fetch(openIdConfig.userinfo_endpoint, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then(async (response) => response.json())
+    .catch(() => {
+      throw new Error('Error while fetching current user');
+    });
 
 export const getJwtPayload = (
   decryptedCookie: Authentication
@@ -148,14 +166,7 @@ export const introspect = async (
 
 export const handleResponse = async (
   data: SessionWrapper
-): Promise<TypedResponse<any>> =>
-  json(data.callbackResult, {
-    headers: data.cookieValue
-      ? {
-          'Set-Cookie': data.cookieValue,
-        }
-      : {},
-  });
+): Promise<TypedResponse<any>> => json(data.callbackResult);
 
 export const withSession = async (
   request: Request,
@@ -163,14 +174,8 @@ export const withSession = async (
 ): Promise<SessionWrapper> => {
   const session = await getSession(request.headers.get('Cookie'));
   const c = await callback(session);
-  const commitSession = await sessionStorage.commitSession(session);
-  const commitSessionCookieValue = commitSession.split(';')[0];
 
   return {
-    cookieValue:
-      request.headers.get('Cookie') != commitSessionCookieValue
-        ? commitSession
-        : undefined,
     callbackResult: c,
   };
 };

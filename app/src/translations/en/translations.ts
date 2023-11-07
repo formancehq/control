@@ -6,6 +6,7 @@ export default {
       operations: 'Operations',
       connectors: 'Connectors',
       configuration: 'Configuration',
+      flows: 'Flows',
     },
     topbar: {
       logout: 'Logout',
@@ -42,6 +43,9 @@ export default {
         apps: 'Apps',
         oAuthClients: 'OAuth Clients',
         webhooks: 'Webhooks',
+        workflows: 'Workflows',
+        instances: 'Instances',
+        status: 'Instance',
       },
     },
     pages: {
@@ -89,11 +93,29 @@ export default {
           },
         },
       },
+      status: {
+        sections: {
+          details: {
+            title: 'Details',
+            id: 'Stack ID',
+            api: 'Base Stack Endpoint',
+          },
+        },
+        latest: 'latest',
+        table: {
+          columnLabel: {
+            name: 'Service name',
+            url: 'Base API URL',
+            version: 'Version',
+            status: 'Status',
+          },
+        },
+      },
       overview: {
         title: 'Overview',
         status: 'Activity',
         charts: {
-          transaction: 'Transactions per ledger top 3',
+          transaction: 'Transactions volume per top ledgers',
           payment: 'Payments volume',
         },
         tasks: {
@@ -200,6 +222,15 @@ export default {
           },
           balances: {
             title: 'Balances',
+            expiresAtPlaceholder: 'No expiring date',
+            table: {
+              columnLabel: {
+                name: 'Name',
+                role: 'Role',
+                amounts: 'Amounts',
+                expiresAt: 'Expires at',
+              },
+            },
           },
           holds: {
             title: 'Last holds',
@@ -347,6 +378,41 @@ export default {
       reconciliation: {
         title: 'Reconciliation',
       },
+      flows: {
+        title: 'Flows',
+        tabs: {
+          workflows: {
+            title: 'Workflows',
+          },
+          instances: {
+            title: 'Instances',
+          },
+        },
+      },
+      workflows: {
+        title: 'Workflows',
+        table: {
+          noName: 'Untitled',
+          columnLabel: {
+            id: 'ID',
+            name: 'Name',
+            stages: 'Stages',
+            createdAt: 'Creation date',
+          },
+        },
+      },
+      instances: {
+        title: 'Instances',
+        table: {
+          columnLabel: {
+            id: 'ID',
+            status: 'Status',
+            workflowID: 'Workflow ID',
+            createdAt: 'Creation date',
+            terminatedAt: 'End date',
+          },
+        },
+      },
       connectors: {
         title: 'Connectors',
         table: {
@@ -399,8 +465,8 @@ export default {
       app: {
         sections: {
           charts: {
-            transaction: '{{provider}} payments volume',
-            payment: '{{provider}} type',
+            transaction: 'Payments volume',
+            payment: 'Payments type',
           },
           dangerZone: {
             title: 'Manage connector',
@@ -517,6 +583,155 @@ export default {
           },
         },
       },
+      instance: {
+        title: 'Instance',
+        sections: {
+          flow: {
+            showing: 'Showing {{current}} stages on {{total}}',
+            showMore: 'Show more stages',
+          },
+          recap: {
+            stages: 'stage(s)',
+            activities: 'activitie(s)',
+            noError: 'No error',
+            error: 'Error: {{error}}',
+            workflow: 'Workflow ID: {{id}}',
+          },
+          logs: {
+            title: 'Logs',
+            error: 'Could not retrieve history log for {{activity}} activity',
+            getPayment: 'Read payment id {{id}}',
+            getAccount: 'Read account {{id}} of ledger {{ledger}}',
+            voidHold: 'Cancel debit hold {{id}}',
+            revertTransaction: {
+              main: 'Revert transaction {{id}}',
+              child1: 'Created transaction: {{txid}}',
+            },
+            stripeTransfer:
+              'Send {{amount}} to Stripe connected account: {{destination}}',
+            getWallet: 'Read wallet id {{id}}',
+            creditWallet: {
+              main: 'Credit wallet {{id}} (balance: {{balance}}) of {{amount}} from account {{source}}',
+              child1: 'Added metadata {{key}} with value {{value}}',
+            },
+            debitWallet: {
+              main: 'Debit wallet {{id}} (balance: {{balance}}) of {{amount}} to account {{destination}}',
+              child1: 'Added metadata {{key}} with value {{value}}',
+            },
+            createTransaction: {
+              main: 'Send {{amount}} from account {{source}} to account {{destination}} ({{ledger}})',
+              child1: 'Created transaction with txid : {{txid}}',
+              child2: 'Reference : {{reference}}',
+              child3: 'Added metadata {{key}} with value {{value}}',
+            },
+          },
+          details: {
+            title: 'Details',
+            runSend: {
+              startedAt: 'Started at',
+              terminatedAt: 'Terminated at',
+            },
+          },
+        },
+      },
+      flow: {
+        error:
+          'An error has occurred during one of the activities of the stage:',
+        activities: {
+          createTransaction: {
+            title: 'Create transaction',
+            preCommitVolumes: 'Pre commit volumes',
+            postCommitTransactions: 'Post commit transaction',
+            metadata: 'Metadata',
+            timestamp: 'Timestamp',
+            reference: 'Reference',
+            txid: 'Txid',
+          },
+          title: 'Activities',
+          creditWallet: {
+            title: 'Credit wallet',
+            metadata: 'Metadata',
+            identifier: 'Identifier',
+            type: 'Type',
+            amount: 'Amount',
+            balance: 'Balance',
+            sources: 'Sources',
+          },
+          voidHold: {
+            title: 'Void hold',
+          },
+          getAccount: {
+            title: 'Get account',
+            metadata: 'Metadata',
+            address: 'ID',
+          },
+          stripeTransfer: {
+            title: 'Stripe transfer',
+            destination: 'Destination',
+            amount: 'Amount',
+          },
+          debitWallet: {
+            title: 'Debit wallet',
+            amount: 'Amount',
+          },
+          getPayment: {
+            title: 'Get payment',
+            createdAt: 'Created at',
+            initialAmount: 'Initial amount',
+            raw: 'Raw data',
+            reference: 'Reference',
+          },
+          getWallet: {
+            title: 'Get wallet',
+            metadata: 'Metadata',
+            ledger: 'Ledger',
+            name: 'Name',
+            createdAt: 'Created at',
+          },
+          revertTransaction: {
+            title: 'Revert transaction',
+          },
+        },
+        waitEvent: {
+          title: 'Wait event',
+          event: 'Event',
+        },
+        delay: {
+          title: 'Delay',
+          duration: 'Duration (s)',
+          until: 'Until (date)',
+        },
+        send: {
+          title: 'Send',
+          source: 'Source',
+          destination: 'Destination',
+          account: 'Account',
+          wallet: 'Wallet',
+          payment: 'Payment',
+          id: 'ID',
+          ledger: 'Ledger',
+          psp: 'PSP',
+        },
+      },
+      workflow: {
+        title: 'Workflow',
+        sections: {
+          recap: {
+            stages: 'stage(s)',
+            instances: 'instances(s)',
+          },
+          details: {
+            title: 'Detailed config',
+          },
+          instances: {
+            title: 'Instances',
+            createdAt: 'Created at',
+            updatedAt: 'Last update',
+            terminated: 'Terminated',
+            running: 'Running',
+          },
+        },
+      },
       webhook: {
         title: 'Webhook',
         secret: 'Webhook secret',
@@ -605,6 +820,11 @@ export default {
         last: 'Last {{value}} {{kind}}',
       },
       boundaries: {
+        auth: 'authentication',
+        buttons: {
+          overview: 'Go back home',
+          getHelp: 'Get help',
+        },
         errorState: {
           error: {
             title:
@@ -634,10 +854,11 @@ export default {
             button: 'Go back home',
           },
         },
-        title: "That's an error",
+        title: "That's an {{type}} error",
       },
       soon: 'Soon!',
       title: 'Formance',
+      noData: 'No data',
       noResults: 'No results',
       noActivity: 'No activity found',
       table: {
@@ -664,6 +885,8 @@ export default {
           payments: 'Payments',
           ledgers: 'Ledgers',
           configuration: 'Configuration',
+          flows: 'Flows',
+          status: 'Instance',
         },
         targets: {
           wallets: 'All wallets',
@@ -677,6 +900,9 @@ export default {
           webhooks: 'Webhooks',
           apps: 'Apps',
           connectors: 'Connectors',
+          status: 'Status',
+          workflows: 'Workflows',
+          instances: 'Instances',
         },
       },
       search: {

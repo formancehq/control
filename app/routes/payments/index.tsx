@@ -14,7 +14,9 @@ import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Select from '~/src/components/Wrappers/Table/Filters/Select';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
+import { FEATURES } from '~/src/contexts/service';
 import { TableContext } from '~/src/contexts/table';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Connector } from '~/src/types/connectorsConfig';
 import { Cursor } from '~/src/types/generic';
 import { Payment, PaymentStatuses, PaymentTypes } from '~/src/types/payment';
@@ -92,6 +94,7 @@ export default function Index() {
   const { t } = useTranslation();
   const { payments, providers } =
     useLoaderData<PaymentsData>() as unknown as PaymentsData;
+  useFeatureFlag(FEATURES.PAYMENTS);
 
   return (
     <Page id={paymentsConfig.id}>

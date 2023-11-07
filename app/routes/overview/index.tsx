@@ -32,6 +32,7 @@ import {
   buildRange,
   buildTermsAggs,
 } from '~/src/components/Dataviz/Charts/utils';
+import { subtitleSx, titleSx } from '~/src/components/Dataviz/utils';
 import { CONNECTORS_ROUTE, overview } from '~/src/components/Layout/routes';
 import { useOpen } from '~/src/hooks/useOpen';
 import { useService } from '~/src/hooks/useService';
@@ -52,6 +53,7 @@ export const meta: MetaFunction = () => ({
 export function ErrorBoundary() {
   return <Overview />;
 }
+
 const getLedgersStats = async (ledgersList: string[], api: ApiClient) => {
   const ledgers = [] as any;
   const firstThreeLedgers = take(ledgersList, 3);
@@ -120,7 +122,7 @@ const getTransactionLedgerChartData = async (
       }
     }
 
-    return buildChart(buildLabels(datasets, 'dd LT'), datasets);
+    return buildChart(buildLabels(datasets, 'dd LT'), datasets, 'dd LT');
   }
 };
 
@@ -143,7 +145,7 @@ const getPaymentChartData = async (api: ApiClient) => {
   if (chart) {
     const dataset = buildLineChartDataset(chart);
 
-    return buildChart(buildLabels([dataset], 'LT'), [dataset]);
+    return buildChart(buildLabels([dataset]), [dataset]);
   }
 };
 
@@ -340,6 +342,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                         }}
                       >
                         <Line
+                          sxTitle={{ ...titleSx, fontSize: '20px' }}
+                          sxSubtitle={{ ...subtitleSx, fontSize: '14px' }}
                           title={t('pages.overview.charts.transaction')}
                           data={transactionChart}
                           time={{ value: '24', kind: 'hours' }}
@@ -361,6 +365,8 @@ const Overview: FunctionComponent<{ data?: OverviewData }> = ({ data }) => {
                         }}
                       >
                         <Line
+                          sxTitle={{ ...titleSx, fontSize: '20px' }}
+                          sxSubtitle={{ ...subtitleSx, fontSize: '14px' }}
                           title={t('pages.overview.charts.payment')}
                           data={paymentChart}
                         />

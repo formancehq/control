@@ -14,7 +14,9 @@ import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
 import Text from '~/src/components/Wrappers/Table/Filters/Text';
+import { FEATURES } from '~/src/contexts/service';
 import { TableContext } from '~/src/contexts/table';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor } from '~/src/types/generic';
 import { Transaction } from '~/src/types/ledger';
 import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
@@ -76,6 +78,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export default function Index() {
   const transactions = useLoaderData<Cursor<Transaction>>();
   const { t } = useTranslation();
+  useFeatureFlag(FEATURES.TRANSACTIONS);
 
   return (
     <Page id={transactionsConfig.id}>

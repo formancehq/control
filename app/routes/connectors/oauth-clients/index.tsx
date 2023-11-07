@@ -14,6 +14,8 @@ import { OAUTH_CLIENT_ROUTE } from '~/src/components/Layout/routes';
 import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoundary';
 import ShowListAction from '~/src/components/Wrappers/Lists/Actions/ShowListAction';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { OAuthClient } from '~/src/types/oauthClient';
 import { API_AUTH } from '~/src/utils/api';
 import { createApiClient } from '~/src/utils/api.server';
@@ -53,6 +55,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   const { t } = useTranslation();
   const oAuthClients = useLoaderData() as OAuthClient[];
+  useFeatureFlag(FEATURES.O_AUTH_CLIENTS);
 
   return (
     <Box mt={2}>

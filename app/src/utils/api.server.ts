@@ -31,7 +31,7 @@ export class DefaultApiClient implements ApiClient {
     if (typeof process !== 'undefined') {
       if (isUndefined(url)) {
         if (process.env.API_URL) {
-          this.baseUrl = process.env.API_URL;
+          this.baseUrl = `${process.env.API_URL}/api`;
         } else throw new Error('API_URL is not defined');
       }
     }

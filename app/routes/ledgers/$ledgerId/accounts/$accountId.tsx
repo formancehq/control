@@ -19,6 +19,7 @@ import {
   buildPayloadQuery,
   buildQueryPayloadMatchPhrase,
   buildQueryPayloadTerms,
+  buildRange,
 } from '~/src/components/Dataviz/Charts/utils';
 import {
   accounts,
@@ -29,6 +30,8 @@ import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import TransactionList from '~/src/components/Wrappers/Lists/TransactionList';
 import Metadata from '~/src/components/Wrappers/Metadata';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Chart } from '~/src/types/chart';
 import { Cursor } from '~/src/types/generic';
 import {
@@ -116,7 +119,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
             { key: 'indexed.source', value: [params.accountId] },
             { key: 'indexed.destination', value: [params.accountId] },
           ]),
-          undefined,
+          [buildRange('indexed.timestamp')],
           { minimum_should_match: 1 }
         ),
       },
@@ -128,7 +131,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return {
       account: account ? normalizeBalance(account) : undefined,
       transactions,
-      chart: buildChart(buildLabels([dataset], 'LT'), [dataset]),
+      chart: buildChart(buildLabels([dataset]), [dataset]),
     };
   }
 
@@ -149,6 +152,7 @@ export default function Index() {
   const fetcher = useFetcher();
   const account = fetcher.data?.account || loaderData.account;
   const { palette } = useTheme();
+  useFeatureFlag(FEATURES.ACCOUNTS);
 
   const sync = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

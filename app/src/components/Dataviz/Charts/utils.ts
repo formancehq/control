@@ -4,7 +4,7 @@ import { compact, flatten, get, omit, sortedUniq } from 'lodash';
 
 import { ObjectOf, theme } from '@numaryhq/storybook';
 
-import { Chart, ChartDataset } from '~/src/types/chart';
+import { Chart, ChartDataset, ChartTypes } from '~/src/types/chart';
 import { BooleanConfig, SearchTargets } from '~/src/types/search';
 
 export const buildQueryPayloadMatchPhrase = (
@@ -125,21 +125,39 @@ export const getRandomContrast = (): 'bright' | 'normal' | 'darker' =>
 
 export const buildChart = (
   labels: (string | Date)[],
-  datasets: any
-): Chart => ({
-  labels,
-  datasets: compact(
-    datasets.map((dataset: ChartDataset) => {
-      if (dataset && dataset.data) {
-        return omit(dataset, ['labels']);
-      }
-    })
-  ),
-});
+  datasets: any,
+  reverseDateFormat = 'LT',
+  type = ChartTypes.LINE
+): Chart => {
+  if (type === ChartTypes.LINE) {
+    datasets.forEach((dataset: ChartDataset) => {
+      const dataFormated = labels.map(() => 0);
+      dataset.labels.forEach((label: string | Date, index: number) => {
+        const myIndex = labels.findIndex(
+          (item: string | Date) =>
+            dayjs(label).format(reverseDateFormat) === item
+        );
+        dataFormated[myIndex] = dataset.data[index];
+      });
+      dataset.data = dataFormated;
+    });
+  }
+
+  return {
+    labels,
+    datasets: compact(
+      datasets.map((dataset: ChartDataset) => {
+        if (dataset && dataset.data) {
+          return omit(dataset, ['labels']);
+        }
+      })
+    ),
+  };
+};
 
 export const buildLabels = (
   datasets: any,
-  dateFormat = 'ddd D MMM'
+  dateFormat = 'LT'
 ): (string | Date)[] => {
   const labels = sortedUniq(
     flatten(compact(datasets.map((dataset: ChartDataset) => dataset.labels)))
@@ -149,7 +167,6 @@ export const buildLabels = (
   ) as string[];
 
   return uniqLabels
-
     .sort((a, b) => (dayjs(a) < dayjs(b) ? 1 : -1))
     .reverse()
     .map((item: Date | string) => {

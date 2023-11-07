@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
 import {
   ArrowDropDown,
@@ -22,13 +22,15 @@ import { TopbarProps } from '~/src/components/Layout/components/Topbar/types';
 import Search from '~/src/components/Search';
 import { useService } from '~/src/hooks/useService';
 import useSimpleMediaQuery from '~/src/hooks/useSimpleMediaQuery';
-import { CurrentUser } from '~/src/utils/api';
+import { Gateway } from '~/src/types/gateway';
+import { ReactApiClient } from '~/src/utils/api.client';
 
 const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
   const { isMobile } = useSimpleMediaQuery();
-  const { api, setCurrentUser, currentUser, metas } = useService();
+  const [gateway, setGateway] = useState<{ region: string; env: string }>();
+  const { currentUser, metas } = useService();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -70,29 +72,14 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
     window.location.href = `${metas.origin}/auth/redirect-logout`;
   };
 
-  const getCurrentUser = async () => {
-    try {
-      const user = await api.getResource<CurrentUser>(
-        `${metas.openIdConfig.userinfo_endpoint.split('api')[1]}`
-      );
-      if (user) {
-        const pseudo =
-          user && user.email ? user.email.split('@')[0] : undefined;
-
-        setCurrentUser({
-          ...user,
-          avatarLetter: pseudo ? pseudo.split('')[0].toUpperCase() : undefined,
-          pseudo,
-        });
-      }
-    } catch (e) {
-      console.info('Current user could not be retrieved');
-    }
-  };
-
   useEffect(() => {
     (async () => {
-      await getCurrentUser();
+      const client = new ReactApiClient();
+      client.setBaseUrl && client.setBaseUrl(metas.api);
+      const gateway = await client.getResource<Gateway>('/versions');
+      if (gateway) {
+        setGateway(gateway);
+      }
     })();
   }, []);
 
@@ -136,8 +123,27 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
         )}
         <Search />
       </Box>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ display: 'flex' }}>
+          {gateway && gateway.region && (
+            <Box>
+              <Typography
+                variant="bold"
+                sx={{
+                  color:
+                    gateway.env === 'staging'
+                      ? palette.yellow.normal
+                      : palette.neutral[200],
+                  p: '4px 6px',
+                  border: '1px solid',
+                  borderRadius: 2,
+                  mr: 2,
+                }}
+              >
+                {gateway.region}
+              </Typography>
+            </Box>
+          )}
           <Box
             sx={{
               display: 'flex',
@@ -204,21 +210,6 @@ const Topbar: FunctionComponent<TopbarProps> = ({ resized, onResize }) => {
               mr: 1,
             }}
           >
-            {/* TODO uncomment when zone are ready */}
-            {/*<Box>*/}
-            {/*  <Typography*/}
-            {/*    variant="bold"*/}
-            {/*    sx={{*/}
-            {/*      color: palette.neutral[500],*/}
-            {/*      p: '4px 6px',*/}
-            {/*      border: '1px solid',*/}
-            {/*      borderRadius: 2,*/}
-            {/*      mr: 2,*/}
-            {/*    }}*/}
-            {/*  >*/}
-            {/*    eu-west-1*/}
-            {/*  </Typography>*/}
-            {/*</Box>*/}
             <Box>
               <IconButton sx={{ p: 0 }}>
                 <Avatar

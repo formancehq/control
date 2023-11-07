@@ -11,14 +11,17 @@ import {
   getLedgerAccountDetailsRoute,
   getLedgerTransactionDetailsRoute,
   getRoute,
+  INSTANCES_ROUTE,
   LEDGER_ROUTE,
   LEDGERS_ROUTE,
   OAUTH_CLIENTS_ROUTE,
   PAYMENTS_ACCOUNTS_ROUTE,
   PAYMENTS_ROUTE,
+  STATUS_ROUTE,
   TRANSACTIONS_ROUTE,
   WALLETS_ROUTE,
   WEBHOOKS_ROUTE,
+  WORKFLOWS_ROUTE,
 } from '~/src/components/Layout/routes';
 import { ObjectOf } from '~/src/types/generic';
 
@@ -209,6 +212,9 @@ export const breadcrumbsFactory = (
     '/ledgers/:ledgerId/transactions/:transactionId'
   );
   const transactionsIndex = match('/transactions');
+  const flowsIndex = match('/flows/:id');
+  const workflowRoute = match('/workflows/:workflowId');
+  const instanceRoute = match('/instances/:instanceId');
   const connectorsIndex = match('/connectors/:id');
   const oAuthClientRoute = match('/oauth-clients/:oAuthClientId');
   const webhookRoute = match('/webhooks/:webhookId');
@@ -221,6 +227,7 @@ export const breadcrumbsFactory = (
   const ledgersIndex = match('/ledgers');
   const ledgerLogsRoute = match('/ledgers/:ledgerId/logs');
   const ledgerRoute = match('/ledgers/:ledgerId');
+  const statusRoute = match('/status');
 
   if (accountsRoute) {
     return buildLedgerBreadcrumbs(
@@ -312,6 +319,34 @@ export const breadcrumbsFactory = (
     return buildAppBreadcrumbs(navigate, params.appName);
   }
 
+  if (workflowRoute) {
+    return [
+      ...buildIndexBreadcrumbs(
+        navigate,
+        'workflows',
+        WORKFLOWS_ROUTE,
+        i18n.t('common.breadcrumbs.categories.flows')
+      ),
+      {
+        label: params.workflowId,
+      },
+    ];
+  }
+
+  if (instanceRoute) {
+    return [
+      ...buildIndexBreadcrumbs(
+        navigate,
+        'instances',
+        INSTANCES_ROUTE,
+        i18n.t('common.breadcrumbs.categories.flows')
+      ),
+      {
+        label: params.instanceId,
+      },
+    ];
+  }
+
   if (accountsIndex) {
     return buildIndexBreadcrumbs(
       navigate,
@@ -339,6 +374,10 @@ export const breadcrumbsFactory = (
     );
   }
 
+  if (flowsIndex) {
+    return [{ label: i18n.t('common.breadcrumbs.categories.flows') }];
+  }
+
   if (paymentsAccountsIndex) {
     return buildIndexBreadcrumbs(
       navigate,
@@ -363,6 +402,15 @@ export const breadcrumbsFactory = (
       'ledgers',
       getRoute(LEDGERS_ROUTE),
       i18n.t('common.breadcrumbs.categories.ledgers')
+    );
+  }
+
+  if (statusRoute) {
+    return buildIndexBreadcrumbs(
+      navigate,
+      'status',
+      getRoute(STATUS_ROUTE),
+      i18n.t('common.breadcrumbs.categories.status')
     );
   }
 

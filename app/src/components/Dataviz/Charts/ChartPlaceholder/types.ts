@@ -1,10 +1,7 @@
-export enum ChartPlaceholderTypes {
-  LINE = 'line',
-  PIE = 'pie',
-}
+import { ChartTypes } from '~/src/types/chart';
 
 export type ChartPlaceholderProps = {
-  type: ChartPlaceholderTypes;
+  type: ChartTypes;
   title?: string;
   time?: { value: string; kind: string };
 };

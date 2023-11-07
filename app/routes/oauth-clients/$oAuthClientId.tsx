@@ -37,6 +37,8 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import IconTitlePage from '~/src/components/Wrappers/IconTitlePage';
 import Modal from '~/src/components/Wrappers/Modal';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { useService } from '~/src/hooks/useService';
 import { OAuthClient, OAuthSecret } from '~/src/types/oauthClient';
 import { API_AUTH } from '~/src/utils/api';
@@ -87,6 +89,7 @@ export default function Index() {
   );
   const navigate = useNavigate();
   const { typography } = useTheme();
+  useFeatureFlag(FEATURES.O_AUTH_CLIENTS);
 
   const renderUris = (key: string, color?: ColorVariants) => {
     const uris = get(oAuthClient, key, []) || [];

@@ -45,9 +45,11 @@ import {
   paymentTypeColorMap,
 } from '~/src/components/Wrappers/StatusChip/maps';
 import Table from '~/src/components/Wrappers/Table';
+import { FEATURES } from '~/src/contexts/service';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { useService } from '~/src/hooks/useService';
 import i18n from '~/src/translations';
-import { Chart } from '~/src/types/chart';
+import { Chart, ChartTypes } from '~/src/types/chart';
 import {
   Connector,
   ConnectorStatuses,
@@ -157,8 +159,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         tasks,
         connector,
         chart: {
-          pie: buildChart(buildLabels([datasetPie]), [datasetPie]),
-          line: buildChart(buildLabels([datasetLine], 'LT'), [datasetLine]),
+          pie: buildChart(
+            buildLabels([datasetPie]),
+            [datasetPie],
+            undefined,
+            ChartTypes.PIE
+          ),
+          line: buildChart(buildLabels([datasetLine]), [datasetLine]),
         },
       };
     }
@@ -197,6 +204,8 @@ export default function Index() {
   }>();
   const navigate = useNavigate();
   const { api, snackbar } = useService();
+  useFeatureFlag(FEATURES.APPS);
+
   const provider = lowerCaseAllWordsExceptFirstLetter(connector.provider);
   const onDelete = async (name: string) => {
     try {

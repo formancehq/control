@@ -21,7 +21,7 @@
     "@mui/icons-material": "^5.8.4",
     "@mui/lab": "^5.0.0-alpha.92",
     "@mui/material": "latest",
-    "@numaryhq/storybook": "^0.10.13",
+    "@numaryhq/storybook": "^0.10.18",
     "@opentelemetry/api": "^1.2.0",
     "@opentelemetry/auto-instrumentations-node": "^0.34.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.33.0",
@@ -51,6 +51,7 @@
     "react-i18next": "^11.18.3",
     "react-json-tree": "^0.17.0",
     "react-spring": "^9.5.2",
+    "reactflow": "^11.6.0",
     "remix": "latest",
     "tiny-invariant": "^1.2.0",
     "yup": "^0.32.11"

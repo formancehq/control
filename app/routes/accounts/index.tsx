@@ -12,7 +12,9 @@ import ComponentErrorBoundary from '~/src/components/Wrappers/ComponentErrorBoun
 import AccountList from '~/src/components/Wrappers/Lists/AccountList/AccountList';
 import { Filters } from '~/src/components/Wrappers/Table/Filters/filters';
 import FiltersBar from '~/src/components/Wrappers/Table/Filters/FiltersBar';
+import { FEATURES } from '~/src/contexts/service';
 import { TableContext } from '~/src/contexts/table';
+import { useFeatureFlag } from '~/src/hooks/useFeatureFlag';
 import { Cursor } from '~/src/types/generic';
 import { Account } from '~/src/types/ledger';
 import { SearchBody, SearchPolicies, SearchTargets } from '~/src/types/search';
@@ -63,6 +65,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export default function Index() {
   const accounts = useLoaderData<Cursor<Account>>();
+  useFeatureFlag(FEATURES.ACCOUNTS);
 
   return (
     <Page id={accountsConfig.id}>

@@ -17,8 +17,9 @@ import { useTranslation } from 'react-i18next';
 import { LineProps } from './types';
 
 import ChartPlaceholder from '~/src/components/Dataviz/Charts/ChartPlaceholder';
-import { ChartPlaceholderTypes } from '~/src/components/Dataviz/Charts/ChartPlaceholder/types';
 import { getChartOptions } from '~/src/components/Dataviz/Charts/utils';
+import { subtitleSx, titleSx } from '~/src/components/Dataviz/utils';
+import { ChartTypes } from '~/src/types/chart';
 
 ChartJS.register(
   CategoryScale,
@@ -34,17 +35,15 @@ const Line: FunctionComponent<LineProps> = ({
   data,
   options,
   title,
-  height = 300,
+  height = 200,
   time = { value: '12', kind: 'hours' },
+  sxTitle = titleSx,
+  sxSubtitle = subtitleSx,
 }) => {
   const { t } = useTranslation();
   if (data.datasets.length === 0 || data.labels.length === 0) {
     return (
-      <ChartPlaceholder
-        type={ChartPlaceholderTypes.LINE}
-        title={title}
-        time={time}
-      />
+      <ChartPlaceholder type={ChartTypes.LINE} title={title} time={time} />
     );
   }
 
@@ -52,10 +51,10 @@ const Line: FunctionComponent<LineProps> = ({
     <>
       {title && (
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h2" mb={1} mt={1}>
+          <Typography variant="h2" mb={1} mt={1} sx={sxTitle}>
             {title}
           </Typography>
-          <Typography variant="h2" mb={1} mt={1}>
+          <Typography mb={1} mt={1} sx={sxSubtitle}>
             {t('common.chart.last', { value: time.value, kind: time.kind })}
           </Typography>
         </Box>
